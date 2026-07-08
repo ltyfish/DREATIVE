@@ -1,13 +1,14 @@
 {
   "name": "dreative",
   "version": "0.1.0",
-  "description": "Layout-first AI UI builder: AI proposes wireframe skeletons, you arrange them, AI designs each page from a reference image.",
+  "description": "Layout-first visual editor skill for coding CLIs: extract your app's UI into editable wireframes, tweak with drag-drop + ref images, then the agent applies the diff back to your code.",
   "type": "module",
   "bin": {
     "dreative": "dist/cli/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "skill"
   ],
   "scripts": {
     "build": "npm run build:server && npm run build:ui",
@@ -17,7 +18,6 @@
     "start": "node dist/cli/index.js"
   },
   "dependencies": {
-    "@anthropic-ai/claude-agent-sdk": "^0.1.0",
     "esbuild": "^0.24.0",
     "express": "^4.21.0",
     "open": "^10.1.0",

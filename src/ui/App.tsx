@@ -130,6 +130,24 @@ export default function App() {
         >
           Export
         </button>
+        <button
+          title="Hand the final layout (as a diff vs the extracted baseline) to your coding CLI to apply"
+          disabled={!!busy || project.pages.length === 0}
+          onClick={async () => {
+            const res = await fetch("/api/finish", { method: "POST" });
+            const data = await res.json();
+            if (!res.ok) {
+              alert(`Finish failed: ${data.error || res.statusText}`);
+              return;
+            }
+            const d = data.diff ?? {};
+            alert(
+              `Handed to your coding CLI.\nAdded pages: ${d.pagesAdded?.length ?? 0} · Removed: ${d.pagesRemoved?.length ?? 0} · Changed: ${d.pagesChanged?.length ?? 0}\n\nThe agent will now apply these changes to your codebase.`,
+            );
+          }}
+        >
+          ✅ Finish
+        </button>
       </div>
 
       <div className="main">

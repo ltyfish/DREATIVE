@@ -3,11 +3,13 @@ import path from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { Store, findBlock, replaceBlock, newId } from "./store.js";
-import { proposeSkeletons, proposeVariants, editBlock, designPage, editDesignedElement } from "./ai.js";
+import { requestAgent, respond, nextEvent, pushFinish } from "./agentQueue.js";
+import { computeDiff } from "./diff.js";
 import { buildPreview, previewHtml } from "./preview.js";
 import { startJob, getJob } from "./jobs.js";
 import type { Block, Project } from "../shared/types.js";
-// (Block used for ref-image collection in the design endpoint)
+
+type Proposal = { name: string; layout: Block; source?: string };
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
@@ -39,11 +41,41 @@ export function createServer(projectDir: string) {
     res.json(job);
   });
 
+  // ---- Host-agent bridge -------------------------------------------------
+  // The coding CLI (dreative skill) long-polls for work and posts results.
+
+  app.get("/api/agent/next", async (_req, res) => {
+    const ev = await nextEvent(25_000);
+    if (!ev) return res.status(204).end();
+    res.json(ev);
+  });
+
+  app.post("/api/agent/respond", (req, res) => {
+    const { id, result, error } = req.body as { id: string; result?: unknown; error?: string };
+    if (!respond(id, { result, error })) return res.status(404).json({ error: "request not found" });
+    res.json({ ok: true });
+  });
+
+  // Snapshot current project as diff baseline (agent calls this after extraction)
+  app.post("/api/baseline", (_req, res) => {
+    store.saveBaseline();
+    res.json({ ok: true });
+  });
+
+  // Finish: compute layout diff vs baseline and hand it to the agent
+  app.post("/api/finish", (_req, res) => {
+    const baseline = store.loadBaseline() ?? { version: 1 as const, pages: [] };
+    const diff = computeDiff(baseline, store.load());
+    fs.writeFileSync(path.join(store.root, "finish.json"), JSON.stringify(diff, null, 2));
+    pushFinish(diff);
+    res.json({ ok: true, diff });
+  });
+
   // Stage 1: prompt -> AI proposes skeleton pages placed on the canvas
   app.post("/api/skeletons", (req, res) => {
     const { prompt } = req.body as { prompt: string };
     const job = startJob("Proposing layouts", async (update) => {
-      const proposals = await proposeSkeletons(prompt, update);
+      const proposals = await requestAgent<Proposal[]>("propose-skeletons", { prompt }, update);
       return store.update((p) => {
         const baseX = Math.max(0, ...p.pages.map((pg) => pg.canvasPos.x + 480));
         proposals.forEach((prop, i) => {
@@ -65,7 +97,11 @@ export function createServer(projectDir: string) {
     const page = store.getPage(req.params.pageId);
     if (!page) return res.status(404).json({ error: "page not found" });
     const job = startJob(`Variants of ${page.name}`, async (update) => {
-      const proposals = await proposeVariants(page.name, page.layout, update);
+      const proposals = await requestAgent<Proposal[]>(
+        "propose-variants",
+        { pageName: page.name, layout: page.layout },
+        update,
+      );
       return store.update((p) => {
         proposals.forEach((prop, i) => {
           p.pages.push({
@@ -108,7 +144,7 @@ export function createServer(projectDir: string) {
     const block = findBlock(page.layout, blockId);
     if (!block) return res.status(404).json({ error: "block not found" });
     const job = startJob("Editing block", async (update) => {
-      const updated = await editBlock(block, instruction, update);
+      const updated = await requestAgent<Block>("edit-block", { block, instruction }, update);
       return store.update((p) => {
         const pg = p.pages.find((x) => x.id === pageId)!;
         pg.layout = replaceBlock(pg.layout, blockId, updated);
@@ -155,36 +191,39 @@ export function createServer(projectDir: string) {
     const { designPrompt } = req.body as { designPrompt?: string };
     const page = store.getPage(pageId);
     if (!page) return res.status(404).json({ error: "page not found" });
-    const previousCode = page.generatedFile
-      ? fs.readFileSync(path.join(store.root, page.generatedFile), "utf-8")
-      : undefined;
     const siblingPages = store
       .load()
       .pages.filter((p) => p.id !== pageId)
       .map((p) => p.name);
-    const blockRefs: { id: string; label: string; path: string }[] = [];
+    // Paths only (relative to .dreative/) — the agent reads images/previous
+    // code with its own tools and writes the .tsx file itself.
+    const blockRefs: { id: string; label: string; refImage: string }[] = [];
     const collect = (b: Block) => {
-      if (b.refImage) blockRefs.push({ id: b.id, label: b.label, path: path.join(store.root, b.refImage) });
+      if (b.refImage) blockRefs.push({ id: b.id, label: b.label, refImage: b.refImage });
       b.children?.forEach(collect);
     };
     collect(page.layout);
+    const outFile = `generated/${pageId}.tsx`;
     const job = startJob(`Designing ${page.name}`, async (update) => {
-      const code = await designPage({
-        pageName: page.name,
-        layout: page.layout,
-        refImagePath: page.refImage ? path.join(store.root, page.refImage) : undefined,
-        blockRefs,
-        designPrompt: designPrompt ?? page.designPrompt,
-        previousCode,
-        siblingPages,
-        progress: update,
-      });
-      const fileName = `${pageId}.tsx`;
-      fs.writeFileSync(store.generatedPath(fileName), code);
+      await requestAgent(
+        "design-page",
+        {
+          pageName: page.name,
+          layout: page.layout,
+          refImage: page.refImage,
+          blockRefs,
+          designPrompt: designPrompt ?? page.designPrompt,
+          previousFile: page.generatedFile,
+          siblingPages,
+          outFile,
+        },
+        update,
+      );
+      if (!fs.existsSync(path.join(store.root, outFile))) throw new Error(`agent did not write ${outFile}`);
       return store.update((p) => {
         const pg = p.pages.find((x) => x.id === pageId)!;
         pg.status = "designed";
-        pg.generatedFile = `generated/${fileName}`;
+        pg.generatedFile = outFile;
         pg.designPrompt = designPrompt ?? pg.designPrompt;
       });
     });
@@ -197,12 +236,12 @@ export function createServer(projectDir: string) {
     const { instruction, refPath } = req.body as { instruction: string; refPath?: string };
     const page = store.getPage(pageId);
     if (!page?.generatedFile) return res.status(404).json({ error: "page not designed yet" });
-    const file = path.join(store.root, page.generatedFile);
-    const code = fs.readFileSync(file, "utf-8");
-    const refImagePath = refPath ? path.join(store.root, refPath) : undefined;
     const job = startJob("Editing element", async (update) => {
-      const updated = await editDesignedElement({ code, elementId, instruction, refImagePath, progress: update });
-      fs.writeFileSync(file, updated);
+      await requestAgent(
+        "edit-element",
+        { file: page.generatedFile, elementId, instruction, refImage: refPath },
+        update,
+      );
       return store.load();
     });
     res.json({ jobId: job.id });

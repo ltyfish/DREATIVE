@@ -1,15 +1,76 @@
 #!/usr/bin/env node
+import fs from "node:fs";
 import { createServer } from "../server/index.js";
 import open from "open";
 
 const port = Number(process.env.DREATIVE_PORT || 4820);
-const noOpen = process.argv.includes("--no-open");
-const projectDir = process.cwd();
+const base = `http://localhost:${port}`;
+const args = process.argv.slice(2);
+const cmd = args[0] && !args[0].startsWith("-") ? args[0] : "start";
 
-const app = createServer(projectDir);
-app.listen(port, () => {
-  const url = `http://localhost:${port}`;
-  console.log(`\n  Dreative running for ${projectDir}`);
-  console.log(`  ${url}\n`);
-  if (!noOpen) open(url).catch(() => {});
+async function main() {
+  switch (cmd) {
+    case "start": {
+      const app = createServer(process.cwd());
+      app.listen(port, () => {
+        console.log(`\n  Dreative running for ${process.cwd()}`);
+        console.log(`  ${base}\n`);
+        if (!args.includes("--no-open")) open(base).catch(() => {});
+      });
+      return;
+    }
+
+    // Agent: block until the UI needs something; print one event as JSON.
+    // Output: {"kind":"request",...} | {"kind":"finish","diff":...} | {"kind":"none"}
+    case "wait": {
+      const tArg = args.indexOf("--timeout");
+      const timeoutMs = (tArg > -1 ? Number(args[tArg + 1]) : 480) * 1000;
+      const deadline = Date.now() + timeoutMs;
+      while (Date.now() < deadline) {
+        const res = await fetch(`${base}/api/agent/next`);
+        if (res.status === 204) continue; // server long-polls 25s per round
+        if (!res.ok) throw new Error(`server error ${res.status}`);
+        console.log(JSON.stringify(await res.json()));
+        return;
+      }
+      console.log(JSON.stringify({ kind: "none" }));
+      return;
+    }
+
+    // Agent: answer a request. `dreative respond <id> <result.json>` or --error "msg"
+    case "respond": {
+      const id = args[1];
+      if (!id) throw new Error("usage: dreative respond <requestId> [resultFile] [--error msg]");
+      const eArg = args.indexOf("--error");
+      const body: { id: string; result?: unknown; error?: string } = { id };
+      if (eArg > -1) body.error = args[eArg + 1] || "agent error";
+      else if (args[2]) body.result = JSON.parse(fs.readFileSync(args[2], "utf-8"));
+      else body.result = { ok: true };
+      const res = await fetch(`${base}/api/agent/respond`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error(`respond failed: ${await res.text()}`);
+      console.log("ok");
+      return;
+    }
+
+    // Agent: snapshot current project.json as the finish-diff baseline
+    case "baseline": {
+      const res = await fetch(`${base}/api/baseline`, { method: "POST" });
+      if (!res.ok) throw new Error(`baseline failed: ${await res.text()}`);
+      console.log("ok");
+      return;
+    }
+
+    default:
+      console.error(`unknown command: ${cmd}\nusage: dreative [start|wait|respond|baseline]`);
+      process.exit(1);
+  }
+}
+
+main().catch((err) => {
+  console.error(String(err));
+  process.exit(1);
 });

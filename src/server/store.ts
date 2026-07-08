@@ -31,6 +31,20 @@ export class Store {
     return project;
   }
 
+  private get baselineFile() {
+    return path.join(this.root, "baseline.json");
+  }
+
+  /** Snapshot the current project as the diff baseline (taken after extraction). */
+  saveBaseline() {
+    fs.writeFileSync(this.baselineFile, JSON.stringify(this.load(), null, 2));
+  }
+
+  loadBaseline(): Project | undefined {
+    if (!fs.existsSync(this.baselineFile)) return undefined;
+    return JSON.parse(fs.readFileSync(this.baselineFile, "utf-8")) as Project;
+  }
+
   getPage(pageId: string): Page | undefined {
     return this.load().pages.find((p) => p.id === pageId);
   }
