@@ -1,5 +1,5 @@
 import React from "react";
-import type { Block } from "../../shared/types";
+import type { Block, PageTheme } from "../../shared/types";
 import { SortableContext, useSortable, verticalListSortingStrategy, horizontalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
@@ -12,10 +12,22 @@ interface Props {
   interactive?: boolean;
 }
 
-/** Visual placeholder glyphs for leaf blocks — mockup style, no labels. */
+/** Map an extracted page theme onto the wireframe CSS variables. */
+export function themeVars(theme?: PageTheme): React.CSSProperties {
+  if (!theme) return {};
+  const vars: Record<string, string> = {};
+  if (theme.bg) vars["--wfp-bg"] = theme.bg;
+  if (theme.fg) vars["--wfp-fg"] = theme.fg;
+  if (theme.accent) vars["--wfp-accent"] = theme.accent;
+  return vars as React.CSSProperties;
+}
+
+/** Visual placeholder glyphs for leaf blocks — real copy when `text` is set. */
 function Glyph({ block }: { block: Block }) {
   switch (block.type) {
     case "text": {
+      if (block.text)
+        return <div className={`g-real ${block.sizeHint === "lg" ? "g-real-lg" : ""}`}>{block.text}</div>;
       const lines = block.sizeHint === "lg" ? 5 : block.sizeHint === "sm" ? 2 : 3;
       return (
         <div className="g-text">
@@ -26,7 +38,7 @@ function Glyph({ block }: { block: Block }) {
       );
     }
     case "button":
-      return <div className="g-button" />;
+      return <div className={`g-button${block.text ? " g-button-labeled" : ""}`}>{block.text}</div>;
     case "image":
       return <div className="g-image" />;
     case "nav":
@@ -42,7 +54,7 @@ function Glyph({ block }: { block: Block }) {
     case "hero":
       return (
         <div className="g-hero">
-          <div className="g-hero-title" />
+          {block.text ? <div className="g-hero-text">{block.text}</div> : <div className="g-hero-title" />}
           <div className="g-line" style={{ width: "55%" }} />
           <div className="g-line" style={{ width: "40%" }} />
           <div className="g-button" style={{ marginTop: 8 }} />

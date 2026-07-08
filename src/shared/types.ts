@@ -16,6 +16,8 @@ export interface Block {
   id: string;
   type: BlockType;
   label: string;
+  /** real visible copy from the app (heading, button caption, ~80 chars) — rendered in the wireframe */
+  text?: string;
   direction?: "row" | "column";
   sizeHint?: "sm" | "md" | "lg";
   intents?: string[];
@@ -26,9 +28,20 @@ export interface Block {
   children?: Block[];
 }
 
+/** Rough look of the real app so wireframes read as "your site" (CSS colors). */
+export interface PageTheme {
+  /** page background, e.g. "#0d0d0f" */
+  bg?: string;
+  /** text/line color, e.g. "#e8e8ea" */
+  fg?: string;
+  /** brand accent for buttons/highlights, e.g. "#f59e0b" */
+  accent?: string;
+}
+
 export interface Page {
   id: string;
   name: string;
+  theme?: PageTheme;
   canvasPos: { x: number; y: number };
   status: "skeleton" | "designed";
   refImage?: string;

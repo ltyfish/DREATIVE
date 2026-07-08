@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, memo } from "react";
 import { ReactFlow, Background, Controls, type Node, type NodeChange, applyNodeChanges } from "@xyflow/react";
 import { useStore } from "../store";
 import type { Page } from "../../shared/types";
-import { BlockView } from "../wireframe/BlockView";
+import { BlockView, themeVars } from "../wireframe/BlockView";
 
 const STEP_HINT: Record<Page["status"], string> = {
   skeleton: "Next: open it, tweak the layout, then generate a design",
@@ -31,7 +31,7 @@ const PageNode = memo(function PageNode({ data }: { data: { page: Page } }) {
         </span>
       </header>
       <div className="mini" style={{ zoom: 0.55 }}>
-        <div className="wf-paper">
+        <div className="wf-paper" style={themeVars(page.theme)}>
           <BlockView block={page.layout} />
         </div>
       </div>

@@ -20,14 +20,17 @@ Write `.dreative/project.json`:
 ```json
 { "version": 1, "pages": [ {
   "id": "pg_home", "name": "Home", "canvasPos": {"x": 40, "y": 40},
+  "theme": { "bg": "#0d0d0f", "fg": "#e8e8ea", "accent": "#f59e0b" },
   "status": "skeleton", "source": "src/pages/Home.tsx",
   "layout": { "id": "blk_root", "type": "section", "label": "Home", "direction": "column", "children": [ … ] }
 } ] }
 ```
 
-Block: `{ id, type, label, direction?, sizeHint?, source?, children? }`
+Block: `{ id, type, label, text?, direction?, sizeHint?, source?, children? }`
 - `type`: section | row | column | nav | hero | card-grid | list | form | footer | text | image | button
-- `label`: use **real text from the app** (button captions, headings) so pages are recognizable — not generic names.
+- `label`: short recognizable name (shown on hover/inspector).
+- `text`: the **actual visible copy** (heading text, button caption, first ~80 chars of a paragraph) — set it on every text/button/hero leaf; it renders verbatim in the wireframe so the user recognizes the page.
+- Page `theme` `{bg, fg, accent}`: pull the real CSS colors (page background, main text color, brand accent) so the wireframe card matches the app's look. Set it on every page.
 - `source`: the real file that owns this block (component path). Set it on every block whose owner differs from its parent's — this is what lets you apply the diff later without re-searching.
 - Keep depth sensible (3–5 levels); every meaningful visible element should exist, but don't model every span.
 - Ids must be unique and stable; prefix `pg_`/`blk_` plus a slug.

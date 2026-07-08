@@ -1,7 +1,7 @@
 import React from "react";
 import { DndContext, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { useStore, findPath } from "../store";
-import { BlockView } from "../wireframe/BlockView";
+import { BlockView, themeVars } from "../wireframe/BlockView";
 import { moveBlock } from "../blockOps";
 import type { Page } from "../../shared/types";
 
@@ -53,7 +53,7 @@ export default function PageEditor({ page }: { page: Page }) {
         <iframe key={previewNonce} className="preview-frame" src={`/preview/${page.id}`} title="preview" />
       ) : (
         <div className="editor-scroll" onClick={() => select({ kind: "page", pageId: page.id })}>
-          <div className="editor-page wf-paper">
+          <div className="editor-page wf-paper" style={themeVars(page.theme)}>
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
               <BlockView
                 block={page.layout}
