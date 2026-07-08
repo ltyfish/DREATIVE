@@ -26,7 +26,7 @@ State lives in `.dreative/` in that folder (`project.json`, `refs/`, `generated/
 2. **Tweak** — in the browser: drag blocks, add/remove/duplicate, attach reference images and prompts per page/block/element. Prompt-driven actions (propose layouts, block edits, design passes) are queued for your agent, which services them via `dreative wait` → `dreative respond`.
 3. **Finish** — click ✅ Finish; the agent receives only the diff vs the baseline (changed/moved/added/removed blocks + annotations) and applies it to the real codebase using the `source` pointers — token-efficient by construction.
 
-CLI: `dreative` / `dreative start` (server+UI) · `dreative wait` (block for next UI event) · `dreative respond <id> [result.json|--error msg]` · `dreative baseline`.
+CLI: `dreative` / `dreative start` (server+UI) · `dreative install-skill` (copy skill into ./.claude/skills) · `dreative wait` (block for next UI event) · `dreative respond <id> [result.json|--error msg]` · `dreative baseline`.
 
 ## Dev
 

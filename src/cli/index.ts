@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { createServer } from "../server/index.js";
 import open from "open";
 
@@ -8,15 +10,39 @@ const base = `http://localhost:${port}`;
 const args = process.argv.slice(2);
 const cmd = args[0] && !args[0].startsWith("-") ? args[0] : "start";
 
+const USAGE = `usage: dreative [command]
+  start            serve the visual editor for the current project (default)
+  install-skill    copy the dreative skill into ./.claude/skills/dreative/
+  wait             (agent) block until the UI needs something; prints one JSON event
+  respond <id> [result.json | --error msg]   (agent) answer a request
+  baseline         (agent) snapshot project.json as the finish-diff baseline`;
+
 async function main() {
+  if (args.includes("--help") || args.includes("-h")) {
+    console.log(USAGE);
+    return;
+  }
   switch (cmd) {
     case "start": {
       const app = createServer(process.cwd());
-      app.listen(port, () => {
+      const server = app.listen(port, () => {
         console.log(`\n  Dreative running for ${process.cwd()}`);
         console.log(`  ${base}\n`);
         if (!args.includes("--no-open")) open(base).catch(() => {});
       });
+      server.on("error", (err) => {
+        console.error(`failed to start on :${port} — ${String(err)}\n(set DREATIVE_PORT to use another port)`);
+        process.exit(1);
+      });
+      return;
+    }
+
+    case "install-skill": {
+      const src = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "skill", "dreative", "SKILL.md");
+      const destDir = path.join(process.cwd(), ".claude", "skills", "dreative");
+      fs.mkdirSync(destDir, { recursive: true });
+      fs.copyFileSync(src, path.join(destDir, "SKILL.md"));
+      console.log(`installed skill to ${path.join(destDir, "SKILL.md")}`);
       return;
     }
 
@@ -65,7 +91,7 @@ async function main() {
     }
 
     default:
-      console.error(`unknown command: ${cmd}\nusage: dreative [start|wait|respond|baseline]`);
+      console.error(`unknown command: ${cmd}\n${USAGE}`);
       process.exit(1);
   }
 }
