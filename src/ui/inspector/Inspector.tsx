@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { useStore, findBlock } from "../store";
 import { removeById, appendChild, makeBlock, cloneWithNewIds, findParent, ALL_TYPES } from "../blockOps";
 import type { BlockType, DesignBrief } from "../../shared/types";
+import { lintLayout } from "../../shared/design";
 
 const AESTHETICS = ["", "minimal", "editorial", "premium", "playful", "brutalist", "dark-tech", "trust"];
 
@@ -123,6 +124,7 @@ export default function Inspector() {
   if (!page) return <aside className="inspector" />;
 
   if (selection.kind === "page") {
+    const lints = lintLayout(page.layout);
     return (
       <aside className="inspector">
         <h3>Page</h3>
@@ -145,6 +147,15 @@ export default function Inspector() {
         >
           ✨ Propose 2 layout variants
         </button>
+
+        {lints.length > 0 && (
+          <>
+            <h3>Design hints</h3>
+            {lints.map((l, i) => (
+              <p key={i} className="lint">⚠ {l}</p>
+            ))}
+          </>
+        )}
 
         <h3>Reference image (whole page)</h3>
         <RefDrop
@@ -202,6 +213,7 @@ export default function Inspector() {
       <aside className="inspector">
         <h3>Block — {block.type}</h3>
         <input type="text" value={block.label} onChange={(e) => mutateBlock((b) => (b.label = e.target.value), false)} />
+        {block.summary && <p className="hint">ℹ {block.summary}</p>}
 
         <div className="btn-row">
           <button

@@ -35,7 +35,7 @@ function EmptyState({ onPick }: { onPick: (s: string) => void }) {
 }
 
 export default function App() {
-  const { project, load, api, busy, error, openPageId, select, selection, previewMode, openPage, mutatePage } =
+  const { project, load, api, busy, error, openPageId, select, selection, viewMode, openPage, mutatePage } =
     useStore();
   const [prompt, setPrompt] = useState("");
 
@@ -85,13 +85,17 @@ export default function App() {
   // element selection messages from the preview iframe
   useEffect(() => {
     const onMsg = (e: MessageEvent) => {
-      if (e.data?.type === "dreative-select" && openPageId && previewMode) {
+      if (e.data?.type === "dreative-select" && openPageId && viewMode === "preview") {
         select({ kind: "element", pageId: openPageId, elementId: e.data.id });
+      }
+      // replica clicks map to the wireframe block with the same id
+      if (e.data?.type === "dreative-select-block" && openPageId && viewMode === "replica") {
+        select({ kind: "block", pageId: openPageId, blockId: e.data.id });
       }
     };
     window.addEventListener("message", onMsg);
     return () => window.removeEventListener("message", onMsg);
-  }, [openPageId, previewMode, select]);
+  }, [openPageId, viewMode, select]);
 
   const openPageObj = project.pages.find((p) => p.id === openPageId);
 

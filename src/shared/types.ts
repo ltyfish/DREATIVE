@@ -21,6 +21,8 @@ export interface Block {
   direction?: "row" | "column";
   sizeHint?: "sm" | "md" | "lg";
   intents?: string[];
+  /** one-line "what this element shows/does" written by the extracting agent — surfaces on hover in wireframe + replica */
+  summary?: string;
   /** relative path under .dreative/, e.g. "refs/pg1_blk3.png" — style reference for this block */
   refImage?: string;
   /** where this block lives in the real codebase, e.g. "src/components/Nav.tsx" — set by extraction */
@@ -48,6 +50,8 @@ export interface Page {
   designPrompt?: string;
   layout: Block;
   generatedFile?: string;
+  /** stripped, non-functional 1:1 replica of the real page (static JSX), relative to .dreative/, e.g. "replica/pg_home.tsx" */
+  replicaFile?: string;
   /** file/route in the real codebase this page came from — set by extraction */
   source?: string;
 }

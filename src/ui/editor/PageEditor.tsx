@@ -6,7 +6,7 @@ import { moveBlock } from "../blockOps";
 import type { Page } from "../../shared/types";
 
 export default function PageEditor({ page }: { page: Page }) {
-  const { selection, select, mutatePage, previewMode, setPreviewMode, openPage, previewNonce } = useStore();
+  const { selection, select, mutatePage, viewMode, setViewMode, openPage, previewNonce } = useStore();
   const selectedBlockId = selection.kind === "block" ? selection.blockId : undefined;
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
@@ -38,10 +38,18 @@ export default function PageEditor({ page }: { page: Page }) {
           </span>
         )}
         <span style={{ flex: 1 }} />
-        <button className={previewMode ? "ghost" : ""} onClick={() => setPreviewMode(false)}>Layout</button>
+        <button className={viewMode === "layout" ? "" : "ghost"} onClick={() => setViewMode("layout")}>Layout</button>
         <button
-          className={previewMode ? "" : "ghost"}
-          onClick={() => setPreviewMode(true)}
+          className={viewMode === "replica" ? "" : "ghost"}
+          onClick={() => setViewMode("replica")}
+          disabled={!page.replicaFile}
+          title={page.replicaFile ? "1:1 replica of your real page — hover elements to see what they do" : "No replica extracted for this page"}
+        >
+          Replica
+        </button>
+        <button
+          className={viewMode === "preview" ? "" : "ghost"}
+          onClick={() => setViewMode("preview")}
           disabled={page.status !== "designed"}
           title={page.status !== "designed" ? "Generate a design first" : ""}
         >
@@ -49,7 +57,9 @@ export default function PageEditor({ page }: { page: Page }) {
         </button>
       </div>
 
-      {previewMode && page.status === "designed" ? (
+      {viewMode === "replica" && page.replicaFile ? (
+        <iframe key={`r${previewNonce}`} className="preview-frame" src={`/replica/${page.id}`} title="replica" />
+      ) : viewMode === "preview" && page.status === "designed" ? (
         <iframe key={previewNonce} className="preview-frame" src={`/preview/${page.id}`} title="preview" />
       ) : (
         <div className="editor-scroll" onClick={() => select({ kind: "page", pageId: page.id })}>

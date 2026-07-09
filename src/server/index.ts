@@ -5,7 +5,8 @@ import { fileURLToPath } from "node:url";
 import { Store, findBlock, replaceBlock, newId } from "./store.js";
 import { requestAgent, respond, nextEvent, pushFinish } from "./agentQueue.js";
 import { computeDiff } from "./diff.js";
-import { buildPreview, previewHtml } from "./preview.js";
+import { buildPreview, previewHtml, replicaHtml } from "./preview.js";
+import { buildDesignPlan } from "../shared/design.js";
 import { startJob, getJob } from "./jobs.js";
 import type { Block, Project } from "../shared/types.js";
 
@@ -210,6 +211,9 @@ export function createServer(projectDir: string) {
         pageName: page.name,
         layout: page.layout,
         brief: project.brief,
+        // Dreative decides, the agent executes: resolved dials, per-section
+        // layout families, spacing/motion budgets, doctrine lints.
+        plan: buildDesignPlan(page, project.brief),
         refImage: page.refImage,
         blockRefs,
         designPrompt: designPrompt ?? page.designPrompt,
@@ -305,6 +309,34 @@ export function createServer(projectDir: string) {
         .type("application/javascript")
         .send(`const pre=document.createElement("pre");pre.style.cssText="color:red;padding:16px;white-space:pre-wrap";pre.textContent=${msg};document.body.appendChild(pre);`);
       console.error("preview build failed:", err);
+    }
+  });
+
+  // Replica serving: stripped 1:1 copy of the real page, hover = agent summaries
+  app.get("/replica/:pageId", (req, res) => {
+    const page = store.getPage(req.params.pageId);
+    if (!page?.replicaFile) return res.status(404).send("no replica for this page");
+    const summaries: Record<string, string> = {};
+    const collect = (b: Block) => {
+      if (b.summary) summaries[b.id] = b.summary;
+      b.children?.forEach(collect);
+    };
+    collect(page.layout);
+    res.type("html").send(replicaHtml(`/replica/${req.params.pageId}/bundle.js?t=${Date.now()}`, summaries));
+  });
+
+  app.get("/replica/:pageId/bundle.js", async (req, res) => {
+    try {
+      const page = store.getPage(req.params.pageId);
+      if (!page?.replicaFile) return res.status(404).send("// no replica");
+      const js = await buildPreview(path.join(store.root, page.replicaFile));
+      res.type("application/javascript").send(js);
+    } catch (err) {
+      const msg = JSON.stringify(`Replica build error:\n${String(err)}`);
+      res
+        .type("application/javascript")
+        .send(`const pre=document.createElement("pre");pre.style.cssText="color:red;padding:16px;white-space:pre-wrap";pre.textContent=${msg};document.body.appendChild(pre);`);
+      console.error("replica build failed:", err);
     }
   });
 

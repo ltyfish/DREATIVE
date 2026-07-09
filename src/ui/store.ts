@@ -11,7 +11,7 @@ interface State {
   project: Project;
   selection: Selection;
   openPageId: string | null;
-  previewMode: boolean;
+  viewMode: "layout" | "replica" | "preview";
   busy: string | null;
   error: string | null;
   previewNonce: number;
@@ -22,7 +22,7 @@ interface State {
   setProject: (p: Project, opts?: { persist?: boolean; history?: boolean }) => void;
   select: (s: Selection) => void;
   openPage: (id: string | null) => void;
-  setPreviewMode: (on: boolean) => void;
+  setViewMode: (m: "layout" | "replica" | "preview") => void;
   api: (path: string, body?: unknown) => Promise<void>;
   mutatePage: (pageId: string, fn: (page: Page) => void, opts?: { history?: boolean }) => void;
   undo: () => void;
@@ -53,7 +53,7 @@ export const useStore = create<State>((set, get) => ({
   project: { version: 1, pages: [] },
   selection: { kind: "none" },
   openPageId: null,
-  previewMode: false,
+  viewMode: "layout",
   busy: null,
   error: null,
   previewNonce: 0,
@@ -76,8 +76,8 @@ export const useStore = create<State>((set, get) => ({
   },
 
   select: (selection) => set({ selection }),
-  openPage: (openPageId) => set({ openPageId, previewMode: false, selection: { kind: "none" } }),
-  setPreviewMode: (previewMode) => set({ previewMode, selection: { kind: "none" } }),
+  openPage: (openPageId) => set({ openPageId, viewMode: "layout", selection: { kind: "none" } }),
+  setViewMode: (viewMode) => set({ viewMode, selection: { kind: "none" } }),
 
   api: async (path, body) => {
     if (get().busy) return;

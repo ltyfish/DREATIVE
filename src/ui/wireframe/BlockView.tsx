@@ -162,7 +162,7 @@ export function BlockView({ block, selectedId, onSelect, sortable, interactive }
   return (
     <div
       className={classNames(block, selected, hasChildren)}
-      title={`${block.label}${block.intents?.length ? ` — ⚡ ${block.intents.join("; ")}` : ""}`}
+      title={`${block.label}${block.summary ? ` · ${block.summary}` : ""}${block.intents?.length ? ` — ⚡ ${block.intents.join("; ")}` : ""}`}
       onClick={
         interactive && onSelect
           ? (e) => {
