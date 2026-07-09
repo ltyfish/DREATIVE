@@ -214,3 +214,9 @@ button.danger { background: #3a2030; color: #f7a6b8; }
 .drop-ref { border: 1.5px dashed #2c2f3a; border-radius: 8px; padding: 14px; text-align: center; color: #8b8fa3; cursor: pointer; }
 .drop-ref:hover { border-color: #6366f1; }
 .drop-ref img { max-width: 100%; border-radius: 6px; }
+
+/* design-brief dials */
+.dial { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; font-size: 12px; color: #8b8fa3; }
+.dial span { display: flex; justify-content: space-between; }
+.dial em { font-style: normal; color: #c9cbe0; }
+.dial input[type="range"] { width: 100%; accent-color: #6366f1; }

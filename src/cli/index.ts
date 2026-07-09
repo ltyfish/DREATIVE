@@ -38,11 +38,14 @@ async function main() {
     }
 
     case "install-skill": {
-      const src = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "skill", "dreative", "SKILL.md");
+      const srcDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "skill", "dreative");
       const destDir = path.join(process.cwd(), ".claude", "skills", "dreative");
       fs.mkdirSync(destDir, { recursive: true });
-      fs.copyFileSync(src, path.join(destDir, "SKILL.md"));
-      console.log(`installed skill to ${path.join(destDir, "SKILL.md")}`);
+      for (const f of fs.readdirSync(srcDir)) {
+        fs.copyFileSync(path.join(srcDir, f), path.join(destDir, f));
+      }
+      console.log(`installed skill to ${destDir} (${fs.readdirSync(srcDir).join(", ")})`);
+      console.log(`next: ask your coding agent to "open dreative" or "redesign my app's UI visually"`);
       return;
     }
 

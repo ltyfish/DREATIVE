@@ -115,6 +115,13 @@ export default function App() {
           ✨ Propose layouts
         </button>
         <button
+          title="AI designs every page to the project's design brief (doctrine-checked)"
+          disabled={!!busy || project.pages.length === 0}
+          onClick={() => api("/api/design-all", {})}
+        >
+          🎨 Design all
+        </button>
+        <button
           className="ghost"
           title="Copy designed pages as .tsx into ./src/pages"
           disabled={!project.pages.some((p) => p.status === "designed")}

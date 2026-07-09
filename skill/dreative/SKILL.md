@@ -1,11 +1,13 @@
 ---
 name: dreative
-description: Visual UI round-trip editor. Use when the user wants to visually redesign, rearrange, or touch up their app's UI ("open dreative", "let me edit the layout visually"). Extracts the app's pages into editable wireframes in a browser UI, services the user's visual edits and prompts, then applies the final layout diff back to the codebase.
+description: Visual UI round-trip editor and design harness. Use when the user wants to visually redesign, rearrange, restyle, or touch up their app's UI, design new pages/screens visually, or says things like "open dreative", "let me edit the layout visually", "redesign my app's pages", "make my UI look good". Extracts the app's pages into editable wireframes in a browser UI, services the user's visual edits and design requests to a strict design doctrine, then applies the final layout diff back to the codebase.
 ---
 
 # Dreative — visual round-trip UI editing
 
 You (the coding agent) are the intelligence; the Dreative server/UI is a dumb visual editor. Flow: **extract → baseline → serve requests → finish → apply**. Be token-frugal at every step: read only the files you need, never re-read the whole app, and keep JSON compact.
+
+**Design quality is a hard requirement.** `DESIGN.md` (same folder as this file) is the design doctrine. Read it ONCE before servicing the first `propose-skeletons`, `propose-variants`, `design-page`, or `edit-element` request, keep it in mind for all later ones, and run its pre-flight checklist before every respond. Requests may carry a `brief` object (aesthetic preset + vibe + dials set by the user in the UI); when present it is the user's explicit direction and overrides doctrine defaults.
 
 ## 0. Setup
 
@@ -18,7 +20,7 @@ Goal: replicate the app's current UI page-by-page as wireframes so the user reco
 Write `.dreative/project.json`:
 
 ```json
-{ "version": 1, "pages": [ {
+{ "version": 1, "brief": { "aesthetic": "minimal", "vibe": "", "audience": "", "variance": 7, "motion": 5, "density": 4, "notes": "" }, "pages": [ {
   "id": "pg_home", "name": "Home", "canvasPos": {"x": 40, "y": 40},
   "theme": { "bg": "#0d0d0f", "fg": "#e8e8ea", "accent": "#f59e0b" },
   "status": "skeleton", "source": "src/pages/Home.tsx",
@@ -35,6 +37,7 @@ Block: `{ id, type, label, text?, direction?, sizeHint?, source?, children? }`
 - Keep depth sensible (3–5 levels); every meaningful visible element should exist, but don't model every span.
 - Ids must be unique and stable; prefix `pg_`/`blk_` plus a slug.
 - Space pages on the canvas: x += 480 per page.
+- Top-level `brief` is optional at extraction time (the user edits it in the UI); if the app has an obvious existing aesthetic, seed it so redesigns preserve the brand.
 
 Then snapshot the baseline: `dreative baseline` (start the server first, step 2, if not running).
 
@@ -61,11 +64,13 @@ dreative wait    # blocks up to ~8 min; prints ONE event as JSON
 
 | type | payload | result to respond with |
 |---|---|---|
-| `propose-skeletons` | `{prompt}` | Array of 1–3 `{name, layout}` page proposals (block schema above) |
-| `propose-variants` | `{pageName, layout}` | Array of 1–3 `{name, layout}` variants |
+| `propose-skeletons` | `{prompt, brief?}` | Array of 1–3 `{name, layout}` page proposals (block schema above), structured per DESIGN.md layout rules |
+| `propose-variants` | `{pageName, layout, brief?}` | Array of 1–3 `{name, layout}` variants |
 | `edit-block` | `{block, instruction}` | The updated block JSON (same id) |
-| `design-page` | `{pageName, layout, refImage?, blockRefs, designPrompt?, previousFile?, siblingPages, outFile}` | Write a single-file React+Tailwind component (default export, no imports beyond react) to `.dreative/<outFile>`; every block id in layout must appear as `data-dreative-id="<id>"`. Read `refImage`/`blockRefs[].refImage` (paths under `.dreative/`) with your image tools; if `previousFile` set, read it and preserve prior element edits. Respond `{"ok":true}` |
-| `edit-element` | `{file, elementId, instruction, refImage?}` | Edit `.dreative/<file>` in place, only the element with `data-dreative-id=elementId`. Respond `{"ok":true}` |
+| `design-page` | `{pageName, layout, brief?, refImage?, blockRefs, designPrompt?, previousFile?, siblingPages, outFile}` | Write a single-file React+Tailwind component (default export, no imports beyond react) to `.dreative/<outFile>`; every block id in layout must appear as `data-dreative-id="<id>"`. Apply DESIGN.md fully (design read → rules → pre-flight checklist). Read `refImage`/`blockRefs[].refImage` (paths under `.dreative/`) with your image tools; if `previousFile` set, read it and preserve prior element edits. Respond `{"ok":true}` |
+| `edit-element` | `{file, elementId, instruction, refImage?}` | Edit `.dreative/<file>` in place, only the element with `data-dreative-id=elementId`, keeping DESIGN.md rules intact. Respond `{"ok":true}` |
+
+A "Design all pages" click in the UI arrives as one `design-page` request per page, back to back: keep visual consistency across them (same accent, type scale, radius system — the first page you design sets the system for the rest).
 
 Token rules: only read ref images when a request names them; never dump whole files into responses; for edits, edit files directly instead of returning code.
 

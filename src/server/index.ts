@@ -75,7 +75,11 @@ export function createServer(projectDir: string) {
   app.post("/api/skeletons", (req, res) => {
     const { prompt } = req.body as { prompt: string };
     const job = startJob("Proposing layouts", async (update) => {
-      const proposals = await requestAgent<Proposal[]>("propose-skeletons", { prompt }, update);
+      const proposals = await requestAgent<Proposal[]>(
+        "propose-skeletons",
+        { prompt, brief: store.load().brief },
+        update,
+      );
       return store.update((p) => {
         const baseX = Math.max(0, ...p.pages.map((pg) => pg.canvasPos.x + 480));
         proposals.forEach((prop, i) => {
@@ -99,7 +103,7 @@ export function createServer(projectDir: string) {
     const job = startJob(`Variants of ${page.name}`, async (update) => {
       const proposals = await requestAgent<Proposal[]>(
         "propose-variants",
-        { pageName: page.name, layout: page.layout },
+        { pageName: page.name, layout: page.layout, brief: store.load().brief },
         update,
       );
       return store.update((p) => {
@@ -185,18 +189,14 @@ export function createServer(projectDir: string) {
     res.json(project);
   });
 
-  // Stage 3: design pass (preserves prior element-level edits when regenerating)
-  app.post("/api/pages/:pageId/design", (req, res) => {
-    const { pageId } = req.params;
-    const { designPrompt } = req.body as { designPrompt?: string };
-    const page = store.getPage(pageId);
-    if (!page) return res.status(404).json({ error: "page not found" });
-    const siblingPages = store
-      .load()
-      .pages.filter((p) => p.id !== pageId)
-      .map((p) => p.name);
-    // Paths only (relative to .dreative/) — the agent reads images/previous
-    // code with its own tools and writes the .tsx file itself.
+  // Design one page via the agent bridge; shared by single-page design and design-all.
+  // Paths only (relative to .dreative/) — the agent reads images/previous
+  // code with its own tools and writes the .tsx file itself.
+  async function designPage(pageId: string, designPrompt: string | undefined, update: (detail: string) => void) {
+    const project = store.load();
+    const page = project.pages.find((p) => p.id === pageId);
+    if (!page) throw new Error("page not found");
+    const siblingPages = project.pages.filter((p) => p.id !== pageId).map((p) => p.name);
     const blockRefs: { id: string; label: string; refImage: string }[] = [];
     const collect = (b: Block) => {
       if (b.refImage) blockRefs.push({ id: b.id, label: b.label, refImage: b.refImage });
@@ -204,28 +204,52 @@ export function createServer(projectDir: string) {
     };
     collect(page.layout);
     const outFile = `generated/${pageId}.tsx`;
-    const job = startJob(`Designing ${page.name}`, async (update) => {
-      await requestAgent(
-        "design-page",
-        {
-          pageName: page.name,
-          layout: page.layout,
-          refImage: page.refImage,
-          blockRefs,
-          designPrompt: designPrompt ?? page.designPrompt,
-          previousFile: page.generatedFile,
-          siblingPages,
-          outFile,
-        },
-        update,
-      );
-      if (!fs.existsSync(path.join(store.root, outFile))) throw new Error(`agent did not write ${outFile}`);
-      return store.update((p) => {
-        const pg = p.pages.find((x) => x.id === pageId)!;
-        pg.status = "designed";
-        pg.generatedFile = outFile;
-        pg.designPrompt = designPrompt ?? pg.designPrompt;
-      });
+    await requestAgent(
+      "design-page",
+      {
+        pageName: page.name,
+        layout: page.layout,
+        brief: project.brief,
+        refImage: page.refImage,
+        blockRefs,
+        designPrompt: designPrompt ?? page.designPrompt,
+        previousFile: page.generatedFile,
+        siblingPages,
+        outFile,
+      },
+      update,
+    );
+    if (!fs.existsSync(path.join(store.root, outFile))) throw new Error(`agent did not write ${outFile}`);
+    return store.update((p) => {
+      const pg = p.pages.find((x) => x.id === pageId)!;
+      pg.status = "designed";
+      pg.generatedFile = outFile;
+      pg.designPrompt = designPrompt ?? pg.designPrompt;
+    });
+  }
+
+  // Stage 3: design pass (preserves prior element-level edits when regenerating)
+  app.post("/api/pages/:pageId/design", (req, res) => {
+    const { pageId } = req.params;
+    const { designPrompt } = req.body as { designPrompt?: string };
+    const page = store.getPage(pageId);
+    if (!page) return res.status(404).json({ error: "page not found" });
+    const job = startJob(`Designing ${page.name}`, (update) => designPage(pageId, designPrompt, update));
+    res.json({ jobId: job.id });
+  });
+
+  // Design every page in one job (skips none — regenerates designed pages too if asked)
+  app.post("/api/design-all", (req, res) => {
+    const { onlySkeletons } = req.body as { onlySkeletons?: boolean };
+    const pages = store.load().pages.filter((p) => !onlySkeletons || p.status === "skeleton");
+    if (pages.length === 0) return res.status(400).json({ error: "no pages to design" });
+    const job = startJob(`Designing ${pages.length} page(s)`, async (update) => {
+      let project;
+      for (let i = 0; i < pages.length; i++) {
+        const scoped = (d: string) => update(`${pages[i].name} (${i + 1}/${pages.length}): ${d}`);
+        project = await designPage(pages[i].id, undefined, scoped);
+      }
+      return project;
     });
     res.json({ jobId: job.id });
   });

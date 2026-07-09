@@ -1,7 +1,70 @@
 import React, { useRef, useState } from "react";
 import { useStore, findBlock } from "../store";
 import { removeById, appendChild, makeBlock, cloneWithNewIds, findParent, ALL_TYPES } from "../blockOps";
-import type { BlockType } from "../../shared/types";
+import type { BlockType, DesignBrief } from "../../shared/types";
+
+const AESTHETICS = ["", "minimal", "editorial", "premium", "playful", "brutalist", "dark-tech", "trust"];
+
+const DIALS: { key: "variance" | "motion" | "density"; label: string; hint: string; def: number }[] = [
+  { key: "variance", label: "Variance", hint: "symmetric ↔ experimental", def: 7 },
+  { key: "motion", label: "Motion", hint: "static ↔ cinematic", def: 5 },
+  { key: "density", label: "Density", hint: "airy ↔ packed", def: 4 },
+];
+
+/** Project-level design direction; sent to the agent with every design request. */
+function BriefPanel() {
+  const { project, setProject } = useStore();
+  const brief = project.brief ?? {};
+  const mutate = (fn: (b: DesignBrief) => void) => {
+    const copy = structuredClone(project);
+    copy.brief = copy.brief ?? {};
+    fn(copy.brief);
+    setProject(copy, { history: false });
+  };
+  return (
+    <>
+      <h3>Design brief</h3>
+      <p className="hint">Sets the direction for every AI design pass. Leave blank to let the agent read the room.</p>
+      <select value={brief.aesthetic ?? ""} onChange={(e) => mutate((b) => (b.aesthetic = e.target.value || undefined))}>
+        {AESTHETICS.map((a) => (
+          <option key={a} value={a}>{a || "aesthetic: auto"}</option>
+        ))}
+      </select>
+      <input
+        type="text"
+        placeholder='vibe, e.g. "calm, Linear-style"'
+        value={brief.vibe ?? ""}
+        onChange={(e) => mutate((b) => (b.vibe = e.target.value || undefined))}
+      />
+      <input
+        type="text"
+        placeholder='audience, e.g. "technical buyers"'
+        value={brief.audience ?? ""}
+        onChange={(e) => mutate((b) => (b.audience = e.target.value || undefined))}
+      />
+      {DIALS.map((d) => (
+        <label key={d.key} className="dial" title={d.hint}>
+          <span>
+            {d.label} <em>{brief[d.key] ?? d.def}</em>
+          </span>
+          <input
+            type="range"
+            min={1}
+            max={10}
+            value={brief[d.key] ?? d.def}
+            onChange={(e) => mutate((b) => (b[d.key] = Number(e.target.value)))}
+          />
+        </label>
+      ))}
+      <textarea
+        rows={2}
+        placeholder="notes for the designer agent (brand rules, must-keeps…)"
+        value={brief.notes ?? ""}
+        onChange={(e) => mutate((b) => (b.notes = e.target.value || undefined))}
+      />
+    </>
+  );
+}
 
 async function fileToBase64(file: File): Promise<string> {
   const buf = await file.arrayBuffer();
@@ -51,6 +114,7 @@ export default function Inspector() {
           Shortcuts: <kbd>Ctrl+Z</kbd> undo · <kbd>Ctrl+Shift+Z</kbd> redo · <kbd>Del</kbd> delete selected block ·{" "}
           <kbd>Esc</kbd> back
         </p>
+        <BriefPanel />
       </aside>
     );
   }

@@ -52,7 +52,26 @@ export interface Page {
   source?: string;
 }
 
+/** Project-wide design direction, edited in the UI and passed to the agent
+ *  with every propose/design request. Interpreted per skill/dreative/DESIGN.md. */
+export interface DesignBrief {
+  /** aesthetic preset: minimal | editorial | premium | playful | brutalist | dark-tech | trust */
+  aesthetic?: string;
+  /** free vibe words, e.g. "calm, Linear-style" */
+  vibe?: string;
+  /** who the UI is for, e.g. "technical buyers" */
+  audience?: string;
+  /** 1-10: layout symmetry → asymmetric experimentation */
+  variance?: number;
+  /** 1-10: static → cinematic motion */
+  motion?: number;
+  /** 1-10: airy → packed */
+  density?: number;
+  notes?: string;
+}
+
 export interface Project {
   version: 1;
+  brief?: DesignBrief;
   pages: Page[];
 }
