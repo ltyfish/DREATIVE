@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import readline from "node:readline";
 import { createServer } from "../server/index.js";
 import open from "open";
 
@@ -14,7 +15,7 @@ const USAGE = `usage: dreative [command]
   start            serve the visual editor for the current project (default)
   install-skill    copy the dreative skill into ./.claude/skills/dreative/
                    --list             show available specialist skills
-                   --skills a,b       install only these specialist skills (default: all)
+                   --skills a,b       install only these specialist skills (no flag: interactive picker, Enter = all)
                    --codex            install for Codex CLI instead (.codex/skills/ + AGENTS.md pointer)
   wait             (agent) block until the UI needs something; prints one JSON event
   respond <id> [result.json | --error msg]   (agent) answer a request
@@ -62,6 +63,23 @@ async function main() {
         picked = (args[sArg + 1] || "").split(",").map((t) => t.trim()).filter(Boolean);
         const unknown = picked.filter((p) => !available.includes(p));
         if (unknown.length) throw new Error(`unknown skill(s): ${unknown.join(", ")} — available: ${available.join(", ")}`);
+      } else if (process.stdin.isTTY && available.length) {
+        console.log("specialist skills:");
+        available.forEach((s, i) => {
+          const firstLine = fs.readFileSync(path.join(skillsDir, `${s}.md`), "utf-8").split("\n")[0].replace(/^#\s*/, "");
+          console.log(`  ${i + 1}. ${s.padEnd(14)} ${firstLine}`);
+        });
+        const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+        const answer = (await new Promise<string>((res) => rl.question("install which? (numbers/names, comma-separated; Enter = all): ", res))).trim();
+        rl.close();
+        if (answer && answer.toLowerCase() !== "all") {
+          picked = answer.split(",").map((t) => t.trim()).filter(Boolean).map((t) => {
+            const n = Number(t);
+            return Number.isInteger(n) && n >= 1 && n <= available.length ? available[n - 1] : t;
+          });
+          const unknown = picked.filter((p) => !available.includes(p));
+          if (unknown.length) throw new Error(`unknown skill(s): ${unknown.join(", ")} — available: ${available.join(", ")}`);
+        }
       }
 
       const forCodex = args.includes("--codex");

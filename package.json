@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "build": "npm run build:server && npm run build:ui",
+    "prepublishOnly": "npm run build",
     "build:server": "tsc -p tsconfig.json",
     "build:ui": "vite build",
     "dev": "concurrently \"tsx watch src/cli/index.ts --no-open\" \"vite\"",
