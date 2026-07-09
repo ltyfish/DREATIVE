@@ -12,11 +12,36 @@ export interface DesignPlan {
   dials: { variance: number; motion: number; density: number };
   aesthetic: string;
   /** per top-level section: assigned layout family (guarantees diversity) */
-  sections: { id: string; label: string; family: string }[];
+  sections: { id: string; label: string; family: string; skills?: string[] }[];
   /** compact executable directives for the agent */
   directives: string[];
   /** doctrine violations found in the current layout */
   lints: string[];
+  /** specialist skill files the agent must read before designing (skills/<name>.md) */
+  skills: string[];
+}
+
+/** Specialist skill detection — keyword signatures over brief/prompt/block text.
+ *  Names map to skill/dreative/skills/<name>.md. */
+const SKILL_SIGNATURES: Record<string, RegExp> = {
+  "3d": /\b(3d|three\.?js|webgl|r3f|shader|glsl|particles?|point ?cloud|globe|mesh gradient|orbit|spline)\b/i,
+  motion: /\b(animat|motion|parallax|scroll[- ]?(driven|trigger|story|choreo)|gsap|framer|lenis|marquee|kinetic|cinematic|stagger|reveal|transition)\b/i,
+  interaction: /\b(micro[- ]?interaction|hover (effect|state)s?|cursor|magnetic|tilt|spotlight|glow|ripple|tactile|interactive|draggable)\b/i,
+};
+
+function detectSkills(texts: (string | undefined)[]): string[] {
+  const hay = texts.filter(Boolean).join(" \n ");
+  return Object.keys(SKILL_SIGNATURES).filter((k) => SKILL_SIGNATURES[k].test(hay));
+}
+
+/** All text a block subtree carries that can signal a specialist skill. */
+function blockTexts(b: Block): string[] {
+  return [
+    b.label,
+    b.summary,
+    ...(b.intents ?? []),
+    ...(b.children ?? []).flatMap(blockTexts),
+  ].filter((t): t is string => Boolean(t));
 }
 
 const AESTHETIC_DIALS: Record<string, [number, number, number]> = {
@@ -133,8 +158,16 @@ export function buildDesignPlan(page: Page, brief: DesignBrief | undefined): Des
     else if (s.type === "hero") family = dials.variance > 4 ? "asymmetric-split-hero" : "centered-hero";
     else if (s.type === "footer") family = "footer";
     else family = FAMILIES[i % FAMILIES.length];
-    return { id: s.id, label: s.label, family };
+    const secSkills = detectSkills(blockTexts(s));
+    return secSkills.length ? { id: s.id, label: s.label, family, skills: secSkills } : { id: s.id, label: s.label, family };
   });
+
+  // page-level specialist skills: brief/prompt keywords + section hits + motion dial
+  const skills = new Set<string>([
+    ...detectSkills([brief?.vibe, brief?.notes, page.designPrompt]),
+    ...sections.flatMap((s) => s.skills ?? []),
+  ]);
+  if (dials.motion >= 6) skills.add("motion");
 
   const spacing = dials.density <= 3 ? "py-24/py-32 section gaps" : dials.density <= 6 ? "py-16/py-20" : "py-8/py-12, hairline dividers, mono numerals";
   const motionBudget =
@@ -151,7 +184,12 @@ export function buildDesignPlan(page: Page, brief: DesignBrief | undefined): Des
     "one accent color, one neutral family, one radius system, locked across ALL pages of this project",
     "section layout families are assigned below — follow them, do not default to repeated card rows",
     ...(dials.variance > 4 ? ["avoid centered-hero-over-gradient; use split or asymmetric composition"] : []),
+    ...(skills.size
+      ? [
+          `specialist skills required: ${[...skills].join(", ")} — read skills/<name>.md (next to DESIGN.md) before writing code; sections tagged with "skills" get that treatment`,
+        ]
+      : []),
   ];
 
-  return { dials, aesthetic, sections, directives, lints: lintLayout(page.layout) };
+  return { dials, aesthetic, sections, directives, lints: lintLayout(page.layout), skills: [...skills] };
 }

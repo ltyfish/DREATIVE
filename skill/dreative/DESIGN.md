@@ -5,7 +5,10 @@ You MUST read this file before servicing any `propose-skeletons`, `propose-varia
 because LLM-designed UIs converge on one templated look. Every rule corrects a known
 model default; none is a suggestion. Requests may carry a `plan` (Dreative's
 pre-computed decision: dials, per-section layout families, budgets, lints) — execute
-the plan, apply this doctrine to everything the plan doesn't specify.
+the plan, apply this doctrine to everything the plan doesn't specify. When
+`plan.skills` names specialist skills (`motion`, `3d`, `interaction`), the matching
+`skills/<name>.md` files extend this doctrine for that request — read them first;
+where they go deeper than a section here, they win.
 
 ## 1. Register: the first decision
 

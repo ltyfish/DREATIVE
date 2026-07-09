@@ -13,6 +13,8 @@ const cmd = args[0] && !args[0].startsWith("-") ? args[0] : "start";
 const USAGE = `usage: dreative [command]
   start            serve the visual editor for the current project (default)
   install-skill    copy the dreative skill into ./.claude/skills/dreative/
+                   --list             show available specialist skills
+                   --skills a,b       install only these specialist skills (default: all)
   wait             (agent) block until the UI needs something; prints one JSON event
   respond <id> [result.json | --error msg]   (agent) answer a request
   baseline         (agent) snapshot project.json as the finish-diff baseline`;
@@ -39,12 +41,42 @@ async function main() {
 
     case "install-skill": {
       const srcDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "skill", "dreative");
+      const skillsDir = path.join(srcDir, "skills");
+      const available = fs.existsSync(skillsDir)
+        ? fs.readdirSync(skillsDir).filter((f) => f.endsWith(".md")).map((f) => f.replace(/\.md$/, ""))
+        : [];
+
+      if (args.includes("--list")) {
+        console.log(`specialist skills (installed by default, pick with --skills a,b):`);
+        for (const s of available) {
+          const firstLine = fs.readFileSync(path.join(skillsDir, `${s}.md`), "utf-8").split("\n")[0].replace(/^#\s*/, "");
+          console.log(`  ${s.padEnd(14)} ${firstLine}`);
+        }
+        return;
+      }
+
+      const sArg = args.indexOf("--skills");
+      let picked = available;
+      if (sArg > -1) {
+        picked = (args[sArg + 1] || "").split(",").map((t) => t.trim()).filter(Boolean);
+        const unknown = picked.filter((p) => !available.includes(p));
+        if (unknown.length) throw new Error(`unknown skill(s): ${unknown.join(", ")} — available: ${available.join(", ")}`);
+      }
+
       const destDir = path.join(process.cwd(), ".claude", "skills", "dreative");
       fs.mkdirSync(destDir, { recursive: true });
       for (const f of fs.readdirSync(srcDir)) {
-        fs.copyFileSync(path.join(srcDir, f), path.join(destDir, f));
+        if (fs.statSync(path.join(srcDir, f)).isFile()) fs.copyFileSync(path.join(srcDir, f), path.join(destDir, f));
       }
-      console.log(`installed skill to ${destDir} (${fs.readdirSync(srcDir).join(", ")})`);
+      if (picked.length) {
+        fs.mkdirSync(path.join(destDir, "skills"), { recursive: true });
+        for (const s of picked) {
+          fs.copyFileSync(path.join(skillsDir, `${s}.md`), path.join(destDir, "skills", `${s}.md`));
+        }
+      }
+      console.log(`installed skill to ${destDir}`);
+      console.log(`  core: SKILL.md, DESIGN.md`);
+      console.log(`  specialist skills: ${picked.length ? picked.join(", ") : "(none)"}`);
       console.log(`next: ask your coding agent to "open dreative" or "redesign my app's UI visually"`);
       return;
     }
