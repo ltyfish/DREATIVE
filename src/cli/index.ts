@@ -15,6 +15,7 @@ const USAGE = `usage: dreative [command]
   install-skill    copy the dreative skill into ./.claude/skills/dreative/
                    --list             show available specialist skills
                    --skills a,b       install only these specialist skills (default: all)
+                   --codex            install for Codex CLI instead (.codex/skills/ + AGENTS.md pointer)
   wait             (agent) block until the UI needs something; prints one JSON event
   respond <id> [result.json | --error msg]   (agent) answer a request
   baseline         (agent) snapshot project.json as the finish-diff baseline`;
@@ -63,7 +64,10 @@ async function main() {
         if (unknown.length) throw new Error(`unknown skill(s): ${unknown.join(", ")} — available: ${available.join(", ")}`);
       }
 
-      const destDir = path.join(process.cwd(), ".claude", "skills", "dreative");
+      const forCodex = args.includes("--codex");
+      const destDir = forCodex
+        ? path.join(process.cwd(), ".codex", "skills", "dreative")
+        : path.join(process.cwd(), ".claude", "skills", "dreative");
       fs.mkdirSync(destDir, { recursive: true });
       for (const f of fs.readdirSync(srcDir)) {
         if (fs.statSync(path.join(srcDir, f)).isFile()) fs.copyFileSync(path.join(srcDir, f), path.join(destDir, f));
@@ -74,7 +78,15 @@ async function main() {
           fs.copyFileSync(path.join(skillsDir, `${s}.md`), path.join(destDir, "skills", `${s}.md`));
         }
       }
-      console.log(`installed skill to ${destDir}`);
+      if (forCodex) {
+        // Codex may not auto-discover skills — leave a pointer in AGENTS.md (idempotent).
+        const agentsMd = path.join(process.cwd(), "AGENTS.md");
+        const marker = "<!-- dreative-skill -->";
+        const pointer = `\n${marker}\n## Dreative (frontend design skill)\nFor ANY frontend design work (redesign, restyle, build pages, animations, motion, 3D, micro-interactions) or when the user says "open dreative" / wants to edit the UI visually: read \`.codex/skills/dreative/SKILL.md\` first and follow it.\n`;
+        const existing = fs.existsSync(agentsMd) ? fs.readFileSync(agentsMd, "utf-8") : "";
+        if (!existing.includes(marker)) fs.writeFileSync(agentsMd, existing + pointer);
+      }
+      console.log(`installed skill to ${destDir}${forCodex ? " (Codex mode: AGENTS.md pointer added)" : ""}`);
       console.log(`  core: SKILL.md, DESIGN.md`);
       console.log(`  specialist skills: ${picked.length ? picked.join(", ") : "(none)"}`);
       console.log(`next: ask your coding agent to "open dreative" or "redesign my app's UI visually"`);

@@ -43,6 +43,8 @@ export interface PageTheme {
 export interface Page {
   id: string;
   name: string;
+  /** screen this view belongs to when one route was split into multiple views (tabs/modes), e.g. "Admin Studio" */
+  group?: string;
   theme?: PageTheme;
   canvasPos: { x: number; y: number };
   status: "skeleton" | "designed";

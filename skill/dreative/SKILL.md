@@ -1,11 +1,16 @@
 ---
 name: dreative
-description: Visual UI round-trip editor and design harness. Use when the user wants to visually redesign, rearrange, restyle, or touch up their app's UI, design new pages/screens visually, or says things like "open dreative", "let me edit the layout visually", "redesign my app's pages", "make my UI look good". Extracts the app's pages into editable wireframes in a browser UI, services the user's visual edits and design requests to a strict design doctrine, then applies the final layout diff back to the codebase.
+description: Frontend design skill + optional visual round-trip editor. Use for ANY frontend design work — redesign/restyle/build pages, landing pages, animations, motion, 3D, micro-interactions, "make my UI look good" — and for visual editing when the user says "open dreative" or "let me edit the layout visually". Default is direct design: apply the design doctrine straight to the codebase. The browser editor (extract → wireframes → edit → apply diff) is an optional mode the user can ask for.
 ---
 
-# Dreative — visual round-trip UI editing
+# Dreative — frontend design skill (+ optional visual editor)
 
-You (the coding agent) are the intelligence; the Dreative server/UI is a dumb visual editor. Flow: **extract → baseline → serve requests → finish → apply**. Be token-frugal at every step: read only the files you need, never re-read the whole app, and keep JSON compact.
+You (the coding agent) are the intelligence. Dreative has **two modes**:
+
+- **Mode A — Direct design (default).** The user asks you to design, redesign, restyle, animate, or build UI. Read `DESIGN.md` (and any specialist `skills/<name>.md` the work calls for — motion, 3d, interaction), then design/edit the real code directly. No server, no extraction, no wireframes. When you finish, add one closing note: *"Tip: run `dreative start` / say 'open dreative' if you want to tweak this visually — I'll extract the pages into an editable canvas."* That's the only place the editor should come up; never force the round-trip on a plain design request.
+- **Mode B — Visual round-trip (only when asked).** The user explicitly wants the visual editor ("open dreative", "let me edit visually"). Flow: **extract → baseline → serve requests → finish → apply**. Be token-frugal at every step: read only the files you need, never re-read the whole app, and keep JSON compact.
+
+Everything below §0 describes Mode B; the design doctrine paragraphs apply to both modes.
 
 **Design quality is a hard requirement.** `DESIGN.md` (same folder as this file) is the design doctrine. Read it ONCE before servicing the first `propose-skeletons`, `propose-variants`, `design-page`, or `edit-element` request, keep it in mind for all later ones, and run its pre-flight checklist (§12) before every respond. Requests may carry a `brief` object (aesthetic preset + vibe + dials set by the user in the UI); when present it is the user's explicit direction and overrides doctrine defaults. Before writing any `design-page` code, state (to yourself, one line) the register, the design read, and the signature element — if you cannot name all three, you are about to produce the generic default; stop and commit first.
 
@@ -17,7 +22,15 @@ Requires `dreative` on PATH (`npm i -g dreative` or `npx dreative`). All command
 
 ## 1. Extract (code → layout + replica)
 
-Goal: replicate the app's current UI page-by-page so the user recognizes every page. Do this **one page at a time** — find the routes/pages first (router config, pages/ dir, app/ dir), then open only each page's component files. **Single pass per page:** while the source is in front of you, produce all three outputs at once (layout JSON, replica file, summaries) — never revisit a file for a second output.
+Goal: replicate the app's current UI **view-by-view** so the user recognizes every screen. Do this **one page at a time** — find the routes/pages first (router config, pages/ dir, app/ dir), then open only each page's component files. **Single pass per page:** while the source is in front of you, produce all three outputs at once (layout JSON, replica file, summaries) — never revisit a file for a second output.
+
+**One Dreative page per VIEW, not per route file.** If a route renders mutually-exclusive views — tab panels, admin vs viewer modes, auth states, wizard steps, a modal that fills the screen — each view becomes its own Dreative page. A page's layout must show exactly what the user sees at one moment; never stack multiple tab panels' content into one layout. Name split views `"<Screen> — <View>"` (e.g. "Admin Studio — Library", "Admin Studio — Ranking Board"), give them the same `source`, the same `group` (e.g. `"group": "Admin Studio"`), and cluster them on the canvas. Shared chrome (header, tab bar) repeats in each view's layout, with the active tab noted in its `text`.
+
+**Expose hidden UI.** UI that exists but isn't visible by default must still surface, or the user gets a wrong picture of their app:
+- *Full-screen or view-sized* hidden UI (modals, dialogs, drawers, overlay panels with real content) → its own Dreative page, grouped with its parent screen (e.g. "Library — Edit Show modal").
+- *Small* hidden UI (dropdown menus, tooltips-with-actions, hover-revealed buttons, expandable rows) → model it as a block **inside its trigger's parent**, labeled for what it is (e.g. label "Sort dropdown (opens on click)"), with a `summary` saying when it appears. Don't invent open-state visuals in the replica — the replica shows the default state; the layout is where hidden things are enumerated.
+
+**Fidelity is the whole point.** The wireframe and replica must be recognizable as *that* page at a glance. Model every visible major section in order — hero/banner, search+filter bars, stat/KPI rows, each shelf/carousel with its cards, footers. A real page with 8 visible sections must yield ~8 top-level children, not 3 generic boxes. Card grids get realistic counts (a shelf showing 7 posters → a card-grid the user reads as a row of posters, with real show titles in `text`). Before moving on, self-check: *would the user, seeing only this wireframe, name which page of their app it is?* If not, you under-extracted — fix it before the next page.
 
 Per page, produce:
 
@@ -36,7 +49,7 @@ Write `.dreative/project.json`:
 } ] }
 ```
 
-(page objects also take `"replicaFile": "replica/pg_home.tsx"`)
+(page objects also take `"replicaFile": "replica/pg_home.tsx"` and `"group": "Admin Studio"` for split views of one screen)
 
 Block: `{ id, type, label, text?, summary?, direction?, sizeHint?, source?, children? }`
 - `type`: section | row | column | nav | hero | card-grid | list | form | footer | text | image | button

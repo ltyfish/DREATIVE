@@ -18,6 +18,7 @@ const PageNode = memo(function PageNode({ data }: { data: { page: Page } }) {
       <header onClick={() => select({ kind: "page", pageId: page.id })} onDoubleClick={() => openPage(page.id)}>
         <span className="name">{page.name}</span>
         <span style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          {page.group && <span className="badge">{page.group}</span>}
           <span className={`badge${page.status === "designed" ? " designed" : ""}`}>{page.status}</span>
           <button
             className="open-btn"
