@@ -10,7 +10,12 @@ halved parallax, 600ms mobile entrance budget) — decide it at design time.
 If the requested motion needs structure the current markup can't express (pinned
 sections, split text, persistent stages), use DESIGN.md §11's transformation-depth
 ladder: offer restructure as an option and, once confirmed, rebuild the markup —
-don't fake choreography onto the old skeleton.
+don't fake choreography onto the old skeleton. When the page's imagery or video
+participates in the choreography (reveals, scrubbed sequences, distortion,
+hover-woken loops), read `media.md` — media is motion material there, with the
+DOM-tier and WebGL treatment vocabularies and the generation pipeline.
+On phones the whole inventory recalibrates: `mobile.md` §2 is the translation
+table (what keeps, what halves, what dies) — decide it at design time.
 
 ## 0. Pick the tool by the job, not by habit
 
@@ -219,4 +224,6 @@ A motion request is fulfilled only if the final code contains, verifiably
 Before reporting done, list which inventory items shipped and where (element +
 trigger). "The page has hover states" does not clear dial 7+. If a listed item
 was deliberately cut, say so and why. This inventory is what the SKILL.md
-self-critique pass checks against.
+verification pass checks against — and its runtime stage must PROVE the items
+run (transforms changing, triggers firing, console clean), not just find them
+in the source.

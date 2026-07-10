@@ -58,7 +58,11 @@ Rules: ONE simulation per site, palette fed from the page tokens, `uTime` slow
 damped — the surface reacts like water, not like a cursor-following gimmick.
 Images/media on the page render INTO the canvas layer (texture planes synced to
 DOM rects — measure, don't guess) so the distortion can touch them; keep real
-DOM (invisible or fallback-visible) underneath for a11y/SEO/selection.
+DOM (invisible or fallback-visible) underneath for a11y/SEO/selection — the
+full media-plane pattern, video textures, and the wired fallback rule live in
+`media.md` §3. When a video-generation tool exists, the pre-rendered-loop
+budget path (§6) becomes first-class: generate the sim-like loop instead of
+building the GPGPU sim (media.md §1).
 
 ## 2. Interaction vocabulary
 
@@ -212,8 +216,11 @@ root layout, outside the router swap point (immersive.md §1).
 7. **The floor.** Reduced-motion still frame, degrade ladder, contrast scrim,
    mobile strategy (poster or halved sim), pause on hidden (§5).
 
-Ship checkpoint after every layer: run it, screenshot it, keep it working.
-A failed step 4 must not take down steps 1–3.
+Ship checkpoint after every layer: run it, screenshot it, READ THE CONSOLE,
+click through it (ux.md §7's audit on the touched surface), keep it working.
+A failed step 4 must not take down steps 1–3 — each layer's fallback is the
+previous layer, and the runtime gate (DESIGN.md §12.18) runs on the final
+stack, not just the last layer added.
 
 ## 7. Changing an existing site into this
 

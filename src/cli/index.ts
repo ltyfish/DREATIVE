@@ -109,7 +109,7 @@ async function main() {
         fs.writeFileSync(agentsMd, stripped + pointer);
       }
       console.log(`installed skill to ${destDir}${forCodex ? " (Codex mode: AGENTS.md pointer added)" : ""}`);
-      console.log(`  core: SKILL.md, DESIGN.md`);
+      console.log(`  core: SKILL.md, DESIGN.md, PLAN.md`);
       console.log(`  specialist skills: ${picked.length ? picked.join(", ") : "(none)"}`);
       console.log(`next: ask your coding agent to "open dreative" or "redesign my app's UI visually"`);
       return;

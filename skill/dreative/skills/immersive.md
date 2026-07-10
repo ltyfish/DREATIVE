@@ -30,7 +30,9 @@ intentional. Decide up front:
   No metaphor = you'll produce disconnected effects. The metaphor decides what
   transitions, camera moves, and layout make sense — everything below serves it.
 - Immersive sites still need an **escape hatch**: visible menu with plain links,
-  working back button, deep-linkable routes. Lost visitors close tabs. On touch
+  working back button, deep-linkable routes — all held to ux.md's working-page
+  contract (the menu closes, links resolve, back plays reverse, nothing
+  invisible eats clicks: run ux.md §7 on the world too). Lost visitors close tabs. On touch
   devices the escape hatch becomes the PRIMARY route (DESIGN.md §13): drag/
   spatial navigation conflicts with native scroll, so mobile gets the index-list
   world view or a swipe carousel, with the full world behind an explicit tap-in.
@@ -193,7 +195,8 @@ Everything in motion.md §6 and 3d.md §7 applies, plus genre-specific:
   CTA top-right, awards rail on the edge) stays fixed through every inversion.
   DOM-only, no WebGL — the spatial feel comes purely from theme travel + scale.
 - **World portfolio**: persistent canvas; works as textured planes arranged in
-  depth; scroll flies the camera past them; hover tilts a plane + cursor says
+  depth (DOM-synced media planes per media.md §3 — real images underneath);
+  scroll flies the camera past them; hover tilts a plane + cursor says
   "View"; click = camera dives to the plane which morphs into the project hero
   (shared-element). Back = reverse flight.
 - **Scene-hopping studio site (epic-style)**: stylized environment as stage;

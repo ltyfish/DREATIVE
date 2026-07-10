@@ -10,8 +10,11 @@ craft discipline, not the absence of one.
 
 It EXTENDS DESIGN.md (everything applies; this file tightens the dials). It does
 NOT stack with `immersive`/`cinematic` — those are different registers. It pairs
-well with a light dose of `interaction` (press states, underline draws) and the
-first tier of `motion` (one hero sequence, 2-3 in-view reveals).
+well with a light dose of `interaction` (press states, underline draws), the
+first tier of `motion` (one hero sequence, 2-3 in-view reveals), `ux` (this
+register's audience punishes broken function hardest), and media.md's quiet
+treatments only (ken-burns, curtain reveals, one hover-woken loop — imagery
+here is generated/sourced to ONE photographic grade, media.md §1).
 
 ## 0. The register: expensive silence
 

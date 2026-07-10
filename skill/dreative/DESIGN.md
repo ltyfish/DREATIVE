@@ -6,7 +6,8 @@ because LLM-designed UIs converge on one templated look. Every rule corrects a k
 model default; none is a suggestion. Requests may carry a `plan` (Dreative's
 pre-computed decision: dials, per-section layout families, budgets, lints) — execute
 the plan, apply this doctrine to everything the plan doesn't specify. When
-`plan.skills` names specialist skills (`motion`, `3d`, `interaction`), the matching
+`plan.skills` names specialist skills (`motion`, `3d`, `interaction`, `immersive`,
+`cinematic`, `refined`, `media`, `ux`, `mobile`), the matching
 `skills/<name>.md` files extend this doctrine for that request — read them first;
 where they go deeper than a section here, they win.
 
@@ -313,6 +314,11 @@ capability found as a first-class design material, not a nice-to-have:
   the client's actual photography when those exist.
 - If no generation capability exists, say so and fall back down the §7 priority
   list — never fake a video with a div animation.
+- `skills/media.md` is this section's deep dive: the production pipeline
+  (prompting for the page's light, compression targets, frame sequences), the
+  full DOM-tier and WebGL media-plane treatment vocabulary, and the
+  entrance/idle/response reasoning frame. Read it whenever generated media or
+  motion-integrated imagery ships.
 
 ## 8. Content and copy
 
@@ -342,7 +348,10 @@ tactile press (`scale-[0.98]`). Same button shape, form vocabulary, and icon sty
 on every screen — if "save" looks different in two places, one is wrong. Modals are
 usually laziness; exhaust inline/progressive first. Dropdowns escape
 overflow-hidden ancestors via popover API/position-fixed/portal. Touch targets
-≥ 44px. Never disable zoom.
+≥ 44px. Never disable zoom. This section is the floor; `skills/ux.md` is the
+full working-page contract (nav that resolves, forms that submit, all states
+reachable, keyboard walk, the pointer-events audit) — load it for any
+product-register page and any redesign touching navigation, forms, or state.
 
 ## 10. Banned AI tells (match-and-refuse)
 
@@ -516,11 +525,21 @@ the output is not done.
     inside their container (nothing clips at a viewport edge); animation
     end-states and parallax extremes collide with nothing; decoration layers
     are pointer-events-none below content.
+18. Runtime gate (Mode A, whenever motion/3d/media/interactive treatments
+    shipped): console clean while loading + scrolling + interacting; every
+    shipped effect provably runs (canvas draws, transforms change, videos
+    play); ux.md §7's functional audit passes (nav, menu, forms, tab walk,
+    hit-tests); failed effects replaced by their planned fallback (PLAN.md),
+    never shipped broken. If no browser is available, the ungated items are
+    reported to the user by name.
 
 ## 13. Mobile & touch adaptation (how ambitious effects degrade)
 
 Ambitious designs die on phones first. Every effect gets an explicit mobile
-strategy DECIDED AT DESIGN TIME, not patched after. The rule of thumb: touch
+strategy DECIDED AT DESIGN TIME, not patched after. (This section governs how
+desktop effects degrade; when mobile is a primary surface — mobile-first
+briefs, app-register products — load `skills/mobile.md`, which designs the
+phone experience as first-class.) The rule of thumb: touch
 devices get a *different good design*, never a broken half-version of the
 desktop one.
 

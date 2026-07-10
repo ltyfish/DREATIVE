@@ -125,6 +125,9 @@ the static design, not a broken half-effect. All of these are decoration — cap
   `prefers-reduced-motion` disables tracking (element stays styled, static).
 - Nothing in this file may cause layout shift, block scrolling, steal focus, or
   attach a raw `scroll`/`mousemove` listener without rAF batching + cleanup.
+- Effect layers (spotlight overlays, cursor followers, glow/beam wrappers) are
+  `pointer-events: none` — run ux.md §4's pointer-events audit after adding
+  any; an overlay that eats one click fails the whole page's runtime gate.
 - Every effect must survive keyboard use: whatever hover reveals, focus reveals.
 - Effects use palette tokens (accent/neutral), never introduce new hues.
 - If an effect can't be justified in one sentence of communication value
