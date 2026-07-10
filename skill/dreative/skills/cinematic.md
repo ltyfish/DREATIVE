@@ -170,6 +170,51 @@ All of 3d.md §7 and immersive.md §6, plus:
   on real DOM, click-and-hold in JS only. 70% of the mood, runs on anything —
   the right call below motion dial 8 or on content-heavy sites.
 
+## 6.5 The unseen.co replication blueprint (build order)
+
+When the brief is "make it like unseen.co" (or this genre at dial 9–10), build
+in THIS order — each layer works before the next starts. Do not attempt it as
+one monolithic rewrite; do not stop after step 2 and call it done.
+
+**Manifest:** `npm i gsap lenis three @react-three/fiber @react-three/drei
+@react-three/postprocessing` (React) or `gsap lenis three` (vanilla/OGL).
+Wire Lenis + ScrollTrigger per motion.md §8 first.
+
+**Layer stack (bottom → top):** persistent WebGL canvas (fixed, full-viewport)
+→ real DOM content (the accessible document) → HUD chrome (fixed corners) →
+grain overlay → custom cursor. Each is its own component/layer mounted in the
+root layout, outside the router swap point (immersive.md §1).
+
+1. **Smooth scroll + type system.** Lenis running, line-mask reveals on every
+   heading (motion.md §8), the two-family type mix (grotesk + true-italic
+   serif accents in one headline), numbered HUD chrome (`01 Index`…). The page
+   should already feel 60% of the genre with zero WebGL.
+2. **The living surface.** One canvas, one simulation family (§1). Start with
+   the highest effort/impact ratio: a shader plane with fbm + domain-warp fed
+   by palette uniforms and damped `uMouse` velocity (3d.md §4), or the
+   pre-rendered-video budget path (§6). Grain overlay goes in now — it glues
+   DOM and canvas into one graded image.
+3. **Scroll = camera.** Tall scroll container drives a camera dolly / scene
+   progress via damped scrub (immersive.md §4). Section copy floats in at
+   progress stops. This is the "one continuous shot" that separates the genre
+   from a parallax page.
+4. **Media through the surface.** Sync DOM image/work-card rects to texture
+   planes in the canvas (measure with `getBoundingClientRect` on resize +
+   scroll, don't guess) so hover/velocity distortion touches them; keep the
+   real DOM images underneath for a11y/fallback (§1). Velocity-reactive
+   stretch/RGB-split on scroll flicks, hard-clamped (§2).
+5. **Gestures + cursor.** Pick 2–3 from §2 (drag-to-explore, click & hold,
+   cursor-as-instrument), each labeled, each with a keyboard/boring
+   equivalent. Custom cursor: one dot, damped follow, contextual labels.
+6. **Doors and passages.** Preloader (real progress, choreographed reveal into
+   the idling scene — immersive.md §2), entry gate if sound ships (§3), route
+   transitions driven by the simulation (§4).
+7. **The floor.** Reduced-motion still frame, degrade ladder, contrast scrim,
+   mobile strategy (poster or halved sim), pause on hidden (§5).
+
+Ship checkpoint after every layer: run it, screenshot it, keep it working.
+A failed step 4 must not take down steps 1–3.
+
 ## 7. Changing an existing site into this
 
 Same rule as immersive.md §8: this register cannot be CSS'd onto a conventional

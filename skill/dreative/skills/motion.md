@@ -145,3 +145,78 @@ tell. Instead:
   ("PLAY VIDEO ⟲") slowly rotates around the pointer while it's over the media
   region — SVG `<textPath>` on a circle, damped position follow, constant
   rotation. Replaces the play button; fine pointers only, real button fallback.
+
+## 8. Setup blueprints — install and WIRE the stack (do not skip)
+
+Doctrine without dependencies ships a static page. When this skill is active,
+actually add the libraries to the project and wire them before designing
+sections. Pick the stack per §0, then:
+
+**GSAP + ScrollTrigger + Lenis (brand pages, the unseen.co-family stack):**
+
+```
+npm i gsap lenis
+```
+
+```js
+// one module, imported once at app root (e.g. src/lib/motion.ts)
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Lenis from "lenis";
+
+gsap.registerPlugin(ScrollTrigger);
+export const lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
+lenis.on("scroll", ScrollTrigger.update);
+gsap.ticker.add((t) => lenis.raf(t * 1000));
+gsap.ticker.lagSmoothing(0);
+```
+
+React: run that inside a `useEffect` in a `<SmoothScroll>` provider mounted in
+the root layout (destroy on unmount); Next.js needs `"use client"` on it.
+ONE Lenis instance, ONE gsap ticker — never per-component.
+
+**motion/react (React product+brand):** `npm i motion` — import from
+`"motion/react"`. Shared transition vocabulary in one exported object
+(`export const spring = { type: "spring", stiffness: 300, damping: 30 }`), used
+everywhere; `MotionConfig reducedMotion="user"` at the root.
+
+**Easing tokens (either stack):** commit page-wide —
+`expo.out` / `cubic-bezier(0.16, 1, 0.3, 1)` for entrances/reveals,
+`power2.inOut` for scrubbed/camera moves, springs for interactive. Define once
+(gsap defaults via `gsap.defaults({ ease: "expo.out" })` or CSS custom
+property `--ease-out-expo`), reference everywhere.
+
+**Line-mask headline reveal (the canonical premium move, copy this shape):**
+
+```jsx
+// each line: <div class="overflow-hidden"><div class="line">…</div></div>
+gsap.set(".line", { yPercent: 110 });
+gsap.to(".line", {
+  yPercent: 0, duration: 0.9, ease: "expo.out", stagger: 0.08,
+  scrollTrigger: { trigger: el, start: "top 80%", once: true },
+});
+```
+
+Use GSAP `SplitText` (free) with `type: "lines", mask: "lines"` instead of
+hand-wrapping when available; `aria-label` the original string per §4.
+
+## 9. Definition of done — the shipped-motion inventory
+
+A motion request is fulfilled only if the final code contains, verifiably
+(grep the imports, name the elements):
+
+- **Dial 4–6 (product/calm brand):** composed hero entrance timeline (§2), the
+  three global feel constants (interaction.md §0), 1–2 `whileInView`/triggered
+  section reveals, animated states (loading/success). No smooth scroll.
+- **Dial 7–8 (expressive brand):** all of the above PLUS Lenis smooth scroll,
+  line-mask headline reveals on hero + section headings, one scrubbed scroll
+  sequence (pin, parallax system, or progress-bound narrative), one signature
+  pointer effect (interaction.md §1), and a page/route transition treatment.
+- **Dial 9–10 (award-site):** all of the above PLUS the immersive.md or
+  cinematic.md architecture actually built (persistent stage/canvas, preloader
+  choreography, spatial or sim-driven route transitions, custom cursor).
+
+Before reporting done, list which inventory items shipped and where (element +
+trigger). "The page has hover states" does not clear dial 7+. If a listed item
+was deliberately cut, say so and why. This inventory is what the SKILL.md
+self-critique pass checks against.

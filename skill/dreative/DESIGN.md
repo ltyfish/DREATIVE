@@ -259,6 +259,33 @@ library (Phosphor/Radix/Tabler/HugeIcons; Lucide only on request), one strokeWid
 globally. Logo walls: real SVG marks (`https://cdn.simpleicons.org/<slug>`) or
 generated monograms — logos only, no category captions, below the hero.
 
+### Generated media (probe your environment, then use it)
+
+Before designing, check what media generation your environment actually offers —
+image-gen tools, video-gen tools, or a CLI that can produce them — and treat any
+capability found as a first-class design material, not a nice-to-have:
+
+- **Images**: generate hero photography, product/context shots, and textures at
+  the section's exact aspect ratio, prompted for the brand's physical subject
+  and the page's light temperature so they grade into the palette. Generate the
+  grain tile and any masks/mattes too instead of hand-rolling SVG.
+- **Video**: a generated 5–10s seamless loop is one of the biggest single UI
+  upgrades available — use it as: a hero background (muted, `autoplay loop
+  playsinline`, poster frame, `prefers-reduced-motion` swaps to the poster);
+  the budget "living surface" (a pre-rendered fluid/particle/atmosphere loop
+  instead of a GPGPU sim — cinematic.md's budget recipe); hover-preview loops
+  on work cards; or an image-sequence for scroll-scrubbed narratives (export
+  frames, scrub per motion.md).
+- **Integrate with motion, don't just embed**: reveal video through masks/wipes,
+  scrub it with scroll, let velocity effects touch it — a raw `<video>` tag
+  dropped in a section is not the treatment.
+- Discipline: same rationing as everything else — one video loop per view,
+  compress hard (H.264/AV1, ≤ 2–4MB per loop, no audio track), lazy-load below
+  the fold, and never let generated media replace REAL product screenshots or
+  the client's actual photography when those exist.
+- If no generation capability exists, say so and fall back down the §7 priority
+  list — never fake a video with a div animation.
+
 ## 8. Content and copy
 
 ≤ 8-word section headlines, ≤ 25-word subtext, one copy register per page, quotes
@@ -322,6 +349,69 @@ order — typography → spacing/rhythm → color recalibration → motion layer
 recomposition → full replacement only when unsalvageable. Honor existing
 accessibility wins and analytics hooks. Preserve prior element-level edits when
 `previousFile` is set.
+
+### The preservation contract (mandatory for ANY redesign of existing code)
+
+Redesigns fail catastrophically in one specific way: the agent rebuilds the page
+from its mental image of it and silently drops what it forgot — links, ids, form
+fields, whole features. Doctrine prose does not prevent this; only a mechanical
+before/after check does. The contract protects **content and function**, never
+structure — a restructure/reimagine still rebuilds markup, components, and
+routing as drastically as the rung demands.
+
+**Step 1 — Manifest (before editing anything).** Per page/view being redesigned,
+read the ORIGINAL source and write a manifest file (scratch or
+`.dreative/preserve/<page>.json`) enumerating:
+
+- **Links & routes**: every `href` / `to` / `router.push` / `navigate` target.
+- **Interactive elements**: every button/menu/toggle/input with its handler or
+  action (name + one line of what it does), every form with its field names,
+  types, validation, and submit target.
+- **Identity hooks**: every `id`, `data-*` attribute, `aria-*` label, analytics
+  hook, test id, and anchor target. These are external contracts — other code,
+  CSS, tests, and deep links point at them.
+- **Visible text**: every heading, label, button caption, tooltip, empty-state,
+  and legal string (verbatim).
+- **Data views & states**: every list/table/feed and what feeds it (API call,
+  prop, store), every conditional view — tabs, modals, auth states, wizard
+  steps, loading/empty/error branches.
+- **Public API**: the component's exports, props, and context it consumes —
+  callers must not break.
+
+**Step 2 — Redesign at the confirmed rung.** Every manifest entry must land
+somewhere in the new code. Restructuring means an entry may MOVE (a tab becomes
+a section, a sidebar item becomes a command-palette entry, a table becomes
+cards) — moving is encouraged; vanishing is a bug. If the new design has no room
+for something, relocate it (overflow menu, secondary view, settings page) —
+never delete a feature to make a layout work. Rewriting copy is allowed only at
+the reimagine rung or on explicit request, and each rewrite is logged as
+intentional.
+
+**Step 3 — Verify mechanically (not by vibes).** After writing the new code,
+walk the manifest item by item and grep the new source for each link target,
+handler/action, id/data-attribute, field name, visible string, and data view.
+Anything unmatched is either fixed on the spot or listed as an intentional
+change with a reason. Then report a **preservation ledger** to the user:
+"kept 14/14 links, 9/9 actions, 6/6 form fields, all 4 tab views; moved the
+sort dropdown into the toolbar; rewrote 2 headings (reimagine rung)". A
+redesign without a ledger is not done.
+
+**Step 4 — Render check.** Every data view and conditional state that rendered
+before must render after: open (or mentally walk) each tab/modal/state, not
+just the default view. A page that "looks designed" but shows an empty shell
+where a table used to be is a failed redesign regardless of how good the hero
+looks.
+
+### Motion is a deliverable, not a garnish
+
+When the user asked for motion/animation (explicitly, or by picking the motion /
+interaction / immersive / cinematic skills), shipped motion is verified like a
+feature: before declaring done, name the specific animations implemented (which
+element, which trigger, which duration/ease) and confirm they exist in the code
+and appear in the self-critique screenshots. "The design system implies motion"
+does not count; entrance choreography, scroll behavior, and micro-interactions
+must be literally present. If zero animations survive to the final code, the
+request was not fulfilled — go back and add them before reporting done.
 
 ### The transformation-depth ladder (offer it, then execute it)
 
@@ -387,6 +477,11 @@ the output is not done.
 14. Every block id from the layout appears as `data-dreative-id` (design-page only).
 15. Dark mode (when in scope): semantic-token swap, surface-lightness depth,
     desaturated accents, tested both modes.
+16. Redesign of existing code: preservation manifest written BEFORE editing;
+    every link, id, handler, form field, visible string, data view, and
+    conditional state verified present (or logged as intentional) in the new
+    code; preservation ledger reported. If motion skills were chosen, the
+    implemented animations are named and present in the code.
 
 ## 13. Mobile & touch adaptation (how ambitious effects degrade)
 
