@@ -1,6 +1,6 @@
 {
   "name": "dreative",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Layout-first visual editor skill for coding CLIs: extract your app's UI into editable wireframes, tweak with drag-drop + ref images, then the agent applies the diff back to your code.",
   "type": "module",
   "bin": {
