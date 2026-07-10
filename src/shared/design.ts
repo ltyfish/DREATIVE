@@ -27,6 +27,10 @@ const SKILL_SIGNATURES: Record<string, RegExp> = {
   "3d": /\b(3d|three\.?js|webgl|r3f|shader|glsl|particles?|point ?cloud|globe|mesh gradient|orbit|spline)\b/i,
   motion: /\b(animat|motion|parallax|scroll[- ]?(driven|trigger|story|choreo)|gsap|framer|lenis|marquee|kinetic|cinematic|stagger|reveal|transition)\b/i,
   interaction: /\b(micro[- ]?interaction|hover (effect|state)s?|cursor|magnetic|tilt|spotlight|glow|ripple|tactile|interactive|draggable)\b/i,
+  immersive:
+    /\b(immersive|award[- ]?(site|winning)|awwwards|spatial( (transition|nav(igation)?))?|scene[- ]?based|world|page[- ]transitions?|camera (move|travel|path)|preloader|scroll (journey|story|as travel)|explorable|experience site|epic\.net)\b/i,
+  cinematic:
+    /\b(cinematic|experiential|unseen\.co|fluid (sim(ulation)?|distortion)|gpgpu|drag[- ]to[- ]explore|click ?(&|and) ?hold|film grain|graded|velocity[- ]reactive|sound design|ambient (audio|sound))\b/i,
 };
 
 function detectSkills(texts: (string | undefined)[]): string[] {

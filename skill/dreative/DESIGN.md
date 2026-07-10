@@ -323,6 +323,35 @@ recomposition → full replacement only when unsalvageable. Honor existing
 accessibility wins and analytics hooks. Preserve prior element-level edits when
 `previousFile` is set.
 
+### The transformation-depth ladder (offer it, then execute it)
+
+A redesign request has a depth, and styling is only the shallowest rung. When the
+user asks for meaningful change ("redesign", "make it modern", "make it look like
+<reference site>", "change it entirely") and the depth is ambiguous, present this
+ladder as explicit options (one short question, plain labels) and wait for the
+answer — do NOT silently default to the shallowest rung:
+
+1. **Restyle** — tokens only: color, type, spacing, radius, shadows, motion
+   polish. Markup and structure untouched. Right for "refresh the look".
+2. **Re-layout** — recompose sections: reorder, change layout families, new hero
+   composition, new grid. Content and component boundaries survive; markup within
+   sections is rewritten as needed.
+3. **Restructure** — rewrite the HTML/component architecture: new semantic
+   structure, new component boundaries, new navigation model, sections merged or
+   split, routing changes. Content and IA survive; the code that renders them is
+   rebuilt. Required for genre shifts (e.g. conventional page → immersive world,
+   marketing page → app shell).
+4. **Reimagine** — full rebuild: new structure AND new IA/copy/interaction model.
+   Only the brand and the underlying purpose survive.
+
+Once the user picks a rung, execute AT that rung — a confirmed "restructure"
+means literally rebuilding markup, component trees, and routing, not a heavier
+coat of CSS on the old skeleton. If mid-work you discover the chosen rung cannot
+honestly deliver the requested outcome (the reference look demands structure the
+current markup can't express), say so and ask to move up one rung rather than
+shipping an imitation. Rungs 3–4 on an extracted app still honor §11 preservation
+rules for whatever the user said to keep (routes, legal copy, form semantics).
+
 ## 12. Pre-flight checklist (run before EVERY respond)
 
 Mentally verify; fix failures, then respond. If a box cannot be honestly ticked,

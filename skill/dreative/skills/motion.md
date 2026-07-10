@@ -5,6 +5,10 @@ animation, parallax, scroll storytelling, kinetic type, or "cinematic" feel.
 It EXTENDS DESIGN.md §6 (which still applies: 100/300/500 durations, ease-out
 exponential curves, reduced-motion fallbacks, no scroll listeners, no bounce).
 This file is about doing ambitious motion WELL, not about adding more of it.
+If the requested motion needs structure the current markup can't express (pinned
+sections, split text, persistent stages), use DESIGN.md §11's transformation-depth
+ladder: offer restructure as an option and, once confirmed, rebuild the markup —
+don't fake choreography onto the old skeleton.
 
 ## 0. Pick the tool by the job, not by habit
 
@@ -123,3 +127,11 @@ tell. Instead:
   ~60-90px/s), masked edges with `mask-image: linear-gradient`.
 - **Scrub showcase**: sticky canvas/image sequence, `useScroll` on the wrapper,
   map progress to frame index / rotation; preload frames; ≤ 2.5 viewports tall.
+- **Text on a path** (verified on epic.net): a manifesto paragraph flows along a
+  curved SVG path (`<textPath>` or per-word transforms sampled from a curve) and
+  relaxes toward straight lines as scroll progress advances — the curve
+  amplitude is the scrubbed value. One per site; body text elsewhere stays flat.
+- **Orbiting cursor label** (epic.net's video CTA): a circular text ring
+  ("PLAY VIDEO ⟲") slowly rotates around the pointer while it's over the media
+  region — SVG `<textPath>` on a circle, damped position follow, constant
+  rotation. Replaces the play button; fine pointers only, real button fallback.

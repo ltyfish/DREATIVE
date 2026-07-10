@@ -5,6 +5,9 @@ for hover effects, cursor work, tilt, glow, "make it feel alive/tactile/premium"
 It EXTENDS DESIGN.md §6/§9/§10 — every ban there still stands (no hover-scale on
 `<img>`, custom cursors only on explicit request, one marquee max). This skill is
 about the last 5% of feel: small, physical, consistent responses to input.
+If an effect needs different markup (wrappers, layers, split spans), follow
+DESIGN.md §11's transformation-depth ladder — offer the restructure and, once
+confirmed, change the structure rather than approximating the effect in CSS.
 
 ## 0. The feel system
 
