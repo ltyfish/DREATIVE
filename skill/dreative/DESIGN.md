@@ -510,6 +510,12 @@ the output is not done.
     conditional state verified present (or logged as intentional) in the new
     code; preservation ledger reported. If motion skills were chosen, the
     implemented animations are named and present in the code.
+17. Spatial integrity (§15): every positioned/fixed element has an anchor and
+    reserved space; no interactive element overlaps another at 320/768/1280;
+    one occupant per overlay corner; overflow-capable rows wrap or scroll
+    inside their container (nothing clips at a viewport edge); animation
+    end-states and parallax extremes collide with nothing; decoration layers
+    are pointer-events-none below content.
 
 ## 13. Mobile & touch adaptation (how ambitious effects degrade)
 
@@ -599,3 +605,60 @@ not replace the brand-voice reasoning. Self-host via Fontshare/google-webfonts
 downloads (`font-display: swap`, preload the display weight only). Never ship
 more than 2 families / ~5 weight files. If the brief names a commercial font
 the project already licenses, use the real thing.
+
+## 15. Spatial integrity (nothing overlaps by accident)
+
+The most common way an otherwise-good AI design dies: elements sitting ON TOP of
+each other — a menu button overlapping the nav, a chip row clipped off the
+viewport edge, a floating widget covering the CTA. Beautiful animation cannot
+rescue a page where things collide. These rules are a hard floor, same tier as §5.
+
+**Every out-of-flow element must justify itself.** Before writing
+`absolute`/`fixed`/`sticky`/negative margin/transform-offset, answer: what is
+this anchored to, and what reserves the space it covers? If there's no answer,
+put it in flow. Decoration layers (glows, grain, orbs, canvas backgrounds) are
+`absolute inset-0 -z-10 pointer-events-none` — below content, never intercepting
+clicks, never between the user and a control.
+
+**Interactive elements never overlap other interactive elements.** Not at any
+breakpoint, not mid-animation, not after a toast appears. Two clickable things
+occupying the same pixels is an automatic fail — one of them is unreachable.
+Mentally hit-test every control: is anything rendered above it (higher z-index,
+later stacking context) covering any part of its hit area?
+
+**Fixed/floating overlays get a slot system.** The viewport has at most 4 overlay
+slots (the corners), plus optional top/bottom bars. ONE occupant per slot —
+before adding a floating element (toast, install prompt, chat bubble, back-to-top,
+cookie notice, desktop-pet promo), check what already lives in that corner,
+including the site's own nav controls. Overlays keep ≥16px from viewport edges
+(safe-area insets on mobile), never cover the hero CTA or nav actions, and
+anything persistent is dismissible. If two things want the same corner, stack them
+in one container or queue them — never let them fight.
+
+**Nav is one coherent bar.** Menu toggles, theme switches, and account buttons
+live INSIDE the nav's flex row — never as separately-positioned fixed elements
+that visually land on top of the bar. If a control is fixed so it survives scroll,
+the nav itself is fixed and the control stays part of it.
+
+**Rows that can overflow must have a plan.** Chip rows, tab bars, button groups,
+breadcrumbs: at every width they either wrap (`flex-wrap`), scroll within their
+own container (`overflow-x-auto` with visible affordance, content inset from the
+container edge, `scroll-padding`), or truncate deliberately. Content silently
+sliding under the viewport edge or under a sibling is a bug. Centered rows wider
+than their container clip on BOTH ends — left-align scrollable rows.
+
+**Animation end-states count.** An element's resting position after its entrance
+(and every scroll-linked position in between) obeys these same rules. Parallax
+and floating loops need enough clearance that their extremes never touch
+neighboring text or controls. Pinned sections must not leave the pinned layer
+hovering over the next section's content when unpinned.
+
+**Reserve space for the dynamic.** Text that will be swapped/typed, badges with
+counts, localized labels: size the container for the longest realistic value.
+Fixed bars get matching `padding` on the scroll container (or `scroll-margin`)
+so content can't hide beneath them — anchored headings included.
+
+**Verification is spatial, not stylistic.** At 320 / 768 / 1280, walk the page
+top to bottom and ask of every element: what is under it, what is above it, and
+was that intentional? Any unintentional occlusion, clipped edge, or double-booked
+corner gets fixed before the respond — this is checklist §12 item 17.
