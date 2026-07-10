@@ -1,16 +1,26 @@
 # Dreative Plan Mode — decide everything before the first line of code
 
-Run this protocol at the start of ANY non-trivial Mode A request (new page/site,
-redesign at rung 2+, any request implying motion/3d/immersive/cinematic/media, or
-"make it amazing/like <reference>"). Skip it only for trivial single-element
-restyles and rung-1 token refreshes — and even then run §1's capability probe
-once per session. The failure this file prevents: jumping into code with half a
-brief, discovering mid-build that media/tools/structure are missing, and shipping
-a page that is 60% of what the user actually wanted.
+This skill is for **drastic change** — a section, a page, or the whole site being
+meaningfully redesigned or built. It is not for button tweaks or single-token
+nudges unless the user explicitly invokes it for one.
+
+**The plan gate (ask EVERY time).** At the start of ANY Mode A request in scope,
+your FIRST action is one structured question: **"Plan it first, or build
+directly?"** with "Plan first (Recommended)" as the leading option. Say plainly
+why plan wins: you'll probe capabilities, agree on treatments/media/mockups up
+front, and the result lands far closer to what they wanted on the first build.
+"Build directly" skips to DESIGN.md + doctrine defaults. Never silently skip the
+gate — even a request that looks simple gets asked; only skip when the user
+already said "no plan / just do it" this session. When plan is accepted, run the
+protocol below.
+
+The failure this file prevents: jumping into code with half a brief, discovering
+mid-build that media/tools/structure are missing, and shipping a page that is
+60% of what the user actually wanted.
 
 Plan Mode is ONE planning pass → ONE structured question round → a written plan
-→ execution in the plan's order. Never turn it into a long interview; the user
-answers once and you build.
+→ (optional) mockups for approval → execution in the plan's order. Never turn it
+into a long interview; the user answers once and you build.
 
 ## 1. Capability probe (before proposing anything)
 
@@ -78,10 +88,17 @@ question should explicitly invite extra direction.
    (generated images/video woven into the motion system) · ux (make every
    control, form, and state actually work — recommended by default) · mobile
    (first-class phone experience, calmer but equally crafted) · none.
-3. **Generated media** — the concrete offer from your probe: e.g. "Generate a
-   hero video loop + 4 section images (Recommended)" / "Images only" /
-   "Placeholders, I'll supply assets". If a needed tool is missing, this is
-   where the install offer goes ("I can add <X> MCP for video generation — ok?").
+3. **Media & asset types** (multi-select) — offer every asset class the probe
+   found tools for, and let choices stack: `generated images` · `generated
+   video loops` · `custom 3D` (real models/geometry, textures, and shaders
+   built in code — top-tier 3D sites are made of custom 3D assets, not
+   wallpaper images behind a canvas) · `real assets` (in repo / user supplies)
+   · `placeholders only`. Mark the probe-backed recommendation "(Recommended)".
+   **State the cost honestly: image/video generation is token-intensive** — say
+   roughly how many assets the blueprint wants and that each costs real
+   tokens/time, so "images only" or "placeholders" is a legitimate budget
+   choice, not a downgrade. If a needed tool is missing, this is where the
+   install offer goes ("I can add <X> MCP for video generation — ok?").
 4. **Ambition tier** — safe (clean + light motion) / expressive (full motion.md
    dial 7-8 inventory) / award-site (dial 9-10, immersive/cinematic
    architecture). State the cost honestly: higher tiers mean heavier builds and
@@ -102,17 +119,38 @@ question should explicitly invite extra direction.
    matter most, what's in this pass vs later, and any hard constraints
    (existing brand tokens to keep, CMS/content that must survive, deadline
    implying the safe tier).
-8. **Final remarks** — close the round with an open catch-all: "Anything else
+8. **Mockups first?** — offer to build 1:1 mockups BEFORE the full build:
+   "Mockup the key pages first (Recommended for big changes)" / "Straight to
+   build". If yes, execute §4b before touching real code.
+9. **Final remarks** — close the round with an open catch-all: "Anything else
    I should know or you'd love to see — specific effects, colors you hate,
    sections to add or kill?" Options: "no, go build" / "yes (write it in
    Other)". Everything written here lands verbatim in the plan file and is
    honored like the brief.
 
-Cap at 4 per round: depth/treatments/media/references usually win; fold
+Cap at 4 per round: depth/treatments/media/mockups usually win; fold
 ambition into treatments' recommendations when crowded, and vibe/scope into
 the blueprint you present for approval. Never re-ask in later rounds;
 ambiguity discovered mid-build resolves by the plan's spirit + doctrine
 defaults.
+
+### Calibration references (what the top tiers actually look like)
+
+When the user picks award-site ambition or 3d/immersive/cinematic treatments,
+these are the bar (fetch and study whichever is closest before designing):
+
+- https://www.experiencethebestyou.com/en-GB/ — coordinated scroll choreography
+  + heavy custom 3D/motion throughout.
+- https://unseen.co/projects/contra/ and https://unseen.co/projects/letter/ —
+  WebGL media planes, shader transitions, kinetic type.
+- https://25residences.com/ — luxury real-estate register, cinematic pacing.
+
+Common thread: their 3D is **custom models, textures, and shaders**, not
+generated wallpapers behind text. If the environment has 3D-capable tooling and
+the user opted in, build real 3D material (geometry, materials, lighting,
+shader surfaces per `skills/3d.md`); reserve generated images/video for what
+3D can't do. This tier only happens when the user explicitly chose it in the
+question round — never impose it.
 
 ## 4. Write the plan, then execute it
 
@@ -121,6 +159,26 @@ Persist the approved plan to `.dreative/plan.md` (or the scratchpad if
 (including references studied — with the distilled borrow-list — and all
 free-text remarks), blueprint table, stack, mobile strategy, fallbacks. Long sessions lose context; the plan file is
 the re-entry point — re-read it instead of re-deciding.
+
+## 4b. Mockups (when the user opted in)
+
+Pick the page(s) with the **biggest/most important planned change** (usually
+1–2; the blueprint tells you which). For each, build a mockup that is a **1:1
+replica of exactly what the full build would produce** — same stack, same
+markup structure, same type/color/spacing, same motion and effects actually
+running (real GSAP/Lenis/three.js code, not a note saying "animation here").
+It is built for VISUAL judgment, not function: strip data fetching, handlers,
+and routing to representative literals — like SKILL.md's replica/design-page
+files (single file, default export, self-contained). The rule is: what the
+user sees in the mockup is what they'd see in the shipped page; nothing in the
+mockup that the build wouldn't do, nothing in the build's look that the mockup
+hides.
+
+Write mockups to `.dreative/mockups/<page>.tsx` (or the scratchpad), serve or
+screenshot them for the user, and ask one approval question: approve / tweak
+(what) / rethink. Approved mockups become the source of truth — the full build
+replicates them exactly and extends the system to the remaining pages. Fold
+tweak feedback into the plan file before building.
 
 **Execution order (always):**
 

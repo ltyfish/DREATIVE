@@ -475,7 +475,31 @@ treatments in one pass:
 
 Once the user picks a rung, execute AT that rung — a confirmed "restructure"
 means literally rebuilding markup, component trees, and routing, not a heavier
-coat of CSS on the old skeleton. If mid-work you discover the chosen rung cannot
+coat of CSS on the old skeleton.
+
+**The drastic-change floor (rungs 3–4).** The chronic failure at these rungs is
+timidity: the agent rebuilds the components but reproduces the old page's shape,
+so a before/after glance reads as a re-theme. That is a failed restructure. At
+rung 3–4 the new page must be **unmistakably a different design at one glance**
+— someone shown both screenshots should assume different products. Concretely,
+change at least TWO structural paradigms, not just their styling:
+
+- **Navigation model** — top bar → side rail / command palette / dock / sticky
+  chapter nav / full-screen overlay menu.
+- **Page architecture** — stacked sections → editorial split-screen, horizontal
+  scroll chapters, sticky-pinned scenes, bento composition, app-shell with
+  panels, scroll-as-journey (immersive.md).
+- **Content presentation** — tables → cards/ledgers, lists → galleries or
+  timelines, forms → conversational steps, tabs → spatial sections.
+- **Hero concept** — a new signature idea (typographic monument, media plane,
+  3D object, kinetic composition), not the old hero with new colors.
+
+Creativity is bounded by usability: every drastic move must still be MORE
+user-friendly than what it replaces — clearer hierarchy, fewer steps to the key
+action, honest affordances, mobile ergonomics intact (§13, skills/ux.md). A
+restructure that confuses users is as failed as one that changed nothing. The
+self-critique pass at these rungs must answer: "name the two-plus structural
+paradigms that changed, and why each is easier to use than before." If mid-work you discover the chosen rung cannot
 honestly deliver the requested outcome (the reference look demands structure the
 current markup can't express), say so and ask to move up one rung rather than
 shipping an imitation. Rungs 3–4 on an extracted app still honor §11 preservation
