@@ -276,9 +276,37 @@ capability found as a first-class design material, not a nice-to-have:
   instead of a GPGPU sim — cinematic.md's budget recipe); hover-preview loops
   on work cards; or an image-sequence for scroll-scrubbed narratives (export
   frames, scrub per motion.md).
-- **Integrate with motion, don't just embed**: reveal video through masks/wipes,
-  scrub it with scroll, let velocity effects touch it — a raw `<video>` tag
-  dropped in a section is not the treatment.
+- **Integrate with motion, don't just embed** — a raw `<video>`/`<img>` dropped
+  in a section is not the treatment. Generated media enters the page THROUGH the
+  motion system; pick 1–2 treatments per page from this vocabulary (or invent in
+  its spirit), matched to the register:
+  - **Pixel/dither reveal**: video or image materializes from coarse blocks —
+    a shader that lerps sample resolution from ~24px mosaic to full res (or a
+    stepped `image-rendering: pixelated` downscale swap for the budget path),
+    driven by scroll progress or hover. Reads as digital-craft; dark-tech and
+    editorial registers.
+  - **Floating media**: images hover in depth with slow damped drift (±6-10px,
+    4-8s loops, each at a different phase), subtle parallax by depth layer, and
+    a soft contact shadow — the immersive "paper sheets in space" look without
+    WebGL. Cap at 3-5 floaters per view.
+  - **Mask-shaped video**: the loop plays inside display type (`background-clip:
+    text` / SVG mask on a 10vw+ headline), an arch/circle clip-path, or the
+    brand mark — the video becomes typography/identity rather than a rectangle.
+  - **Scroll-scrubbed sequence**: generated frames scrubbed by scroll for
+    assemble/morph/rotate narratives (motion.md's canvas product story).
+  - **Velocity-touched media**: scroll/drag velocity stretches, RGB-splits, or
+    ripples the media plane for a beat, settling with damped decay
+    (cinematic.md §2) — needs the WebGL media-plane sync.
+  - **Hover-woken loops**: stills that crossfade into their video loop on
+    hover/focus (240ms), pause + rewind-to-poster on leave; works as generated
+    "living thumbnails" on work/product cards.
+  - **Curtain/split reveal**: media enters behind a 2-4 panel wipe or an
+    expanding inset clip (`clip-path: inset(40% 30%) → inset(0)`), timed with
+    the section's line-mask type reveal so image and headline arrive as one
+    choreographed beat.
+  Whatever the treatment, honor the floors: reduced-motion gets the poster
+  frame, hover treatments have focus equivalents, and the effect is justified
+  in one sentence like any other motion (§6).
 - Discipline: same rationing as everything else — one video loop per view,
   compress hard (H.264/AV1, ≤ 2–4MB per loop, no audio track), lazy-load below
   the fold, and never let generated media replace REAL product screenshots or
