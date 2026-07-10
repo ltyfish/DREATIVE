@@ -30,7 +30,10 @@ intentional. Decide up front:
   No metaphor = you'll produce disconnected effects. The metaphor decides what
   transitions, camera moves, and layout make sense — everything below serves it.
 - Immersive sites still need an **escape hatch**: visible menu with plain links,
-  working back button, deep-linkable routes. Lost visitors close tabs.
+  working back button, deep-linkable routes. Lost visitors close tabs. On touch
+  devices the escape hatch becomes the PRIMARY route (DESIGN.md §13): drag/
+  spatial navigation conflicts with native scroll, so mobile gets the index-list
+  world view or a swipe carousel, with the full world behind an explicit tap-in.
 
 ## 1. Architecture: one persistent stage
 

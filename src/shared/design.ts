@@ -31,6 +31,8 @@ const SKILL_SIGNATURES: Record<string, RegExp> = {
     /\b(immersive|award[- ]?(site|winning)|awwwards|spatial( (transition|nav(igation)?))?|scene[- ]?based|world|page[- ]transitions?|camera (move|travel|path)|preloader|scroll (journey|story|as travel)|explorable|experience site|epic\.net)\b/i,
   cinematic:
     /\b(cinematic|experiential|unseen\.co|fluid (sim(ulation)?|distortion)|gpgpu|drag[- ]to[- ]explore|click ?(&|and) ?hold|film grain|graded|velocity[- ]reactive|sound design|ambient (audio|sound))\b/i,
+  refined:
+    /\b(clean (and )?(modern|professional)|modern clean|business (site|website|use)|corporate|professional look|premium (minimal|clean)|dtc|d2c|e[- ]?commerce|ecommerce|shopify|maswitzerland|lovvelavva|not (too )?(flashy|animated)|calm|understated)\b/i,
 };
 
 function detectSkills(texts: (string | undefined)[]): string[] {

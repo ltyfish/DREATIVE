@@ -150,6 +150,15 @@ All of 3d.md §7 and immersive.md §6, plus:
   Branding 5…); butterfly/petal particles drift through; HUD = wordmark
   top-left, Index/Projects/Contact top-right, globe "world" button bottom-center,
   © year bottom-right. Heavy uniform film grain glues all of it together.
+- **Single-flower lab page (verified on unseen.co/labs/blossom)**: the minimal
+  form of the genre — one WebGL subject (a blooming particle flower) on one
+  canvas, Lenis smooth scroll, headlines split into `overflow-hidden` line
+  masks (`splittext--line`) sliding up on arrival, and a two-family type system
+  (light serif with true italics — SangBleu-style — mixed into a neutral
+  grotesk). No drag, no sound, no HUD maximalism: one subject + line-mask type
+  + smooth scroll already reads as the genre. Start here; add §2 gestures only
+  if the brief earns them. (unseen.co's own home additionally runs a
+  `webgl-rain` particle layer over the scene — weather as grade texture.)
 - **Particle identity page**: brand mark as 50k particles that disperse on
   pointer force and reform; sections change the formation target; scroll
   velocity agitates; reduced-motion = the formed mark as a still.

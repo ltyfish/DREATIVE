@@ -329,7 +329,9 @@ A redesign request has a depth, and styling is only the shallowest rung. When th
 user asks for meaningful change ("redesign", "make it modern", "make it look like
 <reference site>", "change it entirely") and the depth is ambiguous, present this
 ladder as explicit options (one short question, plain labels) and wait for the
-answer — do NOT silently default to the shallowest rung:
+answer — do NOT silently default to the shallowest rung. Bundle the specialist
+skill picker (SKILL.md) into the same question so the user answers depth and
+treatments in one pass:
 
 1. **Restyle** — tokens only: color, type, spacing, radius, shadows, motion
    polish. Markup and structure untouched. Right for "refresh the look".
@@ -385,3 +387,92 @@ the output is not done.
 14. Every block id from the layout appears as `data-dreative-id` (design-page only).
 15. Dark mode (when in scope): semantic-token swap, surface-lightness depth,
     desaturated accents, tested both modes.
+
+## 13. Mobile & touch adaptation (how ambitious effects degrade)
+
+Ambitious designs die on phones first. Every effect gets an explicit mobile
+strategy DECIDED AT DESIGN TIME, not patched after. The rule of thumb: touch
+devices get a *different good design*, never a broken half-version of the
+desktop one.
+
+**Pointer effects** (cursor followers, magnetic pull, spotlight, tilt, hover
+reveals): gate ALL of them behind `@media (hover: hover) and (pointer: fine)`.
+On touch, whatever hover revealed must be visible by default or reachable by
+tap — never lost. Custom cursors simply don't exist on touch; don't ship their
+DOM/listeners there.
+
+**Pinned/scrubbed sections**: pinning is fragile on mobile (URL-bar resize
+fires viewport changes mid-pin; iOS momentum scroll skips scrub frames).
+Strategies in preference order: (1) keep the pin but shorten it (≤ 1.5
+viewports) and drive it with `position: sticky`, never JS pinning; (2) unpin —
+the same content as stacked sections with simple in-view reveals;
+(3) `ScrollTrigger.matchMedia()` / a `matchMedia` branch that swaps the whole
+choreography. Never let a desktop pin length ride on a phone.
+
+**Parallax & depth layers**: halve the differential on small screens (8-15% →
+4-7%) or drop to zero; small viewports make parallax read as jitter. Layered
+depth scenes collapse to 2 layers max.
+
+**Drag-to-explore / spatial navigation**: on touch, drag conflicts with native
+scroll. Either give the pannable surface a dedicated full-screen mode entered
+by tap (with a visible close), or replace it with a swipeable carousel /
+plain scrolling index. The conventional index route (immersive.md's escape
+hatch) becomes the PRIMARY route on mobile, not the fallback.
+
+**WebGL/canvas**: assume the phone GPU is 5-10× weaker and thermally throttled.
+Tier at boot (`devicePixelRatio` capped at 2, sim resolution halved,
+post-processing off) or swap the sim for a pre-rendered video loop / poster.
+`deviceMemory`/first-dropped-frames checks pick the tier; a visible "reduce
+effects" toggle when the brief allows.
+
+**Layout & ergonomics floor** (extends checklist §12.12): tap targets ≥ 44px
+with ≥ 8px gaps; primary actions in thumb reach (bottom half) on app-register
+mobile; `100dvh` not `100vh`; no horizontal body scroll at 320px; type scale
+clamps DOWN gracefully (hero ≥ 2rem, body stays ≥ 16px — iOS zooms inputs
+under 16px); sticky navs shrink rather than stack; test the three widths 320 /
+768 / 1280 mentally before responding.
+
+**Motion budget on mobile**: entrance choreography total ≤ 600ms (vs 900ms
+desktop), at most 1 scroll-driven sequence per page, marquees pause when
+off-screen. Battery is a design constraint: continuous rAF loops must idle
+when nothing animates.
+
+## 14. Typography sourcing (kill the Inter-everywhere default)
+
+The reflex-reject list (§3) says what NOT to reach for; this is where to reach
+instead. All fonts below are free (Google Fonts or Fontshare/ITF). The
+commercial fonts real award sites use — verified: unseen.co sets **Saol
+Display Light/Italic + Neue Montreal**; unseen's Blossom lab sets **SangBleu
+Serif + PP Neue Montreal**; capsul-in-pro sets **Messina Sans** — are the
+targets; the pairings below are their honest free stand-ins, not lookalikes of
+each other.
+
+Per aesthetic register (display / body):
+
+- **Cinematic & experimental** (unseen-like): light editorial serif with a
+  true italic for display — `Boska`, `Sentient`, or `Gelasio Light Italic` —
+  over a neutral grotesk body — `Switzer`, `Hanken Grotesk`. Mixing italic
+  serif words INTO a grotesk headline is the genre move (unseen does exactly
+  this). Mono microtype for HUD labels: `Fragment Mono` or `Martian Mono`.
+- **Minimal / premium product**: one grotesk family carrying everything —
+  `General Sans`, `Switzer`, or `Schibsted Grotesk` in 3-4 weights. The
+  Neue Montreal / Messina Sans stand-in tier. Tight display tracking
+  (−0.02 to −0.04em), no second family.
+- **Editorial / luxury**: `Zodiak` or `Besley` display over `Hanken Grotesk`
+  or `Switzer` body; small-caps eyebrows tracked +0.08em. (Reach here only
+  when §3's serif discipline is satisfied.)
+- **Bold / brutalist / campaign**: `Clash Display` or `Cabinet Grotesk` (black
+  weights) display over `Switzer`/`General Sans` body; `Bricolage Grotesque`
+  when some warmth is wanted.
+- **Playful / consumer** (lovvelavva-like DTC): `Cabinet Grotesk` or `Gambetta`
+  display, rounded moments via weight and spacing — NOT a rounded font —
+  over `Hanken Grotesk` body.
+- **Corporate trust / clean business**: `Switzer` or system stack; Inter is
+  legitimate here (§3). Differentiate through scale contrast and spacing,
+  not font novelty.
+
+Rules: still run §3's selection procedure — this list feeds step 3, it does
+not replace the brand-voice reasoning. Self-host via Fontshare/google-webfonts
+downloads (`font-display: swap`, preload the display weight only). Never ship
+more than 2 families / ~5 weight files. If the brief names a commercial font
+the project already licenses, use the real thing.

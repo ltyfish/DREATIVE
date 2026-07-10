@@ -5,6 +5,8 @@ animation, parallax, scroll storytelling, kinetic type, or "cinematic" feel.
 It EXTENDS DESIGN.md §6 (which still applies: 100/300/500 durations, ease-out
 exponential curves, reduced-motion fallbacks, no scroll listeners, no bounce).
 This file is about doing ambitious motion WELL, not about adding more of it.
+Every effect here needs a mobile strategy per DESIGN.md §13 (shorter pins,
+halved parallax, 600ms mobile entrance budget) — decide it at design time.
 If the requested motion needs structure the current markup can't express (pinned
 sections, split text, persistent stages), use DESIGN.md §11's transformation-depth
 ladder: offer restructure as an option and, once confirmed, rebuild the markup —
@@ -127,6 +129,14 @@ tell. Instead:
   ~60-90px/s), masked edges with `mask-image: linear-gradient`.
 - **Scrub showcase**: sticky canvas/image sequence, `useScroll` on the wrapper,
   map progress to frame index / rotation; preload frames; ≤ 2.5 viewports tall.
+- **Canvas product story** (capsul-in-pro.com's form): a single-product launch
+  page as one scroll-scrubbed narrative — the product renders on a full-page
+  canvas (image-sequence or WebGL) and scroll drives its assembly/rotation
+  while short copy beats fade in at fixed progress stops; the site ships as
+  one bundled app with explicit portrait/landscape variants (it gates on
+  orientation rather than half-working in both). Copy the shape: one subject,
+  one scrubbed timeline, copy anchored to progress ranges, per-orientation
+  choreography decided up front.
 - **Text on a path** (verified on epic.net): a manifesto paragraph flows along a
   curved SVG path (`<textPath>` or per-word transforms sampled from a curve) and
   relaxes toward straight lines as scroll progress advances — the curve
