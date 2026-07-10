@@ -137,7 +137,21 @@ the re-entry point — re-read it instead of re-deciding.
    runtime gates). Any effect that fails gets its planned fallback, and the
    final report says so: "shipped the §2 fallback for X because Y".
 
+**Execution is mandatory, not advisory.** Once the plan is approved, it MUST be
+carried out in full:
+
+- Work through blueprint rows top to bottom; a row is only closed when its code
+  is written AND its verification gate passes (or its named fallback shipped).
+- Never end the session, summarize, or declare done while unshipped rows
+  remain. If interrupted or the context is compacted, re-read
+  `.dreative/plan.md` and resume from the first unshipped row — do NOT
+  re-plan, re-ask, or restart.
+- Cutting a row requires an explicit user decision or a hard technical blocker
+  named in the report; "ran long" is not a reason.
+- Before the final report, walk the plan file row by row and mark each one.
+
 Report against the plan when done: each blueprint row → shipped / fallback /
 cut (with reason), plus the motion inventory (motion.md §9) and the preservation
 ledger when §11 applies. A build that silently diverges from its approved plan
-is a bug even when it looks good.
+is a bug even when it looks good — and a plan left half-executed is a failed
+task, not a partial success.
