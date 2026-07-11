@@ -74,7 +74,14 @@ presents choices about a concrete plan, not abstractions. Per section:
   media.md's exploration protocol: invent three brand-native candidates not
   listed in the catalogs, record them + the pick in the plan file — a media
   plan assembled only from listed effects with no rejected invention on
-  record is minimum-effort compliance.
+  record is minimum-effort compliance. **Custom 3D in a media cell must name
+  its asset source in the blueprint** — a GLB path, a generated/sourced
+  texture (the actual prompt or file), or the billboard cutout it will ride
+  on. "Custom 3D bean/bottle/plant geometry" with no named source is an
+  invalid cell: primitives can't produce an organic subject (3d.md §3), so
+  re-plan it as rung 2 (photo billboard) or an abstract form at plan time —
+  don't let the build stage discover this. The user picking "custom 3D" in
+  the media question grants the *medium*, not an exemption from the ladder.
 - **motion treatment** — from motion.md/immersive.md/cinematic.md vocabulary,
   with the dial-appropriate ambition. **motion.md §9's inventory is a hard
   plan gate, not a target:** at expressive/award-site ambition the blueprint
