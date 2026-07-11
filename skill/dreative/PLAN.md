@@ -44,8 +44,15 @@ Rules:
   question round (§3), phrased as a genuine fork, not a heads-up. Never
   install tools silently; never silently degrade either.
 - The probe result changes the blueprint: no video-gen → hero loops become
-  generated stills + ken-burns or a shader surface; no browser tools → the
+  generated stills + ken-burns or a shader surface; **no image-gen → media
+  cells become `source-image` (DESIGN.md §7's priority: verified stock/CDN
+  photography), every planned cutout prop becomes a sourced-and-matted photo
+  or is cut, and any 3D of an organic real-world subject is re-planned as a
+  photo billboard, an abstract form, or cut (3d.md §3 rungs 2/4 — coded
+  organic geometry never becomes the fallback)**; no browser tools → the
   verification protocol's manual fallback (SKILL.md) must be declared up front.
+  Missing tools change WHERE assets come from, never whether media/3D rules
+  apply — sourced media carries the same treatment obligations (media.md §0).
 
 ## 2. The blueprint (section-by-section, media-first)
 

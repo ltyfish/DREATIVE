@@ -22,6 +22,19 @@ choreographed, distorted, revealed, and lit, never just placed.
   (e.g. evidence screenshots in a refined register). At dial ≥ 8 with a canvas,
   media belongs on media planes (§3) moving in depth — parallax layers, curved
   sheets, velocity distortion — not pasted flat behind the DOM.
+- **Sourced media is media.** Everything in this file applies equally to
+  images/video that were generated, supplied by the user, or sourced from
+  stock/CDN when no generation tool exists — "we had no image-gen" changes the
+  PRODUCTION path (§1), never the treatment obligations. A picsum/stock photo
+  dropped in flat is the same failure as a generated one.
+- **The zoom/fade floor is a floor, not a treatment plan.** Fade-in entrances
+  plus ken-burns idles on every image = the minimum-compliance page, and at
+  motion dial ≥ 6 it FAILS this skill: at that dial, hero + key section
+  imagery each need at least one treatment that is scroll- or cursor-DRIVEN
+  (curtain synced to type, strip-slice, inner-zoom parallax, directional hover
+  wipe, cursor torch, velocity distortion, media plane — §2/§2.5/§3), where
+  the visitor's input visibly pushes the media. Ken-burns-everywhere is the
+  refined register's budget (refined.md), nobody else's.
 - **Edit the asset, don't just place it.** Generation is step one; the pipeline
   (§1) continues with real editing — grade/duotone to the palette, crop to the
   blueprint's aspect, cut video to the loop point, extract posters and frame
@@ -97,7 +110,11 @@ motion.md's terms).
 
 Two flavors — pick per section from the blueprint, they can mix on one page:
 
-- **Cutout image props**: generate on a transparent background — prompt
+- **Cutout image props**: with no image-gen tool, source instead of generate —
+  a verified real photo of the subject, matted to transparency (rembg / sharp /
+  ImageMagick if available); if no photo source and no matting path exists, the
+  prop is cut, never approximated with coded organic geometry (3d.md §3 rung 4).
+  When generating: generate on a transparent background — prompt
   explicitly ("isolated on pure transparent background, studio product
   lighting, no backdrop, no shadow baked in") and REQUEST alpha-channel PNG
   output. **Verify the alpha is real**, not a white/checkerboard fill the
