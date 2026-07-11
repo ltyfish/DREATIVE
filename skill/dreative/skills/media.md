@@ -54,8 +54,12 @@ choreographed, distorted, revealed, and lit, never just placed.
   depth-map dive, diorama, particle fly-through, scrub-dive). **At award-site
   ambition the default set-piece IS a §3.5 dive** — one moment where the
   visitor goes INTO an image or video rather than watching it move; choose a
-  different pixel-transforming class only with a stated reason in the plan
-  (e.g. no depth-capable asset exists and none can be generated). Choreographing whole rectangles (orbit, collapse,
+  different pixel-transforming class only when a stated ASSET impossibility is
+  recorded in the plan (no depth-capable asset exists AND none can be
+  generated — with image-gen available this reason is almost never true, since
+  a depth-capable composition can be prompted). Brand fit, taste, or "this
+  concept links better" is NOT a valid skip reason: a masked reveal or curtain
+  chosen over the dive on preference grounds fails the award-tier check. Choreographing whole rectangles (orbit, collapse,
   card fly-ins, grid reflow) is composition, not a set-piece at this tier —
   it may accompany one, never substitute for it. Evidence at verify: the
   sampled shader uniform / particle count / frame index changing with scroll.

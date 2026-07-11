@@ -822,7 +822,13 @@ architecture (a horizon, an instrument, a frame). If the honest answer is
 "a dark ball with rings," reduce it: shrink it to an accent, anchor it into
 the composition (consistent berth, edges lit by the page's light, cropped
 by a frame ON PURPOSE), or replace it with imagery. Ambiguity at accent
-scale is intrigue; ambiguity at hero scale is confusion.
+scale is intrigue; ambiguity at hero scale is confusion. The test is judged
+from the SCREENSHOT, not from the plan's prose: naming the object "eclipse",
+"thermal horizon", or "roast core" in the plan does not make a translucent
+sphere read as one — if the verify screenshot shows a ball floating over a
+photo, it fails regardless of what the plan swore it wasn't. At hero scale
+the answer must be a nameable thing (see 3d.md §3: abstract coded forms are
+supporting-only and can never be the promoted signature object).
 
 **Interactive elements never overlap other interactive elements.** Not at any
 breakpoint, not mid-animation, not after a toast appears. Two clickable things

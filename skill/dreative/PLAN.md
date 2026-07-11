@@ -85,7 +85,8 @@ presents choices about a concrete plan, not abstractions. Per section:
   texture (the actual prompt or file), or the billboard cutout it will ride
   on. "Custom 3D bean/bottle/plant geometry" with no named source is an
   invalid cell: primitives can't produce an organic subject (3d.md §3), so
-  re-plan it as rung 2 (photo billboard) or an abstract form at plan time —
+  re-plan it as rung 2 (photo billboard) or an abstract SUPPORTING form
+  (3d.md §3 rung 3 — never the promoted signature object) at plan time —
   don't let the build stage discover this. The user picking "custom 3D" in
   the media question grants the *medium*, not an exemption from the ladder.
 - **Travel map (mandatory when any element persists across sections).** If
