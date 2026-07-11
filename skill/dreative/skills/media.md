@@ -82,7 +82,10 @@ choreographed, distorted, revealed, and lit, never just placed.
   counts — the denominator is fixed by the blueprint, and reclassifying
   images as "not key" to shrink it is the same self-grading this floor
   exists to stop (a repeated card-grid pattern counts as ONE image for the
-  tally, treated uniformly). A page that is one set-piece plus curtains everywhere
+  tally, treated uniformly). EXEMPT from the tally: prop/item cutouts —
+  transparent-background object images seeded as scene props or product
+  shots (§1.5) — which follow §1.5's behavior rules instead; the floor
+  governs scenic/editorial imagery, not the objects living in the layout. A page that is one set-piece plus curtains everywhere
   else reads exactly as static as no set-piece at all, and fails this floor.
   (Below dial 8 the §0 zoom/fade-floor and set-piece rules stand unchanged —
   this floor is what "award" buys.)

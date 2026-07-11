@@ -92,6 +92,9 @@ presents choices about a concrete plan, not abstractions. Per section:
   Every 3D prop cell also names its BERTH (3d.md §1.5): which lane/stage of
   the section it occupies and what the layout does to make room — a prop
   planned "over the hero image" or with no berth is an invalid cell.
+  At award-site ambition the blueprint must contain at least one 3D prop
+  cell (3d.md §0's required prop — GLB or cutout billboard, with its berth
+  and asset source named); zero prop cells = incomplete plan.
   At dial ≥ 8 the media column additionally marks each hero/key image's
   treatment as quiet-class or PIXEL-class (media.md §0) and must already
   satisfy the coverage floor on paper: at least half pixel-class (min 3,
