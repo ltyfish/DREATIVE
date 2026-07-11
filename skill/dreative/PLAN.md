@@ -310,6 +310,13 @@ these are the bar (fetch and study whichever is closest before designing):
   WebGL layer + disciplined type can read premium-crazy without cinematic
   darkness.
 
+These teardowns were verified July 2026 and will age — sites redesign and
+registers move on. At award-site ambition, when browser tools exist, spend ONE
+fetch on a current source (Awwwards SOTD or godly.website) to confirm the
+register you're chasing is still the frontier, and note in plan.md what you
+saw. The stack LESSONS above outlive the sites themselves; the aesthetics
+don't.
+
 Common thread: their 3D is **custom models, textures, and shaders**, not
 generated wallpapers behind text. If the environment has 3D-capable tooling and
 the user opted in, build real 3D material (geometry, materials, lighting,
@@ -323,7 +330,9 @@ Persist the approved plan to `.dreative/plan.md` (or the scratchpad if
 `.dreative/` doesn't exist): capability manifest, the **full Q&A transcript**
 (each question asked + the answer, verbatim, including free-text remarks),
 each SKIPPED question with the inference drawn from the prompt, references
-studied with the distilled borrow-list, blueprint table, stack, mobile
+studied with the distilled borrow-list, the concept exploration (DESIGN.md §2:
+the three divergent concepts, the pick, and the rejects' one-line reasons —
+same duty as media.md's set-piece exploration), blueprint table, stack, mobile
 strategy, fallbacks. Long sessions lose context; the plan file is the re-entry
 point — a resumed session re-reads it instead of re-deciding or re-asking.
 

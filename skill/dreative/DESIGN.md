@@ -11,6 +11,14 @@ the plan, apply this doctrine to everything the plan doesn't specify. When
 `skills/<name>.md` files extend this doctrine for that request — read them first;
 where they go deeper than a section here, they win.
 
+Rules come in two tiers. **Hard gates** — preservation (§11), spatial integrity
+(§15), the layout hard rules (§5), banned tells (§10), runtime verification —
+are checked mechanically and never traded away. Everything else is **craft
+doctrine**: binding defaults you deviate from only with a reason you could
+defend to the user. When attention is scarce, gates outrank craft rules, and
+craft rules outrank stylistic preference — but a page that only clears gates
+and shows no point of view is still a failure of this file.
+
 ## 1. Register: the first decision
 
 Every page is one of two registers. Misclassifying it is the biggest single error.
@@ -48,20 +56,43 @@ Then run three tests on your intended output; restart if any fails:
 3. **Competitor sentence**: describe what you're about to build as a competitor would
    describe theirs. If the sentence fits the modal page in the category, restart.
 
-### The working process: commit before code
+### The working process: explore, commit, review — before code
 
-Never design by accretion. Two passes:
+Never design by accretion, and never commit to the first concept. Three passes:
 
-1. **Commit** — before any code, write a compact spec: 4-6 named colors (hex/OKLCH),
+1. **Explore** — sketch THREE genuinely divergent concepts, one line each:
+   palette strategy + type voice + signature element + hero thesis. Different
+   families of idea, not three shades of one (if two concepts share a palette
+   strategy or signature type, they are one concept — replace one). The slop
+   tests below are filters: they reject bad ideas but never generate better
+   ones; this pass is where a better idea gets a chance to exist. Pick one,
+   and record the two rejects with a one-line reason in the plan file
+   (PLAN.md §4).
+2. **Commit** — write the winner as a compact spec: 4-6 named colors (hex/OKLCH),
    2+ type roles with actual font names, a one-sentence layout description per
-   section, and ONE **signature element** — the single memorable move (an
-   interaction, a typographic device, a composition) that carries the page's
-   distinctiveness. Spend your boldness there; keep everything around it disciplined
-   and quiet. Ground choices in the subject's world: its materials, instruments,
-   artifacts, and vernacular ("a coffee brand's world: burlap, roast curves,
-   thermometers, cupping notes") — not in web-design tropes.
-2. **Review** — test the spec against the slop tests below. If any part could apply
+   section, the **compositional spine** (§5), the page's ACTUAL hero headline
+   plus 2-3 section headlines written in the brand's voice (copy precedes
+   layout — type and composition are designed around real words, never
+   lorem-shaped assumptions; §8 governs the writing), and ONE **signature
+   element** with a mini-spec of its own: what it is, what drives it
+   (scroll / cursor / time / data), and why it could only belong to THIS brand
+   (subject-world grounding) — plus a novelty check: seen on a template, or in
+   your own ledger (below)? Invent again. Spend your boldness there; keep
+   everything around it disciplined and quiet. Ground choices in the subject's
+   world: its materials, instruments, artifacts, and vernacular ("a coffee
+   brand's world: burlap, roast curves, thermometers, cupping notes") — not in
+   web-design tropes.
+3. **Review** — test the spec against the slop tests below. If any part could apply
    to any similar project, revise that part. Only then build.
+
+**The choice ledger (anti-self-similarity across projects).** Slop tests can't
+see your own history — repeating yourself project after project is a
+monoculture of one. A global ledger at `~/.dreative/ledger.md` records one
+line per completed build: date · project · display/body fonts · palette
+strategy + hue · signature-element type · hero concept. During the commit
+pass, read it if it exists: anything in the new spec that repeats an axis
+from the last 3 entries is now YOUR reflex — rework that axis. After
+verification, append this build's line (create the file if missing).
 
 **Hero thesis:** open with the most characteristic thing in the subject's world —
 a headline, an image, a live demo, an interactive moment. Whatever form fits.
@@ -174,6 +205,16 @@ Override: a palette is fine when the existing brand or explicit brief names it.
 When redesigning an extracted app, its `theme` colors are the brand — preserve.
 
 ## 5. Layout
+
+**Compositional spine (brand register, whenever variance > 4 or ambition is
+expressive+).** Color and type get selection procedures; composition deserves
+one too — the rules below only bound a layout, they don't give it a point of
+view. Before applying them, derive ONE structural idea from a physical
+artifact in the subject's world and let it organize the page: a vinyl label's
+concentric rings → a radial hero; a boarding pass's rule structure → the
+page grid; a contact sheet → the gallery; a cupping form → the comparison
+table. Name artifact → idea in the commit spec (§2). The memorable award
+sites win on composition, not decoration; this is where that happens.
 
 **Hard rules (failing any = broken work):**
 - Hero fits the initial viewport: headline ≤ 2 lines, subtext ≤ 20 words, CTA visible
@@ -527,7 +568,10 @@ rules for whatever the user said to keep (routes, legal copy, form semantics).
 Mentally verify; fix failures, then respond. If a box cannot be honestly ticked,
 the output is not done.
 
-0. Commit pass done: named palette, named fonts, one signature element, subject-
+0. Explore + commit passes done: three divergent concepts sketched (rejects
+   recorded in the plan file), named palette, named fonts, real headlines
+   written, compositional spine named (when §5 requires it), signature element
+   with mini-spec + novelty check, choice ledger consulted (§2), subject-
    grounded. The quality floor (responsive to mobile, visible keyboard focus,
    reduced motion) is built silently — never announced in copy or comments.
 1. Register named (brand/product); design read stated; brief and plan obeyed.
@@ -661,7 +705,12 @@ Per aesthetic register (display / body):
   not font novelty.
 
 Rules: still run §3's selection procedure — this list feeds step 3, it does
-not replace the brand-voice reasoning. Self-host via Fontshare/google-webfonts
+not replace the brand-voice reasoning. **The named fonts are worked examples
+of the procedure, not a menu**: a closed replacement list just becomes the new
+monoculture one tier deeper. Any font here that appears in your choice
+ledger's last 3 entries (§2) is now YOUR reflex — reject it in step 2 like the
+banned list and run the procedure again; the same rotation duty applies to
+§4's alternative palettes. Self-host via Fontshare/google-webfonts
 downloads (`font-display: swap`, preload the display weight only). Never ship
 more than 2 families / ~5 weight files. If the brief names a commercial font
 the project already licenses, use the real thing.
