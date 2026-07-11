@@ -375,6 +375,23 @@ product-register page and any redesign touching navigation, forms, or state.
   elements (animate the card's border/background/shadow instead).
 - Headline text that overflows its container at any breakpoint — test the actual
   copy; the viewport is part of the design.
+- **The generic SaaS-template hero, banned by name.** Dark navy/purple
+  background with a soft color-blob (pink→orange or purple→blue) behind bold
+  sans headline ("We Make Brands Shine" register), an orange/pink gradient
+  pill CTA next to a ghost-outline secondary button, and a plain top nav —
+  this exact composition is what every ungrounded LLM defaults to and reads
+  as a template regardless of copy. If the in-progress design converges on
+  this (gradient-blob backdrop + gradient-pill CTA + generic bold claim
+  headline), stop and change at least the background treatment, the CTA
+  material, and the headline's specific claim before continuing.
+- **Zero leaked tool/placeholder artifacts in shipped output, ever, no
+  exceptions.** Things like `[Image #1]`, `[Image: source: ...]`, `<image
+  placeholder>`, alt-text strings, markdown image syntax, or any other
+  tool/generation-pipeline token must never render as visible text/alt/aria
+  content on the page — this is the single most obvious "an LLM built this"
+  tell there is. Before shipping, grep the built output for `\[Image`,
+  `placeholder`, and any literal file paths from the generation pipeline; a
+  hit is a shipped bug, not a minor cosmetic issue.
 
 ## 11. Redesign and preservation (extracted apps)
 

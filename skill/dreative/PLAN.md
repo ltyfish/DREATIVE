@@ -35,11 +35,14 @@ Rules:
 - Probe by LOOKING (list your tools, `which ffmpeg`, check MCP config), never by
   assuming. A capability you didn't verify doesn't exist.
 - If a capability is missing but the design clearly wants it (e.g. a cinematic
-  brief with no video-gen), include an **offer to install** in the question round
-  (§3): name the concrete option (an MCP server the user can add, or
-  falling back to generated stills / pre-rendered loops from image sequences)
-  and let the user decide. Never install tools silently; never silently degrade
-  either — the user must know the fancy version was available.
+  brief with no video-gen), you MUST ask a real question with a real choice —
+  **stating the gap and moving on is not an offer, it's a disclosure.** The
+  bug this catches: saying "video generation isn't available, so I'll use
+  stills" and continuing is a FAILURE even though it's honest. The fix is a
+  question with at least two live options: "install <concrete MCP/tool name>
+  now and use it" vs "skip it, use <the specific fallback>". Ask it in the
+  question round (§3), phrased as a genuine fork, not a heads-up. Never
+  install tools silently; never silently degrade either.
 - The probe result changes the blueprint: no video-gen → hero loops become
   generated stills + ken-burns or a shader surface; no browser tools → the
   verification protocol's manual fallback (SKILL.md) must be declared up front.
@@ -92,8 +95,15 @@ should explicitly invite extra direction.
 
 1. **Depth** (redesigns of existing code only) — the §11 transformation-depth
    ladder: restyle / re-layout / restructure / reimagine.
-2. **Treatments** (multi-select — THE canonical skill-picker list; recommend
-   the ones the request obviously implies and mark them "(Recommended)"):
+2. **Treatments** (multi-select — THE canonical skill-picker list). List every
+   option **individually**, never pre-bundled into a combo choice (a
+   "refined+motion+interaction+ux+mobile" single option is a bug — the user
+   can't select a subset of a bundle). Mark the ones the request obviously
+   implies "(Recommended)" on their own line, and always offer a literal
+   **"select all"** option separately from any individual recommendation —
+   for structured-question tools that support multiSelect, this is the
+   multiSelect list itself; for text-mode fallback, spell out "say 'all' to
+   pick every treatment below":
    - **motion** — scroll animations, staggered entrances, parallax, kinetic type
    - **interaction** — micro-interactions: hover states, magnetic buttons, cursor effects, tactile feedback
    - **3d** — WebGL / three.js scenes, shader backgrounds, 3D product showcases
@@ -102,16 +112,48 @@ should explicitly invite extra direction.
    - **refined** — premium clean business look: whitespace, photography, calm minimal motion (the professional pole)
    - **media** — generated images/video woven into the motion system: hero video loops, distortion galleries, living thumbnails
    - **ux** — make everything actually work: nav, mobile menu, forms, states, keyboard, nothing blocks clicks (recommend by default)
-   - **mobile** — first-class phone experience: clean, tidy, thumb-ergonomic, with animations scaled to mobile (calmer than desktop, still premium)
+   - **mobile** — first-class phone experience: bespoke mobile choreography and
+     layout treatment beyond baseline responsiveness (thumb-ergonomic redesign,
+     animations re-authored for touch, not just scaled down). **NOT recommended
+     by default** — baseline responsive/working-on-phone is already guaranteed
+     for every build via `ux` + DESIGN.md §13's required mobile strategy line,
+     so don't mark this "(Recommended)" just because a build is ambitious.
+     Recommend it only when the user asks for it, or the brief signals mobile
+     is a primary surface (e.g. explicitly mobile-first, or a mobile-heavy
+     audience/product).
+   - **experimental** — creative-mindset dial (`skills/experimental.md`): full
+     scroll-reactive assets (images that disperse/reform/refract as you
+     scroll, not just sit still with particles in front), textured/materialed
+     3D instead of smooth plain geometry, camera/dimension shifts on
+     scroll/interaction (zoom into a scene, rotate to a new view, transition
+     between spatial "worlds"), willingness to try a genuinely unusual idea
+     per section rather than the safe default of that treatment. Recommend
+     this whenever the user's language points at "crazy", "bizarre", "wow",
+     "never seen before", or award-tier + immersive/cinematic/3d stacked
+     together — it's the difference between effects *placed on* the page and
+     the page *behaving* like the reference sites when you interact with it.
    Plus "none — plain design doctrine only". Skip only when the user already
    named the treatments or the request is trivially a restyle; read each
    chosen `skills/<name>.md` before designing.
+
+   **Propose extra, request-specific skills beyond this fixed list** when the
+   brief hints at something the 10 named treatments don't cover well (sound
+   design, generative/procedural patterns, data-driven visuals, AR-ish
+   camera tricks, a custom cursor system, easter eggs). Name each candidate
+   in the same question as an extra option with a one-line description —
+   don't invent a `skills/<name>.md` file for a one-off idea; fold ad hoc
+   candidates into the blueprint under the closest existing skill (usually
+   `experimental` or `interaction`) and note the specific technique inline.
 3. **Media & asset types** (multi-select) — offer every asset class the probe
    found tools for, and let choices stack: `generated images` · `generated
    video loops` · `custom 3D` (real models/geometry, textures, and shaders
    built in code — top-tier 3D sites are made of custom 3D assets, not
-   wallpaper images behind a canvas) · `real assets` (in repo / user supplies)
-   · `placeholders only`. Mark the probe-backed recommendation "(Recommended)".
+   wallpaper images behind a canvas) · `custom props` (small isolated
+   compositional elements — transparent-bg cutout images or lightweight
+   textured 3D objects, per `skills/media.md` §1.5 — scattered/floating
+   decoration distinct from hero/gallery media) · `real assets` (in repo /
+   user supplies) · `placeholders only`. Mark the probe-backed recommendation
+   "(Recommended)".
    **State the cost honestly: image/video generation is token-intensive** — say
    roughly how many assets the blueprint wants and that each costs real
    tokens/time, so "images only" or "placeholders" is a legitimate budget
@@ -139,22 +181,47 @@ should explicitly invite extra direction.
    luxury: bone, near-black serif, almost no motion" vs "electric launch:
    drenched color, kinetic type"), plus who the page must convince (buyers /
    investors / recruiters / fans). This seeds DESIGN.md §2's design read.
-7. **Scope & priorities** (multi-page or vague requests) — which pages/flows
-   matter most, what's in this pass vs later, and any hard constraints
+   **Always include an explicit "describe your own theme" option** (own
+   words: palette, mood, a brand they admire) alongside the presets — the
+   presets are a starting menu, not the only path, and a user with a theme
+   already in mind shouldn't have to force-fit one of 3-4 canned directions.
+   If the user has already given any theme/description language in the
+   prompt, skip the presets and just confirm what was inferred instead of
+   re-asking.
+7. **Scope & priorities** (multi-page or vague requests) — when the codebase
+   has more than one page/route, always ask explicitly which are in scope:
+   list the discovered pages by name and offer **"all pages"** as one option
+   alongside individually-named pages (multi-select, so the user can pick a
+   subset like "home + product page" without getting everything). Never
+   assume "all" just because the brief said "redesign the site" — confirm it.
+   Also capture what's in this pass vs later, and any hard constraints
    (existing brand tokens to keep, CMS/content that must survive, deadline
    implying the safe tier).
 8. **Mockups first?** — offer to build 1:1 mockups BEFORE the full build:
-   "Mockup the key pages first (Recommended for big changes)" / "Straight to
-   build". If yes, execute §4b before touching real code.
+   "Mockup the key pages first" / "Straight to build". **Which one is marked
+   "(Recommended)" is NOT static — compute it from the depth + ambition
+   answers already given:** reimagine or restructure depth, OR award-site
+   ambition, mean this is among the biggest changes the tool can make, so
+   **"Mockup first" is the recommended option.** Recommend "Straight to
+   build" only when depth is restyle/re-layout AND ambition is safe/
+   expressive. Getting this backwards (recommending straight-to-build on a
+   reimagine + award-site combo) is a bug, not a stylistic choice. If yes,
+   execute §4b before touching real code.
 9. **Final remarks** — close the round with an open catch-all: "Anything else
    I should know or you'd love to see — specific effects, colors you hate,
    sections to add or kill?" Options: "no, go build" / "yes (write it in
    Other)". Everything written here lands verbatim in the plan file and is
-   honored like the brief.
+   honored like the brief. **This question is asked on every single round,
+   with no exception** — it is the fixed closer, never trimmed, never
+   replaced by ending the round on whatever question happened to be last
+   (e.g. references or mockups). If references was the last substantive
+   question asked, final remarks still follows it as its own separate call.
 
-When trimming to stay under the cap: depth / treatments / references / media /
-mockups usually win; fold ambition into treatments' recommendations when
-crowded, and vibe/scope into the blueprint you present for approval. Never
+When trimming to stay under the cap: depth / treatments / references / media
+usually win; fold ambition into treatments' recommendations when crowded, and
+vibe/scope into the blueprint you present for approval. **Mockups (§8) and
+final remarks (§9) are never trimmed** — they are the last two questions of
+every round, in that order, regardless of how many others got cut. Never
 re-ask a question already answered (in the prompt or in an earlier answer);
 ambiguity discovered mid-build resolves by the plan's spirit + doctrine
 defaults.
@@ -186,6 +253,18 @@ each SKIPPED question with the inference drawn from the prompt, references
 studied with the distilled borrow-list, blueprint table, stack, mobile
 strategy, fallbacks. Long sessions lose context; the plan file is the re-entry
 point — a resumed session re-reads it instead of re-deciding or re-asking.
+
+**Then show the plan to the user in chat, before touching code.** Writing
+`plan.md` is not the same as the user having seen it — after the last
+question (§3.9) is answered, post a readable recap in the same conversation:
+the blueprint table (§2), the ambition/depth/treatments chosen, the asset
+plan and its honest cost, references studied and what was borrowed, and any
+install offers taken. This is a plan RECAP, not another approval gate — don't
+block on it unless mockups (§4b) were opted into — but skipping straight from
+the last answer to "building now" without ever surfacing the plan is a bug:
+the user answered several questions and is owed a look at what they add up to
+before code starts. Keep it scannable (the table + a few bullets), not a
+restatement of this whole file.
 
 ## 4b. Mockups (when the user opted in)
 

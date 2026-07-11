@@ -85,6 +85,53 @@ When the plan calls for generated media, produce it BEFORE section code
   A re-run, a mockup→build transition, or a resumed session regenerates only
   what the manifest doesn't already have.
 
+## 1.5 Custom props (isolated compositional elements)
+
+Distinct from hero/gallery media (§1-2, which fill a frame): a **prop** is a
+small, isolated object — a single coffee bean, a steam wisp, a leaf, a bottle,
+an icon-scale object — used as scattered COMPOSITION around content, not as
+the content itself. Props are what make a page feel art-directed rather than
+stocked with rectangles; they're cheap to generate/build and reused as a
+recurring motif across sections (the visual equivalent of a signature element,
+motion.md's terms).
+
+Two flavors — pick per section from the blueprint, they can mix on one page:
+
+- **Cutout image props**: generate on a transparent background — prompt
+  explicitly ("isolated on pure transparent background, studio product
+  lighting, no backdrop, no shadow baked in") and REQUEST alpha-channel PNG
+  output. **Verify the alpha is real**, not a white/checkerboard fill the
+  model painted in: sample a corner pixel programmatically or view at 100%
+  over a colored backdrop — a prop with a faint white halo is a failed
+  generation, regenerate or matte it out (rembg/similar if available). Add a
+  drop shadow / contact shadow yourself in CSS (`filter: drop-shadow(...)`),
+  never bake it into the generation — a baked shadow breaks when the prop
+  moves or the section behind it changes color.
+- **3D props**: lightweight custom geometry (primitives, simple extrusions, or
+  a small generated/coded mesh) with a real textured material per
+  `experimental.md` §1 (roughness/normal map, rim light, environment
+  reflection) — cheaper to build and render than a scene centerpiece, and
+  reusable: the SAME prop model instanced multiple times (different scale/
+  rotation) reads as a coherent motif, not repetition.
+
+Placement and behavior:
+
+- Compose as a **floating layer** (§2's floating-media technique) around
+  content: corners, margins, trailing a section's edge — never covering the
+  content's readable area. 3-6 instances per page is a motif; more reads as
+  clutter.
+- Give props real behavior, same floors as any media (§0): idle drift/rotate,
+  parallax depth differential, and at least one response (cursor-follow with
+  lag, scroll-linked rotation, hover nudge, scatter-and-reform on scroll
+  velocity). A prop that just sits pinned in a corner is decoration nobody
+  asked for; a prop that visibly reacts is what sells the "crafted" feel.
+- One prop VOCABULARY per page — pick one subject family (all beans/leaves/
+  steam, not a random mix of unrelated objects) and one behavior language, the
+  same discipline as §0's "one treatment vocabulary" rule.
+- Record each in the asset manifest (§1) with `"kind": "prop-image"` or
+  `"kind": "prop-3d"` — props get reused across sections, never regenerated
+  per-section.
+
 ## 2. DOM-tier treatments (no WebGL — the budget vocabulary)
 
 80% of the effect at 5% of the cost; the right tier below dial 8 or without a
