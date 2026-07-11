@@ -89,6 +89,14 @@ presents choices about a concrete plan, not abstractions. Per section:
   (3d.md §3 rung 3 — never the promoted signature object) at plan time —
   don't let the build stage discover this. The user picking "custom 3D" in
   the media question grants the *medium*, not an exemption from the ladder.
+  Every 3D prop cell also names its BERTH (3d.md §1.5): which lane/stage of
+  the section it occupies and what the layout does to make room — a prop
+  planned "over the hero image" or with no berth is an invalid cell.
+  At dial ≥ 8 the media column additionally marks each hero/key image's
+  treatment as quiet-class or PIXEL-class (media.md §0) and must already
+  satisfy the coverage floor on paper: at least half pixel-class (min 3,
+  set-piece included), each a different mechanism, quiet cells tied to the
+  intensity curve's rests.
 - **Travel map (mandatory when any element persists across sections).** If
   the blueprint contains a fixed canvas object, a recurring signature, or any
   scroll-morphing prop that lives through more than one section, add a travel

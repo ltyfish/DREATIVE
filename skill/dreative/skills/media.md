@@ -63,6 +63,21 @@ choreographed, distorted, revealed, and lit, never just placed.
   card fly-ins, grid reflow) is composition, not a set-piece at this tier —
   it may accompany one, never substitute for it. Evidence at verify: the
   sampled shader uniform / particle count / frame index changing with scroll.
+- **Treatment classes, and a coverage floor at award tier.** Treatments split
+  into two classes. QUIET class moves the rectangle or its window: curtain,
+  inner-zoom parallax, ken-burns, hover wipe, strip entrance, floating drift.
+  PIXEL class changes the image's own content: slice/shatter, particle
+  disintegration or assembly, UV distortion/melt/ripple, RGB split, mosaic/
+  pixel-assembly, living overlay, cursor torch, depth-map parallax, terrain
+  displacement, tornado/vortex, frame scrub, print develop. **At dial ≥ 8 /
+  award-site, ONE set-piece is not the whole show: at least half of the
+  hero + key section images (minimum 3, set-piece included) carry a
+  PIXEL-class treatment, each a DIFFERENT mechanism** — quiet class is
+  reserved for the intensity curve's designated rest sections, chosen as
+  rests on purpose. A page that is one set-piece plus curtains everywhere
+  else reads exactly as static as no set-piece at all, and fails this floor.
+  (Below dial 8 the §0 zoom/fade-floor and set-piece rules stand unchanged —
+  this floor is what "award" buys.)
 - **Edit the asset, don't just place it.** Generation is step one; the pipeline
   (§1) continues with real editing — grade/duotone to the palette, crop to the
   blueprint's aspect, cut video to the loop point, extract posters and frame
@@ -279,6 +294,25 @@ blueprint like a signature element, and stamp it consistently (§0).
   sliced into a coarse tile grid, tiles translate/rotate/fade with staggered
   randomized offsets. Click-to-destroy variants pair with a rebuild on
   scroll-back — destruction must be reversible, content is never lost.
+- **Pixel assembly on scroll**: the reverse of disintegration as an ENTRANCE —
+  the image begins as scattered pixel blocks/particles (WebGL point grid ≤10k,
+  or DOM: a coarse tile grid at randomized scatter positions/rotations) and
+  scroll progress converges them into the finished picture; `uProgress` lerps
+  each point from its noise-scattered origin to its texel home, alpha ramping
+  up, optionally staggered radially or along a directional sweep. Pair with
+  the headline resolving in the same beat. Scroll-back re-scatters
+  (reversible). Variants: assemble from RGB-split ghosts converging, from
+  mosaic chunks sharpening (§2 pixel swap driven per-tile), or from another
+  image's dispersed particles (image A dissolves → its particles re-form as
+  image B: a particle CROSSFADE between chapters).
+- **Pixel sort / smear on velocity**: scroll velocity smears the image's
+  pixels along one axis (shader: offset UV lookup by per-column noise ×
+  velocity, or stretch bright bands glitch-style), decaying to sharp at rest
+  — agitation that answers the visitor's speed. Digital/editorial registers.
+- **Halftone/ASCII materialize**: media enters as its own halftone dots,
+  scanlines, or character grid and resolves to the photograph on scroll or
+  in-view — resolution as narrative. Budget: CSS `mask` with a dot pattern
+  scaling down; full: a LUT/threshold shader ramping cell size to zero.
 - **Living overlay**: a shader/canvas layer ON TOP of the media that reacts
   while the image stays legible beneath — flowfield streaks along the
   subject's edges, scanline/glitch bursts on scroll velocity, a displacement
