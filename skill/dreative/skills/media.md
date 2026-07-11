@@ -272,6 +272,70 @@ blueprint like a signature element, and stamp it consistently (§0).
   ramps to full grade (CSS `filter` keyframes or a LUT shader), timed with
   the headline reveal. Photography/portfolio registers.
 
+### The exploration protocol (run it before choosing anything)
+
+The catalogs in this file are calibration, not a menu — the failure mode they
+create is pattern-matching to the nearest listed effect. At dial ≥ 7, before
+committing the media column of the blueprint, generate **three candidate
+treatments that do not appear verbatim in this file**, each derived from the
+brand's world (what does this subject physically DO? beans pour and tumble;
+fabric folds and drapes; ink bleeds; glass refracts; records spin; steam
+rises). Write the three candidates + the pick into the plan file with one
+line each on construction cost. Pick the boldest one that clears §5's floors
+and the register — if all three are weaker than a §2.5 exotic, use the
+exotic, but the exploration must have happened. A media plan assembled purely
+from listed effects, with no rejected invention on record, is minimum-effort
+compliance.
+
+### Exploration catalog (further constructions — steal the mechanics, reskin the idea)
+
+Images beyond the frame:
+
+- **Physics gallery**: images as draggable/throwable bodies (Rapier 2D or
+  a spring sim) that collide, settle, and stack; scroll shakes the pile.
+- **Infinite drag canvas**: a 2D plane of scattered media the visitor pans
+  through (drag + inertia), items waking (scale/unblur/play) near the
+  viewport center — the exploration-museum pattern.
+- **Image as terrain**: the photo's luminance drives vertex displacement on
+  a plane — the image becomes a relief the camera glides over on scroll.
+- **Fake-3D depth parallax**: one still + a (generated or estimated) depth
+  map; UV offset by depth × cursor/gyro = a photo with real parallax inside.
+- **Cursor echo trail**: moving the cursor across a gallery leaves a decaying
+  trail of image fragments/duplicates that fade behind it.
+- **Collage assembly**: a section's imagery enters as scattered scraps
+  (rotated, layered, torn edges) that scroll pulls into a composed collage —
+  the reverse of disintegration.
+- **Lens/magnifier**: a draggable optic over a large image or dense contact
+  sheet, refracting (WebGL) or scaling (CSS) what's beneath.
+
+Video beyond autoplay:
+
+- **Scrub-as-transition**: a 1-2s generated clip scrubbed by route/section
+  transition progress — the page change IS the video (door opens, liquid
+  pours, light sweeps).
+- **Video-lit scene**: sample the playing video's average/dominant color per
+  frame (offscreen canvas) and drive ambient page tint/glow from it — the
+  video becomes the room's light source.
+- **Timeline flipbook**: N generated stills of one subject across time/states
+  flipped by scroll — a bean roasting darker, a garment assembling — the
+  narrative version of a scrub sequence.
+
+Props beyond floating (§1.5 behaviors, upgraded):
+
+- **Flocking swarms**: 20-80 instanced prop cutouts with boids/noise motion
+  that scatter from the cursor and reform into a loose formation (or the
+  brand mark's silhouette) at rest.
+- **Pour/emit systems**: props emitted from a source object (beans from a
+  bag, petals from a stem) on scroll or click, falling with gravity + drag,
+  settling into a pile that persists per session.
+- **Props as UI**: the prop IS the control — a bean that drags along a
+  roast-level slider, a bottle that tilts to pour the page to the next
+  section. One per page; must keep an obvious conventional equivalent.
+
+Same law as §2.5: every construction here still clears §5's floors, earns one
+sentence of communication value, and ONE set-piece per page — an exploration
+catalog is not permission to ship five spectacles.
+
 Discipline stays the law: the composed treatment must still clear §5's floors,
 DESIGN.md §6's "one sentence of communication value", and one-signature-
 per-page — an inventive effect stamped on every image is as loud as a marquee

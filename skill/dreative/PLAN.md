@@ -70,7 +70,11 @@ presents choices about a concrete plan, not abstractions. Per section:
   At dial ≥ 7 the blueprint also names the page's ONE media set-piece
   (media.md §0 — image tornado, disintegration on scroll, shatter/reassemble,
   living overlay…) and which section carries it; a dial-7+ plan whose media
-  column is all quiet treatments is incomplete.
+  column is all quiet treatments is incomplete. The set-piece is chosen via
+  media.md's exploration protocol: invent three brand-native candidates not
+  listed in the catalogs, record them + the pick in the plan file — a media
+  plan assembled only from listed effects with no rejected invention on
+  record is minimum-effort compliance.
 - **motion treatment** — from motion.md/immersive.md/cinematic.md vocabulary,
   with the dial-appropriate ambition. **motion.md §9's inventory is a hard
   plan gate, not a target:** at expressive/award-site ambition the blueprint
