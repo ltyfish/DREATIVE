@@ -108,15 +108,20 @@ should explicitly invite extra direction.
    **"select all"** option separately from any individual recommendation —
    for structured-question tools that support multiSelect, this is the
    multiSelect list itself; for text-mode fallback, spell out "say 'all' to
-   pick every treatment below":
-   - **motion** — scroll animations, staggered entrances, parallax, kinetic type
-   - **interaction** — micro-interactions: hover states, magnetic buttons, cursor effects, tactile feedback
-   - **3d** — WebGL / three.js scenes, shader backgrounds, 3D product showcases
-   - **immersive** — award-site feel: the page becomes a spatial world, scroll-as-journey, page transitions
-   - **cinematic** — dark, shader-graded experiential look: fluid/particle surfaces, drag-to-explore, sound
-   - **refined** — premium clean business look: whitespace, photography, calm minimal motion (the professional pole)
-   - **media** — generated images/video woven into the motion system: hero video loops, distortion galleries, living thumbnails
-   - **ux** — make everything actually work: nav, mobile menu, forms, states, keyboard, nothing blocks clicks (recommend by default)
+   pick every treatment below".
+   **Word the options for a non-designer**: each label/description names what
+   the VISITOR sees or feels, in plain words, with one concrete example —
+   never bare technique jargon ("kinetic type", "editorial restraint",
+   "scroll choreography" mean nothing to most users). The canonical list,
+   with user-facing phrasing to adapt:
+   - **motion** — "things move as you scroll: sections glide in, headlines animate, layers drift at different speeds"
+   - **interaction** — "everything feels touchable: buttons react, cards respond to hover, small satisfying feedback everywhere"
+   - **3d** — "real 3D on the page: an object or scene you can see depth in, lit and rendered live (like a product you scroll around)"
+   - **immersive** — "the page feels like a place you travel through — scrolling is a journey with chapters, not a document"
+   - **cinematic** — "dark, moody, movie-like atmosphere: glow, particles, fluid surfaces (think film title sequence)"
+   - **refined** — "quiet luxury: lots of space, beautiful photography, very little movement — Apple/fashion-brand calm"
+   - **media** — "AI-generated images/video made for this page and woven into the motion (hero film loop, images that come alive)"
+   - **ux** — "everything actually works: menus, forms, cart, keyboard — pretty AND functional" (recommend by default)
    - **mobile** — first-class phone experience: bespoke mobile choreography and
      layout treatment beyond baseline responsiveness (thumb-ergonomic redesign,
      animations re-authored for touch, not just scaled down). **NOT recommended
@@ -126,7 +131,10 @@ should explicitly invite extra direction.
      Recommend it only when the user asks for it, or the brief signals mobile
      is a primary surface (e.g. explicitly mobile-first, or a mobile-heavy
      audience/product).
-   - **experimental** — creative-mindset dial (`skills/experimental.md`): full
+   - **experimental** — user-facing phrasing: "go weird: images that tear/
+     dissolve/reassemble as you scroll, the camera diving into scenes, one
+     never-seen-before idea per section". Internally this is the
+     creative-mindset dial (`skills/experimental.md`): full
      scroll-reactive assets (images that disperse/reform/refract as you
      scroll, not just sit still with particles in front), textured/materialed
      3D instead of smooth plain geometry, camera/dimension shifts on
@@ -164,10 +172,24 @@ should explicitly invite extra direction.
    tokens/time, so "images only" or "placeholders" is a legitimate budget
    choice, not a downgrade. If a needed tool is missing, this is where the
    install offer goes ("I can add <X> MCP for video generation — ok?").
-4. **Ambition tier** — safe (clean + light motion) / expressive (full motion.md
-   dial 7-8 inventory) / award-site (dial 9-10, immersive/cinematic
-   architecture). State the cost honestly: higher tiers mean heavier builds and
-   a mandatory runtime verification pass.
+4. **Ambition tier** — present each tier with a plain description, a
+   best-fit use case, AND its honest tradeoff (a user choosing blind between
+   "cool-sounding" labels is the failure this wording prevents):
+   - **safe** — polished, clean, light motion. *Best for:* dashboards, apps,
+     content-heavy sites, corporate audiences, tight deadlines. *Tradeoff:*
+     looks professional, won't turn heads.
+   - **expressive** — rich scroll motion, 3D accents, everything still
+     instantly usable. *Best for:* most product, e-commerce, and marketing
+     sites — the show/usability sweet spot and the default recommendation.
+     *Tradeoff:* heavier than safe, but visitors never fight the page.
+   - **award-site** — the page becomes an experience: immersive 3D, cinematic
+     pacing, experimental transitions (dial 9-10). *Best for:* portfolios,
+     launches, brand showcases, agency work — anywhere wow IS the goal.
+     *Tradeoff:* heaviest build, longest load, and deliberately unconventional —
+     visitors explore rather than skim, so it can frustrate someone who just
+     wants the price list. Say this plainly when offering it.
+   Higher tiers also mean a longer build and a mandatory runtime verification
+   pass — state that cost too.
    **Which option gets "(Recommended)" is computed, and the default bias is
    UP:** when the brief carries no strong signal either way, recommend
    **expressive** — unnamed ambition becomes beige (DESIGN.md §2), and this
