@@ -35,6 +35,17 @@ choreographed, distorted, revealed, and lit, never just placed.
   wipe, cursor torch, velocity distortion, media plane — §2/§2.5/§3), where
   the visitor's input visibly pushes the media. Ken-burns-everywhere is the
   refined register's budget (refined.md), nobody else's.
+- **One media SET-PIECE per page (dial ≥ 7 / expressive+).** Beyond the
+  per-image floors, the page needs one moment where imagery itself IS the
+  spectacle — a composed §2.5 exotic (or an invention in its spirit) that a
+  visitor would describe to someone else: an image tornado/vortex the scroll
+  spins through, a hero that disintegrates into particles as you scroll past,
+  a gallery that shatters and reassembles, a melt/liquid exit between
+  chapters. Quiet treatments (curtain, parallax, ken-burns) on every image
+  with no set-piece = the page failed this skill even though each image
+  technically "moves". The set-piece is named in the plan blueprint like a
+  signature element, ONE per page (two set-pieces compete; refined register
+  may skip with a stated reason).
 - **Edit the asset, don't just place it.** Generation is step one; the pipeline
   (§1) continues with real editing — grade/duotone to the palette, crop to the
   blueprint's aspect, cut video to the loop point, extract posters and frame
@@ -236,6 +247,27 @@ blueprint like a signature element, and stamp it consistently (§0).
 - **Shatter/scatter**: media as an instanced tile grid (WebGL) that explodes
   along scroll velocity and reassembles at rest — the §3 plane system with a
   per-instance offset uniform; cap tiles ≤ 400.
+- **Image tornado / vortex**: 8-20 image cards on a helical path (WebGL
+  planes, or DOM: `rotateY` + translate on a cylinder via per-card
+  `--angle`), scroll progress spins and tightens/loosens the helix; cards
+  face the camera (billboard) or shear with velocity. Entry/exit: cards fly
+  in from scatter, settle into the vortex, then one card breaks out and
+  expands into the next section's hero. Gallery/archive/portfolio registers;
+  damp the spin (never raw-set), cap DPR, poster fallback.
+- **Disintegration on scroll/click**: the image dissolves into particles that
+  drift away along scroll direction — WebGL: draw the texture as a point grid
+  (one point per NxN texel block, ≤ 10k), scroll/click drives `uProgress`
+  which displaces points along noise + directional velocity while alpha
+  fades; reverse the uniform to reassemble. Budget DOM version: the image
+  sliced into a coarse tile grid, tiles translate/rotate/fade with staggered
+  randomized offsets. Click-to-destroy variants pair with a rebuild on
+  scroll-back — destruction must be reversible, content is never lost.
+- **Living overlay**: a shader/canvas layer ON TOP of the media that reacts
+  while the image stays legible beneath — flowfield streaks along the
+  subject's edges, scanline/glitch bursts on scroll velocity, a displacement
+  ripple radiating from the cursor, halftone dots that swell near the
+  pointer. The overlay is the same §3 plane sampling the same texture —
+  never a second copy of the asset.
 - **Print develop**: media enters as paper-white → exposure/contrast/duotone
   ramps to full grade (CSS `filter` keyframes or a LUT shader), timed with
   the headline reveal. Photography/portfolio registers.

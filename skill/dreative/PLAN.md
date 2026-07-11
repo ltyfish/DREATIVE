@@ -67,6 +67,10 @@ presents choices about a concrete plan, not abstractions. Per section:
   (exists in repo / user must supply — name it), `none`. Media enters through
   the motion system per `skills/media.md` — name the treatment (curtain reveal,
   mask-shaped, hover-woken, media-plane distortion…), never "add an image".
+  At dial ≥ 7 the blueprint also names the page's ONE media set-piece
+  (media.md §0 — image tornado, disintegration on scroll, shatter/reassemble,
+  living overlay…) and which section carries it; a dial-7+ plan whose media
+  column is all quiet treatments is incomplete.
 - **motion treatment** — from motion.md/immersive.md/cinematic.md vocabulary,
   with the dial-appropriate ambition. **motion.md §9's inventory is a hard
   plan gate, not a target:** at expressive/award-site ambition the blueprint
