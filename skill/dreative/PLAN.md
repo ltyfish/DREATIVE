@@ -82,6 +82,17 @@ presents choices about a concrete plan, not abstractions. Per section:
   re-plan it as rung 2 (photo billboard) or an abstract form at plan time —
   don't let the build stage discover this. The user picking "custom 3D" in
   the media question grants the *medium*, not an exemption from the ladder.
+- **Mechanism-diversity quota (dial ≥ 7 / expressive+).** Floors measure the
+  weakest item; quotas measure the whole page. Across the blueprint's media +
+  interaction columns count the DISTINCT mechanisms (curtain reveal, media
+  plane, drag gallery, cursor torch, disintegration… — by name) and the
+  DISTINCT drivers (scroll, cursor/hover, drag, click, time/idle): the page
+  needs **≥ 4 distinct mechanisms spanning ≥ 3 distinct drivers, and no
+  mechanism used more than twice**. Every hero/key image gets BOTH an idle
+  life and an input response — one or the other is the floor, not the plan.
+  "Curtain reveal ×5 + one set-piece" fails the quota: that is a page grazing
+  its rules, not a designed page. The quota tallies go in the plan file and
+  are re-counted at verify.
 - **motion treatment** — from motion.md/immersive.md/cinematic.md vocabulary,
   with the dial-appropriate ambition. **motion.md §9's inventory is a hard
   plan gate, not a target:** at expressive/award-site ambition the blueprint

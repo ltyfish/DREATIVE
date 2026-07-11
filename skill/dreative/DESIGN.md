@@ -68,6 +68,44 @@ Never design by accretion, and never commit to the first concept. Three passes:
    ones; this pass is where a better idea gets a chance to exist. Pick one,
    and record the two rejects with a one-line reason in the plan file
    (PLAN.md §4).
+
+   **The entropy draw (before sketching, at expressive/award ambition).** Your
+   "random" pick is your reflex — the same fonts, the same hero move, run
+   after run. So the variance comes from OUTSIDE your head: roll a real random
+   number (`node -e "console.log(1+require('crypto').randomInt(20))"`, or
+   `$RANDOM % 20 + 1`, or read digits off `date +%N`) and record the literal
+   command AND its output in plan.md. The roll picks one **provocation** from
+   the table below; at least ONE of the three explore concepts must take it
+   literally, and if that concept wins, the provocation ships — visibly, not
+   as a token gesture. Roll a second number (1–6) to pick a **forced-rotation
+   axis** — 1 palette strategy · 2 type voice · 3 hero concept · 4 nav/page
+   architecture · 5 signature driver · 6 set-piece family — and that axis must
+   differ from anything in your ledger's last 3 entries AND from the most
+   obvious genre default. One re-roll is allowed per table if the result is
+   genuinely incompatible with the brief or usability — record both rolls and
+   the reason. A plan file with no recorded roll at expressive+ is incomplete.
+
+   **Provocation table (roll 1–20):**
+   1. The hero image is not a rectangle.
+   2. One image behaves like a physical object — mass, drag, inertia, release.
+   3. Type and imagery share one depth space; one passes through the other.
+   4. The page has a light source, and media visibly responds to it.
+   5. Scroll does something besides move the page down in one section.
+   6. The cursor is an instrument from the subject's world and acts on media.
+   7. One section is traversed by dragging, not scrolling.
+   8. An image disassembles into what it is physically made of.
+   9. Media leaks outside its frame and touches the UI around it.
+   10. Something never stops moving, slowly, for the whole visit.
+   11. The visitor's behavior (speed, hesitation, return) changes an element.
+   12. Two media assets visibly react to each other.
+   13. A transition destroys something that reassembles as something else.
+   14. The palette of a chapter is sampled live from the media on screen.
+   15. One interaction hands the visitor control they didn't expect to have.
+   16. Something pulses to an invisible rhythm, like sound with the audio cut.
+   17. The signature element recurs at three scales/roles across the page.
+   18. An ordinary control (button, input, nav) is built from the scene itself.
+   19. One moment of true depth: layers visibly separate and re-stack.
+   20. The final section answers the hero — a visual callback with a twist.
 2. **Commit** — write the winner as a compact spec: 4-6 named colors (hex/OKLCH),
    2+ type roles with actual font names, a one-sentence layout description per
    section, the **compositional spine** (§5), the page's ACTUAL hero headline
