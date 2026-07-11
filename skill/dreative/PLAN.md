@@ -269,8 +269,31 @@ these are the bar (fetch and study whichever is closest before designing):
 - https://www.experiencethebestyou.com/en-GB/ — coordinated scroll choreography
   + heavy custom 3D/motion throughout.
 - https://unseen.co/projects/contra/ and https://unseen.co/projects/letter/ —
-  WebGL media planes, shader transitions, kinetic type.
+  WebGL media planes, shader transitions, kinetic type (browse
+  https://unseen.co/projects for more in the same family).
 - https://25residences.com/ — luxury real-estate register, cinematic pacing.
+- https://www.ciaoenergy.com/ — THE reference for a real 3D product on the
+  page (stack verified from source): ONE `can.glb` + a small `base.glb`, an
+  `.hdr` environment map for lighting, `MeshPhysicalMaterial`, and six
+  per-flavor **label textures** (AVIF) swapped onto the same geometry via
+  `TextureLoader` — one model, N palettes. Scroll drives it with plain
+  `ScrollTrigger.create`; backgrounds are pre-rendered per-flavor video
+  loops, not live sims. Lesson: photoreal product 3D = real GLB + real label
+  texture + HDRI environment — never coded geometry (3d.md §3) — and the
+  cheap parts (backgrounds) are pre-rendered video.
+- https://www.cinetica.studio/ — the "composed chaos" register (stack
+  verified): Webflow + the FULL GSAP plugin suite (ScrollTrigger, SplitText,
+  ScrambleText, Flip, Draggable, InertiaPlugin, Observer, CustomEase) +
+  Lenis + embedded WebGL shader scenes (Unicorn Studio) + Spline + video.
+  Lesson: the crazy feel is mostly ELABORATE TEXT/LAYOUT CHOREOGRAPHY
+  (scramble, split-line, flip transitions, drag/inertia) layered over a few
+  shader surfaces — not one giant 3D scene.
+- https://www.penguin-capital.co.jp/en and https://designxhand.com/experience
+  — the clean-expressive pole: Next.js/custom builds with three.js + GSAP +
+  Lenis (+ Lottie), a single full-page background canvas
+  (`pointer-events: none`) behind calm editorial type. Lesson: one quiet
+  WebGL layer + disciplined type can read premium-crazy without cinematic
+  darkness.
 
 Common thread: their 3D is **custom models, textures, and shaders**, not
 generated wallpapers behind text. If the environment has 3D-capable tooling and
