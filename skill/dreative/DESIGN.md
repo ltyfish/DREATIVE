@@ -92,7 +92,11 @@ line per completed build: date · project · display/body fonts · palette
 strategy + hue · signature-element type · hero concept. During the commit
 pass, read it if it exists: anything in the new spec that repeats an axis
 from the last 3 entries is now YOUR reflex — rework that axis. After
-verification, append this build's line (create the file if missing).
+verification, append this build's line (create the file if missing). The
+ledger is also a taste memory: when the user gives a verdict on a shipped
+build ("the hero feels generic", "too much motion"), append it to that
+build's entry as a one-line `lesson:` — and the commit pass reads lessons
+alongside choices, so the same critique never has to be given twice.
 
 **Hero thesis:** open with the most characteristic thing in the subject's world —
 a headline, an image, a live demo, an interactive moment. Whatever form fits.

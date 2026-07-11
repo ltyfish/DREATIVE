@@ -59,7 +59,7 @@ Rules:
 Draft the page as a compact table BEFORE asking anything — the question round
 presents choices about a concrete plan, not abstractions. Per section:
 
-| section | layout family | media plan | motion treatment | interaction | fallback |
+| section | layout family | media plan | motion treatment | interaction | intensity | fallback |
 
 - **media plan** — one of: `generate-image` (subject + exact aspect + palette/
   light-temperature prompt notes), `generate-video` (loop subject, 5-10s,
@@ -82,6 +82,14 @@ presents choices about a concrete plan, not abstractions. Per section:
   triggers it — or explicitly name the item as cut with a reason. A plan that
   neither covers nor justifies a §9 item is incomplete; rework it before
   presenting, don't ship the gap to the build.
+- **intensity (the pacing map)** — 1–10 per section: how loud this section is
+  (motion + media + visual weight combined). The page must read as a CURVE, not
+  a flat line: uniform intensity fails in both directions (all loud = exhausting,
+  all quiet = the set-piece feels bolted on). Place deliberate rests (≤ 3)
+  immediately before and after the set-piece so it lands; the hero and the
+  set-piece section are the peaks, nothing else matches them. A blueprint whose
+  intensity column is all the same number is incomplete — rework the pacing
+  before presenting.
 - **fallback** — for every ambitious cell (WebGL, sim, scrubbed sequence,
   generated video), the concrete boring version that ships if the fancy one
   fails runtime verification. A plan cell without a fallback is not ambitious,
@@ -255,8 +263,13 @@ should explicitly invite extra direction.
    **"Mockup first" is the recommended option.** Recommend "Straight to
    build" only when depth is restyle/re-layout AND ambition is safe/
    expressive. Getting this backwards (recommending straight-to-build on a
-   reimagine + award-site combo) is a bug, not a stylistic choice. If yes,
-   execute §4b before touching real code.
+   reimagine + award-site combo) is a bug, not a stylistic choice. When depth
+   is restructure/reimagine OR ambition is award-site, also offer a third
+   option: **"two divergent mockups"** — the two strongest concepts from the
+   explore pass (DESIGN.md §2) each built as a mockup, user picks. State the
+   honest cost (a second mockup is real tokens/time); it's an offer, never
+   the default. If yes to any mockup option, execute §4b before touching
+   real code.
 9. **Final remarks** — close the round with an open catch-all: "Anything else
    I should know or you'd love to see — specific effects, colors you hate,
    sections to add or kill?" Options: "no, go build" / "yes (write it in
@@ -361,6 +374,12 @@ files (single file, default export, self-contained). The rule is: what the
 user sees in the mockup is what they'd see in the shipped page; nothing in the
 mockup that the build wouldn't do, nothing in the build's look that the mockup
 hides.
+
+If the user chose **two divergent mockups** (§3.8), build the highest-impact
+page twice — once per surviving explore-pass concept (genuinely different
+palette/type/signature, not two tints of one idea) — and present both;
+the user's pick becomes the committed concept and its reject reason goes in
+the plan file.
 
 Write mockups to `.dreative/mockups/<page>.tsx` (or the scratchpad), serve or
 screenshot them for the user, and ask one approval question: approve / tweak
