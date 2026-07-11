@@ -50,7 +50,12 @@ choreographed, distorted, revealed, and lit, never just placed.
   changes under scroll/input, not just its placement. Qualifying classes:
   particle/point-grid decomposition, shader displacement/dissolve/melt,
   scroll-scrubbed frame sequences, slice/shatter of the bitmap, live texture
-  feedback or refraction. Choreographing whole rectangles (orbit, collapse,
+  feedback or refraction, and the §3.5 immersion recipes (portal dive,
+  depth-map dive, diorama, particle fly-through, scrub-dive). **At award-site
+  ambition the default set-piece IS a §3.5 dive** — one moment where the
+  visitor goes INTO an image or video rather than watching it move; choose a
+  different pixel-transforming class only with a stated reason in the plan
+  (e.g. no depth-capable asset exists and none can be generated). Choreographing whole rectangles (orbit, collapse,
   card fly-ins, grid reflow) is composition, not a set-piece at this tier —
   it may accompany one, never substitute for it. Evidence at verify: the
   sampled shader uniform / particle count / frame index changing with scroll.
@@ -387,6 +392,63 @@ element remains the interaction target (click/focus/hover listeners on the DOM,
 effects on the plane); reduced-motion and WebGL-failure both fall back to
 simply un-hiding the DOM media (set `opacity: 1`) — this fallback must be
 wired, not theoretical, and it's the first thing runtime verification checks.
+
+## 3.5 Going INSIDE the media (immersion recipes)
+
+The strongest media moment on the modern web is not looking AT an image —
+it's the camera going INTO it: the photo stops being a rectangle on a page
+and becomes, briefly, the space the visitor is in. These are the recipes,
+cheapest first; at dial ≥ 8 with a canvas, prefer one of these as (or inside)
+the set-piece over any flat treatment:
+
+1. **The portal dive (DOM tier — no WebGL needed).** Pin the section; scroll
+   scales the image from framed rectangle past 100% of the viewport while a
+   `clip-path` aperture opens, until its interior IS the background — and the
+   next section's content fades in already "inside" it (its palette sampled
+   from the image's deep tones so the world feels continuous). Reverse on
+   scroll-back. Layer 2-3 depth children (see recipe 3) inside the frame and
+   the dive reads as truly spatial, not as a zoom.
+2. **The depth-map dive (WebGL, the real thing).** Get a depth map for the
+   image: generate one (prompt the image tool for "depth map of this scene,
+   white near black far" alongside the still), or approximate from luminance/
+   a vertical gradient for scenes with obvious near-ground/far-sky structure.
+   Subdivided plane (~128×128), vertex shader displaces z by depth × uDolly;
+   scroll drives the camera INTO the displaced relief (dolly + slight fov
+   ease) while pointer shifts a ±3-5° parallax. Near pixels slide past the
+   camera edges as you enter — that edge-slide is what sells "inside".
+   Occlusion artifacts at the silhouette are hidden with fog/vignette matched
+   to the image's palette.
+3. **The diorama (matted layers).** Cut the image into 2-4 real layers
+   (subject / midground / backdrop — matte with the §1.5 cutout pipeline, or
+   generate the layers separately in the same prompt world). Place them at
+   real z-depths (WebGL planes or CSS `translateZ` with perspective on the
+   parent) and move the camera between them on scroll: passing a foreground
+   layer's edge as it exits the frame is the moment the brain accepts depth.
+   The generated-layers path beats matting: ask the image tool for the same
+   scene as "foreground elements only, transparent background" + "empty
+   background plate".
+4. **The particle fly-through.** Build the image as a point cloud (§2.5
+   disintegration budget: ≤ 10k points sampled from the texture, point size
+   by luminance). Scroll doesn't just dissolve it — it drives the camera
+   THROUGH the cloud: points ahead grow, pass the camera plane, and exit
+   behind (kill/respawn them past z=camera). Halfway through, the cloud
+   re-forms into the NEXT image — one continuous flight from picture to
+   picture is a set-piece by itself.
+5. **The scrub-dive (video/frames).** A scroll-scrubbed frame sequence
+   (generate-sequence, or frames extracted from video via ffmpeg) whose
+   camera already moves INTO the scene (prompt the generation that way:
+   "dolly forward into…"); pin the section, map scroll → frame index
+   (preload + draw to a canvas, never seek a `<video>` per frame), and the
+   visitor's scroll finger literally walks the camera in. Exit the pin at
+   the deepest frame into a section graded to that frame's palette.
+
+Wiring rules: these are still media planes — DOM element stays for a11y and
+the fallback is the graded flat image (§3's rules apply unchanged). ONE dive
+per page (it's a set-piece-class moment; two dives cheapen both). The dive
+target must be an image whose composition has actual depth to enter (a
+corridor, a room, a landscape, machinery receding) — prompt/choose the asset
+for that; diving into a flat-lit product shot reads as a zoom, which is the
+failure this section replaces.
 
 ## 4. Choosing the treatment (the reasoning frame)
 

@@ -70,7 +70,13 @@ presents choices about a concrete plan, not abstractions. Per section:
   At dial ≥ 7 the blueprint also names the page's ONE media set-piece
   (media.md §0 — image tornado, disintegration on scroll, shatter/reassemble,
   living overlay…) and which section carries it; a dial-7+ plan whose media
-  column is all quiet treatments is incomplete. The set-piece is chosen via
+  column is all quiet treatments is incomplete.
+  When the set-piece is a media.md §3.5 dive (the award-tier default), its
+  `generate-image` cell must plan a DEPTH-CAPABLE composition (a corridor,
+  room, landscape, machinery receding — something a camera can enter) and
+  the companion assets in the same cell: the depth map and/or the separated
+  foreground/background plates, generated in the same prompt world.
+  The set-piece is chosen via
   media.md's exploration protocol: invent three brand-native candidates not
   listed in the catalogs, record them + the pick in the plan file — a media
   plan assembled only from listed effects with no rejected invention on
