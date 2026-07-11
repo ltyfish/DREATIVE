@@ -89,6 +89,26 @@ choreographed, distorted, revealed, and lit, never just placed.
   else reads exactly as static as no set-piece at all, and fails this floor.
   (Below dial 8 the §0 zoom/fade-floor and set-piece rules stand unchanged —
   this floor is what "award" buys.)
+- **The perceivability bar: a treatment that reads as zoom/pan doesn't
+  count.** Uniforms changing is machine evidence, not human evidence — a
+  depth shader at ±2px displacement, an RGB split a hair wide, an exposure
+  sweep too slow to catch: all "run" and all read to a visitor as a static
+  image or a plain zoom. Every pixel-class treatment must be obvious to a
+  stranger watching for 3 seconds: tune amplitude UP until a before/after
+  screenshot pair (same element, two scroll/input states) shows an
+  unmistakable difference in the image's CONTENT — pieces visibly apart,
+  pixels visibly displaced or sorted, particles visibly detached — not
+  just framing. If the honest description of what's visible is "it zooms/
+  slides a bit," raise the amplitude or swap to a bolder mechanism.
+  Subtlety is the refined register's virtue; at award tier it is a bug.
+  And at award tier at least ONE tallied mechanism must be from the
+  FRAGMENT family — the bitmap visibly breaking into or assembling from
+  pieces (particles, tiles, slices, shards, pixel-assembly) — because
+  displacement-only pages are the ones visitors describe as "it just
+  zooms." The same bar applies to prop/item cutouts' §1.5 behaviors: a
+  prop whose rotation/settle can be mistaken for a static product image
+  has failed its dimensional kit — its motion must be readable at a
+  glance.
 - **Edit the asset, don't just place it.** Generation is step one; the pipeline
   (§1) continues with real editing — grade/duotone to the palette, crop to the
   blueprint's aspect, cut video to the loop point, extract posters and frame
