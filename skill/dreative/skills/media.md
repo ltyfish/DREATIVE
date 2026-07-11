@@ -75,6 +75,15 @@ When the plan calls for generated media, produce it BEFORE section code
   A 40MB hero loop fails the plan even if it's beautiful.
 - Textures too: grain tiles, masks, mattes, displacement maps — generate them
   instead of hand-rolling SVG (which is banned, DESIGN.md §7).
+- **Asset manifest (`.dreative/assets.json`) — generation is expensive; never
+  pay twice.** Before generating anything, read the manifest; an entry whose
+  prompt/aspect/grade matches the need means REUSE the file, don't regenerate.
+  After each generation+edit, append one entry:
+  `{ "file": "assets/hero-loop.mp4", "kind": "video-loop", "prompt": "<the
+  exact generation prompt>", "aspect": "16:9", "grade": "warm tungsten, deep
+  green shadows", "poster": "assets/hero-poster.webp", "bytes": 2400000 }`.
+  A re-run, a mockup→build transition, or a resumed session regenerates only
+  what the manifest doesn't already have.
 
 ## 2. DOM-tier treatments (no WebGL — the budget vocabulary)
 
