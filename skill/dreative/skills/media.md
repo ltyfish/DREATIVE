@@ -107,12 +107,16 @@ Two flavors — pick per section from the blueprint, they can mix on one page:
   drop shadow / contact shadow yourself in CSS (`filter: drop-shadow(...)`),
   never bake it into the generation — a baked shadow breaks when the prop
   moves or the section behind it changes color.
-- **3D props**: lightweight custom geometry (primitives, simple extrusions, or
-  a small generated/coded mesh) with a real textured material per
-  `experimental.md` §1 (roughness/normal map, rim light, environment
-  reflection) — cheaper to build and render than a scene centerpiece, and
-  reusable: the SAME prop model instanced multiple times (different scale/
-  rotation) reads as a coherent motif, not repetition.
+- **3D props**: when a prop lives inside a WebGL scene, the DEFAULT is still a
+  cutout image — on a billboard plane per 3d.md §3 rung 2 (alpha-tested plane,
+  parallax + damped rotation + contact shadow), which is photoreal by
+  construction. Coded geometry is reserved for ABSTRACT prop shapes (shards,
+  ribbons, orbs-as-design-objects) and must carry a real textured material per
+  `experimental.md` §1 (generated albedo + bump/roughness map, rim light,
+  environment reflection) — never model an organic real object (bean, leaf,
+  bottle…) from primitives; 3d.md §3 bans it. Either flavor is reusable: the
+  SAME prop instanced multiple times (different scale/rotation) reads as a
+  coherent motif, not repetition.
 
 Placement and behavior:
 
@@ -227,7 +231,15 @@ on every section.
 ## 3. WebGL tier — the media plane (the unseen.co mechanic)
 
 When dial ≥ 8 or cinematic/immersive is active, media renders THROUGH the
-canvas so shaders can touch it. The core pattern, in order:
+canvas so shaders can touch it. **At award-site ambition this section is a
+REQUIREMENT, not an option**: the hero image and at least one gallery/section
+image set must be live media planes whose shader visibly responds to scroll
+(velocity distortion, dissolve, RGB split, curvature — pick from §2.5) — a
+page whose images all sit in flat DOM rectangles has not met the tier, no
+matter how much 3D floats around them. Verification must prove it: sample a
+plane's driven uniform (e.g. `uVelocity`, `uProgress`) or its rect-synced
+transform during a scripted scroll and record two differing values in
+verify.md. The core pattern, in order:
 
 1. **Sync planes to DOM rects.** Real `<img>`/`<video>` elements stay in the
    document (a11y, SEO, layout, fallback) but render invisible
