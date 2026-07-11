@@ -72,9 +72,17 @@ choreographed, distorted, revealed, and lit, never just placed.
   displacement, tornado/vortex, frame scrub, print develop. **At dial ≥ 8 /
   award-site, ONE set-piece is not the whole show: at least half of the
   hero + key section images (minimum 3, set-piece included) carry a
-  PIXEL-class treatment, each a DIFFERENT mechanism** — quiet class is
+  PIXEL-class treatment, each a DIFFERENT mechanism** — and the HERO image
+  is always one of them: the hero is the page's first impression and is
+  never the designated rest. Quiet class is
   reserved for the intensity curve's designated rest sections, chosen as
-  rests on purpose. A page that is one set-piece plus curtains everywhere
+  rests on purpose. "Key image" is MECHANICAL, not discretionary: every
+  image that occupies ≥ 25% of the viewport at any scroll position, plus
+  the largest image of every blueprint section whose intensity is ≥ 5,
+  counts — the denominator is fixed by the blueprint, and reclassifying
+  images as "not key" to shrink it is the same self-grading this floor
+  exists to stop (a repeated card-grid pattern counts as ONE image for the
+  tally, treated uniformly). A page that is one set-piece plus curtains everywhere
   else reads exactly as static as no set-piece at all, and fails this floor.
   (Below dial 8 the §0 zoom/fade-floor and set-piece rules stand unchanged —
   this floor is what "award" buys.)
