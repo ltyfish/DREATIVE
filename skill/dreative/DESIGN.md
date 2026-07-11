@@ -802,6 +802,28 @@ put it in flow. Decoration layers (glows, grain, orbs, canvas backgrounds) are
 `absolute inset-0 -z-10 pointer-events-none` — below content, never intercepting
 clicks, never between the user and a control.
 
+**Persistent/traveling scene objects get a TRAVEL MAP.** Any element that
+survives across sections — a fixed canvas object, a scroll-morphing prop, a
+signature that "recurs" down the page — must have a scripted state PER
+SECTION written in the plan blueprint: position, scale, opacity at each
+chapter, chosen so it NEVER rests over a headline, body text, or control at
+any scroll position (including mid-transition — occlusion while traveling
+between keyframes counts). `pointer-events: none` solves clicks, not
+reading: a decorative object visually covering words is a hard fail even
+when clicks pass through. When a section's layout leaves no safe berth, the
+object exits (fades/scales out) and re-enters at the next chapter — an
+object with no scripted berth for a section defaults to HIDDEN there, not
+to floating wherever the scroll math happens to park it.
+
+**Dominant abstract objects must survive the "what is it?" test.** A large
+abstract signature (orb, core, monolith) earns its prominence only if a
+stranger reads it as either a nameable thing or deliberate scene
+architecture (a horizon, an instrument, a frame). If the honest answer is
+"a dark ball with rings," reduce it: shrink it to an accent, anchor it into
+the composition (consistent berth, edges lit by the page's light, cropped
+by a frame ON PURPOSE), or replace it with imagery. Ambiguity at accent
+scale is intrigue; ambiguity at hero scale is confusion.
+
 **Interactive elements never overlap other interactive elements.** Not at any
 breakpoint, not mid-animation, not after a toast appears. Two clickable things
 occupying the same pixels is an automatic fail — one of them is unreachable.

@@ -82,6 +82,16 @@ presents choices about a concrete plan, not abstractions. Per section:
   re-plan it as rung 2 (photo billboard) or an abstract form at plan time —
   don't let the build stage discover this. The user picking "custom 3D" in
   the media question grants the *medium*, not an exemption from the ladder.
+- **Travel map (mandatory when any element persists across sections).** If
+  the blueprint contains a fixed canvas object, a recurring signature, or any
+  scroll-morphing prop that lives through more than one section, add a travel
+  map under the table: one line per section giving the object's position /
+  scale / opacity there, each berth chosen against that section's layout so
+  it never sits over text or controls (DESIGN.md §15). No berth fits ⇒ the
+  object is scripted HIDDEN for that section. A persistent object without a
+  travel map is an unplanned collision that verify will find later — plan it
+  now. The set-piece at dial ≥ 8 must also be pixel-transforming per
+  media.md §0 (placement choreography like orbit/collapse doesn't qualify).
 - **Mechanism-diversity quota (dial ≥ 7 / expressive+).** Floors measure the
   weakest item; quotas measure the whole page. Across the blueprint's media +
   interaction columns count the DISTINCT mechanisms (curtain reveal, media

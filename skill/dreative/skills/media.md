@@ -45,7 +45,15 @@ choreographed, distorted, revealed, and lit, never just placed.
   with no set-piece = the page failed this skill even though each image
   technically "moves". The set-piece is named in the plan blueprint like a
   signature element, ONE per page (two set-pieces compete; refined register
-  may skip with a stated reason).
+  may skip with a stated reason). **At dial ≥ 8 / award tier the set-piece
+  must transform the media at PIXEL level** — the image's own content visibly
+  changes under scroll/input, not just its placement. Qualifying classes:
+  particle/point-grid decomposition, shader displacement/dissolve/melt,
+  scroll-scrubbed frame sequences, slice/shatter of the bitmap, live texture
+  feedback or refraction. Choreographing whole rectangles (orbit, collapse,
+  card fly-ins, grid reflow) is composition, not a set-piece at this tier —
+  it may accompany one, never substitute for it. Evidence at verify: the
+  sampled shader uniform / particle count / frame index changing with scroll.
 - **Edit the asset, don't just place it.** Generation is step one; the pipeline
   (§1) continues with real editing — grade/duotone to the palette, crop to the
   blueprint's aspect, cut video to the loop point, extract posters and frame
