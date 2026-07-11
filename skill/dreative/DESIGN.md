@@ -403,6 +403,37 @@ capability found as a first-class design material, not a nice-to-have:
   entrance/idle/response reasoning frame. Read it whenever generated media or
   motion-integrated imagery ships.
 
+### Surface & light — material identity for every layer
+
+Flat untreated hex fills are the loudest AI tell after Inter-everywhere: real
+designed surfaces are MADE of something and sit under a light. At expressive+
+ambition every major surface (page background, hero, cards/panels, media
+frames) carries at least one deliberate material cue, and the page declares
+ONE light direction that everything obeys:
+
+- **Grain/noise** — a 1-3% opacity noise overlay (tileable PNG or SVG
+  `feTurbulence`, one shared asset) kills gradient banding and digital
+  flatness; vary its intensity by section as part of the pacing curve.
+- **Light consistency** — pick the light's direction once; every shadow,
+  edge-highlight, gradient hotspot, and 3D/scene light agrees with it. Tint
+  shadows toward the background hue (never pure black); give elevated
+  elements a subtle top edge-light (1px inset highlight) on dark themes.
+- **Gradients are graded, not defaulted** — two neighbouring hues from the
+  palette with a noise/dither pass, or a radial hotspot placed where the
+  light is; never the template diagonal of two loud complementaries.
+- **Depth is layered, not dropped** — combine a tinted ambient shadow + a
+  tighter contact shadow instead of one big blur; `backdrop-filter` glass
+  only where content actually passes beneath it.
+- **Type can be a surface too** — one display moment per page may carry
+  material (image/video masked into headline glyphs via `background-clip`,
+  a light sweep, foil/emboss shading) when the register supports it; body
+  text never does.
+
+Clean registers (refined/product/brutalist) obey the same physics with
+quieter amplitudes — grain nearly invisible, shadows tighter, no masked
+type — the discipline is identical, only the volume changes. "Clean" is a
+designed material choice, never the absence of one.
+
 ## 8. Content and copy
 
 ≤ 8-word section headlines, ≤ 25-word subtext, one copy register per page, quotes

@@ -105,6 +105,29 @@ tell. Instead:
   with `view-transition-name` so they morph across routes. Feature-gate; fall back
   to instant navigation, not a JS fade.
 
+## 5.5 Velocity & physical feel (what makes motion feel ALIVE, dial ≥ 6)
+
+Static easings play back; physical motion RESPONDS. The difference between a
+tweened page and a top-tier one is that top-tier motion carries momentum:
+
+- **Scroll velocity as an input.** Track smoothed velocity (Lenis exposes it;
+  else lerp `(scrollY - last) / dt`) and drive secondary properties from it:
+  skew images/cards ±2-4° along the scroll axis, stretch letter-spacing or
+  scaleY on display type a few %, increase a shader's blur/chromatic-
+  aberration/RGB-split uniform with speed. Everything eases back to rest via
+  the same lerp when scrolling stops — the settle IS the effect.
+- **Inertia and release.** Anything draggable keeps momentum on release
+  (Motion's `dragMomentum`, GSAP InertiaPlugin, or a manual velocity fling
+  with friction) and settles with an overshoot spring, never a hard stop.
+  A drag that stops dead on mouseup feels like a slideshow.
+- **Lag as depth.** Layered elements follow the scroll/cursor with different
+  lerp factors (0.05-0.15 spread) so the composition visibly re-stacks in
+  motion — cheap, GPU-light, reads as physicality on every pointer move.
+- **One motion signature per build.** Pick the personality once — a named
+  easing family (e.g. `expo.out` + one overshoot) OR one spring config — and
+  use it everywhere; mixed default eases read as assembled-from-snippets.
+  `linear` only for marquees/orbits; never ship a default ease unexamined.
+
 ## 6. Performance and accessibility (non-negotiable)
 
 - Transform/opacity only in hot paths; promote animating layers sparingly
