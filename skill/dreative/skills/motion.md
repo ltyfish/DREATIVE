@@ -223,7 +223,11 @@ A motion request is fulfilled only if the final code contains, verifiably
 
 Before reporting done, list which inventory items shipped and where (element +
 trigger). "The page has hover states" does not clear dial 7+. If a listed item
-was deliberately cut, say so and why. This inventory is what the SKILL.md
-verification pass checks against — and its runtime stage must PROVE the items
-run (transforms changing, triggers firing, console clean), not just find them
-in the source.
+was deliberately cut, say so and why. This inventory is a **hard gate**, not a
+checklist: the SKILL.md verification pass fails the task on any dial-appropriate
+item that is neither proven running nor logged as a deliberate cut with a
+reason — an incomplete inventory means keep building, not ship with a caveat.
+The runtime stage must PROVE the items run (transforms changing, triggers
+firing, console clean), not just find them in the source. On mobile, grade
+against the shifted dial (mobile.md: desktop N ≈ mobile N−2), not the desktop
+list.

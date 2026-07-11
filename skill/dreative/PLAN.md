@@ -61,7 +61,12 @@ presents choices about a concrete plan, not abstractions. Per section:
   the motion system per `skills/media.md` — name the treatment (curtain reveal,
   mask-shaped, hover-woken, media-plane distortion…), never "add an image".
 - **motion treatment** — from motion.md/immersive.md/cinematic.md vocabulary,
-  with the dial-appropriate ambition (motion.md §9 inventory is the target).
+  with the dial-appropriate ambition. **motion.md §9's inventory is a hard
+  plan gate, not a target:** at expressive/award-site ambition the blueprint
+  must enumerate every §9 item for its dial — which element carries it, what
+  triggers it — or explicitly name the item as cut with a reason. A plan that
+  neither covers nor justifies a §9 item is incomplete; rework it before
+  presenting, don't ship the gap to the build.
 - **fallback** — for every ambitious cell (WebGL, sim, scrubbed sequence,
   generated video), the concrete boring version that ships if the fancy one
   fails runtime verification. A plan cell without a fallback is not ambitious,
@@ -163,6 +168,14 @@ should explicitly invite extra direction.
    dial 7-8 inventory) / award-site (dial 9-10, immersive/cinematic
    architecture). State the cost honestly: higher tiers mean heavier builds and
    a mandatory runtime verification pass.
+   **Which option gets "(Recommended)" is computed, and the default bias is
+   UP:** when the brief carries no strong signal either way, recommend
+   **expressive** — unnamed ambition becomes beige (DESIGN.md §2), and this
+   skill exists for drastic change. Recommend **safe** only on concrete
+   counter-signals: explicit "minimal / corporate / clean / subtle" language,
+   a product/app/dashboard surface rather than a marketing page, or a hard
+   deadline constraint (item 7). Recommending safe to a signal-free brief is
+   a bug, same class as the item-8 mockup inversion.
 5. **References (ask unless the prompt already supplied them)** — "Do you have
    any reference — an image/screenshot, a website you love, or a video of a
    feel/motion to chase?" Options like: attach image(s) / paste a website URL /
