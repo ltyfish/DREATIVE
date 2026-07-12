@@ -181,6 +181,22 @@ When the plan calls for generated media, produce it BEFORE section code
   green shadows", "poster": "assets/hero-poster.webp", "bytes": 2400000 }`.
   A re-run, a mockup→build transition, or a resumed session regenerates only
   what the manifest doesn't already have.
+- **Distinct subjects need distinct assets (the seed-reuse ban).** Manifest
+  reuse is for the SAME need recurring (same subject, aspect, grade) — never
+  for covering N different things with one image. Every distinct product /
+  item / subject the blueprint renders (six bean lots, four team members,
+  three case studies) gets its OWN generated asset whose prompt names that
+  subject's differentiators (roast level, origin, color story, the object
+  itself) — six product cards sharing one seed image is the single loudest
+  "AI built this" tell a visitor can catch, and it is a build FAILURE, not a
+  savings. Same law per section: every blueprint section whose media cell
+  says `generate-*` gets its planned assets actually generated and rendered
+  in that section — if generation budget runs short mid-build, renegotiate
+  the media column with the user (fewer sections with real assets, or
+  placeholders named as such); never silently backfill by stretching one
+  asset across every gap. Verify reconciles this (SKILL.md §V): plan cells →
+  manifest entries → pixels on screen, with N distinct subjects mapping to N
+  distinct files.
 
 ## 1.5 Custom props (isolated compositional elements)
 

@@ -300,6 +300,16 @@ should explicitly invite extra direction.
    tokens/time, so "images only" or "placeholders" is a legitimate budget
    choice, not a downgrade. If a needed tool is missing, this is where the
    install offer goes ("I can add <X> MCP for video generation — ok?").
+   **Set the iteration expectation honestly:** when the user picks `custom
+   3D`, `custom props`, or (later) award-site ambition, say plainly — in the
+   question's description or the plan recap — that complex 3D motion and prop
+   choreography rarely land perfectly in one pass: the first build ships a
+   working version (planned fallbacks where an effect fails verification),
+   and 1–2 follow-up prompts to tune specific moments are normal and
+   expected. This is a disclosure, not a discouragement; it prevents
+   "the plan promised more than the page shows" disappointment, and it never
+   licenses shipping less than the plan — the verify gates still apply in
+   full on pass one.
 4. **Ambition tier** — present each tier with a plain description, a
    best-fit use case, AND its honest tradeoff (a user choosing blind between
    "cool-sounding" labels is the failure this wording prevents):
