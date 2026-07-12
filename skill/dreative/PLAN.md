@@ -464,6 +464,20 @@ same duty as media.md's set-piece exploration), blueprint table, stack, mobile
 strategy, fallbacks. Long sessions lose context; the plan file is the re-entry
 point — a resumed session re-reads it instead of re-deciding or re-asking.
 
+**Re-entry is for resuming, never for skipping (the stale-artifact trap).**
+The re-entry rule applies ONLY when this session is continuing that same run
+mid-flight (the plan approved, the build interrupted). A NEW user request —
+"redesign this", "audit and redesign", any fresh design ask — over a project
+that already contains `.dreative/plan.md` / `system.md` / `verify.md` runs
+the FULL protocol: those files are the previous run's history and inputs to
+the previous-run divergence rule (§2), never evidence that the new request
+is satisfied. Reading the old artifacts, declaring "the redesign is already
+implemented", validating the old build, and stopping is a FAILED invocation —
+the user invoked the skill because they want work done NOW. If it is
+genuinely ambiguous whether the user wants to resume the old run or start a
+new take, that is one AskUserQuestion (resume vs new take), not an
+assumption.
+
 **Then show the plan to the user in chat, before touching code.** Writing
 `plan.md` is not the same as the user having seen it — after the last
 question (§3.9) is answered, post a readable recap in the same conversation:

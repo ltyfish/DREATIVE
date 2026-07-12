@@ -12,7 +12,7 @@ You (the coding agent) are the intelligence. Dreative has **two modes**:
 
 ## A. Mode A checklist (do the steps IN ORDER — skipping one is a bug)
 
-1. **Plan — mandatory.** Run the `PLAN.md` protocol (same folder). Never ask *whether* to plan; the only skip is the user explicitly saying "no plan / just do it".
+1. **Plan — mandatory.** Run the `PLAN.md` protocol (same folder). Never ask *whether* to plan; the only skip is the user explicitly saying "no plan / just do it". **Existing `.dreative/` artifacts (plan.md, system.md, verify.md) from an earlier run never satisfy a new request:** they are history + divergence input (PLAN.md §2), not proof of completion — reporting "the redesign is already implemented" off old artifacts without building anything this session is a failed invocation. Resume-without-replanning is only for continuing the SAME interrupted run; when in doubt, ask (resume vs new take) as one question.
 2. **Probe capabilities** (PLAN.md §1): image-gen, video-gen, 3D tooling, browser tools, ffmpeg. Verify by looking — a capability you didn't verify doesn't exist.
 3. **Blueprint** (PLAN.md §2): section-by-section table (layout / media plan / motion / interaction / fallback) BEFORE asking the user anything.
 4. **Questions — one at a time** (PLAN.md §3): AskUserQuestion, ONE question per call; skip what the prompt already answers clearly, re-ask narrowly what's ambiguous. The pool (incl. the treatments picker and its option list) lives in PLAN.md §3.
