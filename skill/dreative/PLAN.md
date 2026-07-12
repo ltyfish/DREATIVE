@@ -207,6 +207,20 @@ Free text volunteered mid-round (a new feature, a constraint) is captured in
 the plan file AND acknowledged in the next message, but doesn't substitute
 for pending questions.
 
+**Skip-honesty (the under-asking bug).** "Skip what the prompt already
+answers" has a strict test: a question may be skipped ONLY when the prompt
+LITERALLY contains its answer — and the plan file must QUOTE the prompt words
+that answer it next to the skip. "I can infer a reasonable choice" is not a
+skip license; silence in the prompt means ASK. In particular, **treatments
+(item 2), media/asset types (item 3), and references (item 5) are never
+skipped on inference at expressive/award ambition** — these are the three
+questions that most change the build, and a round that jumps from vibe →
+ambition → mockups → remarks without them delivered a design the user never
+chose. Questions that are genuinely N/A (depth on a from-scratch build, scope
+on a single page) are the only inference-skips allowed. If the asked count
+lands under 4 on a non-trivial build, re-check the pool — you almost
+certainly over-skipped.
+
 Order most-decision-changing first, keep the total short (typically 3–5 asked,
 hard cap 7). Structured tools always offer an "Other" free-text option, so
 every question doubles as a remarks channel — and the last question asked

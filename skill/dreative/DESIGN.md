@@ -170,7 +170,14 @@ its own plan didn't describe. Hard rules for any expressive+ no-media build:
    shader-lit surface, a data-driven instrument that never stops — plus
    dimensional motion somewhere real (CSS 3D card physicality, depth-layered
    parallax, a lit WebGL surface). A no-media award page with zero rendered
-   pixels is a text document with transitions.
+   pixels is a text document with transitions. Vocabulary to draw from
+   (subject-grounded, not decorative): oscilloscope/waveform traces driven by
+   real events · topographic contour lines drifting · dot-matrix/LED field
+   that spells live state · plexus line-network connecting related items ·
+   isometric grid that lights under the cursor · scan sweep across data
+   rows · ASCII/character rain in the brand's glyphs · particle flow along
+   the layout's own rails · generative engraving borders · a physical sim
+   (springs, gravity) on the UI's actual objects.
 6. **Layout creativity means spatial composition, not relocated chrome.**
    Moving the nav to the bottom, a novel tab bar, an unusual dock — that is
    furniture rearrangement, and if it's the build's ONLY inventive move the
