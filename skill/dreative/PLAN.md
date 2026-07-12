@@ -158,7 +158,14 @@ when image-gen exists and no real GLB does, the required 3D prop (3d.md §0)
 is planned as a rung-2 transparent photoreal cutout billboard — field
 experience is unambiguous: cutout props read premium, coded/shader hero
 geometry reads as a demo. A plan may promote live coded geometry to signature
-ONLY with a named GLB + texture source in its cell.
+ONLY with a named GLB + texture source in its cell. **Coded custom 3D is
+capability-gated at the probe (§1):** offer/plan it only when the probe
+verified an actual quality path — a real GLB in reach, image-gen for
+albedo/label textures, an HDRI/environment source. No verified texture path
+⇒ the `custom 3D` option is presented as "3D-look props (photoreal cutouts
+sold with depth)" and every 3D cell is planned as a rung-2 billboard; coded
+geometry without a texture path is never planned "to be figured out at
+build".
 
 **Previous-run divergence (reruns over the same project).** If
 `.dreative/plan.md` (or verify.md) from an earlier run already exists in this
@@ -186,6 +193,19 @@ animated" — which treatments? how far?), ask that question anyway, narrowed to
 the ambiguity ("you said animated — full scroll choreography, or calm
 micro-interactions?"). Restate what you inferred from the prompt in the plan
 file so silently-skipped questions are still auditable.
+
+**Answers come only from the user, through the tool.** Never infer, assume,
+or self-supply an answer to a question you posed — an unanswered question
+blocks; a fabricated answer is a corrupted plan. If the user's reply to ANY
+question is itself a question, a request to re-see options, or free text that
+doesn't answer what was asked ("wait, what were the vibe options?"), that
+question is NOT answered: respond to what they asked first (re-present the
+options, clarify), then re-ask the original question as its own call. A
+question consumed by a side-exchange and never re-asked is a lost decision —
+track which pool items actually have answers, not which were merely posed.
+Free text volunteered mid-round (a new feature, a constraint) is captured in
+the plan file AND acknowledged in the next message, but doesn't substitute
+for pending questions.
 
 Order most-decision-changing first, keep the total short (typically 3–5 asked,
 hard cap 7). Structured tools always offer an "Other" free-text option, so

@@ -237,6 +237,26 @@ Placement and behavior:
   `"kind": "prop-3d"` — props get reused across sections, never regenerated
   per-section.
 
+**Crop harvesting — one asset, many animatable parts.** A single generated or
+sourced image is a QUARRY, not one rectangle: crop/matte out its individual
+elements (each leaf, bean, shard, petal, tool) into separate cutouts and use
+them as the sprites of a real motion system — a scroll-scattered leaf drift,
+a cursor-repelled swarm, a pile that pours in as the section enters, a
+particle crossfade built from actual crops instead of colored points. This is
+the cheapest route to "insane animation" from limited assets: N crops × the
+§2.5 grammar = simulated animation without video-gen. Harvest at generation
+time (prompt a sheet: "12 isolated coffee beans, varied angles, transparent
+background") or matte crops from a scene asset; record each crop in the
+manifest.
+
+**Props-as-system floor (award tier).** At dial ≥ 8, static prop dressing is
+not a prop plan: at least ONE prop family on the page behaves as a SYSTEM —
+flocking/swarm, pour/emit with gravity, physics scatter-and-reform,
+scroll-driven multi-instance choreography (the §2.5 exploration-catalog
+constructions) — not just 3-6 cutouts drifting in corners. The drifting-motif
+minimum (idle + parallax + one response) is the floor below award; at award
+it's where fallbacks land, not where the plan aims.
+
 ## 2. DOM-tier treatments (no WebGL — the budget vocabulary)
 
 80% of the effect at 5% of the cost; the right tier below dial 8 or without a

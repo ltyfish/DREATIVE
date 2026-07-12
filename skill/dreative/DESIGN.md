@@ -164,10 +164,28 @@ its own plan didn't describe. Hard rules for any expressive+ no-media build:
 4. **Motion budget spends on the structure**, not on entrance fades: the
    spine's own physicality (things racked, tossed, slid, stamped) is the
    choreography. Motion.md's inventory applies at full dial.
+5. **A live rendered layer is required at award tier.** No imagery does not
+   mean no rendering: the page ships at least one WebGL/canvas system doing
+   real graphic work — a particle field, procedural texture/flowfield,
+   shader-lit surface, a data-driven instrument that never stops — plus
+   dimensional motion somewhere real (CSS 3D card physicality, depth-layered
+   parallax, a lit WebGL surface). A no-media award page with zero rendered
+   pixels is a text document with transitions.
+6. **Layout creativity means spatial composition, not relocated chrome.**
+   Moving the nav to the bottom, a novel tab bar, an unusual dock — that is
+   furniture rearrangement, and if it's the build's ONLY inventive move the
+   build failed. The invention must live in how the CONTENT is composed:
+   asymmetric multi-scale grids, overlapping planes, diagonal/rotated flow,
+   sections that share edges and interlock — while staying rigorously
+   modern and clean (generous space, disciplined alignment, few colors).
+   "Clean" and "insane motion" are the same build: calm composition,
+   spectacular behavior.
 
 The slop tests above apply to the RENDERED page: "dark theme + rounded
 cards + one accent color" fails the competitor sentence for every no-media
-product tool at once.
+product tool at once — and shipped exactly that once (user verdict on
+record: "pure ai slop… I would not want something like that again"). Treat
+these rules as a shipped-failure postmortem, not theory.
 
 **Hero thesis:** open with the most characteristic thing in the subject's world —
 a headline, an image, a live demo, an interactive moment. Whatever form fits.
