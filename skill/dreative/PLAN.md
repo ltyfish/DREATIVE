@@ -80,7 +80,14 @@ presents choices about a concrete plan, not abstractions. Per section:
   media.md's exploration protocol: invent three brand-native candidates not
   listed in the catalogs, record them + the pick in the plan file — a media
   plan assembled only from listed effects with no rejected invention on
-  record is minimum-effort compliance. **Custom 3D in a media cell must name
+  record is minimum-effort compliance. **Every media-plane / pixel-class cell
+  names WHICH image asset the effect consumes as its texture/source** — a
+  "shader plane" cell with no named image, or a plane carrying its own
+  separate texture (steel/noise/gradient) layered over the section's
+  photography, is an invalid cell (media.md §0's overlay-plane loophole: the
+  treatment must transform the image's own pixels, aligned to its rect —
+  never a decorated rectangle floating over a static `<img>`).
+  **Custom 3D in a media cell must name
   its asset source in the blueprint** — a GLB path, a generated/sourced
   texture (the actual prompt or file), or the billboard cutout it will ride
   on. "Custom 3D bean/bottle/plant geometry" with no named source is an

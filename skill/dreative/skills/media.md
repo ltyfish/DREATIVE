@@ -119,6 +119,25 @@ choreographed, distorted, revealed, and lit, never just placed.
   prop whose rotation/settle can be mistaken for a static product image
   has failed its dimensional kit — its motion must be readable at a
   glance.
+- **Treatment identity: the effect must consume THE image (the overlay-plane
+  loophole).** A pixel-class treatment counts for an image only when that
+  image's own pixels are what transform — the image file is the plane's
+  `sampler2D` texture, the DOM element being sliced/displaced, or the source
+  of the particle/frame data. A shader plane carrying its OWN texture (steel,
+  smoke, noise, gradient) that merely floats over, beside, or semi-transparent
+  on top of a static `<img>` is DECOR: the underlying image stays untreated
+  and static, the tally does not move, and the set-piece requirement is not
+  met — however alive the overlay's uniforms are. Field failure this bans: a
+  translucent "heat field" plane at 72% alpha parked offset over static
+  photos passed uniform-sampling evidence while every actual image on the
+  page sat still and the overlay read as a misaligned murky rectangle.
+  Two mechanical corollaries: (a) **alignment** — an effect layer claiming an
+  image must cover that image's bounding rect edge-to-edge (or replace the
+  `<img>` outright); a plane at its own size/offset over the photo is a
+  DESIGN.md §15 overlap bug, not a treatment; (b) **no tint veils** — a
+  near-full-opacity colored plane blended over a photo is a color wash, not a
+  pixel treatment; if the concept is heat/energy on the image, the image's
+  own UVs/pixels carry the distortion.
 - **Edit the asset, don't just place it.** Generation is step one; the pipeline
   (§1) continues with real editing — grade/duotone to the palette, crop to the
   blueprint's aspect, cut video to the loop point, extract posters and frame
