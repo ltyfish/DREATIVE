@@ -203,6 +203,20 @@ React: run that inside a `useEffect` in a `<SmoothScroll>` provider mounted in
 the root layout (destroy on unmount); Next.js needs `"use client"` on it.
 ONE Lenis instance, ONE gsap ticker — never per-component.
 
+**React StrictMode is a hard constraint (the invisible-page bug).** Dev
+StrictMode mounts every effect TWICE. A bare `gsap.from(el, { opacity: 0 … })`
+in a `useEffect` whose cleanup only kills ScrollTriggers leaves the element at
+`opacity: 0`; the second effect run then reads that 0 as the animation's END
+state, and every reveal animates invisible→invisible — the page renders as
+blank sections with only untouched elements visible, no console error, and a
+passing build. Field-observed shipping failure. The rule: ALL GSAP work inside
+React effects lives in `gsap.context(() => { … })` (or `useGSAP`) and the
+cleanup calls `ctx.revert()` — never a kill-only cleanup, never `gsap.from`
+outside a context in a component. This is not a StrictMode workaround to
+disable (`<StrictMode>` stays); it's the correct teardown. Any `from()`-based
+reveal must be verified in a RENDERED page (SKILL.md §V) precisely because
+this failure mode is invisible to builds and greps.
+
 **motion/react (React product+brand):** `npm i motion` — import from
 `"motion/react"`. Shared transition vocabulary in one exported object
 (`export const spring = { type: "spring", stiffness: 300, damping: 30 }`), used
