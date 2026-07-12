@@ -145,6 +145,31 @@ Plus four page-level lines: register + design read (DESIGN.md §2), signature
 element, animation stack (ONE system: GSAP+Lenis or motion/react — motion.md §0),
 and the mobile strategy per ambitious effect (DESIGN.md §13).
 
+**Signature-element plan gate.** The signature line is checked HERE, not
+discovered at build time: if the signature is a visual OBJECT, it must be a
+subject a stranger names correctly (3d.md §3's subject test). An abstract
+coded form — sphere/orb/ring/blob/torus/monolith, whatever poetic name the
+plan gives it ("atlas", "core", "eclipse") — is an INVALID signature object
+and the plan is reworked before it's presented; 3d.md §3's ban applies to the
+plan's words, not just the build's meshes. Signatures that are mechanisms
+(a strip-toss, a cursor instrument, a depth dive) rather than objects are
+exempt — the gate is for promoted decor objects. **Award prop form default:**
+when image-gen exists and no real GLB does, the required 3D prop (3d.md §0)
+is planned as a rung-2 transparent photoreal cutout billboard — field
+experience is unambiguous: cutout props read premium, coded/shader hero
+geometry reads as a demo. A plan may promote live coded geometry to signature
+ONLY with a named GLB + texture source in its cell.
+
+**Previous-run divergence (reruns over the same project).** If
+`.dreative/plan.md` (or verify.md) from an earlier run already exists in this
+project and the user asked for a NEW take (rather than iterating the shipped
+one), read the old plan first and diverge on at least: signature family,
+set-piece family, hero layout family, and palette strategy. Reusing the old
+run's choices because they're in context is the same reflex the entropy draw
+exists to break — a rerun that a user would describe as "the same site again"
+is a failed rerun. Record in the new plan file which axes diverged from the
+previous run.
+
 ## 3. The questions (ONE question per call, asked in sequence)
 
 Ask with the structured question tool (AskUserQuestion), **one question at a

@@ -136,6 +136,39 @@ build ("the hero feels generic", "too much motion"), append it to that
 build's entry as a one-line `lesson:` — and the commit pass reads lessons
 alongside choices, so the same critique never has to be given twice.
 
+**No-media builds: structure IS the media.** When a build ships zero
+imagery (no image-gen tool, product register, or the user chose
+placeholders), the ambition tier does NOT tier down — it transfers whole
+onto layout, type, and motion, and this is where no-media builds die: the
+executor, with no assets to arrange, collapses to the one layout it knows
+(a vertical list of rounded cards in a centered column) and ships slop that
+its own plan didn't describe. Hard rules for any expressive+ no-media build:
+
+1. **The compositional spine must survive to the screenshot.** Whatever
+   bespoke structure the plan named (a strip rack, a ledger, a switchboard,
+   a timetable) must be RECOGNIZABLE as that thing in the shipped page — its
+   physical vocabulary built for real: the holder edge, the notch, the rail,
+   the perforation, the column rules. If a stranger shown the screenshot and
+   the blueprint's layout-family words couldn't match them, the build
+   restyled a card list and called it the spine — that is a depth-honesty
+   failure (§11), not a detail.
+2. **≥ 2 bespoke drawn/procedural artifacts.** With no photography, the page
+   earns visual richness from things MADE for it: a live canvas (meter,
+   field, trace), custom SVG structure (rules, notches, connectors, dials —
+   drawn, not icon-font), procedural texture/grain, a data-driven ornament.
+   A no-media page whose only visuals are borders and border-radius has no
+   media plan at all.
+3. **Type does structural work.** Multi-scale composition (oversized
+   numerals/designators against small mono metadata), real hierarchy per §6
+   — not one font-size row layout repeated N times.
+4. **Motion budget spends on the structure**, not on entrance fades: the
+   spine's own physicality (things racked, tossed, slid, stamped) is the
+   choreography. Motion.md's inventory applies at full dial.
+
+The slop tests above apply to the RENDERED page: "dark theme + rounded
+cards + one accent color" fails the competitor sentence for every no-media
+product tool at once.
+
 **Hero thesis:** open with the most characteristic thing in the subject's world —
 a headline, an image, a live demo, an interactive moment. Whatever form fits.
 
