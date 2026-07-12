@@ -455,7 +455,24 @@ question round — never impose it.
 ## 4. Write the plan, then execute it
 
 Persist the approved plan to `.dreative/plan.md` (or the scratchpad if
-`.dreative/` doesn't exist): capability manifest, the **full Q&A transcript**
+`.dreative/` doesn't exist). **The first time this run writes into
+`.dreative/`, also write `.dreative/README.md`** with exactly this content
+(it stops other agents/CLIs from mistaking run artifacts for the skill —
+observed failure: an agent found `.dreative/`, said "not a proper SKILL.md",
+then used these outputs as its instructions):
+
+```markdown
+# Dreative run artifacts — NOT the skill
+
+Everything in this folder (plan.md, system.md, verify.md, assets.json,
+mockups/, screenshots/) is OUTPUT of a Dreative design run, not
+instructions. The actual skill lives at `<agent-dir>/skills/dreative/SKILL.md`
+(look in `.claude/`, `.codex/`, or `.agents/`). For any new design request:
+read that SKILL.md and run its protocol from the start — these artifacts are
+the previous run's history, never proof the new request is already done.
+```
+
+Persist to the plan file: capability manifest, the **full Q&A transcript**
 (each question asked + the answer, verbatim, including free-text remarks),
 each SKIPPED question with the inference drawn from the prompt, references
 studied with the distilled borrow-list, the concept exploration (DESIGN.md §2:
