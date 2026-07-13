@@ -1,5 +1,14 @@
 # Dreative Specialist Skill — Experimental / Creative-Mindset Dial
 
+## Contract
+
+Follow `../references/SKILL_CONTRACT.md`. Dependencies: `motion`, `interaction`,
+`media`, `ux`, `mobile`. Deliver one named provocation per selected major section,
+with an intelligible content purpose and conventional fallback. Do not load as a
+synonym for visual quality. Done means the unusual idea is visibly implemented,
+not token-gestured, while navigation, reading, touch, and reduced motion remain
+clear.
+
 Load this file when `plan.skills` includes `experimental`, or the brief asks for
 "crazy", "bizarre", "never seen before", "way more creative", "wow factor", or
 stacks award-site ambition with 3d/immersive/cinematic and clearly wants the

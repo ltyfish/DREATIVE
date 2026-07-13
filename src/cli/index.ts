@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import readline from "node:readline";
 import { createServer } from "../server/index.js";
 import open from "open";
+import { printAudit, runDirectDesignAudit } from "./audit.js";
 
 const port = Number(process.env.DREATIVE_PORT || 4820);
 const base = `http://localhost:${port}`;
@@ -20,7 +21,27 @@ const USAGE = `usage: dreative [command]
                    --check            verify the installed skill matches this package (exit 1 on drift)
   wait             (agent) block until the UI needs something; prints one JSON event
   respond <id> [result.json | --error msg]   (agent) answer a request
-  baseline         (agent) snapshot project.json as the finish-diff baseline`;
+  baseline         (agent) snapshot project.json as the finish-diff baseline
+  audit             validate direct-design plan, preservation, assets, ledger, and verification
+                    --json              emit a machine-readable report`;
+
+function walkFiles(root: string, current = root): string[] {
+  const files: string[] = [];
+  for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+    const absolute = path.join(current, entry.name);
+    if (entry.isDirectory()) files.push(...walkFiles(root, absolute));
+    else files.push(path.relative(root, absolute));
+  }
+  return files;
+}
+
+function copyRelativeFiles(sourceRoot: string, destinationRoot: string, files: string[]) {
+  for (const relative of files) {
+    const destination = path.join(destinationRoot, relative);
+    fs.mkdirSync(path.dirname(destination), { recursive: true });
+    fs.copyFileSync(path.join(sourceRoot, relative), destination);
+  }
+}
 
 async function main() {
   if (args.includes("--help") || args.includes("-h")) {
@@ -48,6 +69,7 @@ async function main() {
       const available = fs.existsSync(skillsDir)
         ? fs.readdirSync(skillsDir).filter((f) => f.endsWith(".md")).map((f) => f.replace(/\.md$/, ""))
         : [];
+      const coreFiles = walkFiles(srcDir).filter((relative) => !relative.startsWith(`skills${path.sep}`));
 
       if (args.includes("--list")) {
         console.log(`specialist skills (installed by default, pick with --skills a,b):`);
@@ -66,8 +88,7 @@ async function main() {
           console.error(`skill not installed at ${destDir} — run \`dreative install-skill${args.includes("--codex") ? " --codex" : ""}\``);
           process.exit(1);
         }
-        const rootFiles = fs.readdirSync(srcDir).filter((f) => fs.statSync(path.join(srcDir, f)).isFile());
-        const packaged = [...rootFiles, ...available.map((s) => path.join("skills", `${s}.md`))];
+        const packaged = [...coreFiles, ...available.map((s) => path.join("skills", `${s}.md`))];
         const stale: string[] = [];
         const missingCore: string[] = [];
         for (const rel of packaged) {
@@ -121,9 +142,7 @@ async function main() {
         ? path.join(process.cwd(), ".codex", "skills", "dreative")
         : path.join(process.cwd(), ".claude", "skills", "dreative");
       fs.mkdirSync(destDir, { recursive: true });
-      for (const f of fs.readdirSync(srcDir)) {
-        if (fs.statSync(path.join(srcDir, f)).isFile()) fs.copyFileSync(path.join(srcDir, f), path.join(destDir, f));
-      }
+      copyRelativeFiles(srcDir, destDir, coreFiles);
       if (picked.length) {
         fs.mkdirSync(path.join(destDir, "skills"), { recursive: true });
         for (const s of picked) {
@@ -146,6 +165,13 @@ async function main() {
       console.log(`  core: SKILL.md, DESIGN.md, PLAN.md`);
       console.log(`  specialist skills: ${picked.length ? picked.join(", ") : "(none)"}`);
       console.log(`next: ask your coding agent to "open dreative" or "redesign my app's UI visually"`);
+      return;
+    }
+
+    case "audit": {
+      const report = runDirectDesignAudit(process.cwd());
+      printAudit(report, args.includes("--json"));
+      if (!report.ok) process.exitCode = 1;
       return;
     }
 

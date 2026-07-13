@@ -1,5 +1,13 @@
 # Dreative Specialist Skill — Motion & Scroll Choreography
 
+## Contract
+
+Follow `../references/SKILL_CONTRACT.md`. Dependencies: `ux`, `mobile`. Deliver a
+named motion system, trigger/timing/easing inventory, cleanup strategy, mobile
+translation, reduced-motion fallback, and sampled runtime evidence. Do not load
+when state changes and CSS feedback are sufficient. Done means choreography runs
+as planned without jank, scroll traps, hidden content, or input loss.
+
 Load this file when `plan.skills` includes `motion`, or the brief/prompt asks for
 animation, parallax, scroll storytelling, kinetic type, or "cinematic" feel.
 It EXTENDS DESIGN.md §6 (which still applies: 100/300/500 durations, ease-out

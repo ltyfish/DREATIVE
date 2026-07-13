@@ -1,5 +1,14 @@
 # Dreative Specialist Skill — Immersive Worlds & Spatial Transitions
 
+## Contract
+
+Follow `../references/SKILL_CONTRACT.md`. Dependencies: `motion`, `interaction`,
+`media`, `ux`, `mobile`; add `3d` when the world uses WebGL geometry. Deliver a
+named persistent-stage architecture, travel map, loading/route choreography,
+performance budget, and non-spatial fallback. Do not load for ordinary parallax.
+Done means every route, scroll stop, keyboard path, mobile translation, and
+occlusion sweep passes.
+
 Load this file when `plan.skills` includes `immersive`, or the brief/prompt asks
 for an "award-site" feel, a site that behaves like a world/scene/space, spatial or
 3D page transitions, "sites like epic.net / Awwwards winners", scroll-as-journey,

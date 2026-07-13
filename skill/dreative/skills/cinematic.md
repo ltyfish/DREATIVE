@@ -1,5 +1,14 @@
 # Dreative Specialist Skill — Cinematic WebGL & Experiential Interfaces
 
+## Contract
+
+Follow `../references/SKILL_CONTRACT.md`. Dependencies: `motion`, `interaction`,
+`media`, `ux`, `mobile`; add `3d` only when spatial rendering is real. Deliver a
+coherent living-surface system, gesture/keyboard parity, asset/audio consent
+budgets, calm fallback, and runtime/performance evidence. Do not load merely for
+a dark palette. Done means the experience still communicates and works without
+sound, fine-pointer input, WebGL, or full motion.
+
 Load this file when `plan.skills` includes `cinematic`, or the brief/prompt asks
 for a dark cinematic shader-driven look, "sites like unseen.co", drag-to-explore
 navigation, click-and-hold interactions, fluid/particle distortion effects,

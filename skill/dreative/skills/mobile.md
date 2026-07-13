@@ -1,5 +1,14 @@
 # Dreative Specialist Skill — Mobile Excellence
 
+## Contract
+
+Follow `../references/SKILL_CONTRACT.md`. Dependency: `ux`. This skill is
+universal for web work. Deliver a section-by-section mobile translation, touch
+targets, responsive media/effect budgets, and approximately 390px verification.
+It is never satisfied by shrinking desktop. Done means navigation, content,
+forms, orientation/viewport behavior, performance, and reduced motion pass on a
+coarse pointer.
+
 Load this file when `plan.skills` includes `mobile`, when the brief says
 mobile-first / most users are on phones / "make the mobile version great", or
 when an app-register product is primarily used on mobile. It EXTENDS DESIGN.md

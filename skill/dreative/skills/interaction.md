@@ -1,5 +1,13 @@
 # Dreative Specialist Skill — Micro-interactions & Effect Craft
 
+## Contract
+
+Follow `../references/SKILL_CONTRACT.md`. Dependencies: `ux`, `mobile`; add
+`motion` for coordinated timelines. Deliver a small interaction vocabulary with
+named triggers, feedback, touch/keyboard equivalents, and reduced-motion behavior.
+Do not load to decorate controls with arbitrary movement. Done means hover,
+focus-visible, active, disabled, touch, and pointer-hit behavior is verified.
+
 Load this file when `plan.skills` includes `interaction`, or the brief/prompt asks
 for hover effects, cursor work, tilt, glow, "make it feel alive/tactile/premium".
 It EXTENDS DESIGN.md §6/§9/§10 — every ban there still stands (no hover-scale on

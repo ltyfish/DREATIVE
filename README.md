@@ -1,8 +1,25 @@
 # Dreative
 
-Visual round-trip UI editing **skill for coding CLIs** (Claude Code etc.). The CLI agent extracts your app's current UI page-by-page into editable wireframes; you tweak them in the browser (drag-drop, ref images, text prompts); clicking **Finish** hands a compact layout **diff** back to the agent, which rewrites your real code to match.
+Frontend design **skill for coding CLIs** (Claude Code, Codex, etc.) with an optional visual round-trip editor. By default the agent plans a design, selects specialist treatments, edits the real application directly, preserves existing behavior, and verifies the result. No server or extraction is involved in that mode.
 
-Dreative itself has **no AI** — the web UI is a dumb visual editor plus a request queue. Your coding agent is the intelligence: it services UI prompts via `dreative wait` / `dreative respond` and applies the finish diff. See `skill/dreative/SKILL.md` for the agent workflow (install it into `.claude/skills/dreative/`).
+Dreative itself has **no AI** — your coding agent is the intelligence. See `skill/dreative/SKILL.md` for the direct-design workflow and optional editor mode.
+
+## Direct design (default)
+
+Install the skill, then ask your coding agent to design or redesign a page. The skill provides:
+
+- four explicit ambition tiers, from solid product UI through award-site work;
+- ten composable specialist skills with dependency resolution;
+- framework adapters for React/Vite, Next.js, Vue/Nuxt, SvelteKit, and styling systems;
+- typed plan, preservation, decision-ledger, and verification artifacts;
+- `dreative audit`, which checks delivery status, preservation, assets, evidence, and common frontend risks.
+
+```sh
+dreative install-skill --codex   # or omit --codex for Claude Code
+dreative audit                   # run after implementation
+```
+
+The browser workflow below is optional and only used when explicitly requested.
 
 ## Run
 

@@ -1,5 +1,14 @@
 # Dreative Specialist Skill — Refined Clean Business
 
+## Contract
+
+Follow `../references/SKILL_CONTRACT.md`. Dependencies: `ux`, `mobile`; add
+`media` when photography is a primary material. Deliver a precise type/spacing/
+surface system, restrained signature detail, purposeful photography, complete
+states, and responsive proof. Do not confuse refined with generic minimalism.
+Done means hierarchy, copy, conversion flow, polish, and calm motion hold across
+desktop, keyboard, and phone.
+
 Load this file when `plan.skills` includes `refined`, or the brief/prompt asks
 for a "clean modern business site", premium-but-calm marketing, DTC/e-commerce
 polish, "professional, not flashy", or names references like ch.maswitzerland.com

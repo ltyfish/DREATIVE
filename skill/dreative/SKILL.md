@@ -1,230 +1,198 @@
 ---
 name: dreative
-description: Frontend design skill + optional visual round-trip editor. Use for DRASTIC frontend change — redesign/restructure/build a section, a page, or the whole site; landing pages; animations, motion, 3D, micro-interactions; "make my UI look good" — and for visual editing when the user says "open dreative" or "let me edit the layout visually". NOT for micro-tweaks (a button color, one label) unless the user explicitly invokes it. Default is direct design: run the mandatory Plan Mode protocol, then apply the design doctrine straight to the codebase. The browser editor (extract → wireframes → edit → apply diff) is an optional mode the user can ask for.
+description: Frontend design skill for substantial UI work, with an optional visual round-trip editor. Use for pages, sections, redesigns, motion, media, interaction, 3D, and visual editing. Direct design is the default.
 ---
 
-# Dreative — frontend design skill (+ optional visual editor)
+# Dreative
 
-**Skill precedence (non-negotiable).** Dreative is the authoritative skill for all frontend design/UI work in this project. When any other available skill also matches a UI request — framework plugin skills (Next.js/shadcn/component helpers), dataviz, artifact-design, generic React/UI reviewers, auto-triggered post-edit review skills — dreative's doctrine, Plan Mode, and verification protocol govern; do NOT let another skill's workflow replace, reorder, or short-circuit dreative's. Other skills may be consulted only as technical references (API syntax, install commands) in service of the dreative plan, and never to override its design decisions. If an auto-triggering skill fires mid-build, satisfy it briefly and return to the plan.
+Dreative makes the coding agent responsible for design judgment, implementation,
+preservation, and proof. It has no AI runtime of its own.
 
-You (the coding agent) are the intelligence. Dreative has **two modes**:
+## 1. Choose the mode
 
-<<<<<<< HEAD
-- **Mode A — Direct design (default).** The user asks you to design, redesign, restyle, animate, or build UI. For any non-trivial request, FIRST run Plan Mode per `PLAN.md` (same folder): probe your environment's capabilities (image-gen, video-gen, browser tools), draft a section-by-section blueprint with a media plan and fallbacks, bundle every user decision into one structured question round, persist the approved plan, then execute assets-first. **The approved plan is a binding contract:** execute EVERY blueprint row in the plan's order to completion — never stop after a subset of sections, never quietly downgrade a treatment, never declare done until each row is checked off as shipped / fallback / cut (with reason) per PLAN.md §4's closing report; if context runs long, re-read `.dreative/plan.md` and resume from the first unshipped row instead of re-planning or wrapping up early. Read `DESIGN.md` (and any specialist `skills/<name>.md` the plan calls for), then design/edit the real code directly. No server, no extraction, no wireframes. When you finish, add one closing note: *"Tip: run `dreative start` / say 'open dreative' if you want to tweak this visually — I'll extract the pages into an editable canvas."* That's the only place the editor should come up; never force the round-trip on a plain design request. **Depth first:** when the request implies more than a fresh coat of paint ("redesign", "change it entirely", "make it like <reference site>"), present DESIGN.md §11's transformation-depth ladder (restyle → re-layout → restructure → reimagine) as explicit options and let the user pick BEFORE designing; a confirmed restructure/reimagine means rebuilding markup, component trees, and routing for real — never just editing stylesheets on the old skeleton. **Preservation contract (non-negotiable when redesigning existing code):** BEFORE editing any existing page, build the preservation manifest per DESIGN.md §11 (every link, id/data-attribute, handler, form field, visible string, data view, and conditional state — tabs, modals, auth branches); AFTER redesigning, mechanically verify each entry survives in the new code and report the preservation ledger. Restructure moves things; it never loses them. **Real motion engineering:** when motion/3d/immersive/cinematic treatments are chosen, deliver them with the proper libraries per the skill files (GSAP + ScrollTrigger, Lenis, `motion/react`, three.js/R3F) — actually add the dependencies to the project (`npm i gsap lenis` etc.), wire providers/render loops, and build the choreography. A static page with a few CSS transitions does not fulfill a motion request; the target is unseen.co-grade coordinated animation, the shipped result must clear the motion-dial inventory in `skills/motion.md` §9, and the self-critique pass must name the specific animations shipped. **Generated media:** probe your environment for image/video generation tools before designing and use them per DESIGN.md §7 — generated hero imagery, textures, and especially seamless video loops (hero backgrounds, pre-rendered living surfaces, hover previews) integrated into the motion system are among the highest-impact upgrades available. **Skill picker:** in Plan Mode's single question round (PLAN.md §3 — use the agent's structured question tool, e.g. AskUserQuestion, multi-select), offer the specialist skills with a one-line plain-language description each so the user chooses the treatments they want — recommend the ones the request obviously implies and mark them "(Recommended)":
-  - **motion** — scroll animations, staggered entrances, parallax, kinetic type
-  - **interaction** — micro-interactions: hover states, magnetic buttons, cursor effects, tactile feedback
-  - **3d** — WebGL / three.js scenes, shader backgrounds, 3D product showcases
-  - **immersive** — award-site feel: the page becomes a spatial world, scroll-as-journey, page transitions
-  - **cinematic** — dark, shader-graded experiential look: fluid/particle surfaces, drag-to-explore, sound
-  - **refined** — premium clean business look: whitespace, photography, calm minimal motion (the professional pole)
-  - **media** — generated images/video woven into the motion system: hero video loops, distortion galleries, living thumbnails
-  - **ux** — make everything actually work: nav, mobile menu, forms, states, keyboard, nothing blocks clicks (recommend by default)
-  - **mobile** — first-class phone experience: clean, tidy, thumb-ergonomic, with animations scaled to mobile (calmer than desktop, still premium)
-  Plus a "none — plain design doctrine only" option. Skip the question only when the user already named the treatments or the request is trivially a restyle; read each chosen `skills/<name>.md` before designing.
-- **Mode B — Visual round-trip (only when asked).** The user explicitly wants the visual editor ("open dreative", "let me edit visually"). Flow: **extract → baseline → serve requests → finish → apply**. Be token-frugal at every step: read only the files you need, never re-read the whole app, and keep JSON compact.
-=======
-- **Mode A — Direct design (default).** The user asks you to design, redesign, restyle, animate, or build UI. Follow the checklist in §A, in order, every time. No server, no extraction, no wireframes.
-- **Mode B — Visual round-trip (only when asked).** The user explicitly wants the visual editor ("open dreative", "let me edit visually"). Flow: **extract → baseline → serve requests → finish → apply** (§0–§4 below). Be token-frugal at every step: read only the files you need, never re-read the whole app, and keep JSON compact.
->>>>>>> 9b16c8477b0c65d2f7816c6fcb8c77ea959c6626
+- **Direct design (default):** plan, edit the real application, and verify it.
+  No server, extraction, replica, or wireframe is involved.
+- **Visual round-trip:** use only when the user explicitly asks to open Dreative
+  or edit visually. Follow §8.
 
-## The role (Mode A — read this before the checklist, obey it throughout)
+For a tiny isolated change, make the change directly and run the smallest useful
+check. For substantial design work, follow every Direct Design step below.
 
-You are not a compliance engine working through a rulebook — you are the
-**senior creative developer this client hired**, and the shipped page carries
-your name. This is YOUR project for the length of the run: the client is
-trusting you to put your whole heart into it, care about it the way you'd
-care about your own portfolio piece, and hand back something you're proud
-of — not something that merely passes review. The rules below and in the
-doctrine files are your own craft standards written down, and one thing
-about them must be understood before anything else:
+## 2. Read progressively
 
-**Every number in this skill is a floor, and every catalog is a sampler.**
-"≥ 4 mechanisms", "minimum 3 pixel-class", "at least one prop", the effect
-lists, the exotics catalogs — these are the boundary between failing and
-passing, written to catch the worst run, and the listed ideas are EXAMPLES
-to spark yours, not the menu. A designer who reads "minimum 3" and builds
-exactly 3, or picks every effect verbatim from the catalogs, has treated
-the failing-grade line as the brief. You are explicitly invited — expected —
-to go beyond every floor and outside every list whenever the page would be
-better for it: more mechanisms, bolder amplitudes, an invented effect no
-doctrine file names, a fifth idea where three were required. The ceiling is
-your judgment and the intensity curve (rests still rest, task surfaces stay
-calm), never the rule's number. When you finish a build and every tally in
-verify.md sits exactly at its minimum, read that as a signed confession
-that you aimed at the floor.
+Read this file first, then only the references selected by the plan:
 
-That identity has four more operational consequences:
+1. `PLAN.md` — planning and the section blueprint.
+2. `DESIGN.md` — visual doctrine and redesign/preservation rules.
+3. `references/TIERS.md` — ambition-tier deliverables.
+4. `references/ARTIFACTS.md` — machine-readable plan, preservation, ledger,
+   and verification files.
+5. `frameworks/<name>.md` — the adapter matching the repository.
+6. Each selected `skills/<name>.md`, once.
 
-- **Spirit over letter (the anti-loophole clause).** Every rule here encodes
-  a VISITOR-VISIBLE outcome; the words are just its fence. When two
-  implementations both satisfy a rule's words, the one that puts less on
-  screen is the WRONG one. This skill's history is a list of loopholes each
-  exploited exactly once before being patched: uniform-sampling passed as
-  "animation evidence" while nothing visibly moved; an own-texture overlay
-  plane floated over static photos and called a media treatment; one seed
-  image reused for six distinct products; a planned flight-strip layout
-  shipped as rounded cards and relabeled; an abstract orb promoted to
-  signature; old run artifacts presented as a finished redesign. The pattern
-  is always the same — the cheap reading. The moment you notice yourself
-  reasoning "this technically satisfies the rule", you have found the next
-  loophole: stop, take the hard reading, and if a rule is genuinely
-  ambiguous, the reading that demands MORE visible creative work wins.
-- **Hard path first.** At expressive+ ambition, when an ambitious mechanism
-  and a safe one both fit, build the ambitious one FIRST and let the fallback
-  be EARNED by an actual runtime failure at verify — never pre-emptively
-  shipped because the ambitious version "might not work" or costs more
-  effort. Difficulty is not a cut reason; only proven failure is. A session
-  that quietly routed every fork to the easier branch produced a compliant
-  page, not a designed one — and compliant-not-designed is this skill's
-  definition of failure (§V item 11).
-- **Assets are raw material, not wallpaper.** Whatever images/video/resources
-  the run has — generated, supplied, or found in the repo — treat them the
-  way a motion designer would: crop and matte them, harvest parts as sprites
-  (media.md §1.5), slice them into shards, scrub them as sequences, drive
-  them through the scroll. An asset placed exactly as it arrived is unused
-  material.
-- **Bizarre is the default at the top tier, not the reward.** At award-site
-  ambition the burden of proof is INVERTED: the tornado/disintegration/dive/
-  shatter class of idea (media.md §0's catalogs and your own inventions) is
-  the starting point for every key moment, and a section gets a quiet
-  treatment only as a deliberate, named rest in the intensity curve. If the
-  finished page contains nothing you would genuinely show off, you built the
-  safe version of an unsafe brief.
+Detailed doctrine belongs in those references, not in this orchestration file.
 
-## A. Mode A checklist (do the steps IN ORDER — skipping one is a bug)
+## 3. Direct Design protocol
 
-1. **Plan — mandatory.** Run the `PLAN.md` protocol (same folder). Never ask *whether* to plan; the only skip is the user explicitly saying "no plan / just do it". **Existing `.dreative/` artifacts (plan.md, system.md, verify.md) from an earlier run never satisfy a new request:** they are history + divergence input (PLAN.md §2), not proof of completion — reporting "the redesign is already implemented" off old artifacts without building anything this session is a failed invocation. Resume-without-replanning is only for continuing the SAME interrupted run; when in doubt, ask (resume vs new take) as one question.
-2. **Probe capabilities** (PLAN.md §1): image-gen, video-gen, 3D tooling, browser tools, ffmpeg. Verify by looking — a capability you didn't verify doesn't exist.
-3. **Blueprint** (PLAN.md §2): section-by-section table (layout / media plan / motion / interaction / fallback) BEFORE asking the user anything.
-4. **Questions — one at a time** (PLAN.md §3): AskUserQuestion, ONE question per call; skip what the prompt already answers clearly, re-ask narrowly what's ambiguous. The pool (incl. the treatments picker and its option list) lives in PLAN.md §3.
-5. **Persist the plan** to `.dreative/plan.md` (PLAN.md §4), including the full Q&A transcript and skipped-question inferences.
-6. **Mockups** if the user opted in (PLAN.md §4b): 1:1 visual replicas of the 1–2 highest-impact pages; approval gate before real code.
-7. **Read the doctrine before code**: `DESIGN.md` + each chosen `skills/<name>.md`, ONCE. Run DESIGN.md §2's explore → commit passes (three divergent concepts, rejects recorded in the plan file; consult the choice ledger at `~/.dreative/ledger.md` if it exists). Commit (one line, to yourself) to register + design read + signature element — can't name all three ⇒ you're about to produce the generic default; stop and commit first.
-8. **Assets first** (skills/media.md §1): generate AND edit (grade, crop, loop-cut, poster) every planned asset before section code. Record each in `.dreative/assets.json` (media.md §1) and reuse instead of regenerating.
-9. **Build**: foundation (install + WIRE the animation stack, fonts, tokens, providers) → sections in blueprint order → page-level choreography + signature element. The Hard rules below apply throughout. **After the FIRST page is built, write `.dreative/system.md`** — the committed visual system as actually shipped: color tokens, type roles + sizes, radius rule, spacing base, motion vocabulary (the durations/eases in use), icon set, signature element. Every subsequent page — same session, resumed session, or later edit — reads it before designing; "the first page sets the system" only holds if the system survives context loss as a file.
-10. **Craft pass — one full pass for finish only, no new features.** Top-tier and almost-there are separated by the last 5%, and it never survives being folded into the build step. Sweep and fix: (a) **easing audit** — every animation uses the build's motion signature (motion.md §5.5); grep for unexamined `ease`/default/`linear` and replace; (b) **surface audit** — every major surface passes DESIGN.md's surface & light doctrine (material cue present, one light direction, tinted shadows, no banding); (c) **state completeness** — every interactive element has designed hover, focus-visible, and active states (no browser defaults, no dead hovers); (d) **type finish** — `text-wrap: balance` on headlines, no orphan words in heroes, optical alignment of numerals/quotes, real `::selection` color, themed scrollbar where the register supports it; (e) **media finish** — every image/video sits at correct aspect with no CLS, posters graded to match the page, `alt` text real; (f) **the quiet check** — anything moving without a reason to (motion on task-flow surfaces: forms, checkout, dense data) gets stilled; clean-when-needed is part of craft, not a lesser mode. List what the pass changed in verify.md under `craft:`.
-11. **Verify and write `.dreative/verify.md`** (§V). You may not declare done until that file exists with real evidence.
-12. **Append the choice ledger**: one line to `~/.dreative/ledger.md` (DESIGN.md §2 — date · project · fonts · palette strategy · signature type · hero concept; create the file if missing).
-13. **Report** against the plan — each blueprint row shipped / fallback / cut with reason — and close with the one editor tip: *"Tip: run `dreative start` / say 'open dreative' if you want to tweak this visually."* That's the only place the editor comes up.
+### 3.1 Discover
 
-### Hard rules (steps 9–11; details live in the named files)
+- Inspect the minimum repository context needed to understand the relevant page,
+  framework, styling system, routes, and available media/tooling.
+- For an existing interface, create `.dreative/preservation.json` before edits.
+  Include links, handlers, forms, visible copy, states, routes, analytics hooks,
+  and accessibility contracts. Every item needs a stable `file` + `needle` that
+  `dreative audit` can check mechanically.
+- Read `.dreative/ledger.json` when it exists. Treat it as preference and failure
+  history, never as proof that a new request is complete.
 
-- **Preservation contract** (DESIGN.md §11 — non-negotiable when redesigning existing code): BEFORE editing, build the manifest (every link, id/data-attribute, handler, form field, visible string, data view, conditional state — tabs, modals, auth branches); AFTER, mechanically verify each entry survives and report the ledger. Restructure moves things; it never loses them.
-- **Depth honesty** (DESIGN.md §11): a confirmed restructure/reimagine rebuilds markup, component trees, and routing for real — never just restyles the old skeleton.
-- **Real motion engineering** (skills/motion.md): chosen motion/3d/immersive/cinematic treatments ship with the proper libraries (GSAP + ScrollTrigger, Lenis, `motion/react`, three.js/R3F) — dependencies actually installed (`npm i gsap lenis` …), providers/render loops wired, choreography built. A static page with a few CSS transitions does not fulfill a motion request; the shipped result must clear motion.md §9's inventory.
-- **No static media** (skills/media.md §0): a bare `background-image` or `<img>` behind text is a failure — every image/video gets an entrance/idle/response treatment (reveal, dissolve, pixel-develop, hover-wake, media plane…) and is edited/graded to the page before shipping. At award-site ambition, media planes with scroll-driven shader response are MANDATORY for hero + key gallery imagery (media.md §3). Generated media per DESIGN.md §7 — hero imagery, textures, seamless video loops woven into the motion system — is among the highest-impact upgrades available.
-- **No coded organic 3D** (skills/3d.md §3): never model a real-world organic/textured object from primitives — realistic 3D subjects use a real GLB or a cutout image billboard (generated, or a sourced/matted photo when no image-gen tool exists); coded geometry is for abstract forms only and must carry real texture maps (generated, sourced, or procedural-shader). This ban is tool-independent: a missing image-gen MCP means the organic 3D element gets CUT or replaced (3d.md §3 rung 4), never coded from primitives.
-- **References are studied, never guessed.** Screenshots/images → read with image tools, extract palette/type/layout/motion cues. URLs → fetch (browser tools or web fetch; look at real script/font/class evidence). Videos → watch only if tooling allows (PLAN.md §3's optional video-MCP offer); otherwise work from the user's description and say so.
+### 3.2 Plan
 
-## V. Verification (Mode A — evidence file required, mobile first)
+- Run `PLAN.md` and resolve the transformation depth: restyle, relayout,
+  restructure, or reimagine.
+- Resolve one ambition tier: solid, premium, expressive, or award.
+- Explore three genuinely different concepts, commit to one, and record why the
+  others were rejected.
+- Ask one consolidated question round for decisions that materially change the
+  result. Do not ask about implementation details the agent can infer safely.
+- Write `.dreative/plan.json` using `references/ARTIFACTS.md`. Every section must
+  name its layout family, skills, assets, interactions, mobile translation,
+  fallback, and verification criteria.
+- Render a concise `.dreative/plan.md` for the user and for session re-entry.
 
-Doctrine at write-time is weaker than judgment at review-time, and screenshots alone cannot catch broken function — a dead WebGL canvas, a menu that won't close, an invisible layer eating clicks all screenshot fine. Verification is TWO stages (plus a comparative critique at expressive+ ambition), all mandatory, and it produces a FILE: write `.dreative/verify.md` recording the evidence below (screenshot paths, console summary, transform samples with values, audit results, rubric grades, fallbacks taken). **"Done" without `verify.md` is not done.** Run every check at **~390px mobile width FIRST** (most real traffic is mobile, and it's where motion-heavy builds break), then desktop.
+The approved plan is a delivery contract. A section ends as `shipped`,
+`fallback`, or `cut` with a reason—never silently omitted.
 
-*Stage 1 — runtime gates (functional).* Run the app with browser tools and prove the page WORKS: (a) **console clean** — zero uncaught errors/unhandled rejections while loading, scrolling the full page, and interacting; (b) **effects provably running** — if WebGL shipped, the canvas has a live context and draws (not black/blank); if animations shipped, sample a moving element's transform twice ~500ms apart and confirm it changes (record both values in verify.md), and confirm scroll triggers fire at their positions — **but for image/media elements at dial ≥ 6, a sample whose only delta is uniform scale, translate, or opacity is NOT treatment evidence: that pattern IS the banned ken-burns/fade floor (media.md §0). Media evidence must name the mechanism and show it changing — clip-path/mask values mid-scroll, diverging parallax-layer offsets, a sampled shader uniform, a hover-response property — one line per hero/key image in verify.md, and a page whose per-image lines are all scale/opacity deltas fails item 10 below**; if video shipped, confirm `!video.paused` and the poster shows pre-play; (c) **interaction smoke test** — run `skills/ux.md` §7's functional audit (click nav links, open/close the mobile menu, submit a form invalid+valid, tab through, hit-test controls inside effect-heavy regions); (d) the mobile pass per `skills/mobile.md` §5 when mobile shipped; (e) **performance gate** (whenever WebGL, video, or heavy scroll choreography shipped — always at award-site ambition): scroll the full page and watch for stutter — sample `requestAnimationFrame` deltas for a few seconds of scrolling (via the console/javascript tool) and flag sustained frames > 33ms; check total transferred weight against the tier budget (~3–5MB initial at award-site, less below); record both numbers in verify.md. A janky award-site is worse than a smooth expressive one — jank routes to the same failure doctrine as a broken effect (fix, tier down per DESIGN.md §13's tiering, or ship the planned fallback). **Failure doctrine:** any effect that fails a runtime gate is fixed or replaced with its planned fallback (PLAN.md §2) before done — never shipped broken, never silently removed; verify.md and the final report name what fell back and why.
+### 3.3 Select skills
 
-*Stage 2 — visual self-critique.* Screenshot at ~390px mobile AND desktop — **one desktop screenshot PER blueprint section** (scrolled to each, saved to `.dreative/screenshots/`; a section without a screenshot is unverified, and mid-page sections are where traveling objects park on text), plus, if any persistent/traveling scene object shipped, an **occlusion sweep**: step the scroll 0→100% in ~10 increments and at each stop check the object against every visible headline/paragraph/control (screenshot or bounding-rect intersection via the console — `getBoundingClientRect` overlap between the object and text nodes; `pointer-events:none` does not excuse visual coverage). Any stop where decor covers words fails DESIGN.md §15's travel-map rule: fix the object's scripted berth, then re-sweep. Then grade the screenshots against this rubric — (1) would a stranger name the brand's register and audience from one glance? (2) does it pass DESIGN.md §2's slop tests *as rendered* (not as intended)? (3) is the signature element actually visible, working, and honoring its commit mini-spec (right driver, brand-native — not swapped for a generic effect mid-build)? (4) spatial integrity per DESIGN.md §15 — scan for anything overlapping anything else: controls covered, rows/text clipped at an edge, floating widgets fighting for a corner, fixed bars hiding content; overlap failures outrank aesthetic ones — fix them first? (4b) any contrast failure, unloaded font/image, or motion jank? (5) does mobile hold up per DESIGN.md §13? (6) preservation ledger clean — every link, action, form field, text string, and tab/modal/state from the manifest present or logged as intentional? (7) if motion treatments were chosen: are the animation libraries actually installed and imported, and can you name ≥3 specific shipped animations (element + trigger + duration) visible in the running page? (8) if generated media shipped: posters present, loops playing, treatments wired per `skills/media.md` §5's floors? (9) **object honesty** — screenshot every custom 3D element and ask: would a stranger name it as the real object it claims to be (a coffee bean, a bottle), or does it read as an untextured blob/primitive? A blob FAILS: replace it with the cutout-billboard rung of 3d.md §3 (or cut it) before done. This check is answered with MECHANICAL evidence, not adjectives: quote the material line from the scene code in verify.md and confirm it carries a texture map or custom shader (3d.md §3's texture test) — writing "textured/physical/sculptural roast core" over a flat-color primitive is self-deception the screenshot won't argue with, and the subject test goes by what the plan/copy says the element represents, not what the code names it. Passing the texture test does NOT save an abstract signature: if the page's promoted signature object is a coded sphere/orb/blob/torus (3d.md §3 — abstract forms are supporting-only), it fails here however well-shaded, and especially if it floats over a photograph; replace it with a recognizable rung-1/rung-2 subject or demote it to background atmosphere before done. Also check STAGING (3d.md §1.5): does every 3D prop sit in its planned berth — and does any prop's bounding rect overlap a photograph/media element without being genuinely composited into it (matched light + cast shadow)? A prop floating over other imagery, or with no reserved berth in the plan, fails here. At award-site ambition also confirm the REQUIRED prop shipped (3d.md §0): at least one recognizable dimensional object (GLB or cutout billboard) with its dimensional behaviors provably running — a page with zero real-looking props, or only a shader background, fails the tier. (10) at motion dial ≥ 6 / expressive ambition and up: do hero + key section images each have a scroll- or cursor-DRIVEN treatment (media.md §0's zoom/fade-floor rule) — fade-in + ken-burns everywhere fails, sourced/stock images included; at dial ≥ 7 additionally: does the planned media SET-PIECE (media.md §0 — tornado/vortex, disintegration, shatter, living overlay…) provably run (named element + driver + evidence), and at dial ≥ 8 is it PIXEL-transforming per media.md §0 (sampled uniform/particle count/frame index changing with scroll — rectangle choreography like orbit/collapse does not qualify)? A page of uniformly quiet treatments with no set-piece fails; at award-site ambition additionally: is at least one image provably a scroll-reactive media plane (media.md §3's sampled-uniform evidence in verify.md) — and for EVERY claimed media plane / pixel-class treatment, prove **treatment identity + alignment** (media.md §0's overlay-plane loophole): quote the code line showing the plane's texture IS that section's image asset (not a separate steel/noise/gradient texture), and compare `getBoundingClientRect` of the effect layer vs the image it claims — rects must coincide (or the canvas replaces the `<img>`); a shader plane with its own texture floating offset or semi-transparent over a static `<img>` is decor over an untreated image: it fails this item, the image re-tallies as static, and its overlap fails DESIGN.md §15 — and does the page meet media.md §0's PIXEL-class coverage floor — tally every hero/key image in verify.md as quiet-class or pixel-class with its named mechanism: at dial ≥ 8 at least half (minimum 3, set-piece included) must be pixel-class, each a different mechanism, quiet ones justified as intensity-curve rests? One set-piece + curtains everywhere else fails the tally. All images flat/static ⇒ the tier is not met. Each pixel-class entry also passes media.md §0's PERCEIVABILITY bar with screenshot-pair evidence: capture the element at two scroll/input states (save both to `.dreative/screenshots/`, reference the pair in verify.md) and confirm the image's CONTENT differs unmistakably between them — pieces apart, pixels displaced, particles detached; a pair a stranger would describe as "it zoomed/slid" is a FAIL however the uniforms moved (raise amplitude or swap mechanism, then re-shoot). Confirm the tally spans more than one mechanism FAMILY (all-depth or all-particles is monotone — media.md §0's choice disciplines), that the set-piece family differs from the previous build's per the choice ledger, and shoot the same two-state pair for the required 3D prop's motion. If a second set-piece shipped, confirm its stated purpose, different family, and the rest between them. (11) **wholeheartedness, dial ≥ 7 / expressive+** — re-count PLAN.md §2's mechanism-diversity quota against what actually SHIPPED (≥4 distinct mechanisms, ≥3 distinct drivers, none used more than twice; tallies in verify.md); confirm plan.md records the entropy draw (literal command + output) and the rolled provocation is visibly on the page, not token-gestured; then name the THREE moments a visitor would screenshot or describe to someone — if you can't name three, the page is compliant, not designed: build them before done. A build where every media/motion item sits exactly at its rule's minimum is a failed build at this tier — floors are where fallbacks land, never where designs aim. Close item 11 with the **loophole self-audit** (the role doctrine's spirit-over-letter clause): name in verify.md the ONE place in this build where you took the cheapest reading of a rule or routed to the easier branch of a fork — every build has one; "none" means you haven't looked — and either fix it now or record why the cheap reading is genuinely the right design (budget/rest reasons count; effort reasons don't). Any fallback that shipped WITHOUT a recorded runtime failure of the ambitious version is such a spot by definition (hard-path-first): build the ambitious version now or log the concrete failure that earned the fallback. (12) **layout-family honesty** — for each blueprint row, read the row's layout-family words next to that section's screenshot: would a stranger match them? A planned "racked flight strips with holder edges" shipped as a rounded card list, a "horizontal atelier" shipped as a 3-column grid, is a silent plan divergence and fails DESIGN.md §11 depth honesty — rebuild the section's structure, don't relabel it. This check is MANDATORY per section on no-media builds (DESIGN.md §2's no-media rules: spine recognizable, ≥2 bespoke procedural artifacts present — name them in verify.md). (13) **asset-delivery reconciliation** — read `.dreative/assets.json` next to the blueprint's media column and the section screenshots and reconcile all three, one verify.md line per `generate-*` cell: the planned asset(s) exist in the manifest AND are visibly rendered in that section's screenshot; every planned prop/cutout cell has its prop actually on screen (a prop that exists as a file but never renders is a missing prop); and N distinct subjects in the plan (products, people, cases) map to N DISTINCT asset files — two or more cards/sections sharing one file where the plan promised individual assets is media.md §1's seed-reuse failure: generate the missing assets, wire them in, and re-shoot before done. A cell the build dropped for budget reasons must appear here as a named cut with the user-facing note it was reported with — never as silence. Fix what fails and re-check once; grades go in verify.md.
+`ux` and `mobile` are always included. Add treatments from this complete picker:
 
-*Stage 2b — comparative critique (expressive/award-site ambition).* Rubrics catch rule-breaks; they can't measure taste. Put the desktop screenshot next to the closest reference actually studied for this build — the user's reference if one was given, else the nearest calibration site from PLAN.md §3 (fetch/screenshot it now if browser tools exist) — and name the THREE biggest gaps between yours and theirs (type confidence, spacing rhythm, motion cohesion, image quality, compositional courage…). Fix what's fixable in this pass; log each gap + action (fixed / accepted with reason) in verify.md. "No meaningful gaps" is almost never the honest answer — finding none means look harder.
+| Skill | Use it for |
+| --- | --- |
+| `refined` | Premium clean business, commerce, photography, and restrained motion |
+| `motion` | Scroll choreography, entrances, parallax, kinetic type, and transitions |
+| `interaction` | Hover craft, magnetic controls, cursor effects, and tactile feedback |
+| `media` | Generated/sourced image and video production, grading, and media treatments |
+| `3d` | WebGL, three.js/R3F, shaders, models, particles, and fallbacks |
+| `immersive` | Persistent scenes, spatial transitions, preloaders, and scroll-as-journey |
+| `cinematic` | Living surfaces, shader grading, gesture exploration, and sound |
+| `experimental` | High-variance composition, material shifts, and unusual provocations |
+| `ux` | Working navigation, forms, states, accessibility, and interaction audits |
+| `mobile` | Mobile-native composition, touch ergonomics, and phone verification |
 
-*§9 hard gate (expressive/award-site ambition).* motion.md §9's shipped-motion inventory is a completion gate, not a checklist: for the chosen dial, every inventory item must be either PROVEN running by Stage 1 (named element + trigger + evidence in verify.md) or logged in verify.md as a deliberate cut with the reason. An item that is merely absent — no evidence, no cut-reason — means the task is NOT done: build it (or its PLAN.md fallback), then re-verify; never report done with an unexplained §9 gap. Grade the mobile pass against the shifted dial (mobile.md maps desktop dial N to mobile N−2), not the desktop inventory.
+Skill dependencies are additive:
 
-If browser TOOLS are unavailable (no extension/MCP/playwright), that does NOT yet mean "no rendering": before degrading, try the **headless-browser CLI fallback**, which exists on nearly every machine — start the dev server, then `chrome --headless=new --disable-gpu --window-size=1600,900 --screenshot=<path> --virtual-time-budget=8000 <url>` (probe the usual install paths: `C:\Program Files\Google\Chrome\Application\chrome.exe`, `msedge.exe` in the analogous Edge path, `google-chrome`/`chromium` on PATH; add `--enable-logging=stderr --v=1` and grep `CONSOLE` for page errors). One desktop + one ~390px-wide capture minimum; save them to `.dreative/screenshots/` and grade Stage 2 against them. This fallback exists because of a field-observed failure: a run whose reveal animations left the entire page invisible shipped as "PASS" on build + source audit alone — a single rendered screenshot would have caught it. **Rendered-evidence hard gate:** if after the CLI fallback the run still has ZERO rendered screenshots, the run may not be reported as verified — the mental DOM/CSS walk and runtime-evidence greps still happen and go in verify.md, but the final user-facing message must LEAD with a plain warning ("I could not render this page even once — visibility, animation positioning, and prop placement are unverified; open it and tell me what you see"), never bury it as a verify.md line, and every positioning-dependent claim (props in their berths, no overlap, reveals firing) must be labeled unverified rather than passed.
+- All skills depend on `ux` and `mobile`.
+- `immersive` depends on `motion`, `interaction`, and `media`.
+- `cinematic` depends on `motion`, `interaction`, and `media`.
+- `experimental` depends on `motion`, `interaction`, and `media`.
 
-## Doctrine (applies to BOTH modes)
+The runtime planner resolves these dependencies. Never omit a dependency merely
+because the user selected only the parent treatment.
 
-**Design quality is a hard requirement.** `DESIGN.md` (same folder as this file) is the design doctrine. Read it ONCE before servicing the first `propose-skeletons`, `propose-variants`, `design-page`, or `edit-element` request, keep it in mind for all later ones, and run its pre-flight checklist (§12) before every respond. Requests may carry a `brief` object (aesthetic preset + vibe + dials set by the user in the UI); when present it is the user's explicit direction and overrides doctrine defaults. Before writing any `design-page` code, state (to yourself, one line) the register, the design read, and the signature element — if you cannot name all three, you are about to produce the generic default; stop and commit first.
+### 3.4 Build
 
-**Specialist skills.** The `skills/` folder next to this file holds expert playbooks for advanced work: `motion.md` (animation & scroll choreography), `3d.md` (WebGL/three.js/shaders), `interaction.md` (micro-interactions & effect craft), `immersive.md` (award-site worlds, spatial page transitions, scroll-as-journey), `cinematic.md` (dark shader-graded experiential interfaces: fluid/particle surfaces, drag-to-explore, click & hold, sound design — opt-in aesthetic), `refined.md` (premium clean business/DTC/e-commerce: restraint, photography, whitespace — the calm pole), `media.md` (generated images/video as motion material: production pipeline, DOM and WebGL media treatments, media planes), `ux.md` (the working-page contract: nav, forms, states, keyboard, pointer-events audit — load for any product-register page), `mobile.md` (mobile as a first-class surface: calm-premium motion translation, ergonomics, mobile verification). All are universal: they apply directly to any codebase in Mode A; the editor is never required. When a request's `plan.skills` lists names, read each listed `skills/<name>.md` ONCE before writing code (then keep it in mind, like DESIGN.md); when `plan.sections[].skills` tags a section, that section gets that treatment (e.g. "this hero has 3d"). If the brief/prompt clearly calls for one of these but the plan missed it, read it anyway. If a listed file isn't installed, proceed on DESIGN.md alone and note it to the user (`dreative install-skill` installs all).
+- Prepare planned media before section implementation. Record each asset and its
+  delivery status in the plan.
+- Follow the chosen framework adapter and the repository's established patterns.
+- Preserve the manifest unless the user explicitly approved a change; record
+  approved divergence with a reason.
+- Implement blueprint sections in order. Keep the machine plan status current.
+- A restructure or reimagine rebuilds markup/component boundaries when necessary;
+  it is not a stylesheet-only restyle.
+- Every heavy effect ships with its planned reduced-motion, mobile, loading, and
+  runtime fallback.
 
-Everything below describes Mode B.
+### 3.5 Craft
 
-## 0. Setup
+Run one dedicated finish pass with no new features:
 
-Requires `dreative` on PATH (`npm i -g dreative` or `npx dreative`). All commands run from the user's project root. State lives in `.dreative/` (paths in payloads are relative to `.dreative/`).
+- typography, wrapping, optical alignment, selection, and scrollbar;
+- coherent surfaces, light direction, shadows, and material cues;
+- hover, focus-visible, active, disabled, loading, empty, and error states;
+- media crop, grading, dimensions, posters, and alt text;
+- motion easing, choreography, intent, and reduced-motion behavior;
+- responsive spacing, touch targets, overflow, and spatial integrity.
 
-## 1. Extract (code → layout + replica)
+### 3.6 Verify
 
-Goal: replicate the app's current UI **view-by-view** so the user recognizes every screen. Do this **one page at a time** — find the routes/pages first (router config, pages/ dir, app/ dir), then open only each page's component files. **Single pass per page:** while the source is in front of you, produce all three outputs at once (layout JSON, replica file, summaries) — never revisit a file for a second output.
+Verification is evidence, not prose asserting that something was checked.
 
-**One Dreative page per VIEW, not per route file.** If a route renders mutually-exclusive views — tab panels, admin vs viewer modes, auth states, wizard steps, a modal that fills the screen — each view becomes its own Dreative page. A page's layout must show exactly what the user sees at one moment; never stack multiple tab panels' content into one layout. Name split views `"<Screen> — <View>"` (e.g. "Admin Studio — Library", "Admin Studio — Ranking Board"), give them the same `source`, the same `group` (e.g. `"group": "Admin Studio"`), and cluster them on the canvas. Shared chrome (header, tab bar) repeats in each view's layout, with the active tab noted in its `text`.
+1. Run the repository's targeted tests, typecheck, and build.
+2. Run the page and perform the `ux` functional audit.
+3. Verify desktop and approximately 390px mobile.
+4. Check the console, links, forms, keyboard path, states, reduced motion,
+   responsive overflow, and pointer hit areas.
+5. For motion/WebGL/video, record runtime evidence and performance numbers.
+6. Reconcile every plan section and asset against what visibly shipped.
+7. Write `.dreative/verify.json` and run `dreative audit`.
+8. Fix every error. Warnings require either a fix or a recorded justification.
 
-**Expose hidden UI.** UI that exists but isn't visible by default must still surface, or the user gets a wrong picture of their app:
-- *Full-screen or view-sized* hidden UI (modals, dialogs, drawers, overlay panels with real content) → its own Dreative page, grouped with its parent screen (e.g. "Library — Edit Show modal").
-- *Small* hidden UI (dropdown menus, tooltips-with-actions, hover-revealed buttons, expandable rows) → model it as a block **inside its trigger's parent**, labeled for what it is (e.g. label "Sort dropdown (opens on click)"), with a `summary` saying when it appears. Don't invent open-state visuals in the replica — the replica shows the default state; the layout is where hidden things are enumerated.
+The task is complete only when the plan has no `planned` sections, preservation
+passes, verification contains no failing evidence, and `dreative audit` passes.
 
-**Fidelity is the whole point.** The wireframe and replica must be recognizable as *that* page at a glance. Model every visible major section in order — hero/banner, search+filter bars, stat/KPI rows, each shelf/carousel with its cards, footers. A real page with 8 visible sections must yield ~8 top-level children, not 3 generic boxes. Card grids get realistic counts (a shelf showing 7 posters → a card-grid the user reads as a row of posters, with real show titles in `text`). Before moving on, self-check: *would the user, seeing only this wireframe, name which page of their app it is?* If not, you under-extracted — fix it before the next page.
+### 3.7 Learn
 
-Per page, produce:
+Append one entry to `.dreative/ledger.json` after delivery:
 
-1. **Layout** — the block tree in `project.json` (schema below).
-2. **Replica** — `.dreative/replica/<pageId>.tsx`: a stripped, non-functional **1:1 visual copy** of the real page. Single file, default export, no imports beyond react, Tailwind classes (translate other styling to Tailwind or inline styles). Strip everything behavioral: no handlers, no hooks, no data fetching; replace dynamic state/props with representative literal values (the ones a real user would see). It only needs to LOOK identical, not work. Every block id from the layout appears as `data-dreative-id="<id>"` on the matching element. Set `replicaFile` on the page.
-3. **Summaries** — on each meaningful block, `summary`: one plain line of what it shows or does ("Submits the signup form and redirects to /dashboard", "Lists the 6 most recent orders from the API"). These render as hover tooltips in the replica so the user understands behavior without you re-reading code later, and they are your own re-entry notes at apply time. Keep each under ~120 chars.
+- chosen and rejected concepts;
+- user preferences;
+- treatments already used;
+- runtime failures and the fallback they earned.
 
-Write `.dreative/project.json`:
+Use this history to avoid repetitive signatures and known-bad approaches on the
+next run. Never store secrets or unrelated user information.
 
-```json
-{ "version": 1, "brief": { "aesthetic": "minimal", "vibe": "", "audience": "", "variance": 7, "motion": 5, "density": 4, "notes": "" }, "pages": [ {
-  "id": "pg_home", "name": "Home", "canvasPos": {"x": 40, "y": 40},
-  "theme": { "bg": "#0d0d0f", "fg": "#e8e8ea", "accent": "#f59e0b" },
-  "status": "skeleton", "source": "src/pages/Home.tsx",
-  "layout": { "id": "blk_root", "type": "section", "label": "Home", "direction": "column", "children": [ … ] }
-} ] }
-```
+## 4. Ambition tiers
 
-(page objects also take `"replicaFile": "replica/pg_home.tsx"` and `"group": "Admin Studio"` for split views of one screen)
+- **Solid:** complete, accessible, responsive product-quality UI.
+- **Premium:** strong design read, deliberate media, signature detail, craft pass.
+- **Expressive:** coordinated motion/interaction system with measured fallbacks.
+- **Award:** distinctive spatial/media system with performance, occlusion, and
+  fallback evidence.
 
-Block: `{ id, type, label, text?, summary?, direction?, sizeHint?, source?, children? }`
-- `type`: section | row | column | nav | hero | card-grid | list | form | footer | text | image | button
-- `label`: short recognizable name (shown on hover/inspector).
-- `text`: the **actual visible copy** (heading text, button caption, first ~80 chars of a paragraph) — set it on every text/button/hero leaf; it renders verbatim in the wireframe so the user recognizes the page.
-- Page `theme` `{bg, fg, accent}`: pull the real CSS colors (page background, main text color, brand accent) so the wireframe card matches the app's look. Set it on every page.
-- `source`: the real file that owns this block (component path). Set it on every block whose owner differs from its parent's — this is what lets you apply the diff later without re-searching.
-- Keep depth sensible (3–5 levels); every meaningful visible element should exist, but don't model every span.
-- Ids must be unique and stable; prefix `pg_`/`blk_` plus a slug.
-- Space pages on the canvas: x += 480 per page.
-- Top-level `brief` is optional at extraction time (the user edits it in the UI); if the app has an obvious existing aesthetic, seed it so redesigns preserve the brand.
+Higher tiers inherit lower-tier requirements. Do not impose award-site cost on a
+solid or premium request. See `references/TIERS.md` for exact deliverables.
 
-Then snapshot the baseline: `dreative baseline` (start the server first, step 2, if not running).
+## 5. Preservation rules
 
-## 2. Launch
+- Preserve behavior, not necessarily placement or markup shape.
+- Stable IDs, routes, handlers, form fields, visible strings, conditional states,
+  analytics hooks, and accessibility labels are contractual unless approved.
+- `dreative audit` checks each manifest needle after implementation.
+- Intentional changes require `intentionallyChanged: true` and `changeReason`.
+- A visually successful redesign that loses behavior fails.
 
-```
-dreative start   # serves http://localhost:4820, opens browser (background this)
-```
+## 6. Framework adapters
 
-Tell the user the UI is open: they can view the **Replica** tab (1:1 copy of their real page, hover shows your summaries), drag elements in **Layout**, add/remove blocks, set the **Design brief** (preset + dials), attach reference images and prompts, hit **🎨 Design all**, and click **Finish** when done.
+Load exactly one primary adapter from `frameworks/` plus `styling.md` when useful.
+Adapters provide technical implementation guidance only; they do not override the
+plan, design doctrine, preservation contract, or verification gates.
 
-## 3. Service requests (the wait loop)
+## 7. Completion report
 
-Repeat until finish:
+Report:
 
-```
-dreative wait    # blocks up to ~8 min; prints ONE event as JSON
-```
+- chosen concept, tier, depth, and skills;
+- each section as shipped/fallback/cut;
+- preservation result;
+- tests and runtime evidence;
+- known limitations and next step.
 
-- `{"kind":"none"}` → just run `dreative wait` again.
-- `{"kind":"request","id","type","payload"}` → handle per table below, then
-  `dreative respond <id> <resultFile>` (write the result JSON to a temp file) or `dreative respond <id> --error "why"`.
-- `{"kind":"finish","diff":…}` → go to step 4.
+Never claim a check ran unless it actually ran.
 
-| type | payload | result to respond with |
-|---|---|---|
-| `propose-skeletons` | `{prompt, brief?}` | Array of 1–3 `{name, layout}` page proposals (block schema above), structured per DESIGN.md layout rules |
-| `propose-variants` | `{pageName, layout, brief?}` | Array of 1–3 `{name, layout}` variants |
-| `edit-block` | `{block, instruction}` | The updated block JSON (same id) |
-| `design-page` | `{pageName, layout, brief?, plan?, refImage?, blockRefs, designPrompt?, previousFile?, siblingPages, outFile}` | Write a single-file React+Tailwind component (default export, no imports beyond react) to `.dreative/<outFile>`; every block id in layout must appear as `data-dreative-id="<id>"`. **`plan` is Dreative's pre-computed design decision — execute it, don't re-decide:** it carries resolved dials, a layout family per section (`plan.sections`, sections may carry `skills` tags like `["3d"]`), spacing/motion budgets (`plan.directives`), doctrine violations to fix (`plan.lints`), and required specialist skills (`plan.skills` → read `skills/<name>.md` first). DESIGN.md still governs everything the plan doesn't specify. Read `refImage`/`blockRefs[].refImage` (paths under `.dreative/`) with your image tools; if `previousFile` set, read it and preserve prior element edits. Respond `{"ok":true}` |
-| `edit-element` | `{file, elementId, instruction, refImage?}` | Edit `.dreative/<file>` in place, only the element with `data-dreative-id=elementId`, keeping DESIGN.md rules intact. Respond `{"ok":true}` |
+## 8. Optional visual round-trip
 
-A "Design all pages" click in the UI arrives as one `design-page` request per page, back to back: keep visual consistency across them (same accent, type scale, radius system — the first page you design sets the system for the rest). Persist that system to `.dreative/system.md` after the first page and re-read it before each later page or `edit-element`, so consistency survives session boundaries.
+Use only when explicitly requested:
 
-Token rules: only read ref images when a request names them; never dump whole files into responses; for edits, edit files directly instead of returning code.
+1. Extract the relevant pages into `.dreative/project.json` and replica files.
+2. Run `dreative baseline`.
+3. Start the editor and service `dreative wait` events.
+4. Supported requests are `propose-skeletons`, `propose-variants`, `edit-block`,
+   `design-page`, and `edit-element`. Read `DESIGN.md` and request-selected skills
+   before responding.
+5. On the `finish` event, apply the compact diff to the real source using its
+   source pointers, then run the same preservation and verification gates as
+   Direct Design.
 
-## 4. Apply (finish)
-
-The finish event's `diff` (also saved at `.dreative/finish.json`) contains only what changed vs the baseline:
-
-- `pagesAdded` — full layouts; create real pages/components for them.
-- `pagesRemoved` — confirm with the user before deleting real code.
-- `pagesChanged` — per page: `blocksMoved` (reorder in the source), `blocksAdded`, `blocksRemoved`, `blocksChanged` (only differing props listed; `refImage` = style reference to match, `intents` = behavior notes), plus page-level `refImage`/`designPrompt`.
-
-Use each block's/page's `source` pointer to open **only the owning files**, and each block's `summary` to recall what an element does **without re-reading unrelated code**. Read annotated ref images now (paths relative to `.dreative/`). Make the real code match the final layout and annotations, run the project's checks, and summarize what you changed.
+The editor is an optional input surface. It never weakens the Direct Design
+quality, preservation, or verification contract.

@@ -256,16 +256,11 @@ should explicitly invite extra direction.
    - **cinematic** — "dark, moody, movie-like atmosphere: glow, particles, fluid surfaces (think film title sequence)"
    - **refined** — "quiet luxury: lots of space, beautiful photography, very little movement — Apple/fashion-brand calm"
    - **media** — "AI-generated images/video made for this page and woven into the motion (hero film loop, images that come alive)"
-   - **ux** — "everything actually works: menus, forms, cart, keyboard — pretty AND functional" (recommend by default)
-   - **mobile** — first-class phone experience: bespoke mobile choreography and
-     layout treatment beyond baseline responsiveness (thumb-ergonomic redesign,
-     animations re-authored for touch, not just scaled down). **NOT recommended
-     by default** — baseline responsive/working-on-phone is already guaranteed
-     for every build via `ux` + DESIGN.md §13's required mobile strategy line,
-     so don't mark this "(Recommended)" just because a build is ambitious.
-     Recommend it only when the user asks for it, or the brief signals mobile
-     is a primary surface (e.g. explicitly mobile-first, or a mobile-heavy
-     audience/product).
+   - **ux** — "everything actually works: menus, forms, cart, keyboard — pretty AND functional". This is always included; show it as locked/included rather than optional.
+   - **mobile** — first-class phone experience: thumb-ergonomic layout and
+     effects re-authored for touch, not merely scaled down. This is always
+     included at baseline; mark it as an emphasized treatment only when mobile
+     is the primary surface or the user explicitly asks for a mobile-first take.
    - **experimental** — user-facing phrasing: "go weird: images that tear/
      dissolve/reassemble as you scroll, the camera diving into scenes, one
      never-seen-before idea per section". Internally this is the
@@ -280,7 +275,7 @@ should explicitly invite extra direction.
      "never seen before", or award-tier + immersive/cinematic/3d stacked
      together — it's the difference between effects *placed on* the page and
      the page *behaving* like the reference sites when you interact with it.
-   Plus "none — plain design doctrine only". Skip only when the user already
+   Plus "none — no optional treatments" (`ux` and `mobile` still apply). Skip only when the user already
    named the treatments or the request is trivially a restyle; read each
    chosen `skills/<name>.md` before designing.
 
@@ -461,8 +456,11 @@ question round — never impose it.
 
 ## 4. Write the plan, then execute it
 
-Persist the approved plan to `.dreative/plan.md` (or the scratchpad if
-`.dreative/` doesn't exist). **The first time this run writes into
+Persist the approved plan first to `.dreative/plan.json` using
+`references/ARTIFACTS.md` and `schemas/plan.schema.json`; this is the delivery
+contract consumed by `dreative audit`. Render the same decisions as a readable
+`.dreative/plan.md` for the user and session re-entry. Keep section and asset
+statuses synchronized in JSON as the build progresses. **The first time this run writes into
 `.dreative/`, also write `.dreative/README.md`** with exactly this content
 (it stops other agents/CLIs from mistaking run artifacts for the skill —
 observed failure: an agent found `.dreative/`, said "not a proper SKILL.md",
@@ -552,7 +550,8 @@ tweak feedback into the plan file before building.
 4. **Effects + choreography** across sections (page-level timelines, transitions,
    the signature element).
 5. **Verification** — the full runtime protocol (SKILL.md §V: runtime gates +
-   self-critique, mobile first, evidence written to `.dreative/verify.md`).
+   self-critique, mobile first, evidence written to `.dreative/verify.json` and
+   summarized in `.dreative/verify.md`).
    Any effect that fails gets its planned fallback, and the final report says
    so: "shipped the §2 fallback for X because Y".
 
@@ -563,11 +562,13 @@ carried out in full:
   is written AND its verification gate passes (or its named fallback shipped).
 - Never end the session, summarize, or declare done while unshipped rows
   remain. If interrupted or the context is compacted, re-read
-  `.dreative/plan.md` and resume from the first unshipped row — do NOT
+  `.dreative/plan.json` (using `plan.md` for narrative context) and resume from
+  the first unshipped row — do NOT
   re-plan, re-ask, or restart.
 - Cutting a row requires an explicit user decision or a hard technical blocker
   named in the report; "ran long" is not a reason.
-- Before the final report, walk the plan file row by row and mark each one.
+- Before the final report, walk `plan.json` row by row, mark each one, and run
+  `dreative audit`.
 
 Report against the plan when done: each blueprint row → shipped / fallback /
 cut (with reason), plus the motion inventory (motion.md §9) and the preservation

@@ -1,5 +1,14 @@
 # Dreative Specialist Skill — Media as Motion Material
 
+## Contract
+
+Follow `../references/SKILL_CONTRACT.md`. Dependencies: `ux`, `mobile`; add
+`motion` for animated treatments and `3d` for media planes. Deliver an asset
+manifest, rights/source note, crop/grade/compression work, dimensions/posters,
+responsive treatment, and fallback. Do not load when no meaningful media ships.
+Done means every planned asset exists, renders, has semantics, and has observable
+treatment evidence appropriate to the ambition tier.
+
 Load this file when `plan.skills` includes `media`, when the plan's blueprint
 contains any `generate-*` media cell, or when the brief involves imagery/video
 on a page with motion dial ≥ 6. It EXTENDS DESIGN.md §7 (sourcing priority and
