@@ -22,7 +22,8 @@ all lower-tier requirements.
 ## Expressive (`expressive`)
 
 - Everything in Premium.
-- At least three coordinated motion/interaction moments with distinct purposes.
+- A recorded diversity-or-development path: several distinct mechanisms/drivers,
+  or one signature mechanism developing through three states with quiet support.
 - At least one input-driven treatment; entrances alone do not satisfy the tier.
 - Mobile translations and reduced-motion fallbacks are implemented, not noted.
 - Frame behavior and heavy asset cost are measured.
@@ -31,7 +32,8 @@ all lower-tier requirements.
 
 - Everything in Expressive.
 - A distinctive persistent spatial, media, or material system shapes the journey.
-- Signature media/3D is subject-honest, staged in a planned berth, and resilient.
+- One unmistakable dimensional or spatial signature is subject-honest, staged,
+  and resilient. A real GLB/cutout is the proven default, not the only medium.
 - Runtime evidence covers effects, transferred weight, frame time, occlusion,
   context loss/loading, and fallbacks.
 - The page has three memorable moments without sacrificing function.

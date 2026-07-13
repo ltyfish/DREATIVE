@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { SKILL_DEFINITIONS, resolveSkillDependencies } from "../shared/skillSystem.js";
+import type { ReflexFontRegistry, RuleRegistry } from "../shared/ruleSystem.js";
 
 export interface DocsCheckFinding {
   check: string;
@@ -85,6 +86,21 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
     add(findings, "tiers", schemaFile, `cannot parse tier schema: ${String(error)}`);
   }
 
+  for (const skill of ["media", "motion", "3d", "immersive", "cinematic"]) {
+    const specialist = `skills/${skill}.md`;
+    const recipe = `recipes/${skill}-recipes.md`;
+    if (!contents.has(recipe)) add(findings, "recipes", recipe, "recipe reference is missing");
+    if (!(contents.get(specialist) ?? "").includes(`../${recipe}`))
+      add(findings, "recipes", specialist, "does not point to its progressively loaded recipe reference");
+    if (/^## (?:\d+(?:\.\d+)*\.?\s+)?(?:implementation\s+)?recipes?(?:\s|$)/im.test(contents.get(specialist) ?? ""))
+      add(findings, "recipes", specialist, "inline recipe catalog remains in the primary specialist file");
+  }
+
+  const planSchema = contents.get("schemas/plan.schema.json") ?? "";
+  for (const field of ["doctrineVersion", "ruleExceptions", "creativeStrategy", "fontDecision", "experimentalPlan", "conceptExploration", "recipeAccess"]) {
+    if (!planSchema.includes(`\"${field}\"`)) add(findings, "schema", "schemas/plan.schema.json", `missing creative-control field ${field}`);
+  }
+
   const main = contents.get("SKILL.md") ?? "";
   for (const definition of SKILL_DEFINITIONS) {
     const file = `skills/${definition.name}.md`;
@@ -99,6 +115,37 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   for (const file of UNIVERSAL_FILES) {
     if (!(contents.get(file) ?? "").includes(UNIVERSAL_RULE))
       add(findings, "universal-rules", file, "universal ux/mobile rule differs from the canonical wording");
+  }
+
+  try {
+    const registry = JSON.parse(contents.get("references/RULES.json") ?? "{}") as RuleRegistry;
+    const ids = new Set<string>();
+    for (const rule of registry.rules ?? []) {
+      if (!rule.id || ids.has(rule.id)) add(findings, "rules", "references/RULES.json", `missing or duplicate rule id: ${rule.id}`);
+      ids.add(rule.id);
+      if (!["hard-gate", "evidence-backed-default", "creative-provocation"].includes(rule.category))
+        add(findings, "rules", "references/RULES.json", `${rule.id}: invalid category`);
+      if (rule.category === "hard-gate" && rule.exceptionAllowed)
+        add(findings, "rules", "references/RULES.json", `${rule.id}: hard gates cannot allow exceptions`);
+      if (!rule.observedFailure || !rule.defaultRemedy || !rule.exceptionTest)
+        add(findings, "rules", "references/RULES.json", `${rule.id}: missing history, remedy, or exception test`);
+    }
+    if (!registry.wordingPrinciple?.includes("measurable success criteria"))
+      add(findings, "rules", "references/RULES.json", "missing bounded-exception wording principle");
+  } catch (error) {
+    add(findings, "rules", "references/RULES.json", `cannot parse registry: ${String(error)}`);
+  }
+
+  try {
+    const reflex = JSON.parse(contents.get("references/REFLEX_FONTS.json") ?? "{}") as ReflexFontRegistry;
+    if (!Array.isArray(reflex.fonts) || reflex.fonts.length === 0)
+      add(findings, "fonts", "references/REFLEX_FONTS.json", "reflex font list is empty");
+    if (!Array.isArray(reflex.validReasonKinds) || reflex.validReasonKinds.length === 0)
+      add(findings, "fonts", "references/REFLEX_FONTS.json", "valid reason-kind list is empty");
+    if (!Array.isArray(reflex.invalidGenericReasons) || reflex.invalidGenericReasons.length === 0)
+      add(findings, "fonts", "references/REFLEX_FONTS.json", "generic-reason list is empty");
+  } catch (error) {
+    add(findings, "fonts", "references/REFLEX_FONTS.json", `cannot parse registry: ${String(error)}`);
   }
 
   const design = contents.get("DESIGN.md") ?? "";

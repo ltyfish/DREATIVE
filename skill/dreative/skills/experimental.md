@@ -3,11 +3,11 @@
 ## Contract
 
 Follow `../references/SKILL_CONTRACT.md`. Dependencies: `motion`, `interaction`,
-`media`, `ux`, `mobile`. Deliver one named provocation per selected major section,
-with an intelligible content purpose and conventional fallback. Do not load as a
-synonym for visual quality. Done means the unusual idea is visibly implemented,
-not token-gestured, while navigation, reading, touch, and reduced motion remain
-clear.
+`media`, `ux`, `mobile`. Explore one named provocation per major section, then
+select only the strongest two or three to ship. Do not load as a synonym for
+visual quality. Done means the selected peaks are visibly implemented while the
+remaining sections prepare, support, contrast, transform, or rest; navigation,
+reading, touch, and reduced motion remain clear.
 
 Load this file when `plan.skills` includes `experimental`, or the brief asks for
 "crazy", "bizarre", "never seen before", "way more creative", "wow factor", or
@@ -78,11 +78,11 @@ as-travel camera path:
   perspective to a flattened orthographic beat) — used sparingly, at most once
   or twice per page, as a structural beat (e.g. between "problem" and
   "solution" sections), not as constant novelty.
-- Every dimension shift still obeys immersive.md §3's rule: something must
+- Every dimension shift still obeys immersive.md §2's rule: something must
   persist across the cut (the subject, the camera, a color) or it reads as a
   jarring reload, not a journey.
 
-## 3. Budget for one deliberately unusual idea per major section
+## 3. Explore broadly, ship a hierarchy
 
 Competent execution of the named treatments is the floor, not the ceiling.
 When the user has opted into `experimental`:
@@ -93,8 +93,12 @@ When the user has opted into `experimental`:
   instead of a slide/fade; a form where each correct field entry visibly
   feeds a growing 3D structure; a footer that only fully renders once you've
   scrolled back UP to summon it. Not every idea survives the fallback
-  requirement (PLAN.md §2), but the blueprint should contain at least one per
-  major section, not zero.
+  requirement (PLAN.md §2), but `experimentalPlan.candidates` should contain at
+  least one per major section, not zero.
+- Select only the strongest two or three candidates to ship. Every unselected
+  section receives an explicit supporting role: prepare a peak, rest after it,
+  contrast it, carry connective tissue, or transform its residue. Experimental
+  means hierarchy and surprise, not every section competing as a technical demo.
 - Reference sites should be read as **systems to extract principles from**,
   not screenshots to imitate: note what makes their asset behave (a shader
   uniform driven by scroll velocity, a shared depth-of-field across the whole
@@ -102,6 +106,6 @@ When the user has opted into `experimental`:
   PRINCIPLE to Northwind/the actual brand — copying their literal palette or
   layout without the underlying system produces exactly the "images still
   static, objects still plain" outcome this file exists to prevent.
-- Every ambitious idea still needs 3d.md §7 / motion.md §6 performance
+- Every ambitious idea still needs 3d.md §5 / motion.md §5 performance
   budgets and a concrete fallback (PLAN.md §2) — experimental means bolder
   ideas, not exemption from the runtime verification gate.

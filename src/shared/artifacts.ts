@@ -33,6 +33,8 @@ export interface PlanPage {
 
 export interface DirectDesignPlan {
   version: 2;
+  /** Omitted legacy v2 plans remain readable; new plans set 2. */
+  doctrineVersion?: 2;
   request: string;
   createdAt: string;
   tier: AmbitionTier;
@@ -46,9 +48,65 @@ export interface DirectDesignPlan {
     userAssignments: { pageId: string; skills: SpecialistSkill[] }[];
   };
   designRead: { register: string; concept: string; signature: string };
+  implementationStartedAt?: string;
+  ruleExceptions?: RuleException[];
+  creativeStrategy?: CreativeStrategy;
+  fontDecision?: FontDecision;
+  experimentalPlan?: ExperimentalPlan;
+  conceptExploration?: ConceptExploration;
+  recipeAccess?: RecipeAccess[];
   pages: PlanPage[];
   preservationManifest: string;
   decisionLedger: string;
+}
+
+export interface RuleException {
+  ruleId: string;
+  decision: "substituted";
+  declaredAt: string;
+  reason: string;
+  alternative: string;
+  successCriteria: string[];
+  evidenceIds: string[];
+}
+
+export type CreativeStrategy =
+  | {
+      path: "diversity";
+      mechanisms: string[];
+      drivers: string[];
+    }
+  | {
+      path: "development";
+      signatureMechanism: string;
+      states: string[];
+      secondaryMechanisms: string[];
+      drivers: string[];
+    };
+
+export interface FontDecision {
+  selected: string;
+  candidates: { name: string; reflex: boolean; rationale: string }[];
+  recentDisplayFonts: string[];
+  reasonKinds?: string[];
+  justification?: string;
+  repeatJustification?: string;
+}
+
+export interface ExperimentalPlan {
+  majorSectionIds: string[];
+  candidates: { id: string; sectionId: string; idea: string; selected: boolean }[];
+}
+
+export interface ConceptExploration {
+  recordedAt: string;
+  concepts: { name: string; concept: string; brandConnection: string }[];
+}
+
+export interface RecipeAccess {
+  file: string;
+  loadedAt: string;
+  purpose: "feasibility" | "implementation" | "performance" | "fallback" | "concept-repair";
 }
 
 export type PreservationKind =

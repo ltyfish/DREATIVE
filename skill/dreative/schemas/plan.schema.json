@@ -7,6 +7,7 @@
   "required": ["version", "request", "createdAt", "tier", "depth", "skills", "skillPolicy", "designRead", "pages", "preservationManifest", "decisionLedger"],
   "properties": {
     "version": { "const": 2 },
+    "doctrineVersion": { "const": 2 },
     "request": { "type": "string", "minLength": 1 },
     "createdAt": { "type": "string", "format": "date-time" },
     "tier": { "enum": ["solid", "premium", "expressive", "award"] },
@@ -44,6 +45,13 @@
         "signature": { "type": "string", "minLength": 1 }
       }
     },
+    "implementationStartedAt": { "type": "string", "format": "date-time" },
+    "ruleExceptions": { "type": "array", "items": { "$ref": "#/$defs/ruleException" } },
+    "creativeStrategy": { "$ref": "#/$defs/creativeStrategy" },
+    "fontDecision": { "$ref": "#/$defs/fontDecision" },
+    "experimentalPlan": { "$ref": "#/$defs/experimentalPlan" },
+    "conceptExploration": { "$ref": "#/$defs/conceptExploration" },
+    "recipeAccess": { "type": "array", "items": { "$ref": "#/$defs/recipeAccess" } },
     "pages": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/page" } },
     "preservationManifest": { "type": "string", "minLength": 1 },
     "decisionLedger": { "type": "string", "minLength": 1 }
@@ -62,6 +70,132 @@
       "items": { "$ref": "#/$defs/skill" }
     },
     "status": { "enum": ["planned", "shipped", "fallback", "cut"] },
+    "ruleException": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ruleId", "decision", "declaredAt", "reason", "alternative", "successCriteria", "evidenceIds"],
+      "properties": {
+        "ruleId": { "type": "string", "minLength": 1 },
+        "decision": { "const": "substituted" },
+        "declaredAt": { "type": "string", "format": "date-time" },
+        "reason": { "type": "string", "minLength": 20 },
+        "alternative": { "type": "string", "minLength": 30 },
+        "successCriteria": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 12 } },
+        "evidenceIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "creativeStrategy": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path", "mechanisms", "drivers"],
+          "properties": {
+            "path": { "const": "diversity" },
+            "mechanisms": { "type": "array", "minItems": 4, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+            "drivers": { "type": "array", "minItems": 3, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path", "signatureMechanism", "states", "secondaryMechanisms", "drivers"],
+          "properties": {
+            "path": { "const": "development" },
+            "signatureMechanism": { "type": "string", "minLength": 1 },
+            "states": { "type": "array", "minItems": 3, "uniqueItems": true, "items": { "type": "string", "minLength": 12 } },
+            "secondaryMechanisms": { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+            "drivers": { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+          }
+        }
+      ]
+    },
+    "fontDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selected", "candidates", "recentDisplayFonts"],
+      "properties": {
+        "selected": { "type": "string", "minLength": 1 },
+        "candidates": {
+          "type": "array",
+          "minItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "reflex", "rationale"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1 },
+              "reflex": { "type": "boolean" },
+              "rationale": { "type": "string", "minLength": 12 }
+            }
+          }
+        },
+        "recentDisplayFonts": { "type": "array", "maxItems": 3, "items": { "type": "string" } },
+        "reasonKinds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": ["existing-brand", "design-system-metrics", "product-register", "supplied-reference", "language-coverage", "variable-font-capability", "performance", "physical-editorial-historical-reference"]
+          }
+        },
+        "justification": { "type": "string", "minLength": 20 },
+        "repeatJustification": { "type": "string", "minLength": 20 }
+      }
+    },
+    "experimentalPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["majorSectionIds", "candidates"],
+      "properties": {
+        "majorSectionIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "sectionId", "idea", "selected"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "sectionId": { "type": "string", "minLength": 1 },
+              "idea": { "type": "string", "minLength": 20 },
+              "selected": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
+    "conceptExploration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recordedAt", "concepts"],
+      "properties": {
+        "recordedAt": { "type": "string", "format": "date-time" },
+        "concepts": {
+          "type": "array",
+          "minItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "concept", "brandConnection"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1 },
+              "concept": { "type": "string", "minLength": 20 },
+              "brandConnection": { "type": "string", "minLength": 20 }
+            }
+          }
+        }
+      }
+    },
+    "recipeAccess": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file", "loadedAt", "purpose"],
+      "properties": {
+        "file": { "type": "string", "minLength": 1 },
+        "loadedAt": { "type": "string", "format": "date-time" },
+        "purpose": { "enum": ["feasibility", "implementation", "performance", "fallback", "concept-repair"] }
+      }
+    },
     "asset": {
       "type": "object",
       "additionalProperties": false,

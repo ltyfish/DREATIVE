@@ -3,7 +3,7 @@
 You MUST read this file before servicing any `propose-skeletons`, `propose-variants`,
 `design-page`, or `edit-element` request, and run §12 before every respond. It exists
 because LLM-designed UIs converge on one templated look. Every rule corrects a known
-model default; none is a suggestion. Requests may carry a `plan` (Dreative's
+model default, but its category determines how it governs. Requests may carry a `plan` (Dreative's
 pre-computed decision: dials, per-section layout families, budgets, lints) — execute
 the plan, apply this doctrine to everything the plan doesn't specify. When
 `plan.skills` names specialist skills (`motion`, `3d`, `interaction`, `immersive`,
@@ -11,13 +11,16 @@ the plan, apply this doctrine to everything the plan doesn't specify. When
 `skills/<name>.md` files extend this doctrine for that request — read them first;
 where they go deeper than a section here, they win.
 
-Rules come in two tiers. **Hard gates** — preservation (§11), spatial integrity
-(§15), the layout hard rules (§5), banned tells (§10), runtime verification —
-are checked mechanically and never traded away. Everything else is **craft
-doctrine**: binding defaults you deviate from only with a reason you could
-defend to the user. When attention is scarce, gates outrank craft rules, and
-craft rules outrank stylistic preference — but a page that only clears gates
-and shows no point of view is still a failure of this file.
+Rules use the three categories in `references/RULES.json`. **Hard gates** cover
+objective failures—preservation, functionality, mobile/reduced motion, content
+visibility, spatial integrity, organic-subject honesty, fallbacks, assets, and
+real verification—and cannot be waived. **Evidence-backed defaults** are proven
+remedies for repeated dogfood failures; follow them or declare a planning-time
+alternative with measurable criteria and runtime evidence. **Creative
+provocations** force divergent exploration but do not become shipment checklists.
+When attention is scarce, hard gates outrank defaults, and defaults outrank
+stylistic preference—but a page that only clears gates and shows no point of
+view is still a failure of this file.
 
 ## 1. Register: the first decision
 
@@ -76,8 +79,9 @@ Never design by accretion, and never commit to the first concept. Three passes:
    `$RANDOM % 20 + 1`, or read digits off `date +%N`) and record the literal
    command AND its output in plan.md. The roll picks one **provocation** from
    the table below; at least ONE of the three explore concepts must take it
-   literally, and if that concept wins, the provocation ships — visibly, not
-   as a token gesture. Roll a second number (1–6) to pick a **forced-rotation
+   literally. If that concept wins, the provocation becomes a candidate;
+   experimental delivery selects only the strongest two or three peaks instead
+   of forcing every candidate to ship. Roll a second number (1–6) to pick a **forced-rotation
    axis** — 1 palette strategy · 2 type voice · 3 hero concept · 4 nav/page
    architecture · 5 signature driver · 6 set-piece family — and that axis must
    differ from anything in your ledger's last 3 entries AND from the most
@@ -221,17 +225,24 @@ a headline, an image, a live demo, an interactive moment. Whatever form fits.
 **Font selection procedure (brand register, never skip):**
 1. Write three physical-object brand-voice words ("warm, mechanical, opinionated" —
    never "modern" or "elegant").
-2. List the three fonts you'd reach for by reflex. Reject any on the ban list below.
-3. Pick for the brand as a physical object (museum caption, 1970s terminal manual,
-   concert poster, mid-century receipt). Reject the first thing that "looks designy".
-4. If the final pick matches the original reflex, start over.
+2. Read the last three display fonts from the design ledger and generate at least
+   three candidates for this brand, including continuity candidates when an
+   existing identity or design system matters.
+3. Mark candidates found in `references/REFLEX_FONTS.json`. A reflex font is not
+   bad or prohibited; it is a frequently unexamined choice that needs a specific
+   reason if it wins.
+4. Pick for the brand as a physical object (museum caption, 1970s terminal manual,
+   concert poster, mid-century receipt), supplied reference, product metrics,
+   language coverage, variable-font capability, or performance constraint.
+5. Record candidates and the winner in `plan.fontDecision`. If the winner is a
+   reflex font, record the concrete justification and at least one registry
+   category in `reasonKinds`. If it repeats one of the last three display fonts,
+   add a stronger repeat justification.
 
-**Reflex-reject fonts (training-data defaults, banned as defaults):** Fraunces,
-Newsreader, Lora, Crimson (all), Playfair Display, Cormorant (all), Syne, IBM Plex
-(all), Space Mono, Space Grotesk, Inter, DM Sans/Serif, Outfit, Plus Jakarta Sans,
-Instrument Sans/Serif. Inter/system stacks ARE legitimate in the product register
-and for trust briefs. When an existing app already uses one, identity-preservation
-wins — keep it.
+Valid reflex-font reason: "Inter is already embedded throughout this authenticated
+product, preserves its density metrics and translated layout, and changing it
+would damage brand continuity." Invalid reason: "Inter looks clean and modern."
+The goal is to stop reflex selection, not to declare common fonts inherently bad.
 
 **Serif discipline:** "creative/premium brief = serif" is the most-tested AI tell.
 Default is sans display. Serif only when the brief is genuinely editorial/luxury/
@@ -405,61 +416,18 @@ generated monograms — logos only, no category captions, below the hero.
 
 Before designing, check what media generation your environment actually offers —
 image-gen tools, video-gen tools, or a CLI that can produce them — and treat any
-capability found as a first-class design material, not a nice-to-have:
+capability found as a first-class design material, not a nice-to-have. Generate
+for the section's exact ratio, physical subject, and light temperature. Preserve
+real product screenshots and supplied photography when they are authoritative.
 
-- **Images**: generate hero photography, product/context shots, and textures at
-  the section's exact aspect ratio, prompted for the brand's physical subject
-  and the page's light temperature so they grade into the palette. Generate the
-  grain tile and any masks/mattes too instead of hand-rolling SVG.
-- **Video**: a generated 5–10s seamless loop is one of the biggest single UI
-  upgrades available — use it as: a hero background (muted, `autoplay loop
-  playsinline`, poster frame, `prefers-reduced-motion` swaps to the poster);
-  the budget "living surface" (a pre-rendered fluid/particle/atmosphere loop
-  instead of a GPGPU sim — cinematic.md's budget recipe); hover-preview loops
-  on work cards; or an image-sequence for scroll-scrubbed narratives (export
-  frames, scrub per motion.md).
-- **Integrate with motion, don't just embed** — a raw `<video>`/`<img>` dropped
-  in a section is not the treatment. Generated media enters the page THROUGH the
-  motion system; pick 1–2 treatments per page from this vocabulary (or invent in
-  its spirit), matched to the register:
-  - **Pixel/dither reveal**: video or image materializes from coarse blocks —
-    a shader that lerps sample resolution from ~24px mosaic to full res (or a
-    stepped `image-rendering: pixelated` downscale swap for the budget path),
-    driven by scroll progress or hover. Reads as digital-craft; dark-tech and
-    editorial registers.
-  - **Floating media**: images hover in depth with slow damped drift (±6-10px,
-    4-8s loops, each at a different phase), subtle parallax by depth layer, and
-    a soft contact shadow — the immersive "paper sheets in space" look without
-    WebGL. Cap at 3-5 floaters per view.
-  - **Mask-shaped video**: the loop plays inside display type (`background-clip:
-    text` / SVG mask on a 10vw+ headline), an arch/circle clip-path, or the
-    brand mark — the video becomes typography/identity rather than a rectangle.
-  - **Scroll-scrubbed sequence**: generated frames scrubbed by scroll for
-    assemble/morph/rotate narratives (motion.md's canvas product story).
-  - **Velocity-touched media**: scroll/drag velocity stretches, RGB-splits, or
-    ripples the media plane for a beat, settling with damped decay
-    (cinematic.md §2) — needs the WebGL media-plane sync.
-  - **Hover-woken loops**: stills that crossfade into their video loop on
-    hover/focus (240ms), pause + rewind-to-poster on leave; works as generated
-    "living thumbnails" on work/product cards.
-  - **Curtain/split reveal**: media enters behind a 2-4 panel wipe or an
-    expanding inset clip (`clip-path: inset(40% 30%) → inset(0)`), timed with
-    the section's line-mask type reveal so image and headline arrive as one
-    choreographed beat.
-  Whatever the treatment, honor the floors: reduced-motion gets the poster
-  frame, hover treatments have focus equivalents, and the effect is justified
-  in one sentence like any other motion (§6).
-- Discipline: same rationing as everything else — one video loop per view,
-  compress hard (H.264/AV1, ≤ 2–4MB per loop, no audio track), lazy-load below
-  the fold, and never let generated media replace REAL product screenshots or
-  the client's actual photography when those exist.
-- If no generation capability exists, say so and fall back down the §7 priority
-  list — never fake a video with a div animation.
-- `skills/media.md` is this section's deep dive: the production pipeline
-  (prompting for the page's light, compression targets, frame sequences), the
-  full DOM-tier and WebGL media-plane treatment vocabulary, and the
-  entrance/idle/response reasoning frame. Read it whenever generated media or
-  motion-integrated imagery ships.
+Do not choose a media treatment from a catalog here. First record three original
+brand-native concepts in `conceptExploration`; then read `skills/media.md` for
+principles. Open `recipes/media-recipes.md` only afterward for feasibility,
+implementation, performance, or fallback guidance, and log that access in
+`recipeAccess`. A raw `<video>` or `<img>` is not a treatment: the chosen media
+system must develop the concept and retain poster/static, focus/touch, reduced-
+motion, low-power, and loading fallbacks. If generation is unavailable, use the
+§7 source priority instead of simulating media with decorative divs.
 
 ### Surface & light — material identity for every layer
 
@@ -710,8 +678,9 @@ the output is not done.
 3. Zero em/en-dashes visible. Zero banned tells from §10.
 4. One accent + one tinted-neutral family + one theme + one radius system + one
    icon family, locked page-wide; matches sibling pages of this project.
-5. Fonts: not on the reflex-reject list (or justified by existing brand); scale
-   ratio committed; body ≥16px at 45-75ch; caps tracked; data tabular.
+5. Fonts: three candidates considered; registry matches marked; any reflex winner
+   has a specific registered reason; scale ratio committed; body ≥16px at
+   45-75ch; caps tracked; data tabular.
 6. Every CTA/form/placeholder passes WCAG AA; no CTA wraps; no duplicate CTA intent.
 7. Hero: ≤2-line headline, ≤20-word subtext, ≤4 elements, real visual, CTA above
    fold; centered only if variance ≤ 4 or manifesto brief.
@@ -801,10 +770,11 @@ desktop), at most 1 scroll-driven sequence per page, marquees pause when
 off-screen. Battery is a design constraint: continuous rAF loops must idle
 when nothing animates.
 
-## 14. Typography sourcing (kill the Inter-everywhere default)
+## 14. Typography sourcing (escape the first reflex)
 
-The reflex-reject list (§3) says what NOT to reach for; this is where to reach
-instead. All fonts below are free (Google Fonts or Fontshare/ITF). The
+Use this section only after the brand-register exercise in §3 has produced
+several candidates; it is a sourcing aid, not a rejection or approved-font list.
+All fonts below are free (Google Fonts or Fontshare/ITF). The
 commercial fonts real award sites use — verified: unseen.co sets **Saol
 Display Light/Italic + Neue Montreal**; unseen's Blossom lab sets **SangBleu
 Serif + PP Neue Montreal**; capsul-in-pro sets **Messina Sans** — are the
@@ -885,7 +855,7 @@ from the SCREENSHOT, not from the plan's prose: naming the object "eclipse",
 "thermal horizon", or "roast core" in the plan does not make a translucent
 sphere read as one — if the verify screenshot shows a ball floating over a
 photo, it fails regardless of what the plan swore it wasn't. At hero scale
-the answer must be a nameable thing (see 3d.md §3: abstract coded forms are
+the answer must be a nameable thing (see 3d.md §2: generic abstract forms are
 supporting-only and can never be the promoted signature object).
 
 **Interactive elements never overlap other interactive elements.** Not at any

@@ -75,6 +75,7 @@ test("direct-design audit verifies artifacts and preservation needles", () => {
 
     const report = runDirectDesignAudit(root);
     assert.equal(report.ok, true, JSON.stringify(report.findings));
+    assert.ok(report.findings.some((item) => item.check === "migration" && item.level === "warning"));
 
     const verifyFile = path.join(root, ".dreative", "verify.json");
     const verify = JSON.parse(fs.readFileSync(verifyFile, "utf-8"));

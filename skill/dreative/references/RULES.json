@@ -1,0 +1,186 @@
+{
+  "version": 1,
+  "wordingPrinciple": "Follow the proven default, or outperform it with a named alternative, measurable success criteria, and runtime evidence.",
+  "rules": [
+    {
+      "id": "preservation.noLoss",
+      "category": "hard-gate",
+      "observedFailure": "Redesigns silently removed links, handlers, copy, routes, states, or analytics hooks.",
+      "defaultRemedy": "Complete and pass the preservation manifest before delivery.",
+      "exceptionAllowed": false,
+      "exceptionTest": "none",
+      "reviewAfterRuns": 0
+    },
+    {
+      "id": "ux.functional",
+      "category": "hard-gate",
+      "observedFailure": "Visually ambitious pages shipped broken navigation, forms, states, focus, or pointer behavior.",
+      "defaultRemedy": "Pass the functional UX audit with keyboard and pointer evidence.",
+      "exceptionAllowed": false,
+      "exceptionTest": "none",
+      "reviewAfterRuns": 0
+    },
+    {
+      "id": "mobile.required",
+      "category": "hard-gate",
+      "observedFailure": "Desktop effects were cropped, unusable, or absent on touch devices.",
+      "defaultRemedy": "Ship a deliberate mobile treatment for every page and effect.",
+      "exceptionAllowed": false,
+      "exceptionTest": "none",
+      "reviewAfterRuns": 0
+    },
+    {
+      "id": "motion.reducedMotion",
+      "category": "hard-gate",
+      "observedFailure": "Motion-heavy pages ignored user preferences or hid content when animation failed.",
+      "defaultRemedy": "Ship visible defaults and a tested reduced-motion path.",
+      "exceptionAllowed": false,
+      "exceptionTest": "none",
+      "reviewAfterRuns": 0
+    },
+    {
+      "id": "spatial.noOcclusion",
+      "category": "hard-gate",
+      "observedFailure": "Traveling decoration and canvases covered text, controls, or pointer targets.",
+      "defaultRemedy": "Pass the occlusion and pointer-events sweep at desktop and mobile sizes.",
+      "exceptionAllowed": false,
+      "exceptionTest": "none",
+      "reviewAfterRuns": 0
+    },
+    {
+      "id": "3d.noCodedOrganic",
+      "category": "hard-gate",
+      "observedFailure": "Organic real-world subjects built from primitives looked like crude blobs and damaged credibility.",
+      "defaultRemedy": "Use a real GLB, a photoreal cutout, sourced photography, or remove the claimed object.",
+      "exceptionAllowed": false,
+      "exceptionTest": "none",
+      "reviewAfterRuns": 0
+    },
+    {
+      "id": "effects.runtimeFallback",
+      "category": "hard-gate",
+      "observedFailure": "WebGL, video, and scroll effects left blank or broken content when runtime assumptions failed.",
+      "defaultRemedy": "Ship and exercise loading, context-loss, low-power, and static fallbacks.",
+      "exceptionAllowed": false,
+      "exceptionTest": "none",
+      "reviewAfterRuns": 0
+    },
+    {
+      "id": "verification.realEvidence",
+      "category": "hard-gate",
+      "observedFailure": "Agents claimed checks passed without commands, screenshots, traces, or measurements.",
+      "defaultRemedy": "Attach structured, auditable proof to every passing verification claim.",
+      "exceptionAllowed": false,
+      "exceptionTest": "none",
+      "reviewAfterRuns": 0
+    },
+    {
+      "id": "assets.plannedExist",
+      "category": "hard-gate",
+      "observedFailure": "Plans promised distinct assets that were missing, duplicated, or never rendered.",
+      "defaultRemedy": "Reconcile every shipped asset path against the plan and rendered page.",
+      "exceptionAllowed": false,
+      "exceptionTest": "none",
+      "reviewAfterRuns": 0
+    },
+    {
+      "id": "content.visible",
+      "category": "hard-gate",
+      "observedFailure": "JS animation and effect layers made content invisible or inaccessible.",
+      "defaultRemedy": "Content remains visible and usable before enhancement and when effects fail.",
+      "exceptionAllowed": false,
+      "exceptionTest": "none",
+      "reviewAfterRuns": 0
+    },
+    {
+      "id": "typography.reflexChoice",
+      "category": "evidence-backed-default",
+      "observedFailure": "Agents repeatedly chose the same training-data fonts using generic clean-and-modern reasoning.",
+      "defaultRemedy": "Explore at least three candidates, mark reflex fonts, read the recent ledger, and choose a brand-specific voice.",
+      "exceptionAllowed": true,
+      "exceptionTest": "A reflex font has a specific brand, metric, product, language, variable-font, performance, or supplied-reference reason.",
+      "reviewAfterRuns": 5
+    },
+    {
+      "id": "award.spatialSignature",
+      "category": "evidence-backed-default",
+      "observedFailure": "Award builds used a generic orb or had no recurring dimensional system beyond the hero.",
+      "defaultRemedy": "Use a recognizable real GLB or photoreal cutout prop staged in a designed berth.",
+      "exceptionAllowed": true,
+      "exceptionTest": "A named alternative creates equivalent depth, recurrence, interaction, and visual dominance on desktop and mobile.",
+      "reviewAfterRuns": 5
+    },
+    {
+      "id": "3d.signatureRecognizable",
+      "category": "evidence-backed-default",
+      "observedFailure": "Abstract coded spheres, blobs, and toruses were promoted as signature objects and read as generic demos.",
+      "defaultRemedy": "Promote a recognizable subject; keep abstract geometry supporting-only.",
+      "exceptionAllowed": true,
+      "exceptionTest": "A brand-native abstract instrument has a nameable function, material identity, recurrence, and input response rather than being ambient decoration.",
+      "reviewAfterRuns": 5
+    },
+    {
+      "id": "media.award.participatoryMoment",
+      "category": "evidence-backed-default",
+      "observedFailure": "Award media remained something visitors only watched while the page claimed immersion.",
+      "defaultRemedy": "Use an image or video depth dive when the concept and assets support depth.",
+      "exceptionAllowed": true,
+      "exceptionTest": "The visitor affects, enters, transforms, scrubs, drags, refracts, or controls the media's visual logic with equal perceptual impact.",
+      "reviewAfterRuns": 5
+    },
+    {
+      "id": "media.award.pixelCoverage",
+      "category": "evidence-backed-default",
+      "observedFailure": "Award builds shipped one set-piece while all other key images remained static or used basic fade-and-zoom.",
+      "defaultRemedy": "At least half of key images, minimum three, use distinct pixel-class treatments.",
+      "exceptionAllowed": true,
+      "exceptionTest": "One coherent alternative media system visibly develops through at least three materially different roles or states.",
+      "reviewAfterRuns": 5
+    },
+    {
+      "id": "motion.expressive.diversityOrDevelopment",
+      "category": "evidence-backed-default",
+      "observedFailure": "Multiple sections repeated the same simple reveal or used unrelated effects only to satisfy a catalog.",
+      "defaultRemedy": "Use four distinct mechanisms across three input drivers.",
+      "exceptionAllowed": true,
+      "exceptionTest": "One coherent signature mechanism develops through at least three materially different states with two quieter secondary mechanisms and two drivers.",
+      "reviewAfterRuns": 5
+    },
+    {
+      "id": "exploration.provocationRoll",
+      "category": "creative-provocation",
+      "observedFailure": "Agents converged on the first familiar concept and repeated prior signatures.",
+      "defaultRemedy": "Use a random provocation to force at least one divergent exploration concept.",
+      "exceptionAllowed": true,
+      "exceptionTest": "The exploration still records three genuinely divergent, brand-native concepts.",
+      "reviewAfterRuns": 5
+    },
+    {
+      "id": "experimental.sectionCandidates",
+      "category": "creative-provocation",
+      "observedFailure": "Experimental mode added effects to a conventional page or made every section compete as a technical demo.",
+      "defaultRemedy": "Explore one non-obvious candidate per major section, then ship only the strongest two or three.",
+      "exceptionAllowed": true,
+      "exceptionTest": "The plan records hierarchy: selected peaks plus supporting, resting, contrasting, or transforming sections.",
+      "reviewAfterRuns": 5
+    },
+    {
+      "id": "recipes.afterExploration",
+      "category": "creative-provocation",
+      "observedFailure": "Large effect catalogs anchored concepts before the agent understood the brand or assets.",
+      "defaultRemedy": "Record three original concepts before loading recipe references.",
+      "exceptionAllowed": true,
+      "exceptionTest": "Early recipe access is limited to feasibility for a user-mandated technique and is recorded explicitly.",
+      "reviewAfterRuns": 5
+    },
+    {
+      "id": "layout.familiesArePrompts",
+      "category": "creative-provocation",
+      "observedFailure": "Suggested layout families became repeated templates instead of content-shaped compositions.",
+      "defaultRemedy": "Use layout-family labels to provoke exploration, not as mandatory templates.",
+      "exceptionAllowed": true,
+      "exceptionTest": "The shipped composition is brand-native, structurally honest, and passes hierarchy and repetition checks.",
+      "reviewAfterRuns": 5
+    }
+  ]
+}

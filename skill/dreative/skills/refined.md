@@ -9,6 +9,11 @@ states, and responsive proof. Do not confuse refined with generic minimalism.
 Done means hierarchy, copy, conversion flow, polish, and calm motion hold across
 desktop, keyboard, and phone.
 
+Use `../references/REFLEX_FONTS.json` through DESIGN.md's font procedure. Common
+product or editorial fonts remain valid when brand continuity, metrics, language,
+reference, variable-font capability, or performance specifically earns them;
+generic “clean and modern” reasoning does not.
+
 Load this file when `plan.skills` includes `refined`, or the brief/prompt asks
 for a "clean modern business site", premium-but-calm marketing, DTC/e-commerce
 polish, "professional, not flashy", or names references like ch.maswitzerland.com
@@ -23,7 +28,7 @@ well with a light dose of `interaction` (press states, underline draws), the
 first tier of `motion` (one hero sequence, 2-3 in-view reveals), `ux` (this
 register's audience punishes broken function hardest), and media.md's quiet
 treatments only (ken-burns, curtain reveals, one hover-woken loop — imagery
-here is generated/sourced to ONE photographic grade, media.md §1).
+here is generated/sourced to ONE photographic grade, media.md §4).
 
 ## 0. The register: expensive silence
 

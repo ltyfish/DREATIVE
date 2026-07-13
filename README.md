@@ -11,6 +11,9 @@ Install the skill, then ask your coding agent to design or redesign a page. The 
 - four explicit ambition tiers, from solid product UI through award-site work;
 - ten composable specialist skills with dependency resolution;
 - user-approved multi-page skill routing with explicit per-page assignments;
+- a rule registry that separates hard gates, evidence-backed defaults, and
+  creative provocations, with audited substitutions for equally ambitious alternatives;
+- reflex-font review and diversity-or-development planning instead of fixed aesthetic recipes;
 - framework adapters for React/Vite, Next.js, Vue/Nuxt, SvelteKit, and styling systems;
 - typed plan, preservation, decision-ledger, and verification artifacts;
 - `dreative audit`, which checks delivery status, preservation, assets, evidence, and common frontend risks.

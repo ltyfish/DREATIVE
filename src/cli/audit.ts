@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   validateDecisionLedger,
   validatePlan,
@@ -10,6 +11,11 @@ import {
   type VerificationReport,
 } from "../shared/artifacts.js";
 import { resolveSkillDependencies, type SpecialistSkill } from "../shared/skillSystem.js";
+import {
+  validateRuleControls,
+  type ReflexFontRegistry,
+  type RuleRegistry,
+} from "../shared/ruleSystem.js";
 
 export interface AuditFinding {
   level: "error" | "warning";
@@ -24,6 +30,15 @@ export interface AuditReport {
 
 function readJson(file: string): unknown {
   return JSON.parse(fs.readFileSync(file, "utf-8"));
+}
+
+const packagedSkillDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "skill", "dreative");
+
+function loadRuleFiles(): { registry: RuleRegistry; reflexFonts: ReflexFontRegistry } {
+  return {
+    registry: readJson(path.join(packagedSkillDir, "references", "RULES.json")) as RuleRegistry,
+    reflexFonts: readJson(path.join(packagedSkillDir, "references", "REFLEX_FONTS.json")) as ReflexFontRegistry,
+  };
 }
 
 function finding(level: AuditFinding["level"], check: string, message: string): AuditFinding {
@@ -173,6 +188,18 @@ export function runDirectDesignAudit(projectDir: string): AuditReport {
   findings.push(...checkArtifact(ledgerFile, "ledger", validateDecisionLedger));
   findings.push(...checkArtifact(verificationFile, "verification", validateVerificationReport));
   findings.push(...checkVerificationProof(projectDir, verificationFile));
+  if (plan.doctrineVersion !== 2) {
+    findings.push(finding("warning", "migration", "legacy v2 plan accepted; add doctrineVersion: 2 and the new creative-control fields on the next design run"));
+  } else {
+    try {
+      const { registry, reflexFonts } = loadRuleFiles();
+      const verification = fs.existsSync(verificationFile) ? (readJson(verificationFile) as VerificationReport) : undefined;
+      for (const message of validateRuleControls(plan, registry, reflexFonts, verification))
+        findings.push(finding("error", "rules", message));
+    } catch (error) {
+      findings.push(finding("error", "rules", `cannot load rule registries: ${String(error)}`));
+    }
+  }
   findings.push(...checkSkillClosure(plan));
   findings.push(...checkAssets(projectDir, plan));
   findings.push(...checkStaticQuality(projectDir, plan));

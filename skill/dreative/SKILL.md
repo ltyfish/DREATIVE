@@ -27,8 +27,13 @@ Read this file first, then only the references selected by the plan:
 3. `references/TIERS.md` — ambition-tier deliverables.
 4. `references/ARTIFACTS.md` — machine-readable plan, preservation, ledger,
    and verification files.
-5. `frameworks/<name>.md` — the adapter matching the repository.
-6. Each selected `skills/<name>.md`, once.
+5. `references/RULES.json` and `references/REFLEX_FONTS.json` — rule categories,
+   failure history, bounded substitutions, and reflex font choices.
+6. `frameworks/<name>.md` — the adapter matching the repository.
+7. Each selected `skills/<name>.md`, once.
+8. Only after three original concepts are recorded, load the relevant
+   `recipes/<name>-recipes.md` for feasibility, implementation, performance,
+   fallback selection, or repair of a weak concept.
 
 Detailed doctrine belongs in those references, not in this orchestration file.
 
@@ -52,6 +57,13 @@ Detailed doctrine belongs in those references, not in this orchestration file.
 - Resolve one ambition tier: solid, premium, expressive, or award.
 - Explore three genuinely different concepts, commit to one, and record why the
   others were rejected.
+- Classify important rules through `references/RULES.json`: hard gates are
+  absolute; evidence-backed defaults remain the proven remedy; creative
+  provocations influence exploration rather than becoming shipment quotas.
+- Follow the proven default, or outperform it with a named alternative,
+  measurable success criteria, and runtime evidence. Any substitution is
+  declared before `implementationStartedAt` in `ruleExceptions`; hard gates
+  cannot be substituted.
 - Run one short decision phase containing several sequential single-question
   calls. Use the environment's structured question tool when available;
   otherwise ask in chat. Do not ask about implementation details the agent can
@@ -65,6 +77,12 @@ Detailed doctrine belongs in those references, not in this orchestration file.
 
 The approved plan is a delivery contract. A section ends as `shipped`,
 `fallback`, or `cut` with a reason—never silently omitted.
+
+At `expressive` and `award`, choose one coherent quality path: `diversity`
+(several mechanisms across several drivers) or `development` (one signature
+mechanism evolving through at least three materially different roles, supported
+by two quieter mechanisms). Experimental work explores one non-obvious candidate
+per major section, then selects only the strongest two or three to ship.
 
 ### 3.3 Select skills
 
@@ -105,6 +123,8 @@ must appear somewhere in the overall plan, but not on every page.
 - Preserve the manifest unless the user explicitly approved a change; record
   approved divergence with a reason.
 - Implement blueprint sections in order. Keep the machine plan status current.
+- Do not open recipe catalogs before `conceptExploration` records three
+  brand-native concepts. Record every recipe file and load time in `recipeAccess`.
 - A restructure or reimagine rebuilds markup/component boundaries when necessary;
   it is not a stylesheet-only restyle.
 - Every heavy effect ships with its planned reduced-motion, mobile, loading, and
@@ -134,6 +154,10 @@ Verification is evidence, not prose asserting that something was checked.
 6. Reconcile every plan section and asset against what visibly shipped.
 7. Write `.dreative/verify.json` and run `dreative audit`.
 8. Fix every error. Warnings require either a fix or a recorded justification.
+
+Every evidence-backed substitution references passing evidence IDs whose proof
+meets its declared success criteria. Vague reasons such as "it did not fit",
+"restraint", "felt better", or "3D was unnecessary" fail audit.
 
 The task is complete only when the plan has no `planned` sections, preservation
 passes, verification contains no failing evidence, and `dreative audit` passes.

@@ -18,3 +18,13 @@ Universal foundation: ux and baseline mobile apply to every web page.
    `dreative audit`.
 
 A specialist file may strengthen these floors but may not weaken them.
+
+Rules use three categories from `RULES.json`:
+
+- hard gates are objective delivery failures and cannot be waived;
+- evidence-backed defaults are proven remedies with bounded substitutions;
+- creative provocations generate exploration candidates, not mandatory clutter.
+
+Follow the proven default, or outperform it with a named alternative,
+measurable success criteria, and runtime evidence. Generate and record three
+brand-native concepts before loading any `recipes/` reference.

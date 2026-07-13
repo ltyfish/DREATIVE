@@ -48,11 +48,11 @@ Rules:
   cells become `source-image` (DESIGN.md §7's priority: verified stock/CDN
   photography), every planned cutout prop becomes a sourced-and-matted photo
   or is cut, and any 3D of an organic real-world subject is re-planned as a
-  photo billboard, an abstract form, or cut (3d.md §3 rungs 2/4 — coded
+  photo billboard, a brand-native abstract instrument, or cut (3d.md §1–2 — coded
   organic geometry never becomes the fallback)**; no browser tools → the
   verification protocol's manual fallback (SKILL.md) must be declared up front.
   Missing tools change WHERE assets come from, never whether media/3D rules
-  apply — sourced media carries the same treatment obligations (media.md §0).
+  apply — sourced media carries the same treatment obligations (media.md §1–3).
 
 ## 2. The blueprint (section-by-section, media-first)
 
@@ -67,46 +67,52 @@ presents choices about a concrete plan, not abstractions. Per section:
   (exists in repo / user must supply — name it), `none`. Media enters through
   the motion system per `skills/media.md` — name the treatment (curtain reveal,
   mask-shaped, hover-woken, media-plane distortion…), never "add an image".
-  At dial ≥ 7 the blueprint also names the page's ONE media set-piece
-  (media.md §0 — image tornado, disintegration on scroll, shatter/reassemble,
-  living overlay…) and which section carries it; a dial-7+ plan whose media
-  column is all quiet treatments is incomplete.
-  When the set-piece is a media.md §3.5 dive (the award-tier default), its
+  At dial ≥ 7 the proven default is one meaningful media set-piece and the
+  blueprint names which section carries it. The outcome is a memorable moment
+  where media itself becomes the visitor-controlled spectacle, not a specific
+  catalog effect. A different solution uses a registered planning-time
+  substitution with observable success criteria and evidence IDs.
+  When the set-piece uses a depth dive (the default for image-led `award`
+  concepts with depth-capable assets), its
   `generate-image` cell must plan a DEPTH-CAPABLE composition (a corridor,
   room, landscape, machinery receding — something a camera can enter) and
   the companion assets in the same cell: the depth map and/or the separated
   foreground/background plates, generated in the same prompt world.
   The set-piece is chosen via
   media.md's exploration protocol: invent three brand-native candidates not
-  listed in the catalogs, record them + the pick in the plan file — a media
-  plan assembled only from listed effects with no rejected invention on
-  record is minimum-effort compliance. **Every media-plane / pixel-class cell
+  sourced from recipes, record them + the pick in `conceptExploration`, then
+  load recipe references only for feasibility/implementation/fallback and log
+  them in `recipeAccess`. A media plan assembled from listed effects before
+  original exploration is invalid. **Every media-plane / pixel-class cell
   names WHICH image asset the effect consumes as its texture/source** — a
   "shader plane" cell with no named image, or a plane carrying its own
   separate texture (steel/noise/gradient) layered over the section's
-  photography, is an invalid cell (media.md §0's overlay-plane loophole: the
+  photography, is an invalid cell (media.md §2's treatment-identity rule: the
   treatment must transform the image's own pixels, aligned to its rect —
   never a decorated rectangle floating over a static `<img>`).
   **Custom 3D in a media cell must name
   its asset source in the blueprint** — a GLB path, a generated/sourced
   texture (the actual prompt or file), or the billboard cutout it will ride
   on. "Custom 3D bean/bottle/plant geometry" with no named source is an
-  invalid cell: primitives can't produce an organic subject (3d.md §3), so
+  invalid cell: primitives can't produce an organic subject (3d.md §1), so
   re-plan it as rung 2 (photo billboard) or an abstract SUPPORTING form
-  (3d.md §3 rung 3 — never the promoted signature object) at plan time —
+  (3d.md §2 — never a generic promoted signature object) at plan time —
   don't let the build stage discover this. The user picking "custom 3D" in
   the media question grants the *medium*, not an exemption from the ladder.
-  Every 3D prop cell also names its BERTH (3d.md §1.5): which lane/stage of
+  Every 3D prop cell also names its BERTH (3d.md §3): which lane/stage of
   the section it occupies and what the layout does to make room — a prop
   planned "over the hero image" or with no berth is an invalid cell.
-  At the `award` tier the blueprint must contain at least one 3D prop
-  cell (3d.md §0's required prop — GLB or cutout billboard, with its berth
-  and asset source named); zero prop cells = incomplete plan.
-  At dial ≥ 8 the media column additionally marks each hero/key image's
-  treatment as quiet-class or PIXEL-class (media.md §0) and must already
-  satisfy the coverage floor on paper: at least half pixel-class (min 3,
-  set-piece included), each a different mechanism, quiet cells tied to the
-  intensity curve's rests.
+  At the `award` tier the outcome gate is one unmistakable dimensional or
+  spatial signature. The proven default is a recognizable real GLB or photoreal
+  cutout prop with a berth and asset source. A typography, photographic, data,
+  scene-instrument, or other alternative must use `award.spatialSignature` and
+  prove equivalent depth, recurrence, interaction, and dominance on desktop
+  and mobile. Generic orbs/blobs/toruses remain invalid.
+  At dial ≥ 8 the media column marks each hero/key image quiet-class or
+  PIXEL-class. The proven default is at least half pixel-class (minimum three,
+  set-piece included), each a different mechanism. A coherent alternative may
+  substitute `media.award.pixelCoverage` only when it visibly develops through
+  at least three materially different roles or states and carries runtime proof.
 - **Travel map (mandatory when any element persists across sections).** If
   the blueprint contains a fixed canvas object, a recurring signature, or any
   scroll-morphing prop that lives through more than one section, add a travel
@@ -116,20 +122,17 @@ presents choices about a concrete plan, not abstractions. Per section:
   object is scripted HIDDEN for that section. A persistent object without a
   travel map is an unplanned collision that verify will find later — plan it
   now. The set-piece at dial ≥ 8 must also be pixel-transforming per
-  media.md §0 (placement choreography like orbit/collapse doesn't qualify).
-- **Mechanism-diversity quota (dial ≥ 7 / expressive+).** Floors measure the
-  weakest item; quotas measure the whole page. Across the blueprint's media +
-  interaction columns count the DISTINCT mechanisms (curtain reveal, media
-  plane, drag gallery, cursor torch, disintegration… — by name) and the
-  DISTINCT drivers (scroll, cursor/hover, drag, click, time/idle): the page
-  needs **≥ 4 distinct mechanisms spanning ≥ 3 distinct drivers, and no
-  mechanism used more than twice**. Every hero/key image gets BOTH an idle
-  life and an input response — one or the other is the floor, not the plan.
-  "Curtain reveal ×5 + one set-piece" fails the quota: that is a page grazing
-  its rules, not a designed page. The quota tallies go in the plan file and
-  are re-counted at verify.
+  media.md §3 (placement choreography like orbit/collapse doesn't qualify).
+- **Diversity or development (dial ≥ 7 / expressive+).** Choose and record one
+  path in `creativeStrategy`. Diversity uses at least four distinct mechanisms
+  across three distinct drivers. Development uses one coherent signature
+  mechanism that changes through at least three materially different roles or
+  states, supported by two quieter secondary mechanisms and two drivers. The
+  same reveal repeated with different values is neither path. This keeps the
+  proven anti-repetition safeguard without forcing unrelated effects into a
+  coherent concept.
 - **motion treatment** — from motion.md/immersive.md/cinematic.md vocabulary,
-  with the dial-appropriate ambition. **motion.md §9's inventory is a hard
+  with the dial-appropriate ambition. **motion.md §5's verification inventory is a hard
   plan gate, not a target:** at `expressive`/`award` ambition the blueprint
   must enumerate every §9 item for its dial — which element carries it, what
   triggers it — or explicitly name the item as cut with a reason. A plan that
@@ -149,23 +152,18 @@ presents choices about a concrete plan, not abstractions. Per section:
   it's fragile.
 
 Plus four page-level lines: register + design read (DESIGN.md §2), signature
-element, animation stack (ONE system: GSAP+Lenis or motion/react — motion.md §0),
+element, animation stack (ONE system: GSAP+Lenis or motion/react — motion.md §2),
 and the mobile strategy per ambitious effect (DESIGN.md §13).
 
 **Signature-element plan gate.** The signature line is checked HERE, not
 discovered at build time: if the signature is a visual OBJECT, it must be a
-subject a stranger names correctly (3d.md §3's subject test). An abstract
-coded form — sphere/orb/ring/blob/torus/monolith, whatever poetic name the
-plan gives it ("atlas", "core", "eclipse") — is an INVALID signature object
-and the plan is reworked before it's presented; 3d.md §3's ban applies to the
-plan's words, not just the build's meshes. Signatures that are mechanisms
-(a strip-toss, a cursor instrument, a depth dive) rather than objects are
-exempt — the gate is for promoted decor objects. **Award prop form default:**
-when image-gen exists and no real GLB does, the required 3D prop (3d.md §0)
-is planned as a rung-2 transparent photoreal cutout billboard — field
-experience is unambiguous: cutout props read premium, coded/shader hero
-geometry reads as a demo. A plan may promote live coded geometry to signature
-ONLY with a named GLB + texture source in its cell. **Coded custom 3D is
+subject a stranger names correctly (3d.md §1–2's subject test). An abstract
+crude coded organic form is a hard-gate failure. Generic spheres/orbs/rings/
+blobs/toruses with no brand-native function remain invalid signatures. The
+proven `award` default is a real GLB or rung-2 transparent photoreal cutout;
+an alternative spatial typography, layered photography, data structure, or
+interactive instrument uses a registered substitution and must outperform the
+default on depth, recurrence, input response, and visual dominance. **Coded custom 3D is
 capability-gated at the probe (§1):** offer/plan it only when the probe
 verified an actual quality path — a real GLB in reach, image-gen for
 albedo/label textures, an HDRI/environment source. No verified texture path
@@ -438,7 +436,7 @@ these are the bar (fetch and study whichever is closest before designing):
   `TextureLoader` — one model, N palettes. Scroll drives it with plain
   `ScrollTrigger.create`; backgrounds are pre-rendered per-flavor video
   loops, not live sims. Lesson: photoreal product 3D = real GLB + real label
-  texture + HDRI environment — never coded geometry (3d.md §3) — and the
+  texture + HDRI environment — never crude organic coded geometry (3d.md §1) — and the
   cheap parts (backgrounds) are pre-rendered video.
 - https://www.cinetica.studio/ — the "composed chaos" register (stack
   verified): Webflow + the FULL GSAP plugin suite (ScrollTrigger, SplitText,
@@ -474,7 +472,9 @@ Persist the approved plan first to `.dreative/plan.json` using
 `references/ARTIFACTS.md` and `schemas/plan.schema.json`; this is the delivery
 contract consumed by `dreative audit`. Render the same decisions as a readable
 `.dreative/plan.md` for the user and session re-entry. Keep section and asset
-statuses synchronized in JSON as the build progresses. **The first time this run writes into
+statuses synchronized in JSON as the build progresses. Set `doctrineVersion: 2`,
+record `implementationStartedAt` immediately before code changes, and ensure all
+rule exceptions predate it. **The first time this run writes into
 `.dreative/`, also write `.dreative/README.md`** with exactly this content
 (it stops other agents/CLIs from mistaking run artifacts for the skill —
 observed failure: an agent found `.dreative/`, said "not a proper SKILL.md",
@@ -555,9 +555,10 @@ tweak feedback into the plan file before building.
 **Execution order (always):**
 
 1. **Assets first.** Generate every planned image/video/sequence NOW, at the
-   blueprint's aspect ratios, graded to the palette (media.md §1). Sections get
+   blueprint's aspect ratios, graded to the palette (media.md §4). Sections get
    designed around real assets, not around placeholders that "will be swapped".
-2. **Foundation.** Install and WIRE the animation stack (motion.md §8), fonts,
+2. **Foundation.** Install and wire the animation stack (motion.md §2 and the
+   motion recipe reference), fonts,
    tokens, providers — before any section code.
 3. **Sections** in blueprint order, each honoring its row (skills tagged per
    section apply to that section).
@@ -585,7 +586,7 @@ carried out in full:
   `dreative audit`.
 
 Report against the plan when done: each blueprint row → shipped / fallback /
-cut (with reason), plus the motion inventory (motion.md §9) and the preservation
+cut (with reason), plus the motion inventory (motion.md §5) and the preservation
 ledger when §11 applies. A build that silently diverges from its approved plan
 is a bug even when it looks good — and a plan left half-executed is a failed
 task, not a partial success.
