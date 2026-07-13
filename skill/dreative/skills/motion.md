@@ -105,6 +105,29 @@ tell. Instead:
   with `view-transition-name` so they morph across routes. Feature-gate; fall back
   to instant navigation, not a JS fade.
 
+## 5.5 Velocity & physical feel (what makes motion feel ALIVE, dial ≥ 6)
+
+Static easings play back; physical motion RESPONDS. The difference between a
+tweened page and a top-tier one is that top-tier motion carries momentum:
+
+- **Scroll velocity as an input.** Track smoothed velocity (Lenis exposes it;
+  else lerp `(scrollY - last) / dt`) and drive secondary properties from it:
+  skew images/cards ±2-4° along the scroll axis, stretch letter-spacing or
+  scaleY on display type a few %, increase a shader's blur/chromatic-
+  aberration/RGB-split uniform with speed. Everything eases back to rest via
+  the same lerp when scrolling stops — the settle IS the effect.
+- **Inertia and release.** Anything draggable keeps momentum on release
+  (Motion's `dragMomentum`, GSAP InertiaPlugin, or a manual velocity fling
+  with friction) and settles with an overshoot spring, never a hard stop.
+  A drag that stops dead on mouseup feels like a slideshow.
+- **Lag as depth.** Layered elements follow the scroll/cursor with different
+  lerp factors (0.05-0.15 spread) so the composition visibly re-stacks in
+  motion — cheap, GPU-light, reads as physicality on every pointer move.
+- **One motion signature per build.** Pick the personality once — a named
+  easing family (e.g. `expo.out` + one overshoot) OR one spring config — and
+  use it everywhere; mixed default eases read as assembled-from-snippets.
+  `linear` only for marquees/orbits; never ship a default ease unexamined.
+
 ## 6. Performance and accessibility (non-negotiable)
 
 - Transform/opacity only in hot paths; promote animating layers sparingly
@@ -180,6 +203,20 @@ React: run that inside a `useEffect` in a `<SmoothScroll>` provider mounted in
 the root layout (destroy on unmount); Next.js needs `"use client"` on it.
 ONE Lenis instance, ONE gsap ticker — never per-component.
 
+**React StrictMode is a hard constraint (the invisible-page bug).** Dev
+StrictMode mounts every effect TWICE. A bare `gsap.from(el, { opacity: 0 … })`
+in a `useEffect` whose cleanup only kills ScrollTriggers leaves the element at
+`opacity: 0`; the second effect run then reads that 0 as the animation's END
+state, and every reveal animates invisible→invisible — the page renders as
+blank sections with only untouched elements visible, no console error, and a
+passing build. Field-observed shipping failure. The rule: ALL GSAP work inside
+React effects lives in `gsap.context(() => { … })` (or `useGSAP`) and the
+cleanup calls `ctx.revert()` — never a kill-only cleanup, never `gsap.from`
+outside a context in a component. This is not a StrictMode workaround to
+disable (`<StrictMode>` stays); it's the correct teardown. Any `from()`-based
+reveal must be verified in a RENDERED page (SKILL.md §V) precisely because
+this failure mode is invisible to builds and greps.
+
 **motion/react (React product+brand):** `npm i motion` — import from
 `"motion/react"`. Shared transition vocabulary in one exported object
 (`export const spring = { type: "spring", stiffness: 300, damping: 30 }`), used
@@ -223,7 +260,11 @@ A motion request is fulfilled only if the final code contains, verifiably
 
 Before reporting done, list which inventory items shipped and where (element +
 trigger). "The page has hover states" does not clear dial 7+. If a listed item
-was deliberately cut, say so and why. This inventory is what the SKILL.md
-verification pass checks against — and its runtime stage must PROVE the items
-run (transforms changing, triggers firing, console clean), not just find them
-in the source.
+was deliberately cut, say so and why. This inventory is a **hard gate**, not a
+checklist: the SKILL.md verification pass fails the task on any dial-appropriate
+item that is neither proven running nor logged as a deliberate cut with a
+reason — an incomplete inventory means keep building, not ship with a caveat.
+The runtime stage must PROVE the items run (transforms changing, triggers
+firing, console clean), not just find them in the source. On mobile, grade
+against the shifted dial (mobile.md: desktop N ≈ mobile N−2), not the desktop
+list.

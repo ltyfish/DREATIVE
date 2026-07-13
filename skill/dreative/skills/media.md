@@ -11,6 +11,139 @@ choreographed, distorted, revealed, and lit, never just placed.
 
 ## 0. The doctrine
 
+- **The static-placement ban (any dial, whenever this file is loaded).** A
+  generated or supplied image dropped in as `background-image`, a full-bleed
+  `<img>` behind text, or a card thumbnail with zero behavior is a FAILURE of
+  this skill, not a baseline. Every media element ships with at least one
+  living quality — an entrance from §2/§2.5 (curtain, strip-slice, pixel/dither
+  develop, print develop, fade-sweep…), an idle (loop, drift, ken-burns), or a
+  response (hover wake, directional wipe, cursor torch, distortion). "Static on
+  purpose" is allowed only when written into the plan blueprint with a reason
+  (e.g. evidence screenshots in a refined register). At dial ≥ 8 with a canvas,
+  media belongs on media planes (§3) moving in depth — parallax layers, curved
+  sheets, velocity distortion — not pasted flat behind the DOM.
+- **Sourced media is media.** Everything in this file applies equally to
+  images/video that were generated, supplied by the user, or sourced from
+  stock/CDN when no generation tool exists — "we had no image-gen" changes the
+  PRODUCTION path (§1), never the treatment obligations. A picsum/stock photo
+  dropped in flat is the same failure as a generated one.
+- **The zoom/fade floor is a floor, not a treatment plan.** Fade-in entrances
+  plus ken-burns idles on every image = the minimum-compliance page, and at
+  motion dial ≥ 6 it FAILS this skill: at that dial, hero + key section
+  imagery each need at least one treatment that is scroll- or cursor-DRIVEN
+  (curtain synced to type, strip-slice, inner-zoom parallax, directional hover
+  wipe, cursor torch, velocity distortion, media plane — §2/§2.5/§3), where
+  the visitor's input visibly pushes the media. Ken-burns-everywhere is the
+  refined register's budget (refined.md), nobody else's.
+- **One media SET-PIECE per page (dial ≥ 7 / expressive+).** Beyond the
+  per-image floors, the page needs one moment where imagery itself IS the
+  spectacle — a composed §2.5 exotic (or an invention in its spirit) that a
+  visitor would describe to someone else: an image tornado/vortex the scroll
+  spins through, a hero that disintegrates into particles as you scroll past,
+  a gallery that shatters and reassembles, a melt/liquid exit between
+  chapters. Quiet treatments (curtain, parallax, ken-burns) on every image
+  with no set-piece = the page failed this skill even though each image
+  technically "moves". The set-piece is named in the plan blueprint like a
+  signature element, ONE per page as the default (refined register
+  may skip with a stated reason). At award-site ambition a SECOND
+  set-piece is permitted — never required — when the plan states what the
+  page needs it FOR (e.g. an entrance spectacle and a mid-page dive
+  serving different chapters), it uses a different mechanism family than
+  the first, and the intensity curve places a genuine rest between them;
+  two set-pieces back-to-back, or two of the same family, still compete
+  and still fail. **At dial ≥ 8 / award tier the set-piece
+  must transform the media at PIXEL level** — the image's own content visibly
+  changes under scroll/input, not just its placement. Qualifying classes:
+  particle/point-grid decomposition, shader displacement/dissolve/melt,
+  scroll-scrubbed frame sequences, slice/shatter of the bitmap, live texture
+  feedback or refraction, and the §3.5 immersion recipes (portal dive,
+  depth-map dive, diorama, particle fly-through, scrub-dive). **At award-site
+  ambition the default set-piece IS a §3.5 dive** — one moment where the
+  visitor goes INTO an image or video rather than watching it move; choose a
+  different pixel-transforming class only when a stated ASSET impossibility is
+  recorded in the plan (no depth-capable asset exists AND none can be
+  generated — with image-gen available this reason is almost never true, since
+  a depth-capable composition can be prompted). Brand fit, taste, or "this
+  concept links better" is NOT a valid skip reason: a masked reveal or curtain
+  chosen over the dive on preference grounds fails the award-tier check. Choreographing whole rectangles (orbit, collapse,
+  card fly-ins, grid reflow) is composition, not a set-piece at this tier —
+  it may accompany one, never substitute for it. Evidence at verify: the
+  sampled shader uniform / particle count / frame index changing with scroll.
+- **Treatment classes, and a coverage floor at award tier.** Treatments split
+  into two classes. QUIET class moves the rectangle or its window: curtain,
+  inner-zoom parallax, ken-burns, hover wipe, strip entrance, floating drift.
+  PIXEL class changes the image's own content: slice/shatter, particle
+  disintegration or assembly, UV distortion/melt/ripple, RGB split, mosaic/
+  pixel-assembly, living overlay, cursor torch, depth-map parallax, terrain
+  displacement, tornado/vortex, frame scrub, print develop. **At dial ≥ 8 /
+  award-site, ONE set-piece is not the whole show: at least half of the
+  hero + key section images (minimum 3, set-piece included) carry a
+  PIXEL-class treatment, each a DIFFERENT mechanism** — and the HERO image
+  is always one of them: the hero is the page's first impression and is
+  never the designated rest. Quiet class is
+  reserved for the intensity curve's designated rest sections, chosen as
+  rests on purpose. "Key image" is MECHANICAL, not discretionary: every
+  image that occupies ≥ 25% of the viewport at any scroll position, plus
+  the largest image of every blueprint section whose intensity is ≥ 5,
+  counts — the denominator is fixed by the blueprint, and reclassifying
+  images as "not key" to shrink it is the same self-grading this floor
+  exists to stop (a repeated card-grid pattern counts as ONE image for the
+  tally, treated uniformly). EXEMPT from the tally: prop/item cutouts —
+  transparent-background object images seeded as scene props or product
+  shots (§1.5) — which follow §1.5's behavior rules instead; the floor
+  governs scenic/editorial imagery, not the objects living in the layout. A page that is one set-piece plus curtains everywhere
+  else reads exactly as static as no set-piece at all, and fails this floor.
+  (Below dial 8 the §0 zoom/fade-floor and set-piece rules stand unchanged —
+  this floor is what "award" buys.)
+- **The perceivability bar: a treatment that reads as zoom/pan doesn't
+  count.** Uniforms changing is machine evidence, not human evidence — a
+  depth shader at ±2px displacement, an RGB split a hair wide, an exposure
+  sweep too slow to catch: all "run" and all read to a visitor as a static
+  image or a plain zoom. Every pixel-class treatment must be obvious to a
+  stranger watching for 3 seconds: tune amplitude UP until a before/after
+  screenshot pair (same element, two scroll/input states) shows an
+  unmistakable difference in the image's CONTENT — pieces visibly apart,
+  pixels visibly displaced or sorted, particles visibly detached — not
+  just framing. If the honest description of what's visible is "it zooms/
+  slides a bit," raise the amplitude or swap to a bolder mechanism.
+  Subtlety is the refined register's virtue; at award tier it is a bug.
+  Mechanism CHOICE is free — dive/depth, fragment (particles, tiles,
+  slices, shards, pixel-assembly), distortion (melt, ripple, sort/smear),
+  optical (RGB split, torch, develop), scrub — pick what the brand's world
+  calls for. Two disciplines on the choice: (a) the page's tally must not
+  be all ONE family (a depth-displacement page and a particles-everywhere
+  page are equally monotone); (b) across BUILDS, don't reach for the same
+  family every time — the choice ledger records each build's set-piece
+  family, and repeating the last build's is the reflex the entropy draw
+  exists to break. The same bar applies to prop/item cutouts' §1.5 behaviors: a
+  prop whose rotation/settle can be mistaken for a static product image
+  has failed its dimensional kit — its motion must be readable at a
+  glance.
+- **Treatment identity: the effect must consume THE image (the overlay-plane
+  loophole).** A pixel-class treatment counts for an image only when that
+  image's own pixels are what transform — the image file is the plane's
+  `sampler2D` texture, the DOM element being sliced/displaced, or the source
+  of the particle/frame data. A shader plane carrying its OWN texture (steel,
+  smoke, noise, gradient) that merely floats over, beside, or semi-transparent
+  on top of a static `<img>` is DECOR: the underlying image stays untreated
+  and static, the tally does not move, and the set-piece requirement is not
+  met — however alive the overlay's uniforms are. Field failure this bans: a
+  translucent "heat field" plane at 72% alpha parked offset over static
+  photos passed uniform-sampling evidence while every actual image on the
+  page sat still and the overlay read as a misaligned murky rectangle.
+  Two mechanical corollaries: (a) **alignment** — an effect layer claiming an
+  image must cover that image's bounding rect edge-to-edge (or replace the
+  `<img>` outright); a plane at its own size/offset over the photo is a
+  DESIGN.md §15 overlap bug, not a treatment; (b) **no tint veils** — a
+  near-full-opacity colored plane blended over a photo is a color wash, not a
+  pixel treatment; if the concept is heat/energy on the image, the image's
+  own UVs/pixels carry the distortion.
+- **Edit the asset, don't just place it.** Generation is step one; the pipeline
+  (§1) continues with real editing — grade/duotone to the palette, crop to the
+  blueprint's aspect, cut video to the loop point, extract posters and frame
+  sequences, composite masks/mattes (ffmpeg/sharp or your image tools). An
+  asset that arrives on the page exactly as the generator emitted it usually
+  reads as wallpaper.
 - **No bare media at dial ≥ 7.** Every meaningful image/video gets three
   decisions: an **entrance** (how it arrives — reveal, wipe, materialize), an
   **idle** (what it does at rest — loop, drift, ken-burns, nothing-on-purpose),
@@ -58,6 +191,106 @@ When the plan calls for generated media, produce it BEFORE section code
   A 40MB hero loop fails the plan even if it's beautiful.
 - Textures too: grain tiles, masks, mattes, displacement maps — generate them
   instead of hand-rolling SVG (which is banned, DESIGN.md §7).
+- **Asset manifest (`.dreative/assets.json`) — generation is expensive; never
+  pay twice.** Before generating anything, read the manifest; an entry whose
+  prompt/aspect/grade matches the need means REUSE the file, don't regenerate.
+  After each generation+edit, append one entry:
+  `{ "file": "assets/hero-loop.mp4", "kind": "video-loop", "prompt": "<the
+  exact generation prompt>", "aspect": "16:9", "grade": "warm tungsten, deep
+  green shadows", "poster": "assets/hero-poster.webp", "bytes": 2400000 }`.
+  A re-run, a mockup→build transition, or a resumed session regenerates only
+  what the manifest doesn't already have.
+- **Distinct subjects need distinct assets (the seed-reuse ban).** Manifest
+  reuse is for the SAME need recurring (same subject, aspect, grade) — never
+  for covering N different things with one image. Every distinct product /
+  item / subject the blueprint renders (six bean lots, four team members,
+  three case studies) gets its OWN generated asset whose prompt names that
+  subject's differentiators (roast level, origin, color story, the object
+  itself) — six product cards sharing one seed image is the single loudest
+  "AI built this" tell a visitor can catch, and it is a build FAILURE, not a
+  savings. Same law per section: every blueprint section whose media cell
+  says `generate-*` gets its planned assets actually generated and rendered
+  in that section — if generation budget runs short mid-build, renegotiate
+  the media column with the user (fewer sections with real assets, or
+  placeholders named as such); never silently backfill by stretching one
+  asset across every gap. Verify reconciles this (SKILL.md §V): plan cells →
+  manifest entries → pixels on screen, with N distinct subjects mapping to N
+  distinct files.
+
+## 1.5 Custom props (isolated compositional elements)
+
+Distinct from hero/gallery media (§1-2, which fill a frame): a **prop** is a
+small, isolated object — a single coffee bean, a steam wisp, a leaf, a bottle,
+an icon-scale object — used as scattered COMPOSITION around content, not as
+the content itself. Props are what make a page feel art-directed rather than
+stocked with rectangles; they're cheap to generate/build and reused as a
+recurring motif across sections (the visual equivalent of a signature element,
+motion.md's terms).
+
+Two flavors — pick per section from the blueprint, they can mix on one page:
+
+- **Cutout image props**: with no image-gen tool, source instead of generate —
+  a verified real photo of the subject, matted to transparency (rembg / sharp /
+  ImageMagick if available); if no photo source and no matting path exists, the
+  prop is cut, never approximated with coded organic geometry (3d.md §3 rung 4).
+  When generating: generate on a transparent background — prompt
+  explicitly ("isolated on pure transparent background, studio product
+  lighting, no backdrop, no shadow baked in") and REQUEST alpha-channel PNG
+  output. **Verify the alpha is real**, not a white/checkerboard fill the
+  model painted in: sample a corner pixel programmatically or view at 100%
+  over a colored backdrop — a prop with a faint white halo is a failed
+  generation, regenerate or matte it out (rembg/similar if available). Add a
+  drop shadow / contact shadow yourself in CSS (`filter: drop-shadow(...)`),
+  never bake it into the generation — a baked shadow breaks when the prop
+  moves or the section behind it changes color.
+- **3D props**: when a prop lives inside a WebGL scene, the DEFAULT is still a
+  cutout image — on a billboard plane per 3d.md §3 rung 2 (alpha-tested plane,
+  parallax + damped rotation + contact shadow), which is photoreal by
+  construction. Coded geometry is reserved for ABSTRACT prop shapes (shards,
+  ribbons, orbs-as-design-objects) and must carry a real textured material per
+  `experimental.md` §1 (generated albedo + bump/roughness map, rim light,
+  environment reflection) — never model an organic real object (bean, leaf,
+  bottle…) from primitives; 3d.md §3 bans it. Either flavor is reusable: the
+  SAME prop instanced multiple times (different scale/rotation) reads as a
+  coherent motif, not repetition.
+
+Placement and behavior:
+
+- Compose as a **floating layer** (§2's floating-media technique) around
+  content: corners, margins, trailing a section's edge — never covering the
+  content's readable area. 3-6 instances per page is a motif; more reads as
+  clutter.
+- Give props real behavior, same floors as any media (§0): idle drift/rotate,
+  parallax depth differential, and at least one response (cursor-follow with
+  lag, scroll-linked rotation, hover nudge, scatter-and-reform on scroll
+  velocity). A prop that just sits pinned in a corner is decoration nobody
+  asked for; a prop that visibly reacts is what sells the "crafted" feel.
+- One prop VOCABULARY per page — pick one subject family (all beans/leaves/
+  steam, not a random mix of unrelated objects) and one behavior language, the
+  same discipline as §0's "one treatment vocabulary" rule.
+- Record each in the asset manifest (§1) with `"kind": "prop-image"` or
+  `"kind": "prop-3d"` — props get reused across sections, never regenerated
+  per-section.
+
+**Crop harvesting — one asset, many animatable parts.** A single generated or
+sourced image is a QUARRY, not one rectangle: crop/matte out its individual
+elements (each leaf, bean, shard, petal, tool) into separate cutouts and use
+them as the sprites of a real motion system — a scroll-scattered leaf drift,
+a cursor-repelled swarm, a pile that pours in as the section enters, a
+particle crossfade built from actual crops instead of colored points. This is
+the cheapest route to "insane animation" from limited assets: N crops × the
+§2.5 grammar = simulated animation without video-gen. Harvest at generation
+time (prompt a sheet: "12 isolated coffee beans, varied angles, transparent
+background") or matte crops from a scene asset; record each crop in the
+manifest.
+
+**Props-as-system floor (award tier).** At dial ≥ 8, static prop dressing is
+not a prop plan: at least ONE prop family on the page behaves as a SYSTEM —
+flocking/swarm, pour/emit with gravity, physics scatter-and-reform,
+scroll-driven multi-instance choreography (the §2.5 exploration-catalog
+constructions) — not just 3-6 cutouts drifting in corners. The drifting-motif
+minimum (idle + parallax + one response) is the floor below award; at award
+it's where fallbacks land, not where the plan aims.
 
 ## 2. DOM-tier treatments (no WebGL — the budget vocabulary)
 
@@ -142,9 +375,141 @@ blueprint like a signature element, and stamp it consistently (§0).
 - **Shatter/scatter**: media as an instanced tile grid (WebGL) that explodes
   along scroll velocity and reassembles at rest — the §3 plane system with a
   per-instance offset uniform; cap tiles ≤ 400.
+- **Image tornado / vortex**: 8-20 image cards on a helical path (WebGL
+  planes, or DOM: `rotateY` + translate on a cylinder via per-card
+  `--angle`), scroll progress spins and tightens/loosens the helix; cards
+  face the camera (billboard) or shear with velocity. Entry/exit: cards fly
+  in from scatter, settle into the vortex, then one card breaks out and
+  expands into the next section's hero. Gallery/archive/portfolio registers;
+  damp the spin (never raw-set), cap DPR, poster fallback.
+- **Disintegration on scroll/click**: the image dissolves into particles that
+  drift away along scroll direction — WebGL: draw the texture as a point grid
+  (one point per NxN texel block, ≤ 10k), scroll/click drives `uProgress`
+  which displaces points along noise + directional velocity while alpha
+  fades; reverse the uniform to reassemble. Budget DOM version: the image
+  sliced into a coarse tile grid, tiles translate/rotate/fade with staggered
+  randomized offsets. Click-to-destroy variants pair with a rebuild on
+  scroll-back — destruction must be reversible, content is never lost.
+- **Pixel assembly on scroll**: the reverse of disintegration as an ENTRANCE —
+  the image begins as scattered pixel blocks/particles (WebGL point grid ≤10k,
+  or DOM: a coarse tile grid at randomized scatter positions/rotations) and
+  scroll progress converges them into the finished picture; `uProgress` lerps
+  each point from its noise-scattered origin to its texel home, alpha ramping
+  up, optionally staggered radially or along a directional sweep. Pair with
+  the headline resolving in the same beat. Scroll-back re-scatters
+  (reversible). Variants: assemble from RGB-split ghosts converging, from
+  mosaic chunks sharpening (§2 pixel swap driven per-tile), or from another
+  image's dispersed particles (image A dissolves → its particles re-form as
+  image B: a particle CROSSFADE between chapters).
+- **Pixel sort / smear on velocity**: scroll velocity smears the image's
+  pixels along one axis (shader: offset UV lookup by per-column noise ×
+  velocity, or stretch bright bands glitch-style), decaying to sharp at rest
+  — agitation that answers the visitor's speed. Digital/editorial registers.
+- **Halftone/ASCII materialize**: media enters as its own halftone dots,
+  scanlines, or character grid and resolves to the photograph on scroll or
+  in-view — resolution as narrative. Budget: CSS `mask` with a dot pattern
+  scaling down; full: a LUT/threshold shader ramping cell size to zero.
+- **Living overlay**: a shader/canvas layer ON TOP of the media that reacts
+  while the image stays legible beneath — flowfield streaks along the
+  subject's edges, scanline/glitch bursts on scroll velocity, a displacement
+  ripple radiating from the cursor, halftone dots that swell near the
+  pointer. The overlay is the same §3 plane sampling the same texture —
+  never a second copy of the asset.
 - **Print develop**: media enters as paper-white → exposure/contrast/duotone
   ramps to full grade (CSS `filter` keyframes or a LUT shader), timed with
   the headline reveal. Photography/portfolio registers.
+
+### The exploration protocol (run it before choosing anything)
+
+The catalogs in this file are calibration, not a menu — the failure mode they
+create is pattern-matching to the nearest listed effect. At dial ≥ 7, before
+committing the media column of the blueprint, generate **three candidate
+treatments that do not appear verbatim in this file**, each derived from the
+brand's world (what does this subject physically DO? beans pour and tumble;
+fabric folds and drapes; ink bleeds; glass refracts; records spin; steam
+rises). Write the three candidates + the pick into the plan file with one
+line each on construction cost. Pick the boldest one that clears §5's floors
+and the register — if all three are weaker than a §2.5 exotic, use the
+exotic, but the exploration must have happened. A media plan assembled purely
+from listed effects, with no rejected invention on record, is minimum-effort
+compliance.
+
+### Exploration catalog (further constructions — steal the mechanics, reskin the idea)
+
+Images beyond the frame:
+
+- **Physics gallery**: images as draggable/throwable bodies (Rapier 2D or
+  a spring sim) that collide, settle, and stack; scroll shakes the pile.
+- **Infinite drag canvas**: a 2D plane of scattered media the visitor pans
+  through (drag + inertia), items waking (scale/unblur/play) near the
+  viewport center — the exploration-museum pattern.
+- **Image as terrain**: the photo's luminance drives vertex displacement on
+  a plane — the image becomes a relief the camera glides over on scroll.
+- **Fake-3D depth parallax**: one still + a (generated or estimated) depth
+  map; UV offset by depth × cursor/gyro = a photo with real parallax inside.
+- **Cursor echo trail**: moving the cursor across a gallery leaves a decaying
+  trail of image fragments/duplicates that fade behind it.
+- **Collage assembly**: a section's imagery enters as scattered scraps
+  (rotated, layered, torn edges) that scroll pulls into a composed collage —
+  the reverse of disintegration.
+- **Lens/magnifier**: a draggable optic over a large image or dense contact
+  sheet, refracting (WebGL) or scaling (CSS) what's beneath.
+- **Image weave**: the image sliced into interleaved ribbons (alternating
+  horizontal/vertical strips on two layers) that braid apart on scroll and
+  re-lace at rest — textile/craft/editorial registers.
+- **Contact-sheet deal**: a gallery enters as a physical stack that deals
+  itself across the grid (cards slide from the pile with rotation scatter
+  ±3°, inertia settle); reshuffles on filter change.
+- **Time-slice composite**: N stills of one subject across time/states cut
+  into vertical slivers composing ONE image; cursor X (or scroll) sweeps
+  which moment each sliver shows — time as a spatial axis. Process/
+  transformation stories (roast levels, seasons, day-to-night).
+- **Peephole/slot parallax**: the image seen through moving apertures — a
+  slit-grid layer slides over it while the image counter-slides beneath,
+  the two rates revealing more than either shows alone.
+- **Magnetic filings reveal**: a particle field (dots/dashes) that aligns
+  along the image's edge map as scroll progress rises until the subject's
+  silhouette emerges, then crossfades to the real photo — generate the
+  edge map from the asset (sharp/canvas Sobel) at build time.
+- **Gooey merge**: two images/blobs merge through an SVG gooey filter
+  (blur + contrast threshold) during a transition — liquid registers; cap
+  at one use, filters are paint-expensive.
+- **Wigglegram depth**: two/three frames of the same scene at slightly
+  shifted camera positions (generate them in one prompt world, or derive
+  via depth-map reprojection) alternated at 6-10fps on hover — fake
+  stereo depth with zero WebGL.
+- **Long-exposure echo**: a moving prop/cursor leaves a decaying trail of
+  itself on an offscreen canvas composited under the content — motion
+  paints the page; clears on section exit.
+
+Video beyond autoplay:
+
+- **Scrub-as-transition**: a 1-2s generated clip scrubbed by route/section
+  transition progress — the page change IS the video (door opens, liquid
+  pours, light sweeps).
+- **Video-lit scene**: sample the playing video's average/dominant color per
+  frame (offscreen canvas) and drive ambient page tint/glow from it — the
+  video becomes the room's light source.
+- **Timeline flipbook**: N generated stills of one subject across time/states
+  flipped by scroll — a bean roasting darker, a garment assembling — the
+  narrative version of a scrub sequence.
+
+Props beyond floating (§1.5 behaviors, upgraded):
+
+- **Flocking swarms**: 20-80 instanced prop cutouts with boids/noise motion
+  that scatter from the cursor and reform into a loose formation (or the
+  brand mark's silhouette) at rest.
+- **Pour/emit systems**: props emitted from a source object (beans from a
+  bag, petals from a stem) on scroll or click, falling with gravity + drag,
+  settling into a pile that persists per session.
+- **Props as UI**: the prop IS the control — a bean that drags along a
+  roast-level slider, a bottle that tilts to pour the page to the next
+  section. One per page; must keep an obvious conventional equivalent.
+
+Same law as §2.5: every construction here still clears §5's floors, earns one
+sentence of communication value, and the §0 set-piece count (one by default;
+a justified second at award) — an exploration catalog is not permission to
+ship five spectacles.
 
 Discipline stays the law: the composed treatment must still clear §5's floors,
 DESIGN.md §6's "one sentence of communication value", and one-signature-
@@ -154,7 +519,15 @@ on every section.
 ## 3. WebGL tier — the media plane (the unseen.co mechanic)
 
 When dial ≥ 8 or cinematic/immersive is active, media renders THROUGH the
-canvas so shaders can touch it. The core pattern, in order:
+canvas so shaders can touch it. **At award-site ambition this section is a
+REQUIREMENT, not an option**: the hero image and at least one gallery/section
+image set must be live media planes whose shader visibly responds to scroll
+(velocity distortion, dissolve, RGB split, curvature — pick from §2.5) — a
+page whose images all sit in flat DOM rectangles has not met the tier, no
+matter how much 3D floats around them. Verification must prove it: sample a
+plane's driven uniform (e.g. `uVelocity`, `uProgress`) or its rect-synced
+transform during a scripted scroll and record two differing values in
+verify.md. The core pattern, in order:
 
 1. **Sync planes to DOM rects.** Real `<img>`/`<video>` elements stay in the
    document (a11y, SEO, layout, fallback) but render invisible
@@ -181,6 +554,63 @@ element remains the interaction target (click/focus/hover listeners on the DOM,
 effects on the plane); reduced-motion and WebGL-failure both fall back to
 simply un-hiding the DOM media (set `opacity: 1`) — this fallback must be
 wired, not theoretical, and it's the first thing runtime verification checks.
+
+## 3.5 Going INSIDE the media (immersion recipes)
+
+The strongest media moment on the modern web is not looking AT an image —
+it's the camera going INTO it: the photo stops being a rectangle on a page
+and becomes, briefly, the space the visitor is in. These are the recipes,
+cheapest first; at dial ≥ 8 with a canvas, prefer one of these as (or inside)
+the set-piece over any flat treatment:
+
+1. **The portal dive (DOM tier — no WebGL needed).** Pin the section; scroll
+   scales the image from framed rectangle past 100% of the viewport while a
+   `clip-path` aperture opens, until its interior IS the background — and the
+   next section's content fades in already "inside" it (its palette sampled
+   from the image's deep tones so the world feels continuous). Reverse on
+   scroll-back. Layer 2-3 depth children (see recipe 3) inside the frame and
+   the dive reads as truly spatial, not as a zoom.
+2. **The depth-map dive (WebGL, the real thing).** Get a depth map for the
+   image: generate one (prompt the image tool for "depth map of this scene,
+   white near black far" alongside the still), or approximate from luminance/
+   a vertical gradient for scenes with obvious near-ground/far-sky structure.
+   Subdivided plane (~128×128), vertex shader displaces z by depth × uDolly;
+   scroll drives the camera INTO the displaced relief (dolly + slight fov
+   ease) while pointer shifts a ±3-5° parallax. Near pixels slide past the
+   camera edges as you enter — that edge-slide is what sells "inside".
+   Occlusion artifacts at the silhouette are hidden with fog/vignette matched
+   to the image's palette.
+3. **The diorama (matted layers).** Cut the image into 2-4 real layers
+   (subject / midground / backdrop — matte with the §1.5 cutout pipeline, or
+   generate the layers separately in the same prompt world). Place them at
+   real z-depths (WebGL planes or CSS `translateZ` with perspective on the
+   parent) and move the camera between them on scroll: passing a foreground
+   layer's edge as it exits the frame is the moment the brain accepts depth.
+   The generated-layers path beats matting: ask the image tool for the same
+   scene as "foreground elements only, transparent background" + "empty
+   background plate".
+4. **The particle fly-through.** Build the image as a point cloud (§2.5
+   disintegration budget: ≤ 10k points sampled from the texture, point size
+   by luminance). Scroll doesn't just dissolve it — it drives the camera
+   THROUGH the cloud: points ahead grow, pass the camera plane, and exit
+   behind (kill/respawn them past z=camera). Halfway through, the cloud
+   re-forms into the NEXT image — one continuous flight from picture to
+   picture is a set-piece by itself.
+5. **The scrub-dive (video/frames).** A scroll-scrubbed frame sequence
+   (generate-sequence, or frames extracted from video via ffmpeg) whose
+   camera already moves INTO the scene (prompt the generation that way:
+   "dolly forward into…"); pin the section, map scroll → frame index
+   (preload + draw to a canvas, never seek a `<video>` per frame), and the
+   visitor's scroll finger literally walks the camera in. Exit the pin at
+   the deepest frame into a section graded to that frame's palette.
+
+Wiring rules: these are still media planes — DOM element stays for a11y and
+the fallback is the graded flat image (§3's rules apply unchanged). ONE dive
+per page (it's a set-piece-class moment; two dives cheapen both). The dive
+target must be an image whose composition has actual depth to enter (a
+corridor, a room, a landscape, machinery receding) — prompt/choose the asset
+for that; diving into a flat-lit product shot reads as a zoom, which is the
+failure this section replaces.
 
 ## 4. Choosing the treatment (the reasoning frame)
 

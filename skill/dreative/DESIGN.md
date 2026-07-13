@@ -11,6 +11,14 @@ the plan, apply this doctrine to everything the plan doesn't specify. When
 `skills/<name>.md` files extend this doctrine for that request — read them first;
 where they go deeper than a section here, they win.
 
+Rules come in two tiers. **Hard gates** — preservation (§11), spatial integrity
+(§15), the layout hard rules (§5), banned tells (§10), runtime verification —
+are checked mechanically and never traded away. Everything else is **craft
+doctrine**: binding defaults you deviate from only with a reason you could
+defend to the user. When attention is scarce, gates outrank craft rules, and
+craft rules outrank stylistic preference — but a page that only clears gates
+and shows no point of view is still a failure of this file.
+
 ## 1. Register: the first decision
 
 Every page is one of two registers. Misclassifying it is the biggest single error.
@@ -48,20 +56,143 @@ Then run three tests on your intended output; restart if any fails:
 3. **Competitor sentence**: describe what you're about to build as a competitor would
    describe theirs. If the sentence fits the modal page in the category, restart.
 
-### The working process: commit before code
+### The working process: explore, commit, review — before code
 
-Never design by accretion. Two passes:
+Never design by accretion, and never commit to the first concept. Three passes:
 
-1. **Commit** — before any code, write a compact spec: 4-6 named colors (hex/OKLCH),
+1. **Explore** — sketch THREE genuinely divergent concepts, one line each:
+   palette strategy + type voice + signature element + hero thesis. Different
+   families of idea, not three shades of one (if two concepts share a palette
+   strategy or signature type, they are one concept — replace one). The slop
+   tests below are filters: they reject bad ideas but never generate better
+   ones; this pass is where a better idea gets a chance to exist. Pick one,
+   and record the two rejects with a one-line reason in the plan file
+   (PLAN.md §4).
+
+   **The entropy draw (before sketching, at expressive/award ambition).** Your
+   "random" pick is your reflex — the same fonts, the same hero move, run
+   after run. So the variance comes from OUTSIDE your head: roll a real random
+   number (`node -e "console.log(1+require('crypto').randomInt(20))"`, or
+   `$RANDOM % 20 + 1`, or read digits off `date +%N`) and record the literal
+   command AND its output in plan.md. The roll picks one **provocation** from
+   the table below; at least ONE of the three explore concepts must take it
+   literally, and if that concept wins, the provocation ships — visibly, not
+   as a token gesture. Roll a second number (1–6) to pick a **forced-rotation
+   axis** — 1 palette strategy · 2 type voice · 3 hero concept · 4 nav/page
+   architecture · 5 signature driver · 6 set-piece family — and that axis must
+   differ from anything in your ledger's last 3 entries AND from the most
+   obvious genre default. One re-roll is allowed per table if the result is
+   genuinely incompatible with the brief or usability — record both rolls and
+   the reason. A plan file with no recorded roll at expressive+ is incomplete.
+
+   **Provocation table (roll 1–20):**
+   1. The hero image is not a rectangle.
+   2. One image behaves like a physical object — mass, drag, inertia, release.
+   3. Type and imagery share one depth space; one passes through the other.
+   4. The page has a light source, and media visibly responds to it.
+   5. Scroll does something besides move the page down in one section.
+   6. The cursor is an instrument from the subject's world and acts on media.
+   7. One section is traversed by dragging, not scrolling.
+   8. An image disassembles into what it is physically made of.
+   9. Media leaks outside its frame and touches the UI around it.
+   10. Something never stops moving, slowly, for the whole visit.
+   11. The visitor's behavior (speed, hesitation, return) changes an element.
+   12. Two media assets visibly react to each other.
+   13. A transition destroys something that reassembles as something else.
+   14. The palette of a chapter is sampled live from the media on screen.
+   15. One interaction hands the visitor control they didn't expect to have.
+   16. Something pulses to an invisible rhythm, like sound with the audio cut.
+   17. The signature element recurs at three scales/roles across the page.
+   18. An ordinary control (button, input, nav) is built from the scene itself.
+   19. One moment of true depth: layers visibly separate and re-stack.
+   20. The final section answers the hero — a visual callback with a twist.
+2. **Commit** — write the winner as a compact spec: 4-6 named colors (hex/OKLCH),
    2+ type roles with actual font names, a one-sentence layout description per
-   section, and ONE **signature element** — the single memorable move (an
-   interaction, a typographic device, a composition) that carries the page's
-   distinctiveness. Spend your boldness there; keep everything around it disciplined
-   and quiet. Ground choices in the subject's world: its materials, instruments,
-   artifacts, and vernacular ("a coffee brand's world: burlap, roast curves,
-   thermometers, cupping notes") — not in web-design tropes.
-2. **Review** — test the spec against the slop tests below. If any part could apply
+   section, the **compositional spine** (§5), the page's ACTUAL hero headline
+   plus 2-3 section headlines written in the brand's voice (copy precedes
+   layout — type and composition are designed around real words, never
+   lorem-shaped assumptions; §8 governs the writing), and ONE **signature
+   element** with a mini-spec of its own: what it is, what drives it
+   (scroll / cursor / time / data), and why it could only belong to THIS brand
+   (subject-world grounding) — plus a novelty check: seen on a template, or in
+   your own ledger (below)? Invent again. Spend your boldness there; keep
+   everything around it disciplined and quiet. Ground choices in the subject's
+   world: its materials, instruments, artifacts, and vernacular ("a coffee
+   brand's world: burlap, roast curves, thermometers, cupping notes") — not in
+   web-design tropes.
+3. **Review** — test the spec against the slop tests below. If any part could apply
    to any similar project, revise that part. Only then build.
+
+**The choice ledger (anti-self-similarity across projects).** Slop tests can't
+see your own history — repeating yourself project after project is a
+monoculture of one. A global ledger at `~/.dreative/ledger.md` records one
+line per completed build: date · project · display/body fonts · palette
+strategy + hue · signature-element type · hero concept. During the commit
+pass, read it if it exists: anything in the new spec that repeats an axis
+from the last 3 entries is now YOUR reflex — rework that axis. After
+verification, append this build's line (create the file if missing). The
+ledger is also a taste memory: when the user gives a verdict on a shipped
+build ("the hero feels generic", "too much motion"), append it to that
+build's entry as a one-line `lesson:` — and the commit pass reads lessons
+alongside choices, so the same critique never has to be given twice.
+
+**No-media builds: structure IS the media.** When a build ships zero
+imagery (no image-gen tool, product register, or the user chose
+placeholders), the ambition tier does NOT tier down — it transfers whole
+onto layout, type, and motion, and this is where no-media builds die: the
+executor, with no assets to arrange, collapses to the one layout it knows
+(a vertical list of rounded cards in a centered column) and ships slop that
+its own plan didn't describe. Hard rules for any expressive+ no-media build:
+
+1. **The compositional spine must survive to the screenshot.** Whatever
+   bespoke structure the plan named (a strip rack, a ledger, a switchboard,
+   a timetable) must be RECOGNIZABLE as that thing in the shipped page — its
+   physical vocabulary built for real: the holder edge, the notch, the rail,
+   the perforation, the column rules. If a stranger shown the screenshot and
+   the blueprint's layout-family words couldn't match them, the build
+   restyled a card list and called it the spine — that is a depth-honesty
+   failure (§11), not a detail.
+2. **≥ 2 bespoke drawn/procedural artifacts.** With no photography, the page
+   earns visual richness from things MADE for it: a live canvas (meter,
+   field, trace), custom SVG structure (rules, notches, connectors, dials —
+   drawn, not icon-font), procedural texture/grain, a data-driven ornament.
+   A no-media page whose only visuals are borders and border-radius has no
+   media plan at all.
+3. **Type does structural work.** Multi-scale composition (oversized
+   numerals/designators against small mono metadata), real hierarchy per §6
+   — not one font-size row layout repeated N times.
+4. **Motion budget spends on the structure**, not on entrance fades: the
+   spine's own physicality (things racked, tossed, slid, stamped) is the
+   choreography. Motion.md's inventory applies at full dial.
+5. **A live rendered layer is required at award tier.** No imagery does not
+   mean no rendering: the page ships at least one WebGL/canvas system doing
+   real graphic work — a particle field, procedural texture/flowfield,
+   shader-lit surface, a data-driven instrument that never stops — plus
+   dimensional motion somewhere real (CSS 3D card physicality, depth-layered
+   parallax, a lit WebGL surface). A no-media award page with zero rendered
+   pixels is a text document with transitions. Vocabulary to draw from
+   (subject-grounded, not decorative): oscilloscope/waveform traces driven by
+   real events · topographic contour lines drifting · dot-matrix/LED field
+   that spells live state · plexus line-network connecting related items ·
+   isometric grid that lights under the cursor · scan sweep across data
+   rows · ASCII/character rain in the brand's glyphs · particle flow along
+   the layout's own rails · generative engraving borders · a physical sim
+   (springs, gravity) on the UI's actual objects.
+6. **Layout creativity means spatial composition, not relocated chrome.**
+   Moving the nav to the bottom, a novel tab bar, an unusual dock — that is
+   furniture rearrangement, and if it's the build's ONLY inventive move the
+   build failed. The invention must live in how the CONTENT is composed:
+   asymmetric multi-scale grids, overlapping planes, diagonal/rotated flow,
+   sections that share edges and interlock — while staying rigorously
+   modern and clean (generous space, disciplined alignment, few colors).
+   "Clean" and "insane motion" are the same build: calm composition,
+   spectacular behavior.
+
+The slop tests above apply to the RENDERED page: "dark theme + rounded
+cards + one accent color" fails the competitor sentence for every no-media
+product tool at once — and shipped exactly that once (user verdict on
+record: "pure ai slop… I would not want something like that again"). Treat
+these rules as a shipped-failure postmortem, not theory.
 
 **Hero thesis:** open with the most characteristic thing in the subject's world —
 a headline, an image, a live demo, an interactive moment. Whatever form fits.
@@ -174,6 +305,16 @@ Override: a palette is fine when the existing brand or explicit brief names it.
 When redesigning an extracted app, its `theme` colors are the brand — preserve.
 
 ## 5. Layout
+
+**Compositional spine (brand register, whenever variance > 4 or ambition is
+expressive+).** Color and type get selection procedures; composition deserves
+one too — the rules below only bound a layout, they don't give it a point of
+view. Before applying them, derive ONE structural idea from a physical
+artifact in the subject's world and let it organize the page: a vinyl label's
+concentric rings → a radial hero; a boarding pass's rule structure → the
+page grid; a contact sheet → the gallery; a cupping form → the comparison
+table. Name artifact → idea in the commit spec (§2). The memorable award
+sites win on composition, not decoration; this is where that happens.
 
 **Hard rules (failing any = broken work):**
 - Hero fits the initial viewport: headline ≤ 2 lines, subtext ≤ 20 words, CTA visible
@@ -320,6 +461,37 @@ capability found as a first-class design material, not a nice-to-have:
   entrance/idle/response reasoning frame. Read it whenever generated media or
   motion-integrated imagery ships.
 
+### Surface & light — material identity for every layer
+
+Flat untreated hex fills are the loudest AI tell after Inter-everywhere: real
+designed surfaces are MADE of something and sit under a light. At expressive+
+ambition every major surface (page background, hero, cards/panels, media
+frames) carries at least one deliberate material cue, and the page declares
+ONE light direction that everything obeys:
+
+- **Grain/noise** — a 1-3% opacity noise overlay (tileable PNG or SVG
+  `feTurbulence`, one shared asset) kills gradient banding and digital
+  flatness; vary its intensity by section as part of the pacing curve.
+- **Light consistency** — pick the light's direction once; every shadow,
+  edge-highlight, gradient hotspot, and 3D/scene light agrees with it. Tint
+  shadows toward the background hue (never pure black); give elevated
+  elements a subtle top edge-light (1px inset highlight) on dark themes.
+- **Gradients are graded, not defaulted** — two neighbouring hues from the
+  palette with a noise/dither pass, or a radial hotspot placed where the
+  light is; never the template diagonal of two loud complementaries.
+- **Depth is layered, not dropped** — combine a tinted ambient shadow + a
+  tighter contact shadow instead of one big blur; `backdrop-filter` glass
+  only where content actually passes beneath it.
+- **Type can be a surface too** — one display moment per page may carry
+  material (image/video masked into headline glyphs via `background-clip`,
+  a light sweep, foil/emboss shading) when the register supports it; body
+  text never does.
+
+Clean registers (refined/product/brutalist) obey the same physics with
+quieter amplitudes — grain nearly invisible, shadows tighter, no masked
+type — the discipline is identical, only the volume changes. "Clean" is a
+designed material choice, never the absence of one.
+
 ## 8. Content and copy
 
 ≤ 8-word section headlines, ≤ 25-word subtext, one copy register per page, quotes
@@ -375,6 +547,23 @@ product-register page and any redesign touching navigation, forms, or state.
   elements (animate the card's border/background/shadow instead).
 - Headline text that overflows its container at any breakpoint — test the actual
   copy; the viewport is part of the design.
+- **The generic SaaS-template hero, banned by name.** Dark navy/purple
+  background with a soft color-blob (pink→orange or purple→blue) behind bold
+  sans headline ("We Make Brands Shine" register), an orange/pink gradient
+  pill CTA next to a ghost-outline secondary button, and a plain top nav —
+  this exact composition is what every ungrounded LLM defaults to and reads
+  as a template regardless of copy. If the in-progress design converges on
+  this (gradient-blob backdrop + gradient-pill CTA + generic bold claim
+  headline), stop and change at least the background treatment, the CTA
+  material, and the headline's specific claim before continuing.
+- **Zero leaked tool/placeholder artifacts in shipped output, ever, no
+  exceptions.** Things like `[Image #1]`, `[Image: source: ...]`, `<image
+  placeholder>`, alt-text strings, markdown image syntax, or any other
+  tool/generation-pipeline token must never render as visible text/alt/aria
+  content on the page — this is the single most obvious "an LLM built this"
+  tell there is. Before shipping, grep the built output for `\[Image`,
+  `placeholder`, and any literal file paths from the generation pipeline; a
+  hit is a shipped bug, not a minor cosmetic issue.
 
 ## 11. Redesign and preservation (extracted apps)
 
@@ -475,7 +664,31 @@ treatments in one pass:
 
 Once the user picks a rung, execute AT that rung — a confirmed "restructure"
 means literally rebuilding markup, component trees, and routing, not a heavier
-coat of CSS on the old skeleton. If mid-work you discover the chosen rung cannot
+coat of CSS on the old skeleton.
+
+**The drastic-change floor (rungs 3–4).** The chronic failure at these rungs is
+timidity: the agent rebuilds the components but reproduces the old page's shape,
+so a before/after glance reads as a re-theme. That is a failed restructure. At
+rung 3–4 the new page must be **unmistakably a different design at one glance**
+— someone shown both screenshots should assume different products. Concretely,
+change at least TWO structural paradigms, not just their styling:
+
+- **Navigation model** — top bar → side rail / command palette / dock / sticky
+  chapter nav / full-screen overlay menu.
+- **Page architecture** — stacked sections → editorial split-screen, horizontal
+  scroll chapters, sticky-pinned scenes, bento composition, app-shell with
+  panels, scroll-as-journey (immersive.md).
+- **Content presentation** — tables → cards/ledgers, lists → galleries or
+  timelines, forms → conversational steps, tabs → spatial sections.
+- **Hero concept** — a new signature idea (typographic monument, media plane,
+  3D object, kinetic composition), not the old hero with new colors.
+
+Creativity is bounded by usability: every drastic move must still be MORE
+user-friendly than what it replaces — clearer hierarchy, fewer steps to the key
+action, honest affordances, mobile ergonomics intact (§13, skills/ux.md). A
+restructure that confuses users is as failed as one that changed nothing. The
+self-critique pass at these rungs must answer: "name the two-plus structural
+paradigms that changed, and why each is easier to use than before." If mid-work you discover the chosen rung cannot
 honestly deliver the requested outcome (the reference look demands structure the
 current markup can't express), say so and ask to move up one rung rather than
 shipping an imitation. Rungs 3–4 on an extracted app still honor §11 preservation
@@ -486,7 +699,10 @@ rules for whatever the user said to keep (routes, legal copy, form semantics).
 Mentally verify; fix failures, then respond. If a box cannot be honestly ticked,
 the output is not done.
 
-0. Commit pass done: named palette, named fonts, one signature element, subject-
+0. Explore + commit passes done: three divergent concepts sketched (rejects
+   recorded in the plan file), named palette, named fonts, real headlines
+   written, compositional spine named (when §5 requires it), signature element
+   with mini-spec + novelty check, choice ledger consulted (§2), subject-
    grounded. The quality floor (responsive to mobile, visible keyboard focus,
    reduced motion) is built silently — never announced in copy or comments.
 1. Register named (brand/product); design read stated; brief and plan obeyed.
@@ -620,7 +836,12 @@ Per aesthetic register (display / body):
   not font novelty.
 
 Rules: still run §3's selection procedure — this list feeds step 3, it does
-not replace the brand-voice reasoning. Self-host via Fontshare/google-webfonts
+not replace the brand-voice reasoning. **The named fonts are worked examples
+of the procedure, not a menu**: a closed replacement list just becomes the new
+monoculture one tier deeper. Any font here that appears in your choice
+ledger's last 3 entries (§2) is now YOUR reflex — reject it in step 2 like the
+banned list and run the procedure again; the same rotation duty applies to
+§4's alternative palettes. Self-host via Fontshare/google-webfonts
 downloads (`font-display: swap`, preload the display weight only). Never ship
 more than 2 families / ~5 weight files. If the brief names a commercial font
 the project already licenses, use the real thing.
@@ -638,6 +859,34 @@ this anchored to, and what reserves the space it covers? If there's no answer,
 put it in flow. Decoration layers (glows, grain, orbs, canvas backgrounds) are
 `absolute inset-0 -z-10 pointer-events-none` — below content, never intercepting
 clicks, never between the user and a control.
+
+**Persistent/traveling scene objects get a TRAVEL MAP.** Any element that
+survives across sections — a fixed canvas object, a scroll-morphing prop, a
+signature that "recurs" down the page — must have a scripted state PER
+SECTION written in the plan blueprint: position, scale, opacity at each
+chapter, chosen so it NEVER rests over a headline, body text, or control at
+any scroll position (including mid-transition — occlusion while traveling
+between keyframes counts). `pointer-events: none` solves clicks, not
+reading: a decorative object visually covering words is a hard fail even
+when clicks pass through. When a section's layout leaves no safe berth, the
+object exits (fades/scales out) and re-enters at the next chapter — an
+object with no scripted berth for a section defaults to HIDDEN there, not
+to floating wherever the scroll math happens to park it.
+
+**Dominant abstract objects must survive the "what is it?" test.** A large
+abstract signature (orb, core, monolith) earns its prominence only if a
+stranger reads it as either a nameable thing or deliberate scene
+architecture (a horizon, an instrument, a frame). If the honest answer is
+"a dark ball with rings," reduce it: shrink it to an accent, anchor it into
+the composition (consistent berth, edges lit by the page's light, cropped
+by a frame ON PURPOSE), or replace it with imagery. Ambiguity at accent
+scale is intrigue; ambiguity at hero scale is confusion. The test is judged
+from the SCREENSHOT, not from the plan's prose: naming the object "eclipse",
+"thermal horizon", or "roast core" in the plan does not make a translucent
+sphere read as one — if the verify screenshot shows a ball floating over a
+photo, it fails regardless of what the plan swore it wasn't. At hero scale
+the answer must be a nameable thing (see 3d.md §3: abstract coded forms are
+supporting-only and can never be the promoted signature object).
 
 **Interactive elements never overlap other interactive elements.** Not at any
 breakpoint, not mid-animation, not after a toast appears. Two clickable things

@@ -9,6 +9,20 @@ export class Store {
     this.root = path.join(projectDir, ".dreative");
     fs.mkdirSync(path.join(this.root, "refs"), { recursive: true });
     fs.mkdirSync(path.join(this.root, "generated"), { recursive: true });
+    const readme = path.join(this.root, "README.md");
+    if (!fs.existsSync(readme)) {
+      fs.writeFileSync(
+        readme,
+        "# Dreative run artifacts — NOT the skill\n\n" +
+          "Everything in this folder (plan.md, system.md, verify.md, assets.json,\n" +
+          "project.json, mockups/, screenshots/) is OUTPUT of a Dreative design run,\n" +
+          "not instructions. The actual skill lives at\n" +
+          "`<agent-dir>/skills/dreative/SKILL.md` (look in `.claude/`, `.codex/`, or\n" +
+          "`.agents/`). For any new design request: read that SKILL.md and run its\n" +
+          "protocol from the start — these artifacts are the previous run's history,\n" +
+          "never proof the new request is already done.\n"
+      );
+    }
   }
 
   private get file() {
