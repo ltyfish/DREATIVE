@@ -61,33 +61,34 @@ choreography.
   rows), contact/socials in the footer of the overlay. Wired per ux.md §1
   (focus trap, scroll lock, Esc/back closes).
 
-## 2. Motion on mobile (still premium, never crazy)
+## 2. Motion on mobile (shorter, lighter, still authored)
 
 The motion inventory scaled to touch (extends motion.md §5):
 
-- **Keep**: one composed hero entrance (≤ 600ms total), line-mask headline
-  reveals, in-view section reveals (2-3, `once: true`), press states on
+- **Keep**: the experience's defining transformation in a shorter form when it
+  remains readable, plus line-mask headline reveals, selected in-view moments,
+  and press states on
   EVERYTHING tappable (`active:scale-[0.98]` — on mobile this is the main
   interaction feedback, since hover doesn't exist), marquees (pause
   off-screen), counters, accordion springs.
 - **Translate**: parallax halves or dies (§13); pinned sequences → short
-  sticky sections (≤ 1.5 viewports) or plain stacked beats; hover-woken media
+  measured sticky sections, clip-path/layer handoffs, or plain stacked beats; hover-woken media
   → in-view-woken (loop plays while ≥ 60% visible, pauses off-screen) or
   tap-to-play; magnetic/cursor effects → gone entirely, replaced by press
   feedback; drag-to-explore → swipe carousel or index list as PRIMARY
   (DESIGN.md §13).
-- **Ban on mobile**: smooth-scroll libraries at full strength (Lenis: disable
-  or `syncTouch` carefully — fighting native momentum feels broken), more than
-  one scrubbed sequence, simultaneous animation of > 4 elements, any effect
-  that drops the scroll below 60fps on a mid-range phone.
+- **Avoid on mobile**: smooth-scroll libraries at full strength (Lenis: disable
+  or `syncTouch` carefully — fighting native momentum feels broken), competing
+  scrubbed sequences, dense simultaneous animation, and any effect that misses
+  the measured frame-time target on a mid-range phone.
 - Scroll reveals trigger earlier (`margin: "-10% 0px"` not -20%) — mobile
   viewports are short and users scroll fast; late reveals = users see blank.
 
 ## 3. 3D and heavy media on mobile
 
-- Default: replace live 3D with the poster or a pre-rendered loop (3d.md §5,
-  media.md). A generated video loop IS the mobile 3D strategy in most cases —
-  visually near-identical, thermally free.
+- Choose from a simplified live scene, a pre-rendered loop, layered DOM/SVG, or
+  an intentional poster composition according to concept and measured device
+  cost (3d.md §5, media.md). Do not simply erase the defining moment.
 - If live 3D ships: dpr capped at 2, sim/particle counts halved, post-FX off,
   `frameloop="demand"` where possible, pause on scroll-out and
   `document.hidden`. Test the thermal story: 30s of idling must not heat the
@@ -122,7 +123,7 @@ At 390×844 (plus one small check at 320px):
 3. Scroll the full page fast: reveals keep up, nothing janks, sticky elements
    behave through the URL-bar resize.
 4. Confirm the motion translation shipped (§2): press states everywhere, hero
-   ≤ 600ms, heavy effects swapped for their mobile strategy — name what runs
+   timing stays readable and responsive, heavy effects use their mobile strategy — name what runs
    on mobile vs desktop in the final report.
 5. If media/3D shipped: posters load, loops play inline (not fullscreen),
    pause off-screen.

@@ -35,6 +35,18 @@ the page; independent default animations do not.
 
 ## 2. Motion architecture
 
+Classify motion before selecting a library:
+
+- **Decorative:** reveals, hover response, ambient loops, and slight parallax.
+- **Structural:** motion controls hierarchy, pacing, pinning, section state, or
+  the handoff between compositions.
+- **Transformational:** imagery, type, or objects fragment, combine,
+  reconstruct, change form, or become the next scene.
+
+At expressive/award, actively test key moments for structural or
+transformational value. Do not call opacity/translate/scale choreography
+structural merely because it is scroll-driven.
+
 Choose by job:
 
 - CSS transitions/animations for local states and simple decorative loops.
@@ -49,14 +61,13 @@ or velocity-aware settling; narrative motion uses deliberate timelines.
 
 ## 3. Evidence-backed creative structure
 
-At expressive/award, satisfy `motion.expressive.diversityOrDevelopment` through
-one plan path:
+At expressive/award, satisfy `motion.expressive.architecture` through one plan
+path without mechanism quotas:
 
-- **Diversity:** at least four distinct mechanisms across three input drivers.
-  Reusing one mechanism more than twice is a warning that the system is shallow.
-- **Development:** one coherent signature mechanism develops through at least
-  three materially different roles/states, supported by two quieter secondary
-  mechanisms and at least two drivers.
+- **Diversity:** use the concept-related mechanisms and drivers needed to shape
+  the journey, joined by one motion language.
+- **Development:** evolve one coherent signature mechanism through materially
+  different roles/states, with quieter supporting motion.
 
 Development is not the same reveal with different distances. A line becoming
 navigation, data plot, and scene boundary qualifies; fade-up repeated across
@@ -66,6 +77,10 @@ three sections does not.
 
 - Build a timeline for the whole journey: setup, anticipation, peak, rest,
   transformation, resolution.
+- Concentrate technical and visual complexity in a small number of hero moments;
+  keep reading sections calm so those moments land.
+- Prefer composition handoffs: let a mask, object, layer, grid, or typographic
+  structure from one scene become material for the next.
 - Entrances orient; they are not the design. Key media and signatures respond to
   input or develop state.
 - Scroll links progress to meaning. Clamp/damp velocity and avoid raw scroll
@@ -78,12 +93,34 @@ three sections does not.
 
 ## 5. Planning and verification
 
+Before implementation, complete the section-level motion treatment in the plan:
+static composition, start/end state, changes, pinned elements, handoff, purpose,
+mechanism, mobile translation, and reduced-motion state. Choose the simplest
+mechanism that produces the intended transformation convincingly; CSS is valid,
+and WebGL/3D is never required as a creativity badge.
+
+Run the anti-default review before approval: identify whether imagery only
+fades/scales/slides, sections reveal independently, the page lacks a composition
+handoff, motion merely introduces rather than changes state, the system could fit
+an unrelated brand, or nothing is memorable. Revise expressive/award plans that
+remain generic.
+
+Weak treatment: “hero scales in, heading fades up, cards stagger, sections
+reveal.” Strong treatment: “the isolated subject stays pinned while its depth
+layers separate; the headline compresses into a mask; that mask tiles the scene
+into the next section; mobile uses a short clip-path handoff.” Copy neither
+literally—match that level of state change and continuity to the brief.
+
 For each moment record element, trigger/driver, purpose, state range, duration or
 spring, mobile translation, reduced-motion behavior, fallback, and evidence.
 
 Runtime proof includes changing transforms/uniforms/state at two timestamps,
 trigger positions, tested scroll-back, hidden-tab recovery, cleanup after route
 changes, mobile viewport, reduced motion, console count, and frame-time sampling
-for heavy work. A static screenshot cannot prove choreography.
+for heavy work. Visually inspect initial, early, mid-transition, final, handoff,
+mobile, and reduced-motion states; add pinned midpoint/exit when relevant. Check
+readability, continuity, collisions, empty frames, timing, concept expression,
+and usability. Expressive/award work requires at least one refinement after this
+inspection. A static screenshot cannot prove choreography.
 
 Recipe reference: `../recipes/motion-recipes.md`, after concept exploration only.

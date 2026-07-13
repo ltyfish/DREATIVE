@@ -24,6 +24,8 @@ Required top-level fields:
   declared during planning
 - `ruleExceptions`: bounded substitutions of evidence-backed defaults
 - `creativeStrategy`: `diversity` or `development` at expressive/award tiers
+- `motionComplexityBudget`: hero moments, calm sections, shared language,
+  device limits, progressive enhancement, and anti-default review
 - `fontDecision`: candidates, reflex markers, ledger history, and justification
 - `experimentalPlan`: per-section candidates and the selected two or three peaks
 - `conceptExploration` and `recipeAccess`: proof recipes were loaded only after
@@ -34,11 +36,14 @@ and `mobile`, but optional treatments are assigned only where they serve that
 page. A section may use only skills assigned to its parent page.
 
 Each section requires `id`, `name`, `layoutFamily`, `skills`, `interactions`,
-`mobile`, `fallback`, `verification`, `assets`, and `status`. Status is
+`mobile`, `fallback`, `verification`, `assets`, and `status`. At expressive/
+award it also requires `motionTreatment`: class, static composition, start/end
+states, changes, pins, handoff, purpose, mechanism, mobile, and reduced motion. Status is
 `planned | shipped | fallback | cut`; fallback/cut requires `reason`.
 
-Each asset requires `id`, `path`, `purpose`, and `status`. A shipped asset must
-exist when `dreative audit` runs.
+Each asset requires `id`, `path`, `purpose`, `importance`, `preparation`, and
+`status`. Preparation records flat/decompose/variants/sequence, named
+derivatives, and rationale. A shipped asset must exist when `dreative audit` runs.
 
 ### Routing authority
 
@@ -59,16 +64,16 @@ evidence IDs. The exception must predate `implementationStartedAt`.
 
 ```json
 {
-  "ruleId": "award.spatialSignature",
+  "ruleId": "media.keyAssetTreatment",
   "decision": "substituted",
   "declaredAt": "2026-01-01T00:30:00.000Z",
-  "reason": "The archival concept has no physical subject, so a product prop would misrepresent the material.",
+  "reason": "The archive contains no raster key imagery, so inventing photography would misrepresent the supplied material.",
   "alternative": "A persistent variable-type specimen becomes index, spatial architecture, and interactive control.",
   "successCriteria": [
-    "The specimen appears in at least three materially different roles",
-    "Pointer and scroll input visibly reshape its depth"
+    "The specimen appears in materially different structural roles",
+    "Pointer and scroll input visibly reshape the specimen"
   ],
-  "evidenceIds": ["spatial-type-desktop", "spatial-type-mobile"]
+  "evidenceIds": ["type-system-desktop", "type-system-mobile"]
 }
 ```
 
@@ -76,9 +81,15 @@ evidence IDs. The exception must predate `implementationStartedAt`.
 
 At `expressive` and `award`, `creativeStrategy.path` is either:
 
-- `diversity`: at least four distinct mechanisms and three drivers; or
-- `development`: one named mechanism with three materially different states,
-  two quieter secondary mechanisms, and two drivers.
+- `diversity`: the concept-related mechanisms and drivers the experience needs;
+  or
+- `development`: one named mechanism with materially different states and
+  quieter support.
+
+`motionComplexityBudget` concentrates complexity into one to three hero moments
+(normally two or three; one for a short page), names calm sections and the
+shared language, and records the anti-default review. It is contextual, not a
+mechanism quota.
 
 When `experimental` is selected, `experimentalPlan` records one candidate for
 every major section and marks only two or three as selected. Other sections
@@ -148,6 +159,11 @@ or Playwright test identifier. `dreative audit` checks referenced artifact paths
 and rejects passing commands with nonzero exits or passing runs with console
 errors. `fail` blocks completion. Use `not-applicable` only with a concrete
 explanation and proof of why the criterion does not apply.
+
+For expressive/award motion, tag evidence with `timelineState`: initial, early,
+mid-transition, final, handoff, mobile, and reduced-motion; add pinned midpoint
+and exit states when relevant. Record the post-inspection refinement in
+`refinement` with findings, changes, and passing evidence IDs.
 
 ## `.dreative/ledger.json`
 

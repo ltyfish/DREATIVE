@@ -34,17 +34,16 @@ Enumerate what your environment can actually produce, and write the result down
 Rules:
 - Probe by LOOKING (list your tools, `which ffmpeg`, check MCP config), never by
   assuming. A capability you didn't verify doesn't exist.
-- If a capability is missing but the design clearly wants it (e.g. a cinematic
-  brief with no video-gen), you MUST ask a real question with a real choice —
-  **stating the gap and moving on is not an offer, it's a disclosure.** The
-  bug this catches: saying "video generation isn't available, so I'll use
-  stills" and continuing is a FAILURE even though it's honest. The fix is a
-  question with at least two live options: "install <concrete MCP/tool name>
-  now and use it" vs "skip it, use <the specific fallback>". Ask it in the
-  decision phase (§3), phrased as a genuine fork, not a heads-up. Never
-  install tools silently; never silently degrade either.
-- The probe result changes the blueprint: no video-gen → hero loops become
-  generated stills + ken-burns or a shader surface; **no image-gen → media
+- Missing video, 3D, or separated source layers is not automatically a blocker.
+  First plan the strongest honest treatment available from generated/sourced
+  stills, local image processing, transparent cutouts, SVG, CSS, Canvas,
+  generated keyframes, or existing project assets. Ask for a tool or source
+  asset only when the requested result cannot be approximated convincingly;
+  present the concrete best-effort fallback in that question. Never install a
+  tool silently and never leave an "advanced animation later" placeholder.
+- The probe result changes the blueprint: no video-gen → stills become layered
+  scenes, masks, related keyframes, frame sequences, tiles/fragments, Canvas
+  samples, or shader textures as the concept warrants; **no image-gen → media
   cells become `source-image` (DESIGN.md §7's priority: verified stock/CDN
   photography), every planned cutout prop becomes a sourced-and-matted photo
   or is cut, and any 3D of an organic real-world subject is re-planned as a
@@ -59,7 +58,7 @@ Rules:
 Draft the page as a compact table BEFORE asking anything — the decision phase
 presents choices about a concrete plan, not abstractions. Per section:
 
-| section | layout family | media plan | motion treatment | interaction | intensity | fallback |
+| section | layout family | media + preparation | motion class/treatment | interaction | intensity | fallback |
 
 - **media plan** — one of: `generate-image` (subject + exact aspect + palette/
   light-temperature prompt notes), `generate-video` (loop subject, 5-10s,
@@ -72,8 +71,7 @@ presents choices about a concrete plan, not abstractions. Per section:
   where media itself becomes the visitor-controlled spectacle, not a specific
   catalog effect. A different solution uses a registered planning-time
   substitution with observable success criteria and evidence IDs.
-  When the set-piece uses a depth dive (the default for image-led `award`
-  concepts with depth-capable assets), its
+  When a concept-led set-piece uses a depth dive, its
   `generate-image` cell must plan a DEPTH-CAPABLE composition (a corridor,
   room, landscape, machinery receding — something a camera can enter) and
   the companion assets in the same cell: the depth map and/or the separated
@@ -102,17 +100,18 @@ presents choices about a concrete plan, not abstractions. Per section:
   Every 3D prop cell also names its BERTH (3d.md §3): which lane/stage of
   the section it occupies and what the layout does to make room — a prop
   planned "over the hero image" or with no berth is an invalid cell.
-  At the `award` tier the outcome gate is one unmistakable dimensional or
-  spatial signature. The proven default is a recognizable real GLB or photoreal
-  cutout prop with a berth and asset source. A typography, photographic, data,
-  scene-instrument, or other alternative must use `award.spatialSignature` and
-  prove equivalent depth, recurrence, interaction, and dominance on desktop
-  and mobile. Generic orbs/blobs/toruses remain invalid.
-  At dial ≥ 8 the media column marks each hero/key image quiet-class or
-  PIXEL-class. The proven default is at least half pixel-class (minimum three,
-  set-piece included), each a different mechanism. A coherent alternative may
-  substitute `media.award.pixelCoverage` only when it visibly develops through
-  at least three materially different roles or states and carries runtime proof.
+  At the `award` tier the outcome gate is one unmistakable spatial, media,
+  typographic, or material signature that shapes the journey. If the concept
+  calls for a recognizable physical subject, use a real GLB or photoreal cutout
+  with a berth and source. Typography, layered photography, data, SVG/Canvas,
+  or a scene instrument may be the stronger direct choice; no substitution is
+  needed merely because 3D is absent. Generic orbs/blobs/toruses remain invalid.
+  At expressive/award, the media column records whether each hero/key image
+  stays flat or becomes motion-ready through cutouts, depth layers, masks,
+  fragments, maps, alternate states, a frame sequence, or a Canvas/WebGL
+  texture. Transform only where it strengthens the concept; a still may remain
+  flat as an intentional rest. The default in `media.keyAssetTreatment` is a
+  coherent asset-preparation decision, not a pixel-effect quota.
 - **Travel map (mandatory when any element persists across sections).** If
   the blueprint contains a fixed canvas object, a recurring signature, or any
   scroll-morphing prop that lives through more than one section, add a travel
@@ -121,35 +120,67 @@ presents choices about a concrete plan, not abstractions. Per section:
   it never sits over text or controls (DESIGN.md §15). No berth fits ⇒ the
   object is scripted HIDDEN for that section. A persistent object without a
   travel map is an unplanned collision that verify will find later — plan it
-  now. The set-piece at dial ≥ 8 must also be pixel-transforming per
-  media.md §3 (placement choreography like orbit/collapse doesn't qualify).
+  now. When the set-piece claims transformation, its pixels, layers, form, or
+  role must visibly change; placement choreography alone does not qualify.
 - **Diversity or development (dial ≥ 7 / expressive+).** Choose and record one
-  path in `creativeStrategy`. Diversity uses at least four distinct mechanisms
-  across three distinct drivers. Development uses one coherent signature
-  mechanism that changes through at least three materially different roles or
-  states, supported by two quieter secondary mechanisms and two drivers. The
-  same reveal repeated with different values is neither path. This keeps the
-  proven anti-repetition safeguard without forcing unrelated effects into a
-  coherent concept.
+  path in `creativeStrategy`. Diversity uses only the mechanisms and drivers the
+  concept needs, tied together by a shared language. Development evolves one
+  coherent signature through materially different roles with quieter support.
+  The same reveal repeated with different values is neither path. Do not add
+  unrelated mechanisms to satisfy a count.
 - **motion treatment** — from motion.md/immersive.md/cinematic.md vocabulary,
-  with the dial-appropriate ambition. **motion.md §5's verification inventory is a hard
-  plan gate, not a target:** at `expressive`/`award` ambition the blueprint
-  must enumerate every §9 item for its dial — which element carries it, what
-  triggers it — or explicitly name the item as cut with a reason. A plan that
-  neither covers nor justifies a §9 item is incomplete; rework it before
-  presenting, don't ship the gap to the build.
+  with dial-appropriate ambition. At `expressive`/`award`, complete every
+  `motionTreatment` field below and name the element/driver for each planned
+  moment. A generic or incomplete treatment is reworked before presentation.
 - **intensity (the pacing map)** — 1–10 per section: how loud this section is
   (motion + media + visual weight combined). The page must read as a CURVE, not
   a flat line: uniform intensity fails in both directions (all loud = exhausting,
-  all quiet = the set-piece feels bolted on). Place deliberate rests (≤ 3)
-  immediately before and after the set-piece so it lands; the hero and the
-  set-piece section are the peaks, nothing else matches them. A blueprint whose
+  all quiet = the set-piece feels bolted on). Place deliberate rests around
+  hero moments where the content permits so they land; supporting sections
+  should not compete with them. A blueprint whose
   intensity column is all the same number is incomplete — rework the pacing
   before presenting.
 - **fallback** — for every ambitious cell (WebGL, sim, scrubbed sequence,
   generated video), the concrete boring version that ships if the fancy one
   fails runtime verification. A plan cell without a fallback is not ambitious,
   it's fragile.
+
+### Motion treatment and complexity budget
+
+At expressive/award, write a coherent scene sequence before implementation. For
+every major section record in `motionTreatment`:
+
+- static composition and motion class (`none`, `decorative`, `structural`, or
+  `transformational`);
+- starting and ending visual states;
+- what changes, persists, pins, enters, transforms, combines, fragments, or exits;
+- the handoff into the next composition;
+- narrative/emotional purpose;
+- rendering mechanism;
+- mobile translation and reduced-motion state.
+
+Decorative motion introduces or responds. Structural motion controls hierarchy,
+pacing, pinning, and composition. Transformational motion changes form or turns
+one composition into the next. Opacity, translate, scale, and light parallax are
+not sufficient evidence of structural or transformational motion.
+
+Record `motionComplexityBudget`: normally two or three hero moments (one is valid
+for a short page), calm sections around them, shared motion language, target-
+device limits, and progressive enhancement. Spend complexity where the story
+changes state; do not distribute medium-complexity effects evenly.
+
+Choose the simplest mechanism capable of producing the intended transformation
+convincingly. Simplicity means implementation suitability, not visual blandness.
+Choose deliberately among CSS, Motion, GSAP/ScrollTrigger, SVG masks/filters,
+`clip-path`, DOM fragments, Canvas 2D, WebGL/shaders, image sequences, video,
+Lottie/vector animation, and 3D. Neither basic transforms nor WebGL/3D/pixels are
+an unexamined default.
+
+Before approving the plan, record `antiDefaultReview` answers: are images mostly
+fading/scaling/sliding; are sections independent reveals; where is the major
+composition handoff; how does motion change visual state; could this system fit
+an unrelated site; what is memorable; and how does movement express the concept?
+If the result is generic at expressive/award, revise the scene plan now.
 
 Plus four page-level lines: register + design read (DESIGN.md §2), signature
 element, animation stack (ONE system: GSAP+Lenis or motion/react — motion.md §2),
@@ -160,10 +191,11 @@ discovered at build time: if the signature is a visual OBJECT, it must be a
 subject a stranger names correctly (3d.md §1–2's subject test). An abstract
 crude coded organic form is a hard-gate failure. Generic spheres/orbs/rings/
 blobs/toruses with no brand-native function remain invalid signatures. The
-proven `award` default is a real GLB or rung-2 transparent photoreal cutout;
-an alternative spatial typography, layered photography, data structure, or
-interactive instrument uses a registered substitution and must outperform the
-default on depth, recurrence, input response, and visual dominance. **Coded custom 3D is
+award work chooses the medium that makes the signature most legible and
+concept-specific. A real GLB or rung-2 transparent photoreal cutout is preferred
+when the signature is a recognizable physical subject; spatial typography,
+layered photography, data structure, or an interactive instrument can be the
+direct plan when the concept supports it. **Coded custom 3D is
 capability-gated at the probe (§1):** offer/plan it only when the probe
 verified an actual quality path — a real GLB in reach, image-gen for
 albedo/label textures, an HDRI/environment source. No verified texture path

@@ -22,8 +22,10 @@ all lower-tier requirements.
 ## Expressive (`expressive`)
 
 - Everything in Premium.
-- A recorded diversity-or-development path: several distinct mechanisms/drivers,
-  or one signature mechanism developing through three states with quiet support.
+- A recorded diversity-or-development path: concept-related mechanisms/drivers,
+  or one signature mechanism developing through materially different states.
+- A section-by-section motion treatment and contextual complexity budget
+  concentrate structural/transformational motion into a few hero moments.
 - At least one input-driven treatment; entrances alone do not satisfy the tier.
 - Mobile translations and reduced-motion fallbacks are implemented, not noted.
 - Frame behavior and heavy asset cost are measured.
@@ -32,11 +34,11 @@ all lower-tier requirements.
 
 - Everything in Expressive.
 - A distinctive persistent spatial, media, or material system shapes the journey.
-- One unmistakable dimensional or spatial signature is subject-honest, staged,
-  and resilient. A real GLB/cutout is the proven default, not the only medium.
+- One unmistakable spatial, media, typographic, or material signature is
+  subject-honest, staged, and resilient. WebGL/3D is used only when justified.
 - Runtime evidence covers effects, transferred weight, frame time, occlusion,
   context loss/loading, and fallbacks.
-- The page has three memorable moments without sacrificing function.
+- The page has a small number of memorable moments without sacrificing function.
 
 Do not force Award requirements on product dashboards, checkout, forms, or users
 who asked for calm professional work. Ambition is a product decision, not a score.

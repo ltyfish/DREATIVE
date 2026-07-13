@@ -6,8 +6,28 @@ export interface PlanAsset {
   id: string;
   path: string;
   purpose: string;
+  importance?: "supporting" | "key";
+  preparation?: {
+    decision: "flat" | "decompose" | "variants" | "sequence";
+    derivatives: string[];
+    rationale: string;
+  };
   status: DeliveryStatus;
   reason?: string;
+}
+
+export interface MotionTreatment {
+  class: "none" | "decorative" | "structural" | "transformational";
+  staticComposition: string;
+  startState: string;
+  endState: string;
+  changes: string[];
+  pinnedElements: string[];
+  handoff: string;
+  purpose: string;
+  mechanism: string;
+  mobile: string;
+  reducedMotion: string;
 }
 
 export interface PlanSection {
@@ -16,6 +36,7 @@ export interface PlanSection {
   layoutFamily: string;
   skills: SpecialistSkill[];
   interactions: string[];
+  motionTreatment?: MotionTreatment;
   mobile: string;
   fallback: string;
   verification: string[];
@@ -51,6 +72,7 @@ export interface DirectDesignPlan {
   implementationStartedAt?: string;
   ruleExceptions?: RuleException[];
   creativeStrategy?: CreativeStrategy;
+  motionComplexityBudget?: MotionComplexityBudget;
   fontDecision?: FontDecision;
   experimentalPlan?: ExperimentalPlan;
   conceptExploration?: ConceptExploration;
@@ -58,6 +80,21 @@ export interface DirectDesignPlan {
   pages: PlanPage[];
   preservationManifest: string;
   decisionLedger: string;
+}
+
+export interface MotionComplexityBudget {
+  heroMoments: { sectionId: string; reason: string }[];
+  calmSectionIds: string[];
+  sharedLanguage: string;
+  deviceLimits: string;
+  progressiveEnhancement: string;
+  antiDefaultReview: {
+    basicMotionAssessment: string;
+    compositionHandoff: string;
+    visualStateChange: string;
+    conceptSpecificity: string;
+    memorableMoment: string;
+  };
 }
 
 export interface RuleException {
@@ -155,6 +192,16 @@ export interface VerificationEvidence {
   criterion: string;
   status: "pass" | "fail" | "not-applicable";
   evidence: string;
+  timelineState?:
+    | "initial"
+    | "early"
+    | "mid-transition"
+    | "final"
+    | "handoff"
+    | "pinned-midpoint"
+    | "pinned-exit"
+    | "mobile"
+    | "reduced-motion";
   proof: {
     timestamp: string;
     artifactPath?: string;
@@ -173,6 +220,12 @@ export interface VerificationReport {
   version: 1;
   generatedAt: string;
   evidence: VerificationEvidence[];
+  refinement?: {
+    inspectedAt: string;
+    findings: string[];
+    changes: string[];
+    evidenceIds: string[];
+  };
 }
 
 function nonEmpty(value: unknown): value is string {
@@ -223,11 +276,41 @@ export function validatePlan(value: unknown): string[] {
       if (!Array.isArray(section.verification) || section.verification.length === 0) errors.push(`${prefix}.verification cannot be empty`);
       if (section.status === "planned") errors.push(`${prefix} is still planned`);
       if ((section.status === "fallback" || section.status === "cut") && !nonEmpty(section.reason)) errors.push(`${prefix}.reason is required for ${section.status}`);
+      if (section.motionTreatment) {
+        const treatment = section.motionTreatment;
+        if (!["none", "decorative", "structural", "transformational"].includes(treatment.class))
+          errors.push(`${prefix}.motionTreatment.class is invalid`);
+        for (const [name, value] of Object.entries({
+          staticComposition: treatment.staticComposition,
+          startState: treatment.startState,
+          endState: treatment.endState,
+          handoff: treatment.handoff,
+          purpose: treatment.purpose,
+          mechanism: treatment.mechanism,
+          mobile: treatment.mobile,
+          reducedMotion: treatment.reducedMotion,
+        })) {
+          if (!nonEmpty(value)) errors.push(`${prefix}.motionTreatment.${name} is required`);
+        }
+        if (!Array.isArray(treatment.changes) || !Array.isArray(treatment.pinnedElements))
+          errors.push(`${prefix}.motionTreatment changes and pinnedElements must be arrays`);
+      }
       for (const skill of section.skills ?? []) {
         if (!page.skills?.includes(skill)) errors.push(`${prefix} uses skill ${skill} not assigned to its page`);
       }
       for (const asset of section.assets ?? []) {
         if (!nonEmpty(asset.id) || !nonEmpty(asset.path) || !nonEmpty(asset.purpose)) errors.push(`${prefix} contains an incomplete asset`);
+        if (plan.doctrineVersion === 2 && (!asset.importance || !asset.preparation))
+          errors.push(`${prefix} asset ${asset.id || "unknown"} needs importance and a preparation decision`);
+        else if (asset.preparation) {
+          if (!asset.importance || !["supporting", "key"].includes(asset.importance)) errors.push(`${prefix} asset ${asset.id} has invalid importance`);
+          if (!["flat", "decompose", "variants", "sequence"].includes(asset.preparation.decision))
+            errors.push(`${prefix} asset ${asset.id} has an invalid preparation decision`);
+          if (!nonEmpty(asset.preparation.rationale)) errors.push(`${prefix} asset ${asset.id} needs a preparation rationale`);
+          if (!Array.isArray(asset.preparation.derivatives)) errors.push(`${prefix} asset ${asset.id} preparation.derivatives must be an array`);
+          if (asset.importance === "key" && asset.preparation.decision !== "flat" && asset.preparation.derivatives.length === 0)
+            errors.push(`${prefix} key asset ${asset.id} promises preparation but names no derivatives`);
+        }
         if ((asset.status === "fallback" || asset.status === "cut") && !nonEmpty(asset.reason)) errors.push(`${prefix} asset ${asset.id} needs a reason`);
       }
     }
@@ -281,9 +364,34 @@ export function validateVerificationReport(value: unknown): string[] {
   const errors: string[] = [];
   if (report.version !== 1) errors.push("verification report version must be 1");
   if (!Array.isArray(report.evidence)) errors.push("verification evidence must be an array");
+  if (report.refinement) {
+    if (!nonEmpty(report.refinement.inspectedAt) || Number.isNaN(Date.parse(report.refinement.inspectedAt)))
+      errors.push("verification refinement needs a valid inspectedAt timestamp");
+    if (
+      !Array.isArray(report.refinement.findings) ||
+      report.refinement.findings.length === 0 ||
+      !Array.isArray(report.refinement.changes) ||
+      report.refinement.changes.length === 0 ||
+      !Array.isArray(report.refinement.evidenceIds) ||
+      report.refinement.evidenceIds.length === 0
+    )
+      errors.push("verification refinement needs findings, changes, and evidenceIds arrays");
+  }
   if ((report.evidence ?? []).some((item) => item.status === "fail")) errors.push("verification report contains failing evidence");
+  const timelineStates = new Set([
+    "initial",
+    "early",
+    "mid-transition",
+    "final",
+    "handoff",
+    "pinned-midpoint",
+    "pinned-exit",
+    "mobile",
+    "reduced-motion",
+  ]);
   for (const [index, item] of (report.evidence ?? []).entries()) {
     if (!nonEmpty(item.id) || !nonEmpty(item.criterion) || !nonEmpty(item.evidence)) errors.push(`verification.evidence[${index}] is incomplete`);
+    if (item.timelineState && !timelineStates.has(item.timelineState)) errors.push(`verification.evidence[${index}].timelineState is invalid`);
     const proof = item.proof;
     if (!proof || !nonEmpty(proof.timestamp) || Number.isNaN(Date.parse(proof.timestamp))) {
       errors.push(`verification.evidence[${index}].proof requires a valid timestamp`);

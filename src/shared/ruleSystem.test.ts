@@ -36,6 +36,20 @@ function basePlan(tier: DirectDesignPlan["tier"] = "award"): DirectDesignPlan {
       mechanisms: ["variable-type morph", "depth-stack", "drag-inertia", "mask-dissolve"],
       drivers: ["scroll", "pointer", "time"],
     },
+    motionComplexityBudget: {
+      heroMoments: [{ sectionId: "hero", reason: "The archival specimen becomes the navigation system and establishes the living-catalog concept." }],
+      calmSectionIds: [],
+      sharedLanguage: "Archival sheets fold, align, and become structural boundaries across the journey.",
+      deviceLimits: "Desktop uses the full pinned chapter while mobile shortens travel and removes continuous rendering.",
+      progressiveEnhancement: "Semantic catalog content renders first; masks and synchronized motion enhance it when supported.",
+      antiDefaultReview: {
+        basicMotionAssessment: "The key specimen changes role and geometry rather than only fading, sliding, or scaling.",
+        compositionHandoff: "The specimen edge becomes the next chapter's indexing rail instead of disappearing.",
+        visualStateChange: "Loose sheets become navigation, a research surface, and then the closing mark.",
+        conceptSpecificity: "The sheet behavior is derived from archival handling and would not fit an unrelated product.",
+        memorableMoment: "Dragging the specimen reorganizes the complete catalog into the next chapter.",
+      },
+    },
     pages: [
       {
         id: "home",
@@ -48,6 +62,19 @@ function basePlan(tier: DirectDesignPlan["tier"] = "award"): DirectDesignPlan {
             layoutFamily: "archival-index",
             skills: ["ux", "mobile", "motion", "media"],
             interactions: ["drag specimen"],
+            motionTreatment: {
+              class: "transformational",
+              staticComposition: "A loose archival specimen sits beside the catalog index.",
+              startState: "The specimen is centered and isolated as the page's primary subject.",
+              endState: "The specimen unfolds into the structural rail for the next catalog chapter.",
+              changes: ["The specimen mask expands and its edge becomes the next chapter rail."],
+              pinnedElements: [],
+              handoff: "The specimen edge persists as the indexing rail in the following composition.",
+              purpose: "Turn passive archival viewing into active handling and establish continuity.",
+              mechanism: "SVG mask migration synchronized with a GSAP scroll timeline.",
+              mobile: "A shorter clip-path handoff preserves the specimen-to-rail transformation.",
+              reducedMotion: "Render the specimen already aligned with the rail and use a direct section cut.",
+            },
             mobile: "stacked specimen",
             fallback: "static catalog",
             verification: ["Signature responds to input"],
@@ -63,16 +90,34 @@ function basePlan(tier: DirectDesignPlan["tier"] = "award"): DirectDesignPlan {
 }
 
 function verification(...ids: string[]): VerificationReport {
+  const timelineStates = ["initial", "early", "mid-transition", "final", "handoff", "mobile", "reduced-motion"] as const;
+  const timeline = timelineStates.map((timelineState) => ({
+    id: `timeline-${timelineState}`,
+    criterion: `Captured ${timelineState} visual state`,
+    status: "pass" as const,
+    evidence: "Captured the production build at the planned visual state.",
+    timelineState,
+    proof: { timestamp: started, testedUrl: "http://localhost:3000", consoleErrorCount: 0 },
+  }));
   return {
     version: 1,
     generatedAt: started,
-    evidence: ids.map((id) => ({
-      id,
-      criterion: id,
-      status: "pass",
-      evidence: "Captured runtime behavior in the production build.",
-      proof: { timestamp: started, testedUrl: "http://localhost:3000", consoleErrorCount: 0 },
-    })),
+    evidence: [
+      ...timeline,
+      ...ids.map((id) => ({
+        id,
+        criterion: id,
+        status: "pass" as const,
+        evidence: "Captured runtime behavior in the production build.",
+        proof: { timestamp: started, testedUrl: "http://localhost:3000", consoleErrorCount: 0 },
+      })),
+    ],
+    refinement: {
+      inspectedAt: started,
+      findings: ["The mid-transition index was too compressed to read."],
+      changes: ["Extended the mask handoff and delayed the rail compression."],
+      evidenceIds: ["timeline-mid-transition"],
+    },
   };
 }
 
@@ -80,27 +125,27 @@ test("valid default award plan", () => {
   assert.deepEqual(validateRuleControls(basePlan(), registry, reflex, verification()), []);
 });
 
-test("valid 3D substitution using spatial typography", () => {
+test("valid key-asset substitution for a typography-only experience", () => {
   const plan = basePlan();
   plan.ruleExceptions = [
     {
-      ruleId: "award.spatialSignature",
+      ruleId: "media.keyAssetTreatment",
       decision: "substituted",
       declaredAt: planned,
-      reason: "The archival concept has no physical subject, so a product-like prop would misrepresent the material.",
-      alternative: "A persistent variable-type specimen becomes index, spatial architecture, and interactive control across four chapters.",
-      successCriteria: ["The specimen appears in three materially different roles", "Pointer and scroll input visibly reshape its depth"],
-      evidenceIds: ["spatial-type-desktop", "spatial-type-mobile"],
+      reason: "The archive contains no raster key imagery; inventing photography would misrepresent the supplied typographic material.",
+      alternative: "A persistent variable-type specimen becomes index, spatial architecture, and interactive control across the complete journey.",
+      successCriteria: ["The specimen appears in materially different structural roles", "Pointer and scroll input visibly reshape the specimen"],
+      evidenceIds: ["type-system-desktop", "type-system-mobile"],
     },
   ];
-  assert.deepEqual(validateRuleControls(plan, registry, reflex, verification("spatial-type-desktop", "spatial-type-mobile")), []);
+  assert.deepEqual(validateRuleControls(plan, registry, reflex, verification("type-system-desktop", "type-system-mobile")), []);
 });
 
-test("invalid vague 3D exception", () => {
+test("invalid vague creative-rule exception", () => {
   const plan = basePlan();
   plan.ruleExceptions = [
     {
-      ruleId: "award.spatialSignature",
+      ruleId: "media.keyAssetTreatment",
       decision: "substituted",
       declaredAt: planned,
       reason: "It did not fit",
@@ -146,11 +191,43 @@ test("valid development plan", () => {
   assert.deepEqual(validateRuleControls(plan, registry, reflex, verification()), []);
 });
 
-test("invalid repeated-mechanism plan", () => {
+test("invalid decorative-only expressive plan", () => {
   const plan = basePlan();
-  plan.creativeStrategy = { path: "diversity", mechanisms: ["fade", "fade", "fade", "fade"], drivers: ["scroll", "scroll", "scroll"] };
+  plan.pages[0].sections[0].motionTreatment = {
+    ...plan.pages[0].sections[0].motionTreatment!,
+    class: "decorative",
+    changes: ["The image fades upward and scales into view."],
+    mechanism: "CSS opacity, translateY, and scale transitions on scroll reveal.",
+  };
   const errors = validateRuleControls(plan, registry, reflex, verification());
-  assert.ok(errors.some((error) => error.includes("distinct mechanisms")));
+  assert.ok(errors.some((error) => error.includes("decorative-only")));
+});
+
+test("expressive plan requires contextual motion budget", () => {
+  const plan = basePlan("expressive");
+  delete plan.motionComplexityBudget;
+  assert.ok(validateRuleControls(plan, registry, reflex, verification()).some((error) => error.includes("motionComplexityBudget")));
+});
+
+test("award verification requires timeline states and a refinement pass", () => {
+  const plan = basePlan();
+  const report: VerificationReport = {
+    version: 1,
+    generatedAt: started,
+    evidence: [
+      {
+        id: "initial-only",
+        criterion: "Initial state",
+        status: "pass",
+        evidence: "Captured only the initial frame.",
+        timelineState: "initial",
+        proof: { timestamp: started, testedUrl: "http://localhost:3000", consoleErrorCount: 0 },
+      },
+    ],
+  };
+  const errors = validateRuleControls(plan, registry, reflex, report);
+  assert.ok(errors.some((error) => error.includes("mid-transition")));
+  assert.ok(errors.some((error) => error.includes("refinement pass")));
 });
 
 test("valid reflex-font justification", () => {

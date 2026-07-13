@@ -97,7 +97,7 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   }
 
   const planSchema = contents.get("schemas/plan.schema.json") ?? "";
-  for (const field of ["doctrineVersion", "ruleExceptions", "creativeStrategy", "fontDecision", "experimentalPlan", "conceptExploration", "recipeAccess"]) {
+  for (const field of ["doctrineVersion", "ruleExceptions", "creativeStrategy", "motionComplexityBudget", "motionTreatment", "preparation", "fontDecision", "experimentalPlan", "conceptExploration", "recipeAccess"]) {
     if (!planSchema.includes(`\"${field}\"`)) add(findings, "schema", "schemas/plan.schema.json", `missing creative-control field ${field}`);
   }
 

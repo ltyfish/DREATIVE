@@ -182,13 +182,14 @@ export function buildDesignPlan(page: Page, brief: DesignBrief | undefined, assi
     dials.motion <= 3
       ? "hover/active states only, no scroll animation"
       : dials.motion <= 6
-        ? "entry fade+rise on hero, whileInView reveals on 2-3 key sections, nothing infinite"
-        : "scroll choreography allowed on ≤2 sections + hero entry; everything reduced-motion safe";
+        ? "purposeful local motion; use structural transitions only where content changes state, with visible defaults"
+        : "write section motion treatments; concentrate structural/transformational choreography into a few hero moments with calm sections, mobile translations, and reduced-motion states";
 
   const directives = [
     `aesthetic: ${aesthetic}; dials variance=${dials.variance} motion=${dials.motion} density=${dials.density}`,
     `spacing scale: ${spacing}`,
     `motion budget: ${motionBudget}`,
+    "choose the simplest mechanism that makes each intended transformation convincing; do not default blindly to fade/slide/scale or to WebGL/3D",
     "one accent color, one neutral family, one radius system, locked across ALL pages of this project",
     "section layout families are assigned below — follow them, do not default to repeated card rows",
     ...(dials.variance > 4 ? ["avoid centered-hero-over-gradient; use split or asymmetric composition"] : []),

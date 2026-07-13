@@ -38,6 +38,13 @@ function specific(value: string | undefined, minLength: number): boolean {
   return !/^(it |this )?(did not fit|didn't fit|felt better|was unnecessary|was not needed|looked better|fits? the design|restraint)$/i.test(value.trim());
 }
 
+function genericMotionOnly(value: string): boolean {
+  const text = normalized(value);
+  const basic = /\b(fade|opacity|translate|slide|scale|zoom|parallax|reveal|stagger)\b/;
+  const structural = /\b(mask|fragment|tile|pixel|layer|depth|pin|persist|handoff|morph|reconstruct|sequence|canvas|svg|webgl|shader|state|composition|camera|clip-path|typography)\b/;
+  return basic.test(text) && !structural.test(text);
+}
+
 export function validateRuleControls(
   plan: DirectDesignPlan,
   registry: RuleRegistry,
@@ -109,14 +116,94 @@ export function validateRuleControls(
     const strategy = plan.creativeStrategy;
     if (!strategy) errors.push(`${plan.tier} plans require a diversity-or-development creativeStrategy`);
     else if (strategy.path === "diversity") {
-      if (distinct(strategy.mechanisms ?? []).length < 4) errors.push("diversity path requires four distinct mechanisms");
-      if (distinct(strategy.drivers ?? []).length < 3) errors.push("diversity path requires three distinct drivers");
+      if (distinct(strategy.mechanisms ?? []).length === 0) errors.push("diversity path requires at least one concept-specific mechanism");
+      if (distinct(strategy.drivers ?? []).length === 0) errors.push("diversity path requires at least one meaningful driver");
     } else {
       if (!specific(strategy.signatureMechanism, 12)) errors.push("development path requires a named signature mechanism");
-      if (distinct(strategy.states ?? []).length < 3 || (strategy.states ?? []).some((state) => state.trim().length < 12))
-        errors.push("development path requires three materially different described states");
-      if (distinct(strategy.secondaryMechanisms ?? []).length < 2) errors.push("development path requires two quieter secondary mechanisms");
-      if (distinct(strategy.drivers ?? []).length < 2) errors.push("development path requires two distinct drivers");
+      if (distinct(strategy.states ?? []).length < 2 || (strategy.states ?? []).some((state) => state.trim().length < 12))
+        errors.push("development path requires materially different described states");
+      if (!Array.isArray(strategy.secondaryMechanisms)) errors.push("development path must record its quieter supporting mechanisms");
+      if (distinct(strategy.drivers ?? []).length === 0) errors.push("development path requires a meaningful driver");
+    }
+
+    const sections = plan.pages.flatMap((page) => page.sections);
+    const sectionIds = new Set(sections.map((section) => section.id));
+    const budget = plan.motionComplexityBudget;
+    if (!budget) errors.push(`${plan.tier} plans require a contextual motionComplexityBudget`);
+    else {
+      if (budget.heroMoments.length === 0 || budget.heroMoments.length > 3)
+        errors.push("motion complexity must be concentrated into one to three hero moments");
+      for (const moment of budget.heroMoments) {
+        if (!sectionIds.has(moment.sectionId)) errors.push(`motion hero moment references unknown section ${moment.sectionId}`);
+        if (!specific(moment.reason, 20)) errors.push(`motion hero moment ${moment.sectionId} needs a concept-specific reason`);
+      }
+      for (const sectionId of budget.calmSectionIds) {
+        if (!sectionIds.has(sectionId)) errors.push(`motion calm section references unknown section ${sectionId}`);
+      }
+      if (!specific(budget.sharedLanguage, 20) || !specific(budget.deviceLimits, 20) || !specific(budget.progressiveEnhancement, 20))
+        errors.push("motion complexity budget needs shared language, device limits, and progressive-enhancement decisions");
+      const antiDefault = budget.antiDefaultReview;
+      if (!antiDefault) errors.push("motion complexity budget requires the anti-default review");
+      else
+        for (const [name, answer] of Object.entries(antiDefault)) {
+          if (!specific(answer, 20)) errors.push(`anti-default review ${name} needs a concrete answer`);
+        }
+    }
+
+    const treatments = sections.map((section) => section.motionTreatment);
+    if (treatments.some((treatment) => !treatment)) errors.push(`${plan.tier} plans require a motion treatment for every major section, including calm sections`);
+    const significant = treatments.filter(
+      (treatment): treatment is NonNullable<typeof treatment> =>
+        Boolean(treatment && (treatment.class === "structural" || treatment.class === "transformational")),
+    );
+    if (significant.length === 0) errors.push(`${plan.tier} motion cannot be decorative-only`);
+    if (
+      significant.length > 0 &&
+      significant.every((treatment) => genericMotionOnly(`${treatment.mechanism} ${(treatment.changes ?? []).join(" ")} ${treatment.handoff}`))
+    )
+      errors.push(`${plan.tier} motion still describes only generic fade/slide/scale behavior; revise the scene architecture`);
+    for (const [index, treatment] of treatments.entries()) {
+      if (!treatment) continue;
+      const prefix = `motion treatment ${sections[index].id}`;
+      for (const [name, value] of Object.entries({
+        staticComposition: treatment.staticComposition,
+        startState: treatment.startState,
+        endState: treatment.endState,
+        handoff: treatment.handoff,
+        purpose: treatment.purpose,
+        mechanism: treatment.mechanism,
+        mobile: treatment.mobile,
+        reducedMotion: treatment.reducedMotion,
+      })) {
+        if (!specific(value, 12)) errors.push(`${prefix}.${name} needs a concrete decision`);
+      }
+    }
+
+    if (verification) {
+      const timelineStates = new Set(verification.evidence.map((item) => item.timelineState).filter(Boolean));
+      const requiredStates: NonNullable<VerificationReport["evidence"][number]["timelineState"]>[] = [
+        "initial",
+        "early",
+        "mid-transition",
+        "final",
+        "handoff",
+        "mobile",
+        "reduced-motion",
+      ];
+      if (treatments.some((treatment) => (treatment?.pinnedElements?.length ?? 0) > 0))
+        requiredStates.push("pinned-midpoint", "pinned-exit");
+      for (const state of requiredStates) {
+        if (!timelineStates.has(state)) errors.push(`visual verification is missing timeline state ${state}`);
+      }
+      const refinement = verification.refinement;
+      if (!refinement || refinement.changes.length === 0 || refinement.evidenceIds.length === 0)
+        errors.push(`${plan.tier} verification requires a recorded refinement pass after visual inspection`);
+      else {
+        for (const id of refinement.evidenceIds) {
+          const item = evidence.get(id);
+          if (!item || item.status !== "pass") errors.push(`refinement references missing or failing evidence ${id}`);
+        }
+      }
     }
   }
 

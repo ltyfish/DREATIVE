@@ -72,17 +72,23 @@ Detailed doctrine belongs in those references, not in this orchestration file.
   work, show a page × skill matrix: the user can assign treatments to specific
   pages, and approve routing for selected skills left unassigned. Every section
   names its layout family, skills, assets, interactions, mobile translation,
-  fallback, and verification criteria.
+  fallback, and verification criteria. Expressive/award plans also include a
+  motion treatment for every major section: static composition, start/end
+  states, changes, pins, handoff, purpose, mechanism, mobile translation, and
+  reduced-motion state.
 - Render a concise `.dreative/plan.md` for the user and for session re-entry.
 
 The approved plan is a delivery contract. A section ends as `shipped`,
 `fallback`, or `cut` with a reason—never silently omitted.
 
 At `expressive` and `award`, choose one coherent quality path: `diversity`
-(several mechanisms across several drivers) or `development` (one signature
-mechanism evolving through at least three materially different roles, supported
-by two quieter mechanisms). Experimental work explores one non-obvious candidate
-per major section, then selects only the strongest two or three to ship.
+(several concept-related mechanisms/drivers) or `development` (one signature
+mechanism evolving through materially different roles with quiet support).
+Allocate a contextual motion-complexity budget: concentrate effort into a small
+number of hero moments, name calm sections, and run the anti-default review.
+Do not satisfy ambition through mechanism quotas. Experimental work explores one
+non-obvious candidate per major section, then selects only the strongest two or
+three to ship.
 
 ### 3.3 Select skills
 
@@ -117,8 +123,10 @@ must appear somewhere in the overall plan, but not on every page.
 
 ### 3.4 Build
 
-- Prepare planned media before section implementation. Record each asset and its
-  delivery status in the plan.
+- Prepare planned media before section implementation. Treat generated stills as
+  raw material: decide whether each asset stays flat or needs cutouts, depth
+  layers, masks, fragments, variants, maps, or a frame sequence. Record the
+  decision, derivatives, rationale, and delivery status in the plan.
 - Follow the chosen framework adapter and the repository's established patterns.
 - Preserve the manifest unless the user explicitly approved a change; record
   approved divergence with a reason.
@@ -151,9 +159,13 @@ Verification is evidence, not prose asserting that something was checked.
 4. Check the console, links, forms, keyboard path, states, reduced motion,
    responsive overflow, and pointer hit areas.
 5. For motion/WebGL/video, record runtime evidence and performance numbers.
+   Capture initial, early, mid-transition, final, handoff, mobile, and
+   reduced-motion states; add pinned midpoint/exit states when pinning exists.
 6. Reconcile every plan section and asset against what visibly shipped.
-7. Write `.dreative/verify.json` and run `dreative audit`.
-8. Fix every error. Warnings require either a fix or a recorded justification.
+7. At expressive/award, visually inspect the captured states, make at least one
+   refinement to timing, composition, readability, or continuity, and record it.
+8. Write `.dreative/verify.json` and run `dreative audit`.
+9. Fix every error. Warnings require either a fix or a recorded justification.
 
 Every evidence-backed substitution references passing evidence IDs whose proof
 meets its declared success criteria. Vague reasons such as "it did not fit",

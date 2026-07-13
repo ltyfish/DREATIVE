@@ -21,6 +21,30 @@ in `recipeAccess`.
 - Sticky CSS for simple pinning; cap pin length and remove/shorten on mobile.
 - Velocity treatments use damped/clamped derivatives, never raw scroll deltas.
 
+## Optional transformation patterns
+
+Choose only patterns that express the concept:
+
+- **Image fragmentation:** split a source into aligned DOM/SVG/Canvas tiles or
+  sampled pixels; disperse, filter, and reconstruct the actual image.
+- **Composition handoff:** carry an object, mask, grid, or type structure from
+  one section into the next instead of resetting the page.
+- **Layered image dive:** separate depth planes or use a depth map and move the
+  camera through the composition.
+- **Mask migration:** evolve one mask window across images or sections.
+- **Object persistence:** keep a key subject staged while its environment,
+  scale, supporting content, and berth change.
+- **Generated-keyframe morph:** blend related still states through masking,
+  displacement, or a bounded frame sequence.
+- **Pixel-to-object reconstruction:** assemble sampled text/image particles into
+  a recognizable subject.
+- **Typography-to-image:** use readable type as mask, grid, path, or fragment
+  source that becomes imagery.
+- **Environmental system:** drive texture, light, particles, type, and objects
+  from the same scroll/interaction state.
+- **Editorial sequence:** treat a long section as one pinned timeline with
+  deliberate internal states rather than independent blocks.
+
 ## Type
 
 - Split lines/words/characters only for selected display moments; keep accessible

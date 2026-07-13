@@ -105,9 +105,9 @@
       "id": "award.spatialSignature",
       "category": "evidence-backed-default",
       "observedFailure": "Award builds used a generic orb or had no recurring dimensional system beyond the hero.",
-      "defaultRemedy": "Use a recognizable real GLB or photoreal cutout prop staged in a designed berth.",
+      "defaultRemedy": "Plan one concept-specific spatial, media, typographic, or material signature that recurs and changes state.",
       "exceptionAllowed": true,
-      "exceptionTest": "A named alternative creates equivalent depth, recurrence, interaction, and visual dominance on desktop and mobile.",
+      "exceptionTest": "A named alternative creates equivalent recurrence, interaction, visual dominance, and journey continuity on desktop and mobile.",
       "reviewAfterRuns": 5
     },
     {
@@ -123,27 +123,27 @@
       "id": "media.award.participatoryMoment",
       "category": "evidence-backed-default",
       "observedFailure": "Award media remained something visitors only watched while the page claimed immersion.",
-      "defaultRemedy": "Use an image or video depth dive when the concept and assets support depth.",
+      "defaultRemedy": "Create one concept-specific point where the visitor affects, enters, transforms, or controls the media's visual logic.",
       "exceptionAllowed": true,
       "exceptionTest": "The visitor affects, enters, transforms, scrubs, drags, refracts, or controls the media's visual logic with equal perceptual impact.",
       "reviewAfterRuns": 5
     },
     {
-      "id": "media.award.pixelCoverage",
+      "id": "media.keyAssetTreatment",
       "category": "evidence-backed-default",
       "observedFailure": "Award builds shipped one set-piece while all other key images remained static or used basic fade-and-zoom.",
-      "defaultRemedy": "At least half of key images, minimum three, use distinct pixel-class treatments.",
+      "defaultRemedy": "Give every key image an explicit flat-or-decompose decision and concentrate meaningful transformation where the narrative changes state.",
       "exceptionAllowed": true,
-      "exceptionTest": "One coherent alternative media system visibly develops through at least three materially different roles or states.",
+      "exceptionTest": "A coherent alternative media system makes key imagery intentional while preserving calm sections and asset feasibility.",
       "reviewAfterRuns": 5
     },
     {
-      "id": "motion.expressive.diversityOrDevelopment",
+      "id": "motion.expressive.architecture",
       "category": "evidence-backed-default",
       "observedFailure": "Multiple sections repeated the same simple reveal or used unrelated effects only to satisfy a catalog.",
-      "defaultRemedy": "Use four distinct mechanisms across three input drivers.",
+      "defaultRemedy": "Plan the page as connected visual states with a small number of hero moments, calm sections, and a concept-specific handoff language.",
       "exceptionAllowed": true,
-      "exceptionTest": "One coherent signature mechanism develops through at least three materially different states with two quieter secondary mechanisms and two drivers.",
+      "exceptionTest": "A coherent signature mechanism develops through materially different states without requiring unrelated mechanisms or gimmick quotas.",
       "reviewAfterRuns": 5
     },
     {
