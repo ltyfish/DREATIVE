@@ -3,7 +3,7 @@
 Choose the lowest tier that honestly satisfies the request. Higher tiers inherit
 all lower-tier requirements.
 
-## Solid
+## Solid (`solid`)
 
 - Complete, accessible, responsive interface.
 - Existing behavior and preservation manifest pass.
@@ -11,7 +11,7 @@ all lower-tier requirements.
 - Desktop, keyboard, reduced-motion, and approximately 390px mobile verified.
 - Heavy media or bespoke motion is not required.
 
-## Premium
+## Premium (`premium`)
 
 - Everything in Solid.
 - A named register, design concept, and visible signature detail.
@@ -19,7 +19,7 @@ all lower-tier requirements.
 - Layout composition varies by content; no repeated default-card solution.
 - Motion is restrained and purposeful unless the brief asks for more.
 
-## Expressive
+## Expressive (`expressive`)
 
 - Everything in Premium.
 - At least three coordinated motion/interaction moments with distinct purposes.
@@ -27,7 +27,7 @@ all lower-tier requirements.
 - Mobile translations and reduced-motion fallbacks are implemented, not noted.
 - Frame behavior and heavy asset cost are measured.
 
-## Award
+## Award (`award`)
 
 - Everything in Expressive.
 - A distinctive persistent spatial, media, or material system shapes the journey.

@@ -19,6 +19,29 @@ export interface SkillDefinition {
   signature: RegExp;
 }
 
+export interface SkillRoutingPage {
+  id: string;
+  texts: (string | undefined)[];
+}
+
+export interface SkillRoutingRequest {
+  pages: SkillRoutingPage[];
+  /** User-approved treatment pool. Unselected treatments are suggestions only. */
+  selected: SpecialistSkill[];
+  /** Explicit user assignments. These always win over automatic placement. */
+  assignments?: Record<string, SpecialistSkill[]>;
+  /** False leaves unassigned selected treatments for manual placement. Defaults to true. */
+  autoRouteUnassigned?: boolean;
+}
+
+export interface SkillRoutingResult {
+  selected: SpecialistSkill[];
+  resolved: SpecialistSkill[];
+  byPage: Record<string, SpecialistSkill[]>;
+  suggestions: Record<string, SpecialistSkill[]>;
+  unassigned: SpecialistSkill[];
+}
+
 export const SKILL_DEFINITIONS: SkillDefinition[] = [
   {
     name: "ux",
@@ -98,6 +121,70 @@ export function resolveSkillDependencies(requested: Iterable<SpecialistSkill>): 
   };
   for (const name of requested) visit(name);
   return SKILL_DEFINITIONS.map((skill) => skill.name).filter((name) => resolved.has(name));
+}
+
+function skillScore(name: SpecialistSkill, texts: (string | undefined)[]): number {
+  const definition = BY_NAME.get(name);
+  if (!definition) return 0;
+  const haystack = texts.filter(Boolean).join("\n");
+  const flags = definition.signature.flags.includes("g") ? definition.signature.flags : `${definition.signature.flags}g`;
+  return [...haystack.matchAll(new RegExp(definition.signature.source, flags))].length;
+}
+
+/**
+ * Hybrid multi-page routing: user selection is authoritative, explicit page
+ * assignments are locked, and only selected-but-unassigned treatments are
+ * placed automatically. Detected unselected skills are returned as suggestions
+ * and never activated silently.
+ */
+export function routeSkillsAcrossPages(request: SkillRoutingRequest): SkillRoutingResult {
+  const selected = [...new Set(request.selected)];
+  const resolved = resolveSkillDependencies(selected);
+  const byPageSets = new Map(request.pages.map((page) => [page.id, new Set<SpecialistSkill>(["ux", "mobile"])]));
+  for (const [pageId, skills] of Object.entries(request.assignments ?? {})) {
+    const target = byPageSets.get(pageId);
+    if (!target) continue;
+    for (const skill of skills) {
+      if (!resolved.includes(skill)) continue;
+      for (const dependency of resolveSkillDependencies([skill])) target.add(dependency);
+    }
+  }
+
+  const optionalSelected = selected.filter((skill) => skill !== "ux" && skill !== "mobile");
+  const unassigned = optionalSelected.filter((skill) => ![...byPageSets.values()].some((skills) => skills.has(skill)));
+  if (request.autoRouteUnassigned !== false && request.pages.length > 0) {
+    for (const skill of unassigned) {
+      const ranked = request.pages
+        .map((page, index) => ({
+          page,
+          index,
+          score: skillScore(skill, page.texts),
+          load: [...(byPageSets.get(page.id) ?? [])].filter((name) => name !== "ux" && name !== "mobile").length,
+        }))
+        .sort((a, b) => b.score - a.score || a.load - b.load || a.index - b.index);
+      const target = byPageSets.get(ranked[0].page.id)!;
+      for (const dependency of resolveSkillDependencies([skill])) target.add(dependency);
+    }
+  }
+
+  const suggestions: Record<string, SpecialistSkill[]> = {};
+  for (const page of request.pages) {
+    suggestions[page.id] = detectSpecialistSkills(page.texts).filter((skill) => !resolved.includes(skill));
+  }
+
+  const byPage = Object.fromEntries(
+    request.pages.map((page) => [
+      page.id,
+      SKILL_DEFINITIONS.map((definition) => definition.name).filter((name) => byPageSets.get(page.id)?.has(name)),
+    ]),
+  );
+  return {
+    selected,
+    resolved,
+    byPage,
+    suggestions,
+    unassigned: request.autoRouteUnassigned === false ? unassigned : [],
+  };
 }
 
 export function resolveAmbitionTier(input: {

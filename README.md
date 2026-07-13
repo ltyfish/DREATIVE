@@ -10,6 +10,7 @@ Install the skill, then ask your coding agent to design or redesign a page. The 
 
 - four explicit ambition tiers, from solid product UI through award-site work;
 - ten composable specialist skills with dependency resolution;
+- user-approved multi-page skill routing with explicit per-page assignments;
 - framework adapters for React/Vite, Next.js, Vue/Nuxt, SvelteKit, and styling systems;
 - typed plan, preservation, decision-ledger, and verification artifacts;
 - `dreative audit`, which checks delivery status, preservation, assets, evidence, and common frontend risks.
@@ -17,6 +18,7 @@ Install the skill, then ask your coding agent to design or redesign a page. The 
 ```sh
 dreative install-skill --codex   # or omit --codex for Claude Code
 dreative audit                   # run after implementation
+dreative docs-check              # validate the packaged doctrine and references
 ```
 
 The browser workflow below is optional and only used when explicitly requested.

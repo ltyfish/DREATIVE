@@ -469,8 +469,8 @@ ambition every major surface (page background, hero, cards/panels, media
 frames) carries at least one deliberate material cue, and the page declares
 ONE light direction that everything obeys:
 
-- **Grain/noise** — a 1-3% opacity noise overlay (tileable PNG or SVG
-  `feTurbulence`, one shared asset) kills gradient banding and digital
+- **Grain/noise** — a 1-3% opacity tileable PNG/WebP noise overlay (one shared
+  asset; never `feTurbulence`) kills gradient banding and digital
   flatness; vary its intensity by section as part of the pacing curve.
 - **Light consistency** — pick the light's direction once; every shadow,
   edge-highlight, gradient hotspot, and 3D/scene light agrees with it. Tint

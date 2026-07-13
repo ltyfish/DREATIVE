@@ -2,6 +2,8 @@
 
 Every specialist skill follows this contract, in addition to its own doctrine:
 
+Universal foundation: ux and baseline mobile apply to every web page.
+
 1. **Load when:** selected in `plan.skills` or clearly triggered by the brief.
 2. **Do not load when:** the treatment adds cost without serving the request.
 3. **Dependencies:** resolve the skill graph in `SKILL.md`; `ux` and `mobile`

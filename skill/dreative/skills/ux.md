@@ -2,6 +2,8 @@
 
 ## Contract
 
+Universal foundation: ux and baseline mobile apply to every web page.
+
 Follow `../references/SKILL_CONTRACT.md`. This universal foundation has no
 specialist dependency; pair it with `mobile` for all web delivery. Deliver the
 preservation manifest, state inventory, semantic/keyboard behavior, feedback,

@@ -3,8 +3,10 @@ import {
   detectSpecialistSkills,
   resolveAmbitionTier,
   resolveSkillDependencies,
+  routeSkillsAcrossPages,
   TIER_REQUIREMENTS,
   type AmbitionTier,
+  type SkillRoutingResult,
   type SpecialistSkill,
 } from "./skillSystem.js";
 
@@ -147,16 +149,18 @@ export function lintLayout(layout: Block): string[] {
 }
 
 /** Build the compact, executable plan sent to the agent with design-page. */
-export function buildDesignPlan(page: Page, brief: DesignBrief | undefined): DesignPlan {
+export function buildDesignPlan(page: Page, brief: DesignBrief | undefined, assignedSkills?: SpecialistSkill[]): DesignPlan {
   const dials = resolveDials(brief);
   const aesthetic = brief?.aesthetic || "auto (infer per DESIGN.md, then commit)";
+  const allowedSkills = assignedSkills ? new Set(resolveSkillDependencies(assignedSkills)) : undefined;
   const sections = (page.layout.children ?? []).map((s, i) => {
     let family: string;
     if (s.type === "nav") family = "nav-single-line";
     else if (s.type === "hero") family = dials.variance > 4 ? "asymmetric-split-hero" : "centered-hero";
     else if (s.type === "footer") family = "footer";
     else family = FAMILIES[i % FAMILIES.length];
-    const secSkills = resolveSkillDependencies(detectSpecialistSkills(blockTexts(s)));
+    const detected = resolveSkillDependencies(detectSpecialistSkills(blockTexts(s)));
+    const secSkills = allowedSkills ? detected.filter((skill) => allowedSkills.has(skill)) : detected;
     return secSkills.length ? { id: s.id, label: s.label, family, skills: secSkills } : { id: s.id, label: s.label, family };
   });
 
@@ -166,7 +170,7 @@ export function buildDesignPlan(page: Page, brief: DesignBrief | undefined): Des
     ...sections.flatMap((s) => s.skills ?? []),
   ]);
   if (dials.motion >= 6) requestedSkills.add("motion");
-  const skills = resolveSkillDependencies(requestedSkills);
+  const skills = assignedSkills ? resolveSkillDependencies(assignedSkills) : resolveSkillDependencies(requestedSkills);
   const tier = resolveAmbitionTier({
     ...dials,
     aesthetic,
@@ -205,5 +209,34 @@ export function buildDesignPlan(page: Page, brief: DesignBrief | undefined): Des
     lints: lintLayout(page.layout),
     skills,
     verification: TIER_REQUIREMENTS[tier],
+  };
+}
+
+export interface MultiPageDesignPlans {
+  routing: SkillRoutingResult;
+  pages: { pageId: string; plan: DesignPlan }[];
+}
+
+/** Build page plans from a user-approved pool. Unselected optional skills are
+ * suggestions only; explicit page assignments win. */
+export function buildMultiPageDesignPlans(
+  pages: Page[],
+  brief: DesignBrief | undefined,
+  selection: {
+    selected: SpecialistSkill[];
+    assignments?: Record<string, SpecialistSkill[]>;
+    autoRouteUnassigned?: boolean;
+  },
+): MultiPageDesignPlans {
+  const routing = routeSkillsAcrossPages({
+    pages: pages.map((page) => ({
+      id: page.id,
+      texts: [page.name, page.designPrompt, brief?.vibe, brief?.notes, ...blockTexts(page.layout)],
+    })),
+    ...selection,
+  });
+  return {
+    routing,
+    pages: pages.map((page) => ({ pageId: page.id, plan: buildDesignPlan(page, brief, routing.byPage[page.id]) })),
   };
 }

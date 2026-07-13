@@ -2,6 +2,8 @@
 
 ## Contract
 
+Universal foundation: ux and baseline mobile apply to every web page.
+
 Follow `../references/SKILL_CONTRACT.md`. Dependency: `ux`. This skill is
 universal for web work. Deliver a section-by-section mobile translation, touch
 targets, responsive media/effect budgets, and approximately 390px verification.

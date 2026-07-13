@@ -14,27 +14,35 @@ test("direct-design audit verifies artifacts and preservation needles", () => {
     fs.writeFileSync(
       path.join(root, ".dreative", "plan.json"),
       JSON.stringify({
-        version: 1,
+        version: 2,
         request: "Polish pricing",
         createdAt: new Date().toISOString(),
         tier: "solid",
         depth: "restyle",
         skills: ["ux", "mobile"],
+        skillPolicy: { mode: "hybrid", global: ["ux", "mobile"], routingApproved: true, userAssignments: [] },
         designRead: { register: "product", concept: "clear value", signature: "pricing rail" },
         preservationManifest: ".dreative/preservation.json",
         decisionLedger: ".dreative/ledger.json",
-        sections: [
+        pages: [
           {
-            id: "pricing",
-            name: "Pricing",
-            layoutFamily: "comparison",
+            id: "pricing-page",
+            name: "Pricing page",
             skills: ["ux", "mobile"],
-            interactions: [],
-            mobile: "stacked plans",
-            fallback: "semantic table",
-            verification: ["Pricing link remains"],
-            assets: [],
-            status: "shipped",
+            sections: [
+              {
+                id: "pricing",
+                name: "Pricing",
+                layoutFamily: "comparison",
+                skills: ["ux", "mobile"],
+                interactions: [],
+                mobile: "stacked plans",
+                fallback: "semantic table",
+                verification: ["Pricing link remains"],
+                assets: [],
+                status: "shipped",
+              },
+            ],
           },
         ],
       }),
@@ -53,12 +61,28 @@ test("direct-design audit verifies artifacts and preservation needles", () => {
       JSON.stringify({
         version: 1,
         generatedAt: new Date().toISOString(),
-        evidence: [{ id: "pricing-link", criterion: "Pricing link remains", status: "pass", evidence: "Clicked /pricing in production build" }],
+        evidence: [
+          {
+            id: "pricing-link",
+            criterion: "Pricing link remains",
+            status: "pass",
+            evidence: "Clicked /pricing in production build",
+            proof: { timestamp: new Date().toISOString(), testedUrl: "http://localhost:3000/pricing", consoleErrorCount: 0 },
+          },
+        ],
       }),
     );
 
     const report = runDirectDesignAudit(root);
     assert.equal(report.ok, true, JSON.stringify(report.findings));
+
+    const verifyFile = path.join(root, ".dreative", "verify.json");
+    const verify = JSON.parse(fs.readFileSync(verifyFile, "utf-8"));
+    verify.evidence[0].proof.artifactPath = ".dreative/screenshots/missing.png";
+    fs.writeFileSync(verifyFile, JSON.stringify(verify));
+    const missingArtifact = runDirectDesignAudit(root);
+    assert.equal(missingArtifact.ok, false);
+    assert.ok(missingArtifact.findings.some((item) => item.message.includes("evidence artifact is missing")));
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }

@@ -52,10 +52,14 @@ Detailed doctrine belongs in those references, not in this orchestration file.
 - Resolve one ambition tier: solid, premium, expressive, or award.
 - Explore three genuinely different concepts, commit to one, and record why the
   others were rejected.
-- Ask one consolidated question round for decisions that materially change the
-  result. Do not ask about implementation details the agent can infer safely.
-- Write `.dreative/plan.json` using `references/ARTIFACTS.md`. Every section must
-  name its layout family, skills, assets, interactions, mobile translation,
+- Run one short decision phase containing several sequential single-question
+  calls. Use the environment's structured question tool when available;
+  otherwise ask in chat. Do not ask about implementation details the agent can
+  infer safely.
+- Write `.dreative/plan.json` using `references/ARTIFACTS.md`. For multi-page
+  work, show a page × skill matrix: the user can assign treatments to specific
+  pages, and approve routing for selected skills left unassigned. Every section
+  names its layout family, skills, assets, interactions, mobile translation,
   fallback, and verification criteria.
 - Render a concise `.dreative/plan.md` for the user and for session re-entry.
 
@@ -64,7 +68,8 @@ The approved plan is a delivery contract. A section ends as `shipped`,
 
 ### 3.3 Select skills
 
-`ux` and `mobile` are always included. Add treatments from this complete picker:
+Universal foundation: ux and baseline mobile apply to every web page.
+Add treatments from this complete picker:
 
 | Skill | Use it for |
 | --- | --- |
@@ -86,8 +91,11 @@ Skill dependencies are additive:
 - `cinematic` depends on `motion`, `interaction`, and `media`.
 - `experimental` depends on `motion`, `interaction`, and `media`.
 
-The runtime planner resolves these dependencies. Never omit a dependency merely
-because the user selected only the parent treatment.
+The user's selected skills are authoritative. Routing recommends placement; it
+never silently activates an unselected optional skill. Explicit page assignments
+always win. The planner resolves dependencies and places selected-but-unassigned
+skills across suitable pages for approval. If the user selects all, every skill
+must appear somewhere in the overall plan, but not on every page.
 
 ### 3.4 Build
 
@@ -144,13 +152,13 @@ next run. Never store secrets or unrelated user information.
 
 ## 4. Ambition tiers
 
-- **Solid:** complete, accessible, responsive product-quality UI.
-- **Premium:** strong design read, deliberate media, signature detail, craft pass.
-- **Expressive:** coordinated motion/interaction system with measured fallbacks.
-- **Award:** distinctive spatial/media system with performance, occlusion, and
+- **Solid (`solid`):** complete, accessible, responsive product-quality UI.
+- **Premium (`premium`):** strong design read, deliberate media, signature detail, craft pass.
+- **Expressive (`expressive`):** coordinated motion/interaction system with measured fallbacks.
+- **Award (`award`):** distinctive spatial/media system with performance, occlusion, and
   fallback evidence.
 
-Higher tiers inherit lower-tier requirements. Do not impose award-site cost on a
+Higher tiers inherit lower-tier requirements. Do not impose `award`-tier cost on a
 solid or premium request. See `references/TIERS.md` for exact deliverables.
 
 ## 5. Preservation rules

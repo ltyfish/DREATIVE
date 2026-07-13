@@ -6,6 +6,7 @@ import readline from "node:readline";
 import { createServer } from "../server/index.js";
 import open from "open";
 import { printAudit, runDirectDesignAudit } from "./audit.js";
+import { printDocsCheck, runDocsCheck } from "./docsCheck.js";
 
 const port = Number(process.env.DREATIVE_PORT || 4820);
 const base = `http://localhost:${port}`;
@@ -23,7 +24,11 @@ const USAGE = `usage: dreative [command]
   respond <id> [result.json | --error msg]   (agent) answer a request
   baseline         (agent) snapshot project.json as the finish-diff baseline
   audit             validate direct-design plan, preservation, assets, ledger, and verification
+                    --json              emit a machine-readable report
+  docs-check        validate packaged skill tiers, names, rules, references, and doctrine consistency
                     --json              emit a machine-readable report`;
+
+const packagedSkillDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "skill", "dreative");
 
 function walkFiles(root: string, current = root): string[] {
   const files: string[] = [];
@@ -64,7 +69,7 @@ async function main() {
     }
 
     case "install-skill": {
-      const srcDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "skill", "dreative");
+      const srcDir = packagedSkillDir;
       const skillsDir = path.join(srcDir, "skills");
       const available = fs.existsSync(skillsDir)
         ? fs.readdirSync(skillsDir).filter((f) => f.endsWith(".md")).map((f) => f.replace(/\.md$/, ""))
@@ -171,6 +176,13 @@ async function main() {
     case "audit": {
       const report = runDirectDesignAudit(process.cwd());
       printAudit(report, args.includes("--json"));
+      if (!report.ok) process.exitCode = 1;
+      return;
+    }
+
+    case "docs-check": {
+      const report = runDocsCheck(packagedSkillDir);
+      printDocsCheck(report, args.includes("--json"));
       if (!report.ok) process.exitCode = 1;
       return;
     }

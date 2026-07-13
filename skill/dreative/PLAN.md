@@ -41,7 +41,7 @@ Rules:
   stills" and continuing is a FAILURE even though it's honest. The fix is a
   question with at least two live options: "install <concrete MCP/tool name>
   now and use it" vs "skip it, use <the specific fallback>". Ask it in the
-  question round (§3), phrased as a genuine fork, not a heads-up. Never
+  decision phase (§3), phrased as a genuine fork, not a heads-up. Never
   install tools silently; never silently degrade either.
 - The probe result changes the blueprint: no video-gen → hero loops become
   generated stills + ken-burns or a shader surface; **no image-gen → media
@@ -56,7 +56,7 @@ Rules:
 
 ## 2. The blueprint (section-by-section, media-first)
 
-Draft the page as a compact table BEFORE asking anything — the question round
+Draft the page as a compact table BEFORE asking anything — the decision phase
 presents choices about a concrete plan, not abstractions. Per section:
 
 | section | layout family | media plan | motion treatment | interaction | intensity | fallback |
@@ -99,7 +99,7 @@ presents choices about a concrete plan, not abstractions. Per section:
   Every 3D prop cell also names its BERTH (3d.md §1.5): which lane/stage of
   the section it occupies and what the layout does to make room — a prop
   planned "over the hero image" or with no berth is an invalid cell.
-  At award-site ambition the blueprint must contain at least one 3D prop
+  At the `award` tier the blueprint must contain at least one 3D prop
   cell (3d.md §0's required prop — GLB or cutout billboard, with its berth
   and asset source named); zero prop cells = incomplete plan.
   At dial ≥ 8 the media column additionally marks each hero/key image's
@@ -130,7 +130,7 @@ presents choices about a concrete plan, not abstractions. Per section:
   are re-counted at verify.
 - **motion treatment** — from motion.md/immersive.md/cinematic.md vocabulary,
   with the dial-appropriate ambition. **motion.md §9's inventory is a hard
-  plan gate, not a target:** at expressive/award-site ambition the blueprint
+  plan gate, not a target:** at `expressive`/`award` ambition the blueprint
   must enumerate every §9 item for its dial — which element carries it, what
   triggers it — or explicitly name the item as cut with a reason. A plan that
   neither covers nor justifies a §9 item is incomplete; rework it before
@@ -184,13 +184,13 @@ exists to break — a rerun that a user would describe as "the same site again"
 is a failed rerun. Record in the new plan file which axes diverged from the
 previous run.
 
-## 3. The questions (ONE question per call, asked in sequence)
+## 3. The decision phase
 
-Ask with the structured question tool (AskUserQuestion), **one question at a
-time** — never dump the whole pool in a single round; a wall of 4 simultaneous
-questions is exactly the failure this section prevents. Each answer can change
-what you ask next (e.g. a "cinematic" treatment pick makes the media question
-matter more; "restyle" depth kills the mockup question).
+Run one short decision phase containing several sequential single-question
+calls. Use the environment's structured question tool when available; otherwise
+ask in chat. Never dump the whole pool in one message: each answer can change
+what comes next (for example, a cinematic treatment makes the media question
+matter more, while restyle depth can remove the mockup question).
 
 **Skip what the prompt already answers.** Before asking anything, walk the pool
 below against the user's prompt + attachments: a question whose answer is
@@ -279,6 +279,15 @@ should explicitly invite extra direction.
    named the treatments or the request is trivially a restyle; read each
    chosen `skills/<name>.md` before designing.
 
+   **For multi-page work, follow selection with one page-assignment matrix.**
+   Rows are pages and columns are the user-selected optional treatments. Let the
+   user pin any treatment to specific pages. For unpinned selections, propose a
+   distribution based on page purpose and intensity, then ask for one approval
+   of the complete matrix. User pins are authoritative; routing cannot move
+   them or activate unselected optional skills. `ux` and baseline `mobile` apply
+   to every page. Selecting all means every skill is used somewhere in the
+   overall plan—not that every page receives every effect.
+
    **Propose extra, request-specific skills beyond this fixed list** when the
    brief hints at something the 10 named treatments don't cover well (sound
    design, generative/procedural patterns, data-driven visuals, AR-ish
@@ -303,7 +312,7 @@ should explicitly invite extra direction.
    choice, not a downgrade. If a needed tool is missing, this is where the
    install offer goes ("I can add <X> MCP for video generation — ok?").
    **Set the iteration expectation honestly:** when the user picks `custom
-   3D`, `custom props`, or (later) award-site ambition, say plainly — in the
+   3D`, `custom props`, or (later) the `award` tier, say plainly — in the
    question's description or the plan recap — that complex 3D motion and prop
    choreography rarely land perfectly in one pass: the first build ships a
    working version (planned fallbacks where an effect fails verification),
@@ -315,14 +324,19 @@ should explicitly invite extra direction.
 4. **Ambition tier** — present each tier with a plain description, a
    best-fit use case, AND its honest tradeoff (a user choosing blind between
    "cool-sounding" labels is the failure this wording prevents):
-   - **safe** — polished, clean, light motion. *Best for:* dashboards, apps,
+   - **Solid (`solid`)** — polished, complete, responsive, and light on custom
+     effects. *Best for:* dashboards, apps,
      content-heavy sites, corporate audiences, tight deadlines. *Tradeoff:*
      looks professional, won't turn heads.
-   - **expressive** — rich scroll motion, 3D accents, everything still
+   - **Premium (`premium`)** — a strong design read, deliberate media, and one
+     signature detail with restrained motion. *Best for:* business, commerce,
+     and marketing work that should feel distinctive without becoming an
+     experience site. *Tradeoff:* more craft and media work than solid.
+   - **Expressive (`expressive`)** — rich scroll motion, 3D accents, everything still
      instantly usable. *Best for:* most product, e-commerce, and marketing
      sites — the show/usability sweet spot and the default recommendation.
-     *Tradeoff:* heavier than safe, but visitors never fight the page.
-   - **award-site** — the page becomes an experience: immersive 3D, cinematic
+     *Tradeoff:* heavier than premium, but visitors never fight the page.
+   - **Award (`award`)** — the page becomes an experience: immersive 3D, cinematic
      pacing, experimental transitions (dial 9-10). *Best for:* portfolios,
      launches, brand showcases, agency work — anywhere wow IS the goal.
      *Tradeoff:* heaviest build, longest load, and deliberately unconventional —
@@ -333,10 +347,10 @@ should explicitly invite extra direction.
    **Which option gets "(Recommended)" is computed, and the default bias is
    UP:** when the brief carries no strong signal either way, recommend
    **expressive** — unnamed ambition becomes beige (DESIGN.md §2), and this
-   skill exists for drastic change. Recommend **safe** only on concrete
+   skill exists for drastic change. Recommend **solid** only on concrete
    counter-signals: explicit "minimal / corporate / clean / subtle" language,
    a product/app/dashboard surface rather than a marketing page, or a hard
-   deadline constraint (item 7). Recommending safe to a signal-free brief is
+   deadline constraint (item 7). Recommending solid to a signal-free brief is
    a bug, same class as the item-8 mockup inversion.
 5. **References (ask unless the prompt already supplied them)** — "Do you have
    any reference — an image/screenshot, a website you love, or a video of a
@@ -371,17 +385,17 @@ should explicitly invite extra direction.
    assume "all" just because the brief said "redesign the site" — confirm it.
    Also capture what's in this pass vs later, and any hard constraints
    (existing brand tokens to keep, CMS/content that must survive, deadline
-   implying the safe tier).
+   implying the solid tier).
 8. **Mockups first?** — offer to build 1:1 mockups BEFORE the full build:
    "Mockup the key pages first" / "Straight to build". **Which one is marked
    "(Recommended)" is NOT static — compute it from the depth + ambition
-   answers already given:** reimagine or restructure depth, OR award-site
+   answers already given:** reimagine or restructure depth, OR `award`
    ambition, mean this is among the biggest changes the tool can make, so
    **"Mockup first" is the recommended option.** Recommend "Straight to
-   build" only when depth is restyle/re-layout AND ambition is safe/
+   build" only when depth is restyle/re-layout AND ambition is solid/premium/
    expressive. Getting this backwards (recommending straight-to-build on a
-   reimagine + award-site combo) is a bug, not a stylistic choice. When depth
-   is restructure/reimagine OR ambition is award-site, also offer a third
+   reimagine + award combo) is a bug, not a stylistic choice. When depth
+   is restructure/reimagine OR ambition is `award`, also offer a third
    option: **"two divergent mockups"** — the two strongest concepts from the
    explore pass (DESIGN.md §2) each built as a mockup, user picks. State the
    honest cost (a second mockup is real tokens/time); it's an offer, never
@@ -408,7 +422,7 @@ defaults.
 
 ### Calibration references (what the top tiers actually look like)
 
-When the user picks award-site ambition or 3d/immersive/cinematic treatments,
+When the user picks the `award` tier or 3d/immersive/cinematic treatments,
 these are the bar (fetch and study whichever is closest before designing):
 
 - https://www.experiencethebestyou.com/en-GB/ — coordinated scroll choreography
@@ -441,7 +455,7 @@ these are the bar (fetch and study whichever is closest before designing):
   darkness.
 
 These teardowns were verified July 2026 and will age — sites redesign and
-registers move on. At award-site ambition, when browser tools exist, spend ONE
+registers move on. At the `award` tier, when browser tools exist, spend ONE
 fetch on a current source (Awwwards SOTD or godly.website) to confirm the
 register you're chasing is still the frontier, and note in plan.md what you
 saw. The stack LESSONS above outlive the sites themselves; the aesthetics
@@ -452,7 +466,7 @@ generated wallpapers behind text. If the environment has 3D-capable tooling and
 the user opted in, build real 3D material (geometry, materials, lighting,
 shader surfaces per `skills/3d.md`); reserve generated images/video for what
 3D can't do. This tier only happens when the user explicitly chose it in the
-question round — never impose it.
+decision phase — never impose it.
 
 ## 4. Write the plan, then execute it
 
@@ -496,8 +510,8 @@ the previous-run divergence rule (§2), never evidence that the new request
 is satisfied. Reading the old artifacts, declaring "the redesign is already
 implemented", validating the old build, and stopping is a FAILED invocation —
 the user invoked the skill because they want work done NOW. If it is
-genuinely ambiguous whether the user wants to resume the old run or start a
-new take, that is one AskUserQuestion (resume vs new take), not an
+ genuinely ambiguous whether the user wants to resume the old run or start a
+ new take, ask one structured question when available (resume vs new take), not an
 assumption.
 
 **Then show the plan to the user in chat, before touching code.** Writing

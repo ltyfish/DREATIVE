@@ -7,6 +7,7 @@ import {
   validateVerificationReport,
   type DirectDesignPlan,
   type PreservationManifest,
+  type VerificationReport,
 } from "../shared/artifacts.js";
 import { resolveSkillDependencies, type SpecialistSkill } from "../shared/skillSystem.js";
 
@@ -60,22 +61,28 @@ function checkPreservation(projectDir: string, manifestFile: string): AuditFindi
 }
 
 function checkSkillClosure(plan: DirectDesignPlan): AuditFinding[] {
+  const findings: AuditFinding[] = [];
   const requested = plan.skills as SpecialistSkill[];
-  const resolved = resolveSkillDependencies(requested);
-  const missing = resolved.filter((skill) => !requested.includes(skill));
-  return missing.length
-    ? [finding("error", "skills", `missing required skill dependencies: ${missing.join(", ")}`)]
-    : [];
+  const missing = resolveSkillDependencies(requested).filter((skill) => !requested.includes(skill));
+  if (missing.length) findings.push(finding("error", "skills", `missing required skill dependencies: ${missing.join(", ")}`));
+  for (const page of plan.pages) {
+    const pageMissing = resolveSkillDependencies(page.skills).filter((skill) => !page.skills.includes(skill));
+    if (pageMissing.length)
+      findings.push(finding("error", "skills", `${page.name} is missing dependencies: ${pageMissing.join(", ")}`));
+  }
+  return findings;
 }
 
 function checkAssets(projectDir: string, plan: DirectDesignPlan): AuditFinding[] {
   const findings: AuditFinding[] = [];
-  for (const section of plan.sections) {
-    for (const asset of section.assets) {
-      if (asset.status !== "shipped") continue;
-      const target = path.resolve(projectDir, asset.path);
-      if (!target.startsWith(path.resolve(projectDir) + path.sep) || !fs.existsSync(target))
-        findings.push(finding("error", "assets", `${section.name}/${asset.id}: shipped asset missing at ${asset.path}`));
+  for (const page of plan.pages) {
+    for (const section of page.sections) {
+      for (const asset of section.assets) {
+        if (asset.status !== "shipped") continue;
+        const target = path.resolve(projectDir, asset.path);
+        if (!target.startsWith(path.resolve(projectDir) + path.sep) || !fs.existsSync(target))
+          findings.push(finding("error", "assets", `${page.name}/${section.name}/${asset.id}: shipped asset missing at ${asset.path}`));
+      }
     }
   }
   return findings;
@@ -122,6 +129,35 @@ function checkStaticQuality(projectDir: string, plan: DirectDesignPlan): AuditFi
   return findings;
 }
 
+function checkVerificationProof(projectDir: string, verificationFile: string): AuditFinding[] {
+  if (!fs.existsSync(verificationFile)) return [];
+  let report: VerificationReport;
+  try {
+    report = readJson(verificationFile) as VerificationReport;
+  } catch {
+    return [];
+  }
+  const findings: AuditFinding[] = [];
+  for (const item of report.evidence ?? []) {
+    const proof = item.proof;
+    if (!proof) continue;
+    if (proof.artifactPath) {
+      const target = path.resolve(projectDir, proof.artifactPath);
+      if (!target.startsWith(path.resolve(projectDir) + path.sep))
+        findings.push(finding("error", "verification", `${item.id}: artifact path escapes the project root`));
+      else if (!fs.existsSync(target))
+        findings.push(finding("error", "verification", `${item.id}: evidence artifact is missing at ${proof.artifactPath}`));
+    }
+    if (proof.viewport && (proof.viewport.width <= 0 || proof.viewport.height <= 0 || (proof.viewport.dpr ?? 1) <= 0))
+      findings.push(finding("error", "verification", `${item.id}: viewport dimensions and DPR must be positive`));
+    if (typeof proof.averageFps === "number" && proof.averageFps <= 0)
+      findings.push(finding("error", "verification", `${item.id}: averageFps must be positive`));
+    if (typeof proof.maxFrameTimeMs === "number" && proof.maxFrameTimeMs < 0)
+      findings.push(finding("error", "verification", `${item.id}: maxFrameTimeMs cannot be negative`));
+  }
+  return findings;
+}
+
 export function runDirectDesignAudit(projectDir: string): AuditReport {
   const root = path.join(projectDir, ".dreative");
   const planFile = path.join(root, "plan.json");
@@ -136,15 +172,18 @@ export function runDirectDesignAudit(projectDir: string): AuditReport {
   findings.push(...checkPreservation(projectDir, preservationFile));
   findings.push(...checkArtifact(ledgerFile, "ledger", validateDecisionLedger));
   findings.push(...checkArtifact(verificationFile, "verification", validateVerificationReport));
+  findings.push(...checkVerificationProof(projectDir, verificationFile));
   findings.push(...checkSkillClosure(plan));
   findings.push(...checkAssets(projectDir, plan));
   findings.push(...checkStaticQuality(projectDir, plan));
 
   const verify = fs.existsSync(verificationFile) ? JSON.stringify(readJson(verificationFile)) : "";
-  for (const section of plan.sections) {
-    for (const criterion of section.verification) {
-      if (!verify.includes(criterion))
-        findings.push(finding("warning", "verification", `${section.name}: no evidence references criterion: ${criterion}`));
+  for (const page of plan.pages) {
+    for (const section of page.sections) {
+      for (const criterion of section.verification) {
+        if (!verify.includes(criterion))
+          findings.push(finding("warning", "verification", `${page.name}/${section.name}: no evidence references criterion: ${criterion}`));
+      }
     }
   }
   return { ok: !findings.some((item) => item.level === "error"), findings };

@@ -16,6 +16,7 @@
     "build:server": "tsc -p tsconfig.json",
     "build:ui": "vite build",
     "test": "npm run build:server && node --test dist/shared/*.test.js dist/cli/*.test.js",
+    "docs-check": "npm run build:server && node dist/cli/index.js docs-check",
     "dev": "concurrently \"tsx watch src/cli/index.ts --no-open\" \"vite\"",
     "start": "node dist/cli/index.js"
   },
