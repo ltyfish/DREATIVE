@@ -31,6 +31,16 @@ function BriefPanel() {
           <option key={a} value={a}>{a || "aesthetic: auto"}</option>
         ))}
       </select>
+      <label>Transformation depth</label>
+      <select
+        value={brief.transformationDepth ?? "restyle"}
+        onChange={(e) => mutate((b) => (b.transformationDepth = e.target.value as NonNullable<typeof b.transformationDepth>))}
+      >
+        <option value="restyle">Restyle — retain structure</option>
+        <option value="relayout">Relayout — recompose hierarchy</option>
+        <option value="restructure">Restructure — rebuild architecture</option>
+        <option value="reimagine">Reimagine — new experience model</option>
+      </select>
       <input
         type="text"
         placeholder='vibe, e.g. "calm, Linear-style"'

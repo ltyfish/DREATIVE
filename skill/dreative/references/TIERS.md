@@ -26,7 +26,11 @@ all lower-tier requirements.
   or one signature mechanism developing through materially different states.
 - A section-by-section motion treatment and contextual complexity budget
   concentrate structural/transformational motion into a few hero moments.
-- At least one input-driven treatment; entrances alone do not satisfy the tier.
+- At least one project-specific mechanism communicates content, state,
+  progression, selection, navigation, transformation, or spatial relationship.
+  Entrances, hover elevation, gradients, and large type alone do not satisfy
+  the tier. A calm page may document why while the wider product retains a
+  coherent authored expression system.
 - Mobile translations and reduced-motion fallbacks are implemented, not noted.
 - Frame behavior and heavy asset cost are measured.
 
@@ -42,3 +46,5 @@ all lower-tier requirements.
 
 Do not force Award requirements on product dashboards, checkout, forms, or users
 who asked for calm professional work. Ambition is a product decision, not a score.
+Transformation depth remains separate: `restructure + solid` changes page
+architecture, while `restyle + expressive` may retain it honestly.

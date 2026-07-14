@@ -6,7 +6,8 @@ Universal foundation: ux and baseline mobile apply to every web page.
 
 Follow `../references/SKILL_CONTRACT.md`. Dependency: `ux`. This skill is
 universal for web work. Deliver a section-by-section mobile translation, touch
-targets, responsive media/effect budgets, and approximately 390px verification.
+targets, responsive media/effect budgets, a page-level mobile blueprint, and
+390×844 plus 320px verification.
 It is never satisfied by shrinking desktop. Done means navigation, content,
 forms, orientation/viewport behavior, performance, and reduced motion pass on a
 coarse pointer.
@@ -34,6 +35,10 @@ choreography.
   screenful like one (hero = one headline + one visual + one CTA, nothing
   else). If a desktop section held three things, the mobile version stacks
   them as three clean beats or cuts to the strongest one.
+- **Task pages are task-first.** The first viewport exposes what the user needs
+  to act, the current state, and the primary action. Supporting explanation
+  follows; promotional or decorative panels never block the task without a
+  page-specific reason recorded in the blueprint.
 - **Tidy is the aesthetic.** Consistent gutters (20-24px), one column
   discipline, generous vertical rhythm (56-80px between sections), no element
   closer than 8px to another. Clutter reads twice as loud at 390px.

@@ -76,6 +76,13 @@ Detailed doctrine belongs in those references, not in this orchestration file.
   motion treatment for every major section: static composition, start/end
   states, changes, pins, handoff, purpose, mechanism, mobile translation, and
   reduced-motion state.
+- For every existing page, record its register, source strategy, concrete
+  existing-versus-proposed structural delta, page-level mobile blueprint, and
+  typed verification criteria. `restyle` uses `patch`, `relayout` uses
+  `recompose`, and `restructure`/`reimagine` use `rebuild-from-contracts`.
+  Expressive/award pages also need a content/state-specific expression contract
+  or a documented intentional-calm rationale. Record project coherence without
+  repeating one branded shell across unlike page registers.
 - Render a concise `.dreative/plan.md` for the user and for session re-entry.
 
 The approved plan is a delivery contract. A section ends as `shipped`,
@@ -133,8 +140,9 @@ must appear somewhere in the overall plan, but not on every page.
 - Implement blueprint sections in order. Keep the machine plan status current.
 - Do not open recipe catalogs before `conceptExploration` records three
   brand-native concepts. Record every recipe file and load time in `recipeAccess`.
-- A restructure or reimagine rebuilds markup/component boundaries when necessary;
-  it is not a stylesheet-only restyle.
+- A restructure or reimagine creates the new blueprint independently, uses old
+  code only as a behavior/wiring reference, and then reconciles preservation.
+  It is not a stylesheet-only restyle.
 - Every heavy effect ships with its planned reduced-motion, mobile, loading, and
   runtime fallback.
 
@@ -155,7 +163,8 @@ Verification is evidence, not prose asserting that something was checked.
 
 1. Run the repository's targeted tests, typecheck, and build.
 2. Run the page and perform the `ux` functional audit.
-3. Verify desktop and approximately 390px mobile.
+3. Verify desktop (approximately 1280/1440px), 390×844 mobile, and a 320px
+   narrow-mobile fallback for every important page.
 4. Check the console, links, forms, keyboard path, states, reduced motion,
    responsive overflow, and pointer hit areas.
 5. For motion/WebGL/video, record runtime evidence and performance numbers.
@@ -164,7 +173,9 @@ Verification is evidence, not prose asserting that something was checked.
 6. Reconcile every plan section and asset against what visibly shipped.
 7. At expressive/award, visually inspect the captured states, make at least one
    refinement to timing, composition, readability, or continuity, and record it.
-8. Write `.dreative/verify.json` and run `dreative audit`.
+8. Write `.dreative/verify.json` v2. Associate each row to a typed criterion,
+   page/section, evidence kind, viewport class, and artifact/test. Run
+   `dreative audit`.
 9. Fix every error. Warnings require either a fix or a recorded justification.
 
 Every evidence-backed substitution references passing evidence IDs whose proof

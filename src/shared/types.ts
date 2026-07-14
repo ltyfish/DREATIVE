@@ -40,6 +40,83 @@ export interface PageTheme {
   accent?: string;
 }
 
+export type TransformationDepth = "restyle" | "relayout" | "restructure" | "reimagine";
+export type SourceStrategy = "patch" | "recompose" | "rebuild-from-contracts";
+export type PageRegister =
+  | "marketing-storytelling"
+  | "discovery-browse"
+  | "task-transaction"
+  | "account-status"
+  | "administration"
+  | "data-dense-utility"
+  | "authentication"
+  | "system-state";
+
+export interface StructuralDelta {
+  existingModel: string;
+  proposedModel: string;
+  existingParadigm: string;
+  proposedParadigm: string;
+  materialChanges: string[];
+  survivingBoundaries: string[];
+  rebuiltBoundaries: string[];
+  preservedContracts: string[];
+  retainedPatterns: { pattern: string; rationale: string }[];
+  forbiddenCarryovers: string[];
+  depthHonesty: string;
+}
+
+export interface MobileBlueprint {
+  primaryTask: string;
+  firstViewportPurpose: string;
+  contentOrder: string[];
+  beforeFirstScroll: string[];
+  primaryThumbAction: { action: string; placement: string };
+  stickyElements: string[];
+  safeArea: string;
+  navigationModel: string;
+  mobileOnlyComposition: string;
+  desktopTranslation: {
+    retained: string[];
+    translated: string[];
+    removed: string[];
+    replaced: string[];
+  };
+  mediaStrategy: string;
+  motionStrategy: string;
+  keyboardAndForms: string;
+  composition390: string;
+  fallback320: string;
+  stackingRejection: string;
+  verificationChecks: MobileVerificationCheck[];
+}
+
+export type MobileVerificationCheck =
+  | "no-horizontal-overflow"
+  | "no-clipped-content"
+  | "fixed-elements-clear-content"
+  | "safe-area-spacing"
+  | "primary-task-discoverable"
+  | "primary-action-reachable"
+  | "touch-targets"
+  | "software-keyboard-usable"
+  | "no-hover-only"
+  | "intentional-mobile-composition"
+  | "mobile-content-order"
+  | "motion-media-translated"
+  | "no-decorative-task-blocker";
+
+export interface ExpressionContract {
+  mechanism: string;
+  communicates: string;
+  projectFit: string;
+  location: string;
+  mobileTranslation: string;
+  reducedMotion: string;
+  fallback: string;
+  verification: string;
+}
+
 export interface Page {
   id: string;
   name: string;
@@ -73,6 +150,8 @@ export interface DesignBrief {
   motion?: number;
   /** 1-10: airy → packed */
   density?: number;
+  /** independent redesign depth; does not imply an ambition tier */
+  transformationDepth?: TransformationDepth;
   notes?: string;
 }
 

@@ -6,17 +6,23 @@
   "additionalProperties": false,
   "required": ["version", "generatedAt", "evidence"],
   "properties": {
-    "version": { "const": 1 },
+    "version": { "const": 2 },
     "generatedAt": { "type": "string", "format": "date-time" },
     "evidence": {
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "criterion", "status", "evidence", "proof"],
+        "required": ["id", "criterion", "kind", "criterionId", "pageId", "viewportClass", "status", "evidence", "proof"],
         "properties": {
           "id": { "type": "string", "minLength": 1 },
           "criterion": { "type": "string", "minLength": 1 },
+          "kind": { "enum": ["visual", "interaction", "responsive", "preservation", "structural-depth"] },
+          "criterionId": { "type": "string", "minLength": 1 },
+          "pageId": { "type": "string", "minLength": 1 },
+          "sectionId": { "type": "string", "minLength": 1 },
+          "viewportClass": { "enum": ["desktop", "mobile", "narrow-mobile", "non-visual"] },
+          "mobileChecks": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["no-horizontal-overflow", "no-clipped-content", "fixed-elements-clear-content", "safe-area-spacing", "primary-task-discoverable", "primary-action-reachable", "touch-targets", "software-keyboard-usable", "no-hover-only", "intentional-mobile-composition", "mobile-content-order", "motion-media-translated", "no-decorative-task-blocker"] } },
           "status": { "enum": ["pass", "fail", "not-applicable"] },
           "evidence": { "type": "string", "minLength": 1 },
           "timelineState": {

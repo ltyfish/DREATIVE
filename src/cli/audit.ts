@@ -103,6 +103,35 @@ function checkAssets(projectDir: string, plan: DirectDesignPlan): AuditFinding[]
   return findings;
 }
 
+function checkAntiSlopPlan(plan: DirectDesignPlan): AuditFinding[] {
+  if (plan.version !== 3) return [];
+  const findings: AuditFinding[] = [];
+  const signatures = new Map<string, string[]>();
+  for (const page of plan.pages) {
+    const signature = page.sections.map((section) => section.layoutFamily.trim().toLowerCase()).join(" > ");
+    signatures.set(signature, [...(signatures.get(signature) ?? []), page.name]);
+    const cardSections = page.sections.filter((section) => /\b(card|tile)\b/i.test(section.layoutFamily));
+    if (cardSections.length > 2) findings.push(finding("warning", "anti-slop", `${page.name}: repeated card-family sections need an explicit page-specific rationale`));
+    if (page.sections.some((section) => /^\s*stack(?:ed)?(?:\s+vertically)?[.!]?\s*$/i.test(section.mobile)))
+      findings.push(finding("error", "anti-slop", `${page.name}: a section uses stack-only mobile translation`));
+    if (page.register === "task-transaction") {
+      const first = page.mobileBlueprint?.contentOrder?.[0] ?? "";
+      if (/\b(promo|decorative|hero|story)\b/i.test(first)) findings.push(finding("error", "anti-slop", `${page.name}: promotional or decorative content precedes the primary mobile task`));
+    }
+    for (const section of page.sections) {
+      if (/\b(testimonial|review)\b/i.test(section.name) && !/\b(state|task|concept|product|brand|evidence|decision)\b/i.test([section.layoutFamily, ...section.interactions].join(" ")))
+        findings.push(finding("warning", "anti-slop", `${page.name}/${section.name}: generic social-proof section appears detached from the page concept`));
+    }
+  }
+  for (const [signature, pages] of signatures) {
+    if (signature && pages.length > 1) findings.push(finding("warning", "anti-slop", `${pages.join(", ")}: unrelated routes repeat the same section-layout shell (${signature})`));
+  }
+  const compositions = plan.coherence?.pageSpecificCompositions ?? [];
+  if (compositions.length > 1 && new Set(compositions.map((item) => `${item.register}:${item.taskModel.trim().toLowerCase()}`)).size === 1)
+    findings.push(finding("warning", "anti-slop", "all pages were assigned the same register and task model; verify that composition was not copied mechanically"));
+  return findings;
+}
+
 const SOURCE_EXTENSIONS = new Set([".tsx", ".jsx", ".vue", ".svelte", ".html", ".css", ".scss"]);
 const SKIP_DIRS = new Set([".git", ".dreative", "node_modules", "dist", "build", ".next", ".nuxt"]);
 
@@ -173,6 +202,45 @@ function checkVerificationProof(projectDir: string, verificationFile: string): A
   return findings;
 }
 
+export function checkVerificationCoverage(plan: DirectDesignPlan, report: VerificationReport): AuditFinding[] {
+  const findings: AuditFinding[] = [];
+  if (plan.version !== 3) return findings;
+  if (report.version !== 2) return [finding("error", "migration", "v3 plans require verify.json version 2; legacy verification cannot satisfy depth and mobile guarantees")];
+  const passing = report.evidence.filter((item) => item.status === "pass");
+  for (const page of plan.pages) {
+    for (const viewportClass of ["desktop", "mobile", "narrow-mobile"] as const) {
+      if (!passing.some((item) => item.pageId === page.id && item.viewportClass === viewportClass && item.proof?.viewport))
+        findings.push(finding("error", "verification", `${page.name}: missing passing ${viewportClass} evidence with an exact viewport`));
+    }
+    if ((plan.depth === "restructure" || plan.depth === "reimagine") && !passing.some((item) => item.pageId === page.id && item.kind === "structural-depth"))
+      findings.push(finding("error", "verification", `${page.name}: missing structural-depth evidence against its structural delta`));
+    if (!passing.some((item) => item.pageId === page.id && item.kind === "preservation"))
+      findings.push(finding("error", "verification", `${page.name}: missing preservation evidence`));
+    for (const check of page.mobileBlueprint?.verificationChecks ?? []) {
+      if (!passing.some((item) => item.pageId === page.id && (item.viewportClass === "mobile" || item.viewportClass === "narrow-mobile") && item.mobileChecks?.includes(check)))
+        findings.push(finding("error", "verification", `${page.name}: missing mobile evidence for ${check}`));
+    }
+    for (const section of page.sections) {
+      for (const criterion of section.verification) {
+        if (typeof criterion === "string") {
+          findings.push(finding("error", "verification", `${page.name}/${section.name}: v3 criteria must be typed objects, not strings`));
+          continue;
+        }
+        for (const viewport of criterion.viewports) {
+          const match = passing.find((item) =>
+            item.criterionId === criterion.id &&
+            item.pageId === criterion.pageId &&
+            item.sectionId === criterion.sectionId &&
+            item.kind === criterion.kind &&
+            item.viewportClass === viewport);
+          if (!match) findings.push(finding("error", "verification", `${page.name}/${section.name}: no passing ${viewport} evidence is associated with criterion ${criterion.id}`));
+        }
+      }
+    }
+  }
+  return findings;
+}
+
 export function runDirectDesignAudit(projectDir: string): AuditReport {
   const root = path.join(projectDir, ".dreative");
   const planFile = path.join(root, "plan.json");
@@ -188,12 +256,12 @@ export function runDirectDesignAudit(projectDir: string): AuditReport {
   findings.push(...checkArtifact(ledgerFile, "ledger", validateDecisionLedger));
   findings.push(...checkArtifact(verificationFile, "verification", validateVerificationReport));
   findings.push(...checkVerificationProof(projectDir, verificationFile));
-  if (plan.doctrineVersion !== 2) {
-    findings.push(finding("warning", "migration", "legacy v2 plan accepted; add doctrineVersion: 2 and the new creative-control fields on the next design run"));
+  const verification = fs.existsSync(verificationFile) ? (readJson(verificationFile) as VerificationReport) : undefined;
+  if (plan.version !== 3 || plan.doctrineVersion !== 3) {
+    findings.push(finding("warning", "migration", "legacy v2 plan accepted for compatibility only; migrate to plan v3 and verify v2 for structural-depth, mobile-blueprint, expression, and evidence-association guarantees"));
   } else {
     try {
       const { registry, reflexFonts } = loadRuleFiles();
-      const verification = fs.existsSync(verificationFile) ? (readJson(verificationFile) as VerificationReport) : undefined;
       for (const message of validateRuleControls(plan, registry, reflexFonts, verification))
         findings.push(finding("error", "rules", message));
     } catch (error) {
@@ -202,15 +270,15 @@ export function runDirectDesignAudit(projectDir: string): AuditReport {
   }
   findings.push(...checkSkillClosure(plan));
   findings.push(...checkAssets(projectDir, plan));
+  findings.push(...checkAntiSlopPlan(plan));
   findings.push(...checkStaticQuality(projectDir, plan));
+  if (verification) findings.push(...checkVerificationCoverage(plan, verification));
 
-  const verify = fs.existsSync(verificationFile) ? JSON.stringify(readJson(verificationFile)) : "";
-  for (const page of plan.pages) {
-    for (const section of page.sections) {
-      for (const criterion of section.verification) {
-        if (!verify.includes(criterion))
-          findings.push(finding("warning", "verification", `${page.name}/${section.name}: no evidence references criterion: ${criterion}`));
-      }
+  if (plan.version === 2) {
+    const verifyText = verification ? JSON.stringify(verification) : "";
+    for (const page of plan.pages) for (const section of page.sections) for (const criterion of section.verification) {
+      const text = typeof criterion === "string" ? criterion : criterion.claim;
+      if (!verifyText.includes(text)) findings.push(finding("warning", "verification", `${page.name}/${section.name}: no legacy evidence references criterion: ${text}`));
     }
   }
   return { ok: !findings.some((item) => item.level === "error"), findings };

@@ -1,4 +1,5 @@
 import type { AmbitionTier, SpecialistSkill } from "./skillSystem.js";
+import type { ExpressionContract, MobileBlueprint, MobileVerificationCheck, PageRegister, SourceStrategy, StructuralDelta, TransformationDepth } from "./types.js";
 
 export type DeliveryStatus = "planned" | "shipped" | "fallback" | "cut";
 
@@ -39,7 +40,7 @@ export interface PlanSection {
   motionTreatment?: MotionTreatment;
   mobile: string;
   fallback: string;
-  verification: string[];
+  verification: (string | VerificationCriterion)[];
   assets: PlanAsset[];
   status: DeliveryStatus;
   reason?: string;
@@ -48,18 +49,42 @@ export interface PlanSection {
 export interface PlanPage {
   id: string;
   name: string;
+  register?: PageRegister;
+  sourceStrategy?: SourceStrategy;
+  structuralDelta?: StructuralDelta;
+  mobileBlueprint?: MobileBlueprint;
+  expression?: ExpressionContract;
+  intentionalCalm?: string;
   skills: SpecialistSkill[];
   sections: PlanSection[];
 }
 
+export interface VerificationCriterion {
+  id: string;
+  claim: string;
+  kind: "visual" | "interaction" | "responsive" | "preservation" | "structural-depth";
+  pageId: string;
+  sectionId?: string;
+  viewports: ("desktop" | "mobile" | "narrow-mobile" | "non-visual")[];
+}
+
+export interface MultiPageCoherence {
+  globalVisualLanguage: string;
+  globalInteractionLanguage: string;
+  sharedPrimitives: string[];
+  pageSpecificCompositions: { pageId: string; register: PageRegister; taskModel: string; expressionLevel: "calm" | "authored" }[];
+  crossPageContinuity: string[];
+  prohibitedRepeatedShells: string[];
+}
+
 export interface DirectDesignPlan {
-  version: 2;
-  /** Omitted legacy v2 plans remain readable; new plans set 2. */
-  doctrineVersion?: 2;
+  /** v2 remains readable as legacy; new artifacts must write v3. */
+  version: 2 | 3;
+  doctrineVersion?: 2 | 3;
   request: string;
   createdAt: string;
   tier: AmbitionTier;
-  depth: "restyle" | "relayout" | "restructure" | "reimagine";
+  depth: TransformationDepth;
   /** User-approved pool. Every selected treatment must appear on at least one page. */
   skills: SpecialistSkill[];
   skillPolicy: {
@@ -77,6 +102,7 @@ export interface DirectDesignPlan {
   experimentalPlan?: ExperimentalPlan;
   conceptExploration?: ConceptExploration;
   recipeAccess?: RecipeAccess[];
+  coherence?: MultiPageCoherence;
   pages: PlanPage[];
   preservationManifest: string;
   decisionLedger: string;
@@ -192,6 +218,12 @@ export interface VerificationEvidence {
   criterion: string;
   status: "pass" | "fail" | "not-applicable";
   evidence: string;
+  kind?: "visual" | "interaction" | "responsive" | "preservation" | "structural-depth";
+  criterionId?: string;
+  pageId?: string;
+  sectionId?: string;
+  viewportClass?: "desktop" | "mobile" | "narrow-mobile" | "non-visual";
+  mobileChecks?: MobileVerificationCheck[];
   timelineState?:
     | "initial"
     | "early"
@@ -217,7 +249,7 @@ export interface VerificationEvidence {
 }
 
 export interface VerificationReport {
-  version: 1;
+  version: 1 | 2;
   generatedAt: string;
   evidence: VerificationEvidence[];
   refinement?: {
@@ -232,11 +264,63 @@ function nonEmpty(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
 }
 
+function concreteList(value: unknown, minimum = 1): value is string[] {
+  return Array.isArray(value) && value.length >= minimum && value.every((item) => nonEmpty(item) && !/^(improve|modernize|make better|n\/a|none)$/i.test(item.trim()));
+}
+
+function validateV3Page(page: PlanPage, prefix: string, depth: TransformationDepth, tier: AmbitionTier): string[] {
+  const errors: string[] = [];
+  const validRegisters: PageRegister[] = ["marketing-storytelling", "discovery-browse", "task-transaction", "account-status", "administration", "data-dense-utility", "authentication", "system-state"];
+  if (!page.register || !validRegisters.includes(page.register)) errors.push(`${prefix}.register is required`);
+  const expectedStrategy: SourceStrategy = depth === "restyle" ? "patch" : depth === "relayout" ? "recompose" : "rebuild-from-contracts";
+  if (page.sourceStrategy !== expectedStrategy) errors.push(`${prefix}.sourceStrategy must be ${expectedStrategy} for ${depth}`);
+  const delta = page.structuralDelta;
+  if (!delta) errors.push(`${prefix}.structuralDelta is required`);
+  else {
+    for (const key of ["existingModel", "proposedModel", "existingParadigm", "proposedParadigm", "depthHonesty"] as const) {
+      if (!nonEmpty(delta[key]) || /^(old|new|modern|expressive|same|n\/a)( layout| design)?$/i.test(delta[key].trim())) errors.push(`${prefix}.structuralDelta.${key} must be concrete and page-specific`);
+    }
+    if (!concreteList(delta.materialChanges)) errors.push(`${prefix}.structuralDelta.materialChanges cannot be empty or generic`);
+    if (!Array.isArray(delta.survivingBoundaries) || !Array.isArray(delta.rebuiltBoundaries) || !concreteList(delta.preservedContracts) || !Array.isArray(delta.retainedPatterns) || !concreteList(delta.forbiddenCarryovers))
+      errors.push(`${prefix}.structuralDelta requires boundaries, preservation, retained-pattern rationale, and forbidden carryovers`);
+    if (delta.retainedPatterns?.some((item) => !nonEmpty(item.pattern) || !nonEmpty(item.rationale))) errors.push(`${prefix}.structuralDelta retained patterns need rationale`);
+    const structural = [delta.proposedModel, delta.proposedParadigm, ...delta.materialChanges].join(" ");
+    if ((depth === "restructure" || depth === "reimagine") && !/\b(architect|component|boundary|workflow|navigation|interaction|model|task|rebuild|replace|merge|remove|reorder|hierarchy|workspace)\b/i.test(structural))
+      errors.push(`${prefix}: ${depth} cannot be satisfied by stylesheet, token, typography, card, or animation changes alone`);
+    if ((depth === "restructure" || depth === "reimagine") && /\b(same (sections|layout)|only (colou?r|font|style)|new (colou?r|font|shadow|radius))\b/i.test(structural))
+      errors.push(`${prefix}: structural delta contradicts selected depth ${depth}`);
+  }
+  const mobile = page.mobileBlueprint;
+  if (!mobile) errors.push(`${prefix}.mobileBlueprint is required`);
+  else {
+    const fields = [mobile.primaryTask, mobile.firstViewportPurpose, mobile.safeArea, mobile.navigationModel, mobile.mobileOnlyComposition, mobile.mediaStrategy, mobile.motionStrategy, mobile.keyboardAndForms, mobile.composition390, mobile.fallback320, mobile.stackingRejection];
+    if (fields.some((field) => !nonEmpty(field)) || !concreteList(mobile.contentOrder, 2) || !concreteList(mobile.beforeFirstScroll) || !nonEmpty(mobile.primaryThumbAction?.action) || !nonEmpty(mobile.primaryThumbAction?.placement))
+      errors.push(`${prefix}.mobileBlueprint must specify task, order, first viewport, thumb action, safe areas, navigation, media, motion, forms, 390px, and 320px behavior`);
+    if (/^\s*stack(?:ed)?(?:\s+vertically)?[.!]?\s*$/i.test(mobile.mobileOnlyComposition) || /^\s*stack(?:ed)?(?:\s+vertically)?[.!]?\s*$/i.test(mobile.stackingRejection))
+      errors.push(`${prefix}.mobileBlueprint cannot be only “stack vertically”`);
+    if (!mobile.desktopTranslation || !Array.isArray(mobile.desktopTranslation.retained) || !Array.isArray(mobile.desktopTranslation.translated) || !Array.isArray(mobile.desktopTranslation.removed) || !Array.isArray(mobile.desktopTranslation.replaced))
+      errors.push(`${prefix}.mobileBlueprint must classify retained, translated, removed, and replaced desktop features`);
+    if (!Array.isArray(mobile.verificationChecks) || mobile.verificationChecks.length < 13) errors.push(`${prefix}.mobileBlueprint must include the complete mobile verification checklist`);
+  }
+  if (tier === "expressive" || tier === "award") {
+    if (!page.expression && !nonEmpty(page.intentionalCalm)) errors.push(`${prefix} needs an expression contract or a documented intentional-calm rationale`);
+    if (page.expression) {
+      const expression = page.expression;
+      if ([expression.mechanism, expression.communicates, expression.projectFit, expression.location, expression.mobileTranslation, expression.reducedMotion, expression.fallback, expression.verification].some((field) => !nonEmpty(field)))
+        errors.push(`${prefix}.expression is incomplete`);
+      if (/\b(fade|slide|stagger|hover|scale|gradient|large typography)\b/i.test(expression.mechanism) && !/\b(content|state|progress|selection|navigation|transform|spatial|relationship)\b/i.test(expression.communicates))
+        errors.push(`${prefix}.expression is decorative-only`);
+    }
+  }
+  return errors;
+}
+
 export function validatePlan(value: unknown): string[] {
   const errors: string[] = [];
   const plan = value as Partial<DirectDesignPlan> | null;
   if (!plan || typeof plan !== "object") return ["plan must be an object"];
-  if (plan.version !== 2) errors.push("plan.version must be 2 (migrate legacy top-level sections into pages[])");
+  if (plan.version !== 2 && plan.version !== 3) errors.push("plan.version must be 2 (legacy) or 3");
+  if (plan.version === 3 && plan.doctrineVersion !== 3) errors.push("plan.doctrineVersion must be 3 for v3 plans");
   if (!nonEmpty(plan.request)) errors.push("plan.request is required");
   if (!nonEmpty(plan.createdAt) || Number.isNaN(Date.parse(plan.createdAt))) errors.push("plan.createdAt must be an ISO date");
   if (!["solid", "premium", "expressive", "award"].includes(String(plan.tier))) errors.push("plan.tier is invalid");
@@ -259,6 +343,7 @@ export function validatePlan(value: unknown): string[] {
   for (const [pageIndex, page] of (plan.pages ?? []).entries()) {
     const pagePrefix = `pages[${pageIndex}]`;
     if (!nonEmpty(page.id) || !nonEmpty(page.name)) errors.push(`${pagePrefix} requires id and name`);
+    if (plan.version === 3 && plan.depth && plan.tier) errors.push(...validateV3Page(page, pagePrefix, plan.depth, plan.tier));
     if (!Array.isArray(page.skills) || !page.skills.includes("ux") || !page.skills.includes("mobile"))
       errors.push(`${pagePrefix}.skills must include ux and mobile`);
     for (const globalSkill of plan.skillPolicy?.global ?? []) {
@@ -274,6 +359,14 @@ export function validatePlan(value: unknown): string[] {
       if (!nonEmpty(section.id) || !nonEmpty(section.name) || !nonEmpty(section.layoutFamily)) errors.push(`${prefix} requires id, name, and layoutFamily`);
       if (!nonEmpty(section.mobile) || !nonEmpty(section.fallback)) errors.push(`${prefix} requires mobile and fallback treatments`);
       if (!Array.isArray(section.verification) || section.verification.length === 0) errors.push(`${prefix}.verification cannot be empty`);
+      if (plan.version === 3) {
+        for (const [criterionIndex, criterion] of (section.verification ?? []).entries()) {
+          const criterionPrefix = `${prefix}.verification[${criterionIndex}]`;
+          if (typeof criterion === "string") errors.push(`${criterionPrefix} must be a typed verification criterion`);
+          else if (!nonEmpty(criterion.id) || !nonEmpty(criterion.claim) || !criterion.kind || criterion.pageId !== page.id || (criterion.sectionId !== undefined && criterion.sectionId !== section.id) || !Array.isArray(criterion.viewports) || criterion.viewports.length === 0)
+            errors.push(`${criterionPrefix} must associate id, claim, kind, page, section, and viewports`);
+        }
+      }
       if (section.status === "planned") errors.push(`${prefix} is still planned`);
       if ((section.status === "fallback" || section.status === "cut") && !nonEmpty(section.reason)) errors.push(`${prefix}.reason is required for ${section.status}`);
       if (section.motionTreatment) {
@@ -300,7 +393,7 @@ export function validatePlan(value: unknown): string[] {
       }
       for (const asset of section.assets ?? []) {
         if (!nonEmpty(asset.id) || !nonEmpty(asset.path) || !nonEmpty(asset.purpose)) errors.push(`${prefix} contains an incomplete asset`);
-        if (plan.doctrineVersion === 2 && (!asset.importance || !asset.preparation))
+        if ((plan.doctrineVersion === 2 || plan.doctrineVersion === 3) && (!asset.importance || !asset.preparation))
           errors.push(`${prefix} asset ${asset.id || "unknown"} needs importance and a preparation decision`);
         else if (asset.preparation) {
           if (!asset.importance || !["supporting", "key"].includes(asset.importance)) errors.push(`${prefix} asset ${asset.id} has invalid importance`);
@@ -314,6 +407,14 @@ export function validatePlan(value: unknown): string[] {
         if ((asset.status === "fallback" || asset.status === "cut") && !nonEmpty(asset.reason)) errors.push(`${prefix} asset ${asset.id} needs a reason`);
       }
     }
+  }
+  if (plan.version === 3) {
+    if (!plan.coherence || !nonEmpty(plan.coherence.globalVisualLanguage) || !nonEmpty(plan.coherence.globalInteractionLanguage) || !concreteList(plan.coherence.sharedPrimitives) || !concreteList(plan.coherence.crossPageContinuity) || !concreteList(plan.coherence.prohibitedRepeatedShells))
+      errors.push("plan.coherence must define global languages, shared primitives, continuity, and prohibited repeated shells");
+    if (!Array.isArray(plan.coherence?.pageSpecificCompositions) || plan.coherence.pageSpecificCompositions.length !== (plan.pages?.length ?? 0))
+      errors.push("plan.coherence.pageSpecificCompositions must cover every page");
+    if ((plan.tier === "expressive" || plan.tier === "award") && !(plan.pages ?? []).some((page) => page.expression))
+      errors.push(`${plan.tier} multi-page plans require at least one authored expression mechanism across the product`);
   }
   for (const skill of plan.skills ?? []) {
     if (!coveredSkills.has(skill)) errors.push(`selected skill ${skill} is not assigned to any page`);
@@ -362,7 +463,7 @@ export function validateVerificationReport(value: unknown): string[] {
   const report = value as Partial<VerificationReport> | null;
   if (!report || typeof report !== "object") return ["verification report must be an object"];
   const errors: string[] = [];
-  if (report.version !== 1) errors.push("verification report version must be 1");
+  if (report.version !== 1 && report.version !== 2) errors.push("verification report version must be 1 (legacy) or 2");
   if (!Array.isArray(report.evidence)) errors.push("verification evidence must be an array");
   if (report.refinement) {
     if (!nonEmpty(report.refinement.inspectedAt) || Number.isNaN(Date.parse(report.refinement.inspectedAt)))
@@ -392,6 +493,15 @@ export function validateVerificationReport(value: unknown): string[] {
   for (const [index, item] of (report.evidence ?? []).entries()) {
     if (!nonEmpty(item.id) || !nonEmpty(item.criterion) || !nonEmpty(item.evidence)) errors.push(`verification.evidence[${index}] is incomplete`);
     if (item.timelineState && !timelineStates.has(item.timelineState)) errors.push(`verification.evidence[${index}].timelineState is invalid`);
+    if (report.version === 2) {
+      if (!item.kind || !["visual", "interaction", "responsive", "preservation", "structural-depth"].includes(item.kind)) errors.push(`verification.evidence[${index}].kind is required`);
+      if (!nonEmpty(item.criterionId) || !nonEmpty(item.pageId) || !item.viewportClass) errors.push(`verification.evidence[${index}] must associate criterionId, pageId, and viewportClass`);
+      if (item.viewportClass !== "non-visual" && !item.proof?.viewport) errors.push(`verification.evidence[${index}] visual/responsive evidence requires an exact viewport`);
+      if (item.viewportClass === "desktop" && item.proof?.viewport && item.proof.viewport.width < 1200) errors.push(`verification.evidence[${index}] desktop evidence must be at least 1200px wide`);
+      if (item.viewportClass === "mobile" && item.proof?.viewport && (item.proof.viewport.width < 375 || item.proof.viewport.width > 430)) errors.push(`verification.evidence[${index}] mobile evidence must be approximately 390px wide`);
+      if (item.viewportClass === "narrow-mobile" && item.proof?.viewport && item.proof.viewport.width > 340) errors.push(`verification.evidence[${index}] narrow-mobile evidence must be approximately 320px wide`);
+      if ((item.viewportClass === "mobile" || item.viewportClass === "narrow-mobile") && (!Array.isArray(item.mobileChecks) || item.mobileChecks.length === 0)) errors.push(`verification.evidence[${index}] mobile evidence must name the checks it proves`);
+    }
     const proof = item.proof;
     if (!proof || !nonEmpty(proof.timestamp) || Number.isNaN(Date.parse(proof.timestamp))) {
       errors.push(`verification.evidence[${index}].proof requires a valid timestamp`);

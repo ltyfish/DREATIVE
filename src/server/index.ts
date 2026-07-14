@@ -6,7 +6,7 @@ import { Store, findBlock, replaceBlock, newId } from "./store.js";
 import { requestAgent, respond, nextEvent, pushFinish } from "./agentQueue.js";
 import { computeDiff } from "./diff.js";
 import { buildPreview, previewHtml, replicaHtml } from "./preview.js";
-import { buildDesignPlan } from "../shared/design.js";
+import { buildDesignPlan, buildDesignSourceContext, buildRuntimeCoherence } from "../shared/design.js";
 import { startJob, getJob } from "./jobs.js";
 import type { Block, Project } from "../shared/types.js";
 
@@ -198,6 +198,7 @@ export function createServer(projectDir: string) {
     const page = project.pages.find((p) => p.id === pageId);
     if (!page) throw new Error("page not found");
     const siblingPages = project.pages.filter((p) => p.id !== pageId).map((p) => p.name);
+    const projectComposition = buildRuntimeCoherence(project.pages, project.brief);
     const blockRefs: { id: string; label: string; refImage: string }[] = [];
     const collect = (b: Block) => {
       if (b.refImage) blockRefs.push({ id: b.id, label: b.label, refImage: b.refImage });
@@ -205,20 +206,24 @@ export function createServer(projectDir: string) {
     };
     collect(page.layout);
     const outFile = `generated/${pageId}.tsx`;
+    const plan = buildDesignPlan(page, project.brief);
+    const source = buildDesignSourceContext(plan.depth, page.generatedFile);
     await requestAgent(
       "design-page",
       {
         pageName: page.name,
         layout: page.layout,
         brief: project.brief,
-        // Dreative decides, the agent executes: resolved dials, per-section
-        // layout families, spacing/motion budgets, doctrine lints.
-        plan: buildDesignPlan(page, project.brief),
+        // Dreative resolves depth, source strategy, contracts, budgets, and
+        // blocking lints; the agent authors the page-specific composition.
+        plan,
         refImage: page.refImage,
         blockRefs,
         designPrompt: designPrompt ?? page.designPrompt,
-        previousFile: page.generatedFile,
+        source,
+        ...(source.previousFile ? { previousFile: source.previousFile } : {}),
         siblingPages,
+        projectComposition,
         outFile,
       },
       update,

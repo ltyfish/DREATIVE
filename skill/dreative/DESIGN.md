@@ -4,7 +4,7 @@ You MUST read this file before servicing any `propose-skeletons`, `propose-varia
 `design-page`, or `edit-element` request, and run §12 before every respond. It exists
 because LLM-designed UIs converge on one templated look. Every rule corrects a known
 model default, but its category determines how it governs. Requests may carry a `plan` (Dreative's
-pre-computed decision: dials, per-section layout families, budgets, lints) — execute
+pre-computed constraints: dials, depth, source strategy, structural/mobile/expression contracts, budgets, and lints) — execute
 the plan, apply this doctrine to everything the plan doesn't specify. When
 `plan.skills` names specialist skills (`motion`, `3d`, `interaction`, `immersive`,
 `cinematic`, `refined`, `media`, `ux`, `mobile`), the matching
@@ -549,8 +549,11 @@ route slugs, nav labels, form field names, logo, legal copy; extract brand token
 before applying §4 (a purple brand stays purple); apply modernisation levers in
 order — typography → spacing/rhythm → color recalibration → motion layer → hero
 recomposition → full replacement only when unsalvageable. Honor existing
-accessibility wins and analytics hooks. Preserve prior element-level edits when
-`previousFile` is set.
+accessibility wins and analytics hooks. `previousFile` is a composition source
+only for `restyle`. For `relayout`, old code is a content/behavior inventory. For
+`restructure` and `reimagine`, it is a wiring reference only: draft the new
+blueprint independently, then reconcile routes, handlers, data, fields, states,
+accessibility, analytics, required copy, and public APIs.
 
 ### The preservation contract (mandatory for ANY redesign of existing code)
 
@@ -645,9 +648,10 @@ coat of CSS on the old skeleton.
 **The drastic-change floor (rungs 3–4).** The chronic failure at these rungs is
 timidity: the agent rebuilds the components but reproduces the old page's shape,
 so a before/after glance reads as a re-theme. That is a failed restructure. At
-rung 3–4 the new page must be **unmistakably a different design at one glance**
-— someone shown both screenshots should assume different products. Concretely,
-change at least TWO structural paradigms, not just their styling:
+rung 3–4 the structural-delta contract must name material changes to page
+architecture, component boundaries, navigation, workflow, or interaction model.
+Tokens, cards, decoration, and entrance motion cannot satisfy it. Relevant
+paradigms can include:
 
 - **Navigation model** — top bar → side rail / command palette / dock / sticky
   chapter nav / full-screen overlay menu.
@@ -659,12 +663,12 @@ change at least TWO structural paradigms, not just their styling:
 - **Hero concept** — a new signature idea (typographic monument, media plane,
   3D object, kinetic composition), not the old hero with new colors.
 
-Creativity is bounded by usability: every drastic move must still be MORE
+These are diagnostic possibilities, not quotas. Creativity is bounded by usability: every drastic move must still be MORE
 user-friendly than what it replaces — clearer hierarchy, fewer steps to the key
 action, honest affordances, mobile ergonomics intact (§13, skills/ux.md). A
 restructure that confuses users is as failed as one that changed nothing. The
-self-critique pass at these rungs must answer: "name the two-plus structural
-paradigms that changed, and why each is easier to use than before." If mid-work you discover the chosen rung cannot
+self-critique pass must explain why the implemented delta honestly satisfies the
+chosen depth and how it improves use. If mid-work you discover the chosen rung cannot
 honestly deliver the requested outcome (the reference look demands structure the
 current markup can't express), say so and ask to move up one rung rather than
 shipping an imitation. Rungs 3–4 on an extracted app still honor §11 preservation

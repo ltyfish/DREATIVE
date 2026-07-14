@@ -265,6 +265,15 @@ should explicitly invite extra direction.
 
 1. **Depth** (redesigns of existing code only) — the §11 transformation-depth
    ladder: restyle / re-layout / restructure / reimagine.
+   Record it independently from ambition. For every page, write the current and
+   proposed models/paradigms, material changes, surviving/rebuilt boundaries,
+   preserved contracts, retained patterns with rationale, forbidden carryovers,
+   and a depth-honesty assessment. Then write the page-level mobile blueprint
+   (task, first viewport, exact order, thumb action, safe areas, navigation,
+   desktop translations, media/motion/forms, 390px and 320px compositions, and
+   why it is not desktop DOM stacking). Classify the page register before
+   composing; transactional, account, admin, and utility pages do not inherit a
+   marketing shell.
 2. **Treatments** (multi-select — THE canonical skill-picker list). List every
    option **individually**, never pre-bundled into a combo choice (a
    "refined+motion+interaction+ux+mobile" single option is a bug — the user
@@ -504,7 +513,8 @@ Persist the approved plan first to `.dreative/plan.json` using
 `references/ARTIFACTS.md` and `schemas/plan.schema.json`; this is the delivery
 contract consumed by `dreative audit`. Render the same decisions as a readable
 `.dreative/plan.md` for the user and session re-entry. Keep section and asset
-statuses synchronized in JSON as the build progresses. Set `doctrineVersion: 2`,
+statuses synchronized in JSON as the build progresses. Set `version: 3` and
+`doctrineVersion: 3`,
 record `implementationStartedAt` immediately before code changes, and ensure all
 rule exceptions predate it. **The first time this run writes into
 `.dreative/`, also write `.dreative/README.md`** with exactly this content

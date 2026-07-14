@@ -7,9 +7,9 @@ All paths are relative to the target project.
 
 Required top-level fields:
 
-- `version: 2`
-- `doctrineVersion: 2` for the bounded-creative-controls format. Legacy v2
-  plans without this field remain readable and receive a migration warning.
+- `version: 3`, `doctrineVersion: 3`. Legacy v2 plans remain readable only for
+  compatibility and receive a migration warning; they do not satisfy v3 depth,
+  mobile, expression, or evidence guarantees.
 - `request`, `createdAt`
 - `tier`: `solid | premium | expressive | award`
 - `depth`: `restyle | relayout | restructure | reimagine`
@@ -17,6 +17,8 @@ Required top-level fields:
 - `skillPolicy`: hybrid routing policy, global foundations, explicit user page
   assignments, and `routingApproved: true`
 - `designRead`: `{ register, concept, signature }`
+- `coherence`: global visual/interaction languages, shared primitives,
+  page-specific register/task models, continuity, and prohibited repeated shells
 - `preservationManifest`: normally `.dreative/preservation.json`
 - `decisionLedger`: normally `.dreative/ledger.json`
 - `pages`: ordered pages, each with its assigned skills and delivery sections
@@ -33,10 +35,16 @@ Required top-level fields:
 
 Every selected skill must appear on at least one page. Every page includes `ux`
 and `mobile`, but optional treatments are assigned only where they serve that
-page. A section may use only skills assigned to its parent page.
+page. A section may use only skills assigned to its parent page. Each page also
+requires `register`, the depth-derived `sourceStrategy`, a concrete
+`structuralDelta`, and a page-level `mobileBlueprint`. Expressive/award pages
+require an `expression` contract or `intentionalCalm`; at least one page across
+the product must carry authored expression.
 
 Each section requires `id`, `name`, `layoutFamily`, `skills`, `interactions`,
-`mobile`, `fallback`, `verification`, `assets`, and `status`. At expressive/
+`mobile`, `fallback`, typed `verification`, `assets`, and `status`. Verification
+criteria include a stable id, claim, evidence kind, page/section, and required
+viewport classes. At expressive/
 award it also requires `motionTreatment`: class, static composition, start/end
 states, changes, pins, handoff, purpose, mechanism, mobile, and reduced motion. Status is
 `planned | shipped | fallback | cut`; fallback/cut requires `reason`.
@@ -108,7 +116,7 @@ category from the registry. Repeating a recent display font needs an additional
 
 ```json
 {
-  "version": 1,
+  "version": 2,
   "createdAt": "2026-01-01T00:00:00.000Z",
   "items": [
     {
@@ -138,6 +146,11 @@ Schema: `schemas/verify.schema.json`.
     {
       "id": "mobile-nav",
       "criterion": "Mobile navigation opens and closes",
+      "kind": "interaction",
+      "criterionId": "navigation-mobile",
+      "pageId": "home",
+      "sectionId": "navigation",
+      "viewportClass": "mobile",
       "status": "pass",
       "evidence": "Escape closes and focus returns to trigger",
       "proof": {
@@ -153,7 +166,11 @@ Schema: `schemas/verify.schema.json`.
 }
 ```
 
-Every evidence row requires a timestamp and concrete proof: an existing artifact
+Every evidence row is joined to its planned criterion by id, page, section,
+evidence kind, and viewport class. Every important page requires desktop
+(approximately 1280/1440px), mobile (approximately 390×844), and narrow-mobile
+(approximately 320px) evidence; deep redesigns also require structural-depth
+evidence and every page requires preservation evidence. Every row requires a timestamp and concrete proof: an existing artifact
 path, command + exit code, tested URL/console count, FPS/frame-time measurement,
 or Playwright test identifier. `dreative audit` checks referenced artifact paths
 and rejects passing commands with nonzero exits or passing runs with console
@@ -192,5 +209,6 @@ store secrets, personal notes, or unrelated conversation.
 ## Audit
 
 Run `dreative audit`. It validates schemas, skill dependency closure, section
-completion, shipped assets, preservation needles, verification evidence, and the
+completion, shipped assets, preservation needles, exact criterion/evidence
+associations, required viewports, structural depth, anti-slop warnings, and the
 decision ledger. `--json` emits a machine-readable report.

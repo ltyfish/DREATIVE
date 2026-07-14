@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { runDirectDesignAudit } from "./audit.js";
+import { checkVerificationCoverage, runDirectDesignAudit } from "./audit.js";
+import type { DirectDesignPlan, VerificationReport } from "../shared/artifacts.js";
 
 test("direct-design audit verifies artifacts and preservation needles", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-audit-"));
@@ -87,4 +88,44 @@ test("direct-design audit verifies artifacts and preservation needles", () => {
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
+});
+
+test("v3 audit associates criteria by id, page, section, kind, and viewport", () => {
+  const criterion = { id: "depth", claim: "Architecture matches delta", kind: "structural-depth" as const, pageId: "outlets", sectionId: "workspace", viewports: ["desktop" as const] };
+  const plan = {
+    version: 3,
+    doctrineVersion: 3,
+    depth: "restructure",
+    pages: [{ id: "outlets", name: "Outlets", mobileBlueprint: { verificationChecks: ["no-horizontal-overflow"] }, sections: [{ id: "workspace", name: "Workspace", verification: [criterion] }] }],
+  } as DirectDesignPlan;
+  const makeEvidence = (id: string, kind: "responsive" | "preservation" | "structural-depth", viewportClass: "desktop" | "mobile" | "narrow-mobile") => ({
+    id,
+    criterion: id,
+    criterionId: id === "depth-proof" ? "depth" : id,
+    pageId: "outlets",
+    sectionId: id === "depth-proof" ? "workspace" : undefined,
+    kind,
+    viewportClass,
+    mobileChecks: viewportClass === "desktop" ? undefined : ["no-horizontal-overflow" as const],
+    status: "pass" as const,
+    evidence: "Browser and test evidence",
+    proof: { timestamp: new Date().toISOString(), viewport: { width: viewportClass === "desktop" ? 1280 : viewportClass === "mobile" ? 390 : 320, height: 844 }, artifactPath: `.dreative/${id}.png` },
+  });
+  const report: VerificationReport = {
+    version: 2,
+    generatedAt: new Date().toISOString(),
+    evidence: [
+      makeEvidence("desktop", "responsive", "desktop"),
+      makeEvidence("mobile", "responsive", "mobile"),
+      makeEvidence("narrow", "responsive", "narrow-mobile"),
+      makeEvidence("preserved", "preservation", "desktop"),
+      makeEvidence("depth-proof", "structural-depth", "desktop"),
+    ],
+  };
+  assert.deepEqual(checkVerificationCoverage(plan, report), []);
+  plan.pages[0].mobileBlueprint!.verificationChecks.push("touch-targets");
+  assert.ok(checkVerificationCoverage(plan, report).some((item) => item.message.includes("touch-targets")));
+  plan.pages[0].mobileBlueprint!.verificationChecks.pop();
+  report.evidence[4].sectionId = "wrong-section";
+  assert.ok(checkVerificationCoverage(plan, report).some((item) => item.message.includes("criterion depth")));
 });
