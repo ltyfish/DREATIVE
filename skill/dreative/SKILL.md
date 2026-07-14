@@ -166,7 +166,8 @@ must appear somewhere in the overall plan, but not on every page.
   translations, and primary motion language exist, stop expansion. Capture
   baseline/current screenshots, critique perceptual quality, refine meaningful
   weaknesses, write `.dreative/checkpoint.json`, and obtain user approval before
-  spreading the system. Straight-to-build does not skip this checkpoint.
+  spreading the system. “Build after plan, with visual checkpoint” names this
+  workflow honestly; it does not skip the checkpoint.
 - Every heavy effect ships with its planned reduced-motion, mobile, loading, and
   runtime fallback.
 

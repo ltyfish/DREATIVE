@@ -208,7 +208,8 @@ remove decisions for valuable qualities.
 first viewport, representative core section, desktop/mobile translations, and
 primary motion language exist, it records baseline/current screenshots, the
 perceptual critique, refinements, user approval, and when system expansion
-started. Straight-to-build may skip a full mockup, never this gate.
+started. “Build after plan, with visual checkpoint” may skip a full mockup,
+never this gate.
 
 ## `.dreative/ledger.json`
 

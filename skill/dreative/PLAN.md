@@ -299,24 +299,24 @@ should explicitly invite extra direction.
    - **interaction** — "everything feels touchable: buttons react, cards respond to hover, small satisfying feedback everywhere"
    - **3d** — "real 3D on the page: an object or scene you can see depth in, lit and rendered live (like a product you scroll around)"
    - **immersive** — "the page feels like a place you travel through — scrolling is a journey with chapters, not a document"
-   - **cinematic** — "dark, moody, movie-like atmosphere: glow, particles, fluid surfaces (think film title sequence)"
-   - **refined** — "quiet luxury: lots of space, beautiful photography, very little movement — Apple/fashion-brand calm"
+   - **cinematic** — "scene-based pacing, atmospheric transitions, living media, and intentional framing — bright, dark, playful, documentary, or editorial as the concept requires"
+   - **refined** — "exceptional finish: precise spacing, typography, materials, and restraint, compatible with calm or expressive motion"
    - **media** — "AI-generated images/video made for this page and woven into the motion (hero film loop, images that come alive)"
    - **ux** — "everything actually works: menus, forms, cart, keyboard — pretty AND functional". This is always included; show it as locked/included rather than optional.
    - **mobile** — first-class phone experience: thumb-ergonomic layout and
      effects re-authored for touch, not merely scaled down. This is always
      included at baseline; mark it as an emphasized treatment only when mobile
      is the primary surface or the user explicitly asks for a mobile-first take.
-   - **experimental** — user-facing phrasing: "go weird: images that tear/
-     dissolve/reassemble as you scroll, the camera diving into scenes, one
-     never-seen-before idea per section". Internally this is the
+   - **experimental** — user-facing phrasing: "explore unusual section ideas,
+     then ship only the strongest coherent peaks rather than making every
+     section compete". Internally this is the
      creative-mindset dial (`skills/experimental.md`): full
      scroll-reactive assets (images that disperse/reform/refract as you
      scroll, not just sit still with particles in front), textured/materialed
      3D instead of smooth plain geometry, camera/dimension shifts on
      scroll/interaction (zoom into a scene, rotate to a new view, transition
      between spatial "worlds"), willingness to try a genuinely unusual idea
-     per section rather than the safe default of that treatment. Recommend
+     during exploration rather than accepting the safe default. Recommend
      this whenever the user's language points at "crazy", "bizarre", "wow",
      "never seen before", or award-tier + immersive/cinematic/3d stacked
      together — it's the difference between effects *placed on* the page and
@@ -378,16 +378,15 @@ should explicitly invite extra direction.
      signature detail with restrained motion. *Best for:* business, commerce,
      and marketing work that should feel distinctive without becoming an
      experience site. *Tradeoff:* more craft and media work than solid.
-   - **Expressive (`expressive`)** — rich scroll motion, 3D accents, everything still
-     instantly usable. *Best for:* most product, e-commerce, and marketing
-     sites — the show/usability sweet spot and the default recommendation.
-     *Tradeoff:* heavier than premium, but visitors never fight the page.
-   - **Award (`award`)** — the page becomes an experience: immersive 3D, cinematic
-     pacing, experimental transitions (dial 9-10). *Best for:* portfolios,
-     launches, brand showcases, agency work — anywhere wow IS the goal.
-     *Tradeoff:* heaviest build, longest load, and deliberately unconventional —
-     visitors explore rather than skim, so it can frustrate someone who just
-     wants the price list. Say this plainly when offering it.
+   - **Expressive (`expressive`)** — coordinated composition, motion, and
+     interaction with clear usability. *Best for:* product, commerce, and
+     marketing sites that need visible authorship without becoming an
+     experience site. *Tradeoff:* more choreography and testing than premium.
+   - **Award (`award`)** — a distinctive spatial, media, typographic, or
+     interactive system shapes the whole journey; 3D is optional. *Best for:*
+     portfolios, launches, brand showcases, and agency work where exploration
+     serves the message. *Tradeoff:* the most involved build and verification;
+     unconventional behavior must remain understandable and performant.
    Higher tiers also mean a longer build and a mandatory runtime verification
    pass — state that cost too.
    **Which option gets "(Recommended)" is computed, and the default bias is
@@ -432,18 +431,19 @@ should explicitly invite extra direction.
    Also capture what's in this pass vs later, and any hard constraints
    (existing brand tokens to keep, CMS/content that must survive, deadline
    implying the solid tier).
-8. **Mockups first?** — offer to build 1:1 mockups BEFORE the full build:
-   "Mockup the key pages first" / "Straight to build". **Which one is marked
+8. **Mockups first?** — offer three honest workflows:
+   "Build after plan, with visual checkpoint" / "Mockup first" /
+   "Two divergent mockups". **Which one is marked
    "(Recommended)" is NOT static — compute it from the depth + ambition
    answers already given:** reimagine or restructure depth, `award` ambition,
    OR a polished/exceptional existing baseline
    ambition, mean this is among the biggest changes the tool can make, so
-   **"Mockup first" is the recommended option.** Recommend "Straight to
-   build" only when depth is restyle/re-layout AND ambition is solid/premium/
-   expressive. Getting this backwards (recommending straight-to-build on a
+   **"Mockup first" is the recommended option.** Recommend "Build after plan,
+   with visual checkpoint" only when depth is restyle/re-layout AND ambition is solid/premium/
+   expressive. Getting this backwards (recommending the checkpoint build on a
    reimagine + award combo) is a bug, not a stylistic choice. When depth
    is restructure/reimagine OR ambition is `award`, also offer a third
-   option: **"two divergent mockups"** — the two strongest concepts from the
+   option: **"Two divergent mockups"** — the two strongest concepts from the
    explore pass (DESIGN.md §2) each built as a mockup, user picks. State the
    honest cost (a second mockup is real tokens/time); it's an offer, never
    the default. If yes to any mockup option, execute §4b before touching
@@ -595,7 +595,7 @@ user sees in the mockup is what they'd see in the shipped page; nothing in the
 mockup that the build wouldn't do, nothing in the build's look that the mockup
 hides.
 
-If the user chose **two divergent mockups** (§3.8), build the highest-impact
+If the user chose **Two divergent mockups** (§3.8), build the highest-impact
 page twice — once per surviving explore-pass concept (genuinely different
 palette/type/signature, not two tints of one idea) — and present both;
 the user's pick becomes the committed concept and its reject reason goes in
