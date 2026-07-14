@@ -7,9 +7,9 @@ All paths are relative to the target project.
 
 Required top-level fields:
 
-- `version: 4`, `doctrineVersion: 4`. Legacy v2/v3 plans remain readable only
-  for compatibility and receive a migration warning; they do not satisfy v4
-  approval, design-equity, creative-parity, checkpoint, or comparison gates.
+- `version: 5`, `doctrineVersion: 5`. Legacy v2-v4 plans remain readable only
+  for compatibility and receive a migration warning; they do not satisfy v5
+  independent-critic, approval, equity, checkpoint, or comparison gates.
 - `scope`: `tiny | substantial`; `projectKind`: `from-scratch | redesign`
 - `approval`: status/timestamp, transcript references, approved concept, depth,
   tier/treatments, recommendation choice, and sequential decisions
@@ -29,7 +29,9 @@ Required top-level fields:
   declared during planning and implementation followed final approval
 - `designEquity` for redesigns; `checkpoint` and `creativeParity` for
   restructure/reimagine; `executionBrief`, `commonPatternReview`, and concrete
-  section `visualBlueprint` for substantial work
+  section `visualBlueprint` for substantial work; `executionBrief` also carries
+  `criticRequirement` so the independent stage cannot disappear during build
+- `criticInput` and `visualCritic` for every substantial run
 - `ruleExceptions`: bounded substitutions of evidence-backed defaults
 - `creativeStrategy`: `diversity` or `development` at expressive/award tiers
 - `motionComplexityBudget`: hero moments, calm sections, shared language,
@@ -139,6 +141,29 @@ category from the registry. Repeating a recent display font needs an additional
 Allowed kinds: `link`, `handler`, `form-field`, `visible-copy`, `state`,
 `analytics-hook`, `accessibility`, `route`. Intentional changes add
 `intentionallyChanged: true` and a non-empty `changeReason`.
+
+## Independent critic artifacts
+
+`.dreative/critic-input.json` follows `schemas/critic-input.schema.json`. It is
+the critic's complete first-pass context: original brief, constraints, approved
+concept/blueprints/signature, optional baseline, final desktop/mobile evidence,
+and interactive evidence when available. Its closed schema excludes builder
+self-review, implementation rationale, quality claims, difficulty excuses, and
+scores. `dreative critic-prompt` renders the isolated prompt for a fresh
+subagent/context; where unavailable, record the best-effort isolation honestly.
+
+`.dreative/visual-critic.json` follows `schemas/visual-critic.schema.json`. It
+records review context, the independent reading made before builder context,
+one of `PASS | PASS AFTER REVISION | MAJOR REVISION REQUIRED | INSUFFICIENT
+EVIDENCE`, evidence-grounded findings, baseline/concept/mobile/motion findings,
+at most five required revisions, separate non-blocking experiments, one
+evidence-backed revision iteration, and dogfood observations. Experiments cannot
+block. Missing techniques cannot block. Static screenshots cannot support strong
+motion conclusions. Audit rejects non-passing verdicts and unresolved blockers.
+
+This first version is intentionally small and fallible. It judges visible and
+experiential outcomes, not implementation technologies. Dogfood evidence—not
+the critic's authority—decides future expansion.
 
 ## `.dreative/verify.json`
 

@@ -15,6 +15,7 @@ import {
   type VisualCheckpoint,
 } from "../shared/artifacts.js";
 import { resolveSkillDependencies, type SpecialistSkill } from "../shared/skillSystem.js";
+import { validateCriticInput, validateVisualCriticReport, type CriticInput, type VisualCriticReport } from "../shared/critic.js";
 import {
   validateRuleControls,
   type ReflexFontRegistry,
@@ -108,7 +109,7 @@ function checkAssets(projectDir: string, plan: DirectDesignPlan): AuditFinding[]
 }
 
 function checkAntiSlopPlan(plan: DirectDesignPlan): AuditFinding[] {
-  if (plan.version !== 3 && plan.version !== 4) return [];
+  if (plan.version !== 3 && plan.version !== 4 && plan.version !== 5) return [];
   const findings: AuditFinding[] = [];
   const signatures = new Map<string, string[]>();
   for (const page of plan.pages) {
@@ -208,8 +209,8 @@ function checkVerificationProof(projectDir: string, verificationFile: string): A
 
 export function checkVerificationCoverage(plan: DirectDesignPlan, report: VerificationReport): AuditFinding[] {
   const findings: AuditFinding[] = [];
-  if (plan.version !== 3 && plan.version !== 4) return findings;
-  if ((plan.version === 3 && report.version !== 2) || (plan.version === 4 && report.version !== 3)) return [finding("error", "migration", `${plan.version === 4 ? "v4" : "v3"} plans require verify.json version ${plan.version === 4 ? "3" : "2"}`)];
+  if (plan.version !== 3 && plan.version !== 4 && plan.version !== 5) return findings;
+  if ((plan.version === 3 && report.version !== 2) || ((plan.version === 4 || plan.version === 5) && report.version !== 3)) return [finding("error", "migration", `${plan.version === 5 ? "v5" : plan.version === 4 ? "v4" : "v3"} plans require verify.json version ${plan.version === 3 ? "2" : "3"}`)];
   const passing = report.evidence.filter((item) => item.status === "pass");
   for (const page of plan.pages) {
     for (const viewportClass of ["desktop", "mobile", "narrow-mobile"] as const) {
@@ -246,7 +247,7 @@ export function checkVerificationCoverage(plan: DirectDesignPlan, report: Verifi
 }
 
 export function checkRedesignQualityArtifacts(projectDir: string, plan: DirectDesignPlan, report: VerificationReport | undefined): AuditFinding[] {
-  if (plan.version !== 4 || plan.scope !== "substantial") return [];
+  if ((plan.version !== 4 && plan.version !== 5) || plan.scope !== "substantial") return [];
   const findings: AuditFinding[] = [];
   if (!plan.approval || plan.approval.status !== "approved" || !plan.approval.approvedAt || !plan.implementationStartedAt || Date.parse(plan.implementationStartedAt) <= Date.parse(plan.approval.approvedAt))
     findings.push(finding("error", "approval", "substantial implementation began without final recorded approval, or implementationStartedAt is not later than approval"));
@@ -295,6 +296,47 @@ export function checkRedesignQualityArtifacts(projectDir: string, plan: DirectDe
   return findings;
 }
 
+function criticArtifactPath(projectDir: string, value: string | undefined, fallback: string): string {
+  return path.resolve(projectDir, value ?? fallback);
+}
+
+export function checkCriticArtifacts(projectDir: string, plan: DirectDesignPlan, verification?: VerificationReport): AuditFinding[] {
+  if (plan.version !== 5 || plan.scope !== "substantial") return [];
+  const findings: AuditFinding[] = [];
+  const inputFile = criticArtifactPath(projectDir, plan.criticInput, ".dreative/critic-input.json");
+  const reportFile = criticArtifactPath(projectDir, plan.visualCritic, ".dreative/visual-critic.json");
+  const projectRoot = path.resolve(projectDir) + path.sep;
+  if (!inputFile.startsWith(projectRoot) || !reportFile.startsWith(projectRoot)) return [finding("error", "visual-critic", "critic artifact paths must stay inside the project root")];
+  findings.push(...checkArtifact(inputFile, "critic-input", validateCriticInput));
+  if (findings.some((item) => item.level === "error")) return findings;
+  const input = readJson(inputFile) as CriticInput;
+  if (!fs.existsSync(reportFile)) return [...findings, finding("error", "visual-critic", "missing visual-critic.json")];
+  let report: VisualCriticReport;
+  try {
+    report = readJson(reportFile) as VisualCriticReport;
+    const reportErrors = validateVisualCriticReport(report, input);
+    findings.push(...reportErrors.map((message) => finding("error", "visual-critic", message)));
+    if (reportErrors.length) return findings;
+  } catch (error) {
+    return [...findings, finding("error", "visual-critic", `cannot parse visual critic artifact: ${String(error)}`)];
+  }
+  if (path.resolve(projectDir, report.inputArtifact) !== inputFile) findings.push(finding("error", "visual-critic", "visual critic report does not reference the plan's objective input artifact"));
+  const root = projectRoot;
+  for (const item of input.evidence) if (item.artifactPath) {
+    const target = path.resolve(projectDir, item.artifactPath);
+    if (!target.startsWith(root) || !fs.existsSync(target)) findings.push(finding("error", "visual-critic", `${item.id}: objective critic evidence is missing at ${item.artifactPath}`));
+  }
+  if (plan.projectKind === "redesign" && !input.baselineAvailable) findings.push(finding("error", "visual-critic", "redesign critic input must include the available baseline rather than degrading as a new build"));
+  if (report.verdict !== "PASS" && report.verdict !== "PASS AFTER REVISION") findings.push(finding("error", "visual-critic", `completion is blocked by critic verdict ${report.verdict}`));
+  if (verification && Date.parse(report.revision?.followUpReviewedAt ?? report.reviewedAt) >= Date.parse(verification.generatedAt)) findings.push(finding("error", "visual-critic", "independent critic and any focused follow-up must complete before final verification"));
+  const resolutions = new Map(report.revision?.resolutions.map((item) => [item.findingId, item.status]) ?? []);
+  for (const item of report.findings.filter((candidate) => candidate.blocksCompletion)) {
+    const resolution = resolutions.get(item.id);
+    if (resolution !== "resolved" && resolution !== "intentionally-rejected") findings.push(finding("error", "visual-critic", `${item.id}: blocking critic finding remains ${resolution ?? "unresolved"}`));
+  }
+  return findings;
+}
+
 export function runDirectDesignAudit(projectDir: string): AuditReport {
   const root = path.join(projectDir, ".dreative");
   const planFile = path.join(root, "plan.json");
@@ -311,8 +353,8 @@ export function runDirectDesignAudit(projectDir: string): AuditReport {
   findings.push(...checkArtifact(verificationFile, "verification", validateVerificationReport));
   findings.push(...checkVerificationProof(projectDir, verificationFile));
   const verification = fs.existsSync(verificationFile) ? (readJson(verificationFile) as VerificationReport) : undefined;
-  if (plan.version !== 4 || plan.doctrineVersion !== 4) {
-    findings.push(finding("warning", "migration", "legacy v2/v3 plan accepted for compatibility only; migrate to plan v4 and verify v3 for approval, design-equity, creative-parity, checkpoint, and perceptual-comparison guarantees"));
+  if (plan.version !== 5 || plan.doctrineVersion !== 5) {
+    findings.push(finding("warning", "migration", "legacy v2-v4 plan accepted for compatibility only; migrate to plan v5 and verify v3 for independent critic, approval, design-equity, checkpoint, and perceptual-comparison guarantees"));
   } else {
     try {
       const { registry, reflexFonts } = loadRuleFiles();
@@ -328,6 +370,7 @@ export function runDirectDesignAudit(projectDir: string): AuditReport {
   findings.push(...checkStaticQuality(projectDir, plan));
   if (verification) findings.push(...checkVerificationCoverage(plan, verification));
   findings.push(...checkRedesignQualityArtifacts(projectDir, plan, verification));
+  findings.push(...checkCriticArtifacts(projectDir, plan, verification));
 
   if (plan.version === 2) {
     const verifyText = verification ? JSON.stringify(verification) : "";

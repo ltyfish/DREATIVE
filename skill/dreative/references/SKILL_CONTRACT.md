@@ -14,8 +14,8 @@ Universal foundation: ux and baseline mobile apply to every web page.
 6. **Accessibility:** provide keyboard, reduced-motion, semantic, and readable
    fallbacks for every treatment.
 7. **Fallback:** name the cheaper robust version before implementation.
-8. **Definition of done:** record observable evidence in `verify.json` and pass
-   `dreative audit`.
+8. **Definition of done:** pass the independent visual critic for substantial
+   work, record observable evidence in `verify.json`, and pass `dreative audit`.
 
 A specialist file may strengthen these floors but may not weaken them.
 

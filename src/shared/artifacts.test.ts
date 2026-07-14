@@ -150,6 +150,15 @@ test("from-scratch substantial work requires approval but not redesign baseline 
   assert.deepEqual(validatePlan(plan), []);
 });
 
+test("v5 substantial plans require independent critic artifacts and honest checkpoint workflow naming", () => {
+  const plan = v4Plan("from-scratch");
+  plan.version = 5; plan.doctrineVersion = 5; plan.criticInput = ".dreative/critic-input.json"; plan.visualCritic = ".dreative/visual-critic.json"; plan.mockupStrategy = "build-with-checkpoint"; plan.executionBrief!.criticRequirement = "Run the objective-only independent critic before final verification.";
+  delete plan.checkpoint; delete plan.creativeParity;
+  assert.deepEqual(validatePlan(plan), []);
+  delete plan.visualCritic;
+  assert.ok(validatePlan(plan).some((error) => error.includes("criticInput and visualCritic")));
+});
+
 test("v4 rejects a prose-only signature blueprint", () => {
   const plan = v4Plan();
   plan.pages[0].sections[0].visualBlueprint!.signatureLocation = "signal rail";
@@ -162,7 +171,7 @@ test("v4 rejects a fake restructure made of generic styling and entrance changes
   assert.ok(validatePlan(plan).some((error) => error.includes("fails creative parity")));
 });
 
-test("design-equity and straight-to-build checkpoint artifacts are typed", () => {
+test("design-equity and build-with-checkpoint artifacts are typed", () => {
   const equity = { version: 1, capturedAt: "2026-07-14T00:00:00.000Z", baselineQuality: "polished", screenshots: { desktop: [".dreative/before-desktop.png"], mobile: [".dreative/before-mobile.png"] }, strongestVisualQualities: ["Distinctive editorial typography"], weakestVisualQualities: ["Mobile action becomes difficult to reach"], typographyCharacter: "A high-contrast italic serif supplies editorial identity and hierarchy.", colorMaterialCharacter: "Warm paper neutrals and ink lines make the interface tactile.", compositionalStrengths: ["Feature interaction controls pacing"], hierarchyAndPacing: "Tight authored clusters alternate with deliberate breathing room.", signatureVisualElements: ["Animated feature ledger"], animationInteractionInventory: ["Feature rows reveal contextual media"], mobileStrengthsAndFailures: ["Typography survives but the action drops too low"], distinctivePatterns: ["Editorial ledger interaction"], genericOrDatedPatterns: ["Conventional footer grid"], items: [{ id: "type", quality: "Distinctive editorial typography anchors the brand.", decision: "transform", rationale: "Keep equal character while changing the family.", replacementOrEvolution: "A new high-contrast family retains italic cadence and optical hierarchy.", successCriteria: ["Final hero has equivalent typographic character"], finalEvidenceIds: [] }] };
   assert.deepEqual(validateDesignEquityBaseline(equity), []);
   const checkpoint = { version: 1, capturedAt: "2026-07-14T00:20:00.000Z", implementation: { hero: true, coreSection: true, desktop: true, mobile: true, primaryMotionLanguage: true }, baselineScreenshotPaths: [".dreative/before-desktop.png"], screenshotPaths: { desktop: [".dreative/check-desktop.png"], mobile: [".dreative/check-mobile.png"] }, critique: Object.fromEntries(["distinctiveness", "hierarchy", "brandVisibility", "signatureLegibility", "equityRetention", "saasTemplateRisk", "brandSwapRisk", "mobileAuthorship", "motionPurpose", "counterfactualStrength"].map((key) => [key, `Concrete ${key} comparison against the rendered baseline identifies the observable result.`])), meaningfulWeaknessFound: true, refinements: [{ finding: "The route is too quiet", change: "Increased state contrast", evidenceIds: ["checkpoint-refined"] }], approval: { status: "approved", approvedAt: "2026-07-14T00:30:00.000Z", transcriptReferences: ["chat:checkpoint"] }, systemSpreadStartedAt: "2026-07-14T00:31:00.000Z" };

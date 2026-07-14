@@ -7,6 +7,7 @@ import { createServer } from "../server/index.js";
 import open from "open";
 import { printAudit, runDirectDesignAudit } from "./audit.js";
 import { printDocsCheck, runDocsCheck } from "./docsCheck.js";
+import { renderCriticPrompt } from "./critic.js";
 
 const port = Number(process.env.DREATIVE_PORT || 4820);
 const base = `http://localhost:${port}`;
@@ -23,8 +24,9 @@ const USAGE = `usage: dreative [command]
   wait             (agent) block until the UI needs something; prints one JSON event
   respond <id> [result.json | --error msg]   (agent) answer a request
   baseline         (agent) snapshot project.json as the finish-diff baseline
-  audit             validate direct-design plan, preservation, assets, ledger, and verification
+  audit             validate plan, preservation, assets, independent critic, ledger, and verification
                     --json              emit a machine-readable report
+  critic-prompt     render the objective-only critic prompt from .dreative/critic-input.json
   docs-check        validate packaged skill tiers, names, rules, references, and doctrine consistency
                     --json              emit a machine-readable report`;
 
@@ -177,6 +179,11 @@ async function main() {
       const report = runDirectDesignAudit(process.cwd());
       printAudit(report, args.includes("--json"));
       if (!report.ok) process.exitCode = 1;
+      return;
+    }
+
+    case "critic-prompt": {
+      console.log(renderCriticPrompt(process.cwd(), args[1] || ".dreative/critic-input.json"));
       return;
     }
 

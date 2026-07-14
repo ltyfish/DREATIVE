@@ -26,7 +26,7 @@ Read this file first, then only the references selected by the plan:
 2. `DESIGN.md` — visual doctrine and redesign/preservation rules.
 3. `references/TIERS.md` — ambition-tier deliverables.
 4. `references/ARTIFACTS.md` — machine-readable plan, preservation, ledger,
-   and verification files.
+   critic, and verification files.
 5. `references/RULES.json` and `references/REFLEX_FONTS.json` — rule categories,
    failure history, bounded substitutions, and reflex font choices.
 6. `frameworks/<name>.md` — the adapter matching the repository.
@@ -100,7 +100,9 @@ implementation context.
   brand, purpose, content, audience, assets, and register; select the strongest
   concept, then reconcile function and design equity without weakening it.
   Record the creative-parity contract, section visual blueprints, common-pattern
-  risk review, approval record, and compact execution brief in plan v4.
+  risk review, approval record, and compact execution brief in plan v5. New
+  substantial runs also reference `.dreative/critic-input.json` and
+  `.dreative/visual-critic.json`.
 - Render a concise `.dreative/plan.md` for the user and for session re-entry.
 
 The approved plan is a delivery contract. A section ends as `shipped`,
@@ -128,7 +130,7 @@ Add treatments from this complete picker:
 | `media` | Generated/sourced image and video production, grading, and media treatments |
 | `3d` | WebGL, three.js/R3F, shaders, models, particles, and fallbacks |
 | `immersive` | Persistent scenes, spatial transitions, preloaders, and scroll-as-journey |
-| `cinematic` | Living surfaces, shader grading, gesture exploration, and sound |
+| `cinematic` | Scene-based pacing, atmospheric transitions, living media, and intentional framing |
 | `experimental` | High-variance composition, material shifts, and unusual provocations |
 | `ux` | Working navigation, forms, states, accessibility, and interaction audits |
 | `mobile` | Mobile-native composition, touch ergonomics, and phone verification |
@@ -182,7 +184,33 @@ Run one dedicated finish pass with no new features:
 - motion easing, choreography, intent, and reduced-motion behavior;
 - responsive spacing, touch targets, overflow, and spatial integrity.
 
-### 3.6 Verify
+### 3.6 Independent visual critic
+
+Run this after the complete build and craft pass, before final verification:
+
+1. Capture final desktop/mobile states and motion or interaction evidence when
+   available.
+2. Write `.dreative/critic-input.json` from objective material only: original
+   brief, user constraints, approved concept, visual blueprints, signature,
+   baseline evidence when available, and final evidence. Exclude the builder's
+   self-review, rationale, quality claims, difficulty/excuses, and score.
+3. Run `dreative critic-prompt` and give that prompt to a fresh subagent or fresh
+   context. If unavailable, use an isolated prompt before reopening builder
+   context and document the limitation. Record the independent reading first.
+4. Write `.dreative/visual-critic.json`. Every finding needs an exact location
+   and objective evidence. Technique absence never fails a design; experiments
+   never block completion.
+5. Give the builder only the highest-impact required revisions (maximum five),
+   perform one focused correction pass, recapture affected states, and run one
+   independent follow-up. Do not create an open-ended critique loop.
+
+`PASS` or evidence-backed `PASS AFTER REVISION` is required for completion.
+Unresolved blockers, missing desktop/mobile evidence, unsupported motion claims,
+`MAJOR REVISION REQUIRED`, and `INSUFFICIENT EVIDENCE` fail audit. The critic is
+fallible quality control, not an aesthetic authority: it judges outcomes, not
+whether 3D, WebGL, canvas, video, generated media, or another technique was used.
+
+### 3.7 Verify
 
 Verification is evidence, not prose asserting that something was checked.
 

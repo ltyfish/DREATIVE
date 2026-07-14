@@ -37,8 +37,9 @@ all lower-tier requirements.
 ## Award (`award`)
 
 - Everything in Expressive.
-- A distinctive persistent spatial, media, or material system shapes the journey.
-- One unmistakable spatial, media, typographic, or material signature is
+- A distinctive persistent spatial, media, typographic, material, or interactive
+  system shapes the journey; 3D is optional.
+- One unmistakable spatial, media, typographic, material, or interactive signature is
   subject-honest, staged, and resilient. WebGL/3D is used only when justified.
 - Runtime evidence covers effects, transferred weight, frame time, occlusion,
   context loss/loading, and fallbacks.

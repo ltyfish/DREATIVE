@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { checkRedesignQualityArtifacts, checkVerificationCoverage, runDirectDesignAudit } from "./audit.js";
+import { checkCriticArtifacts, checkRedesignQualityArtifacts, checkVerificationCoverage, runDirectDesignAudit } from "./audit.js";
 import type { DirectDesignPlan, VerificationReport } from "../shared/artifacts.js";
 
 test("direct-design audit verifies artifacts and preservation needles", () => {
@@ -151,4 +151,22 @@ test("v4 audit gate rejects implementation that predates approval", () => {
   const plan = { version: 4, doctrineVersion: 4, scope: "substantial", projectKind: "from-scratch", implementationStartedAt: "2026-07-14T00:09:00.000Z", approval: { status: "approved", approvedAt: "2026-07-14T00:10:00.000Z" } } as DirectDesignPlan;
   const findings = checkRedesignQualityArtifacts(process.cwd(), plan, undefined);
   assert.ok(findings.some((item) => item.check === "approval" && item.level === "error"));
+});
+
+test("v5 critic stage is required before completion and accepts an objective pass", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-critic-audit-"));
+  try {
+    fs.mkdirSync(path.join(root, ".dreative"));
+    for (const name of ["desktop.png", "mobile.png"]) fs.writeFileSync(path.join(root, ".dreative", name), "proof");
+    const input = { version: 1, generatedAt: "2026-07-14T02:00:00.000Z", originalBrief: "Create an authored editorial product website for this brand.", userConstraints: [], approvedConcept: "A product ledger controls composition and interaction across the story.", visualBlueprints: [{ pageId: "home", sectionId: "hero", blueprint: "An offset ledger connects the hero product state to later editorial chapters." }], intendedSignature: "Product ledger", baselineAvailable: false, evidence: [{ id: "desktop", kind: "final-screenshot", description: "Final desktop", artifactPath: ".dreative/desktop.png", viewport: { width: 1440, height: 900 } }, { id: "mobile", kind: "final-screenshot", description: "Final mobile", artifactPath: ".dreative/mobile.png", viewport: { width: 390, height: 844 } }], contextPolicy: { firstPass: "objective-only", excluded: ["builder-self-review", "implementation-rationale", "quality-claims", "difficulty-excuses", "builder-score"] } };
+    fs.writeFileSync(path.join(root, ".dreative", "critic-input.json"), JSON.stringify(input));
+    const report = { version: 1, reviewedAt: "2026-07-14T02:10:00.000Z", inputArtifact: ".dreative/critic-input.json", contextIsolation: { mode: "isolated-prompt", independentReadingRecordedAt: "2026-07-14T02:08:00.000Z", limitation: "The host did not expose fresh-subagent execution, so a closed isolated prompt was used." }, reviewContext: { availableInputs: ["brief", "concept", "desktop", "mobile"], missingInputs: ["motion"], viewportsInspected: ["1440x900", "390x844"], pagesOrFlowsInspected: ["home"], motionInspected: false, limitations: ["No motion evidence"] }, independentReading: { perceivedConcept: "An editorial ledger organizes the product narrative.", perceivedSignature: "The ledger visibly connects hero and content chapters.", perceivedBrandCharacter: "Precise operational structure meets editorial warmth.", perceivedMotionRole: "Motion was not directly available and is not judged." }, initialVerdict: "PASS", verdict: "PASS", strongestQualities: [], findings: [], baselineRegressions: [], conceptFidelityFindings: [], mobileFindings: [], motionFindings: [], requiredRevisionSet: [], nonBlockingExperiments: [], dogfood: { falsePositives: [], vagueFindings: [], humanMisses: [], styleConvergenceRisk: [], complexityBias: [], motionEvidenceRisk: ["No motion evidence"], experimentsForRecipes: [] } };
+    fs.writeFileSync(path.join(root, ".dreative", "visual-critic.json"), JSON.stringify(report));
+    const plan = { version: 5, doctrineVersion: 5, scope: "substantial", projectKind: "from-scratch", criticInput: ".dreative/critic-input.json", visualCritic: ".dreative/visual-critic.json" } as DirectDesignPlan;
+    assert.deepEqual(checkCriticArtifacts(root, plan), []);
+    assert.ok(checkCriticArtifacts(root, plan, { version: 3, generatedAt: "2026-07-14T02:05:00.000Z", evidence: [] }).some((item) => item.message.includes("before final verification")));
+    report.verdict = "MAJOR REVISION REQUIRED";
+    fs.writeFileSync(path.join(root, ".dreative", "visual-critic.json"), JSON.stringify(report));
+    assert.ok(checkCriticArtifacts(root, plan).some((item) => item.message.includes("completion is blocked")));
+  } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });

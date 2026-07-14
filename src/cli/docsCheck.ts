@@ -97,8 +97,12 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   }
 
   const planSchema = contents.get("schemas/plan.schema.json") ?? "";
-  for (const field of ["doctrineVersion", "approval", "designEquity", "checkpoint", "creativeParity", "executionBrief", "commonPatternReview", "visualBlueprint", "ruleExceptions", "creativeStrategy", "motionComplexityBudget", "motionTreatment", "preparation", "fontDecision", "experimentalPlan", "conceptExploration", "recipeAccess"]) {
+  for (const field of ["doctrineVersion", "approval", "designEquity", "checkpoint", "creativeParity", "executionBrief", "criticRequirement", "commonPatternReview", "visualBlueprint", "criticInput", "visualCritic", "ruleExceptions", "creativeStrategy", "motionComplexityBudget", "motionTreatment", "preparation", "fontDecision", "experimentalPlan", "conceptExploration", "recipeAccess"]) {
     if (!planSchema.includes(`\"${field}\"`)) add(findings, "schema", "schemas/plan.schema.json", `missing creative-control field ${field}`);
+  }
+  for (const file of ["schemas/plan.schema.json", "schemas/verify.schema.json", "schemas/critic-input.schema.json", "schemas/visual-critic.schema.json", "schemas/design-equity.schema.json", "schemas/checkpoint.schema.json"]) {
+    try { JSON.parse(contents.get(file) ?? ""); }
+    catch (error) { add(findings, "schema", file, `cannot parse schema: ${String(error)}`); }
   }
 
   const main = contents.get("SKILL.md") ?? "";

@@ -522,14 +522,16 @@ Persist the approved plan first to `.dreative/plan.json` using
 `references/ARTIFACTS.md` and `schemas/plan.schema.json`; this is the delivery
 contract consumed by `dreative audit`. Render the same decisions as a readable
 `.dreative/plan.md` for the user and session re-entry. Keep section and asset
-statuses synchronized in JSON as the build progresses. Set `version: 4` and
-`doctrineVersion: 4`,
+statuses synchronized in JSON as the build progresses. Set `version: 5` and
+`doctrineVersion: 5`,
 record `implementationStartedAt` immediately before code changes, and ensure all
 rule exceptions predate it and final approval predates it. For substantial work,
 persist the typed approval, scope/project kind, compact execution brief, and
 common-pattern review. Redesigns reference `design-equity.json`; restructure and
 reimagine also reference `checkpoint.json` and include creative parity plus
-section visual blueprints. **The first time this run writes into
+section visual blueprints. Substantial runs reference `critic-input.json` and
+`visual-critic.json`; the critic runs after the full craft pass and objective
+captures, before final verification. **The first time this run writes into
 `.dreative/`, also write `.dreative/README.md`** with exactly this content
 (it stops other agents/CLIs from mistaking run artifacts for the skill —
 observed failure: an agent found `.dreative/`, said "not a proper SKILL.md",
@@ -619,7 +621,10 @@ tweak feedback into the plan file before building.
    section apply to that section).
 4. **Effects + choreography** across sections (page-level timelines, transitions,
    the signature element).
-5. **Verification** — the full runtime protocol (SKILL.md §V: runtime gates +
+5. **Independent visual critic** — capture objective desktop/mobile and
+   interactive evidence, run the objective-only packet in fresh context, apply
+   at most one focused required-revision pass, and retain the critic verdict.
+6. **Verification** — the full runtime protocol (SKILL.md §3.7: runtime gates +
    self-critique, mobile first, evidence written to `.dreative/verify.json` and
    summarized in `.dreative/verify.md`).
    Any effect that fails gets its planned fallback, and the final report says

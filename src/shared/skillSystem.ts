@@ -93,7 +93,7 @@ export const SKILL_DEFINITIONS: SkillDefinition[] = [
   },
   {
     name: "cinematic",
-    description: "Shader-graded experiential interfaces, living surfaces, gesture exploration, and sound.",
+    description: "Scene-based pacing, atmospheric transitions, living media, and intentional framing in any tonal register.",
     dependencies: ["motion", "interaction", "media", "ux", "mobile"],
     signature: /\b(cinematic|experiential|unseen\.co|fluid (sim(ulation)?|distortion)|gpgpu|drag[- ]to[- ]explore|click ?(&|and) ?hold|film grain|graded|velocity[- ]reactive|sound design|ambient (audio|sound))\b/i,
   },
@@ -218,7 +218,7 @@ export const TIER_REQUIREMENTS: Record<AmbitionTier, string[]> = {
   ],
   award: [
     "Expressive-tier requirements pass.",
-    "The experience has a distinctive spatial or media system, not isolated decoration.",
+    "The experience has a distinctive spatial, media, typographic, material, or interactive system, not isolated decoration; 3D is optional.",
     "Runtime, asset-weight, frame-time, occlusion, and fallback evidence is recorded.",
   ],
 };

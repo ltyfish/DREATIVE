@@ -103,9 +103,9 @@ export interface MultiPageCoherence {
 }
 
 export interface DirectDesignPlan {
-  /** v2/v3 remain readable as legacy; new artifacts must write v4. */
-  version: 2 | 3 | 4;
-  doctrineVersion?: 2 | 3 | 4;
+  /** v2-v4 remain readable as legacy; new artifacts must write v5. */
+  version: 2 | 3 | 4 | 5;
+  doctrineVersion?: 2 | 3 | 4 | 5;
   request: string;
   createdAt: string;
   tier: AmbitionTier;
@@ -124,10 +124,12 @@ export interface DirectDesignPlan {
   approval?: ApprovalRecord;
   designEquity?: string;
   checkpoint?: string;
-  mockupStrategy?: "mockup-first" | "straight-to-build";
+  mockupStrategy?: "mockup-first" | "two-divergent-mockups" | "build-with-checkpoint" | "straight-to-build";
   creativeParity?: CreativeParityContract;
   executionBrief?: ExecutionBrief;
   commonPatternReview?: CommonPatternReview[];
+  criticInput?: string;
+  visualCritic?: string;
   implementationStartedAt?: string;
   ruleExceptions?: RuleException[];
   creativeStrategy?: CreativeStrategy;
@@ -178,6 +180,7 @@ export interface ExecutionBrief {
   preservationContracts: string[];
   selectedTreatmentRules: string[];
   checkpointRequirement: string;
+  criticRequirement?: string;
   verificationCriteria: string[];
 }
 
@@ -436,12 +439,13 @@ function validateVisualBlueprint(blueprint: VisualBlueprint | undefined, prefix:
   return errors;
 }
 
-function validateV4Controls(plan: Partial<DirectDesignPlan>): string[] {
+function validateQualityControls(plan: Partial<DirectDesignPlan>, doctrineVersion: 4 | 5): string[] {
   const errors: string[] = [];
-  if (plan.doctrineVersion !== 4) errors.push("plan.doctrineVersion must be 4 for v4 plans");
+  if (plan.doctrineVersion !== doctrineVersion) errors.push(`plan.doctrineVersion must be ${doctrineVersion} for v${doctrineVersion} plans`);
   if (!plan.scope || !["tiny", "substantial"].includes(plan.scope)) errors.push("plan.scope must classify tiny or substantial work");
   if (!plan.projectKind || !["from-scratch", "redesign"].includes(plan.projectKind)) errors.push("plan.projectKind must classify from-scratch or redesign work");
   if (plan.scope !== "substantial") return errors;
+  if (doctrineVersion === 5 && (!nonEmpty(plan.criticInput) || !nonEmpty(plan.visualCritic))) errors.push("substantial v5 work must reference criticInput and visualCritic artifacts");
   const approval = plan.approval;
   if (!approval || approval.status !== "approved" || !validDate(approval.approvedAt)) errors.push("substantial work requires an approved typed approval record");
   else {
@@ -474,6 +478,7 @@ function validateV4Controls(plan: Partial<DirectDesignPlan>): string[] {
   const brief = plan.executionBrief;
   if (!brief || !concreteList(brief.approvedDecisions, 2) || !specificText(brief.selectedConcept, 20) || !concreteList(brief.preservationContracts) || !concreteList(brief.selectedTreatmentRules) || !specificText(brief.checkpointRequirement) || !concreteList(brief.verificationCriteria))
     errors.push("substantial work requires a compact executable creative brief");
+  if (doctrineVersion === 5 && !specificText(brief?.criticRequirement, 20)) errors.push("v5 execution brief must define the independent critic requirement");
   if (!Array.isArray(plan.commonPatternReview)) errors.push("substantial work requires a common-pattern risk review");
   for (const [pageIndex, page] of (plan.pages ?? []).entries()) for (const [sectionIndex, section] of page.sections.entries())
     errors.push(...validateVisualBlueprint(section.visualBlueprint, `pages[${pageIndex}].sections[${sectionIndex}]`));
@@ -538,9 +543,9 @@ export function validatePlan(value: unknown): string[] {
   const errors: string[] = [];
   const plan = value as Partial<DirectDesignPlan> | null;
   if (!plan || typeof plan !== "object") return ["plan must be an object"];
-  if (plan.version !== 2 && plan.version !== 3 && plan.version !== 4) errors.push("plan.version must be 2/3 (legacy) or 4");
+  if (plan.version !== 2 && plan.version !== 3 && plan.version !== 4 && plan.version !== 5) errors.push("plan.version must be 2-4 (legacy) or 5");
   if (plan.version === 3 && plan.doctrineVersion !== 3) errors.push("plan.doctrineVersion must be 3 for v3 plans");
-  if (plan.version === 4) errors.push(...validateV4Controls(plan));
+  if (plan.version === 4 || plan.version === 5) errors.push(...validateQualityControls(plan, plan.version));
   if (!nonEmpty(plan.request)) errors.push("plan.request is required");
   if (!nonEmpty(plan.createdAt) || Number.isNaN(Date.parse(plan.createdAt))) errors.push("plan.createdAt must be an ISO date");
   if (!["solid", "premium", "expressive", "award"].includes(String(plan.tier))) errors.push("plan.tier is invalid");
@@ -563,7 +568,7 @@ export function validatePlan(value: unknown): string[] {
   for (const [pageIndex, page] of (plan.pages ?? []).entries()) {
     const pagePrefix = `pages[${pageIndex}]`;
     if (!nonEmpty(page.id) || !nonEmpty(page.name)) errors.push(`${pagePrefix} requires id and name`);
-    if ((plan.version === 3 || plan.version === 4) && plan.depth && plan.tier) errors.push(...validateModernPage(page, pagePrefix, plan.depth, plan.tier));
+    if ((plan.version === 3 || plan.version === 4 || plan.version === 5) && plan.depth && plan.tier) errors.push(...validateModernPage(page, pagePrefix, plan.depth, plan.tier));
     if (!Array.isArray(page.skills) || !page.skills.includes("ux") || !page.skills.includes("mobile"))
       errors.push(`${pagePrefix}.skills must include ux and mobile`);
     for (const globalSkill of plan.skillPolicy?.global ?? []) {
@@ -579,7 +584,7 @@ export function validatePlan(value: unknown): string[] {
       if (!nonEmpty(section.id) || !nonEmpty(section.name) || !nonEmpty(section.layoutFamily)) errors.push(`${prefix} requires id, name, and layoutFamily`);
       if (!nonEmpty(section.mobile) || !nonEmpty(section.fallback)) errors.push(`${prefix} requires mobile and fallback treatments`);
       if (!Array.isArray(section.verification) || section.verification.length === 0) errors.push(`${prefix}.verification cannot be empty`);
-      if (plan.version === 3 || plan.version === 4) {
+      if (plan.version === 3 || plan.version === 4 || plan.version === 5) {
         for (const [criterionIndex, criterion] of (section.verification ?? []).entries()) {
           const criterionPrefix = `${prefix}.verification[${criterionIndex}]`;
           if (typeof criterion === "string") errors.push(`${criterionPrefix} must be a typed verification criterion`);
@@ -628,7 +633,7 @@ export function validatePlan(value: unknown): string[] {
       }
     }
   }
-  if (plan.version === 3 || plan.version === 4) {
+  if (plan.version === 3 || plan.version === 4 || plan.version === 5) {
     if (!plan.coherence || !nonEmpty(plan.coherence.globalVisualLanguage) || !nonEmpty(plan.coherence.globalInteractionLanguage) || !concreteList(plan.coherence.sharedPrimitives) || !concreteList(plan.coherence.crossPageContinuity) || !concreteList(plan.coherence.prohibitedRepeatedShells))
       errors.push("plan.coherence must define global languages, shared primitives, continuity, and prohibited repeated shells");
     if (!Array.isArray(plan.coherence?.pageSpecificCompositions) || plan.coherence.pageSpecificCompositions.length !== (plan.pages?.length ?? 0))

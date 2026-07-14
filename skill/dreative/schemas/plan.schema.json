@@ -6,13 +6,13 @@
   "additionalProperties": false,
   "required": ["version", "doctrineVersion", "request", "createdAt", "scope", "projectKind", "tier", "depth", "skills", "skillPolicy", "designRead", "coherence", "pages", "preservationManifest", "decisionLedger"],
   "allOf": [
-    { "if": { "properties": { "scope": { "const": "substantial" } } }, "then": { "required": ["approval", "executionBrief", "commonPatternReview"] } },
+    { "if": { "properties": { "scope": { "const": "substantial" } } }, "then": { "required": ["approval", "executionBrief", "commonPatternReview", "criticInput", "visualCritic"] } },
     { "if": { "properties": { "scope": { "const": "substantial" }, "projectKind": { "const": "redesign" } } }, "then": { "required": ["designEquity"] } },
     { "if": { "properties": { "scope": { "const": "substantial" }, "projectKind": { "const": "redesign" }, "depth": { "enum": ["restructure", "reimagine"] } } }, "then": { "required": ["checkpoint", "creativeParity"] } }
   ],
   "properties": {
-    "version": { "const": 4 },
-    "doctrineVersion": { "const": 4 },
+    "version": { "const": 5 },
+    "doctrineVersion": { "const": 5 },
     "request": { "type": "string", "minLength": 1 },
     "createdAt": { "type": "string", "format": "date-time" },
     "scope": { "enum": ["tiny", "substantial"] },
@@ -56,10 +56,12 @@
     "approval": { "$ref": "#/$defs/approval" },
     "designEquity": { "type": "string", "minLength": 1 },
     "checkpoint": { "type": "string", "minLength": 1 },
-    "mockupStrategy": { "enum": ["mockup-first", "straight-to-build"] },
+    "mockupStrategy": { "enum": ["mockup-first", "two-divergent-mockups", "build-with-checkpoint"] },
     "creativeParity": { "$ref": "#/$defs/creativeParity" },
     "executionBrief": { "$ref": "#/$defs/executionBrief" },
     "commonPatternReview": { "type": "array", "items": { "$ref": "#/$defs/commonPatternReview" } },
+    "criticInput": { "type": "string", "minLength": 1 },
+    "visualCritic": { "type": "string", "minLength": 1 },
     "ruleExceptions": { "type": "array", "items": { "$ref": "#/$defs/ruleException" } },
     "creativeStrategy": { "$ref": "#/$defs/creativeStrategy" },
     "motionComplexityBudget": { "$ref": "#/$defs/motionComplexityBudget" },
@@ -105,8 +107,8 @@
     },
     "executionBrief": {
       "type": "object", "additionalProperties": false,
-      "required": ["approvedDecisions", "baselineDesignEquity", "selectedConcept", "preservationContracts", "selectedTreatmentRules", "checkpointRequirement", "verificationCriteria"],
-      "properties": { "approvedDecisions": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 1 } }, "baselineDesignEquity": { "type": "array", "items": { "type": "string", "minLength": 1 } }, "selectedConcept": { "type": "string", "minLength": 20 }, "preservationContracts": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }, "selectedTreatmentRules": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }, "checkpointRequirement": { "type": "string", "minLength": 12 }, "verificationCriteria": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } } }
+      "required": ["approvedDecisions", "baselineDesignEquity", "selectedConcept", "preservationContracts", "selectedTreatmentRules", "checkpointRequirement", "criticRequirement", "verificationCriteria"],
+      "properties": { "approvedDecisions": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 1 } }, "baselineDesignEquity": { "type": "array", "items": { "type": "string", "minLength": 1 } }, "selectedConcept": { "type": "string", "minLength": 20 }, "preservationContracts": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }, "selectedTreatmentRules": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }, "checkpointRequirement": { "type": "string", "minLength": 12 }, "criticRequirement": { "type": "string", "minLength": 20 }, "verificationCriteria": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } } }
     },
     "commonPatternReview": {
       "type": "object", "additionalProperties": false, "required": ["pattern", "decision", "rationale", "brandSpecificEvidence"],
