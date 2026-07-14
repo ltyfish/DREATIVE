@@ -5,10 +5,11 @@ meaningfully redesigned or built. It is not for button tweaks or single-token
 nudges unless the user explicitly invokes it for one.
 
 **Plan Mode is MANDATORY.** Every Mode A request in scope runs this protocol —
-do not ask "plan or build directly?", do not offer a skip, do not silently jump
-to code. The ONLY exception is the user explicitly saying "no plan / just do
-it" this session; then note you're skipping and go straight to DESIGN.md +
-doctrine defaults.
+do not ask "plan or build directly?", do not offer a skip, and do not silently
+jump to code. “No plan,” “just do it,” “all decisions are up to you,” and
+similar phrasing allow the agent to recommend a direction; they do not waive
+concept and final-plan approval. Tiny isolated token, spacing, or component
+fixes retain the lightweight exception.
 
 The failure this file prevents: jumping into code with half a brief, discovering
 mid-build that media/tools/structure are missing, and shipping a page that is
@@ -18,6 +19,12 @@ Plan Mode is ONE planning pass → a short sequence of single questions (§3) �
 written plan → (optional) mockups for approval → execution in the plan's order.
 Questions come one at a time so each is easy to answer, but the interview stays
 short: only what the prompt genuinely leaves open, then build.
+
+For from-scratch work, the minimum sequence is concept direction followed by
+final plan approval. For redesigns, first render desktop/mobile and present the
+agent's design-equity analysis for confirmation, then ask concept direction,
+then final approval. Ask users to choose among concrete recommendations, not to
+invent the design for you.
 
 ## 1. Capability probe (before proposing anything)
 
@@ -428,7 +435,8 @@ should explicitly invite extra direction.
 8. **Mockups first?** — offer to build 1:1 mockups BEFORE the full build:
    "Mockup the key pages first" / "Straight to build". **Which one is marked
    "(Recommended)" is NOT static — compute it from the depth + ambition
-   answers already given:** reimagine or restructure depth, OR `award`
+   answers already given:** reimagine or restructure depth, `award` ambition,
+   OR a polished/exceptional existing baseline
    ambition, mean this is among the biggest changes the tool can make, so
    **"Mockup first" is the recommended option.** Recommend "Straight to
    build" only when depth is restyle/re-layout AND ambition is solid/premium/
@@ -447,7 +455,8 @@ should explicitly invite extra direction.
    honored like the brief. **This question is asked on every single round,
    with no exception** — it is the fixed closer, never trimmed, never
    replaced by ending the round on whatever question happened to be last
-   (e.g. references or mockups). If references was the last substantive
+   (e.g. references or mockups). “No, go build” closes remarks but does not
+   replace the final plan-approval decision. If references was the last substantive
    question asked, final remarks still follows it as its own separate call.
 
 When trimming to stay under the cap: depth / treatments / references / media
@@ -513,10 +522,14 @@ Persist the approved plan first to `.dreative/plan.json` using
 `references/ARTIFACTS.md` and `schemas/plan.schema.json`; this is the delivery
 contract consumed by `dreative audit`. Render the same decisions as a readable
 `.dreative/plan.md` for the user and session re-entry. Keep section and asset
-statuses synchronized in JSON as the build progresses. Set `version: 3` and
-`doctrineVersion: 3`,
+statuses synchronized in JSON as the build progresses. Set `version: 4` and
+`doctrineVersion: 4`,
 record `implementationStartedAt` immediately before code changes, and ensure all
-rule exceptions predate it. **The first time this run writes into
+rule exceptions predate it and final approval predates it. For substantial work,
+persist the typed approval, scope/project kind, compact execution brief, and
+common-pattern review. Redesigns reference `design-equity.json`; restructure and
+reimagine also reference `checkpoint.json` and include creative parity plus
+section visual blueprints. **The first time this run writes into
 `.dreative/`, also write `.dreative/README.md`** with exactly this content
 (it stops other agents/CLIs from mistaking run artifacts for the skill —
 observed failure: an agent found `.dreative/`, said "not a proper SKILL.md",

@@ -57,21 +57,21 @@ export const SKILL_DEFINITIONS: SkillDefinition[] = [
   },
   {
     name: "refined",
-    description: "Premium clean business, DTC, and commerce design with restraint and strong photography.",
+    description: "A finish, material, and craft treatment for calm or clean work; independent of composition and motion ambition.",
     dependencies: ["ux", "mobile"],
-    signature: /\b(clean (and )?(modern|professional)|modern clean|business (site|website|use)|corporate|professional look|premium (minimal|clean)|dtc|d2c|e[- ]?commerce|ecommerce|shopify|calm|understated)\b/i,
+    signature: /\b(clean(?: and)? (?:modern|professional|luxury|minimal(?:istic)?)|modern clean|clean luxury|minimal(?:istic)?|luxury|business (?:site|website|use)|corporate|professional(?: look)?|premium (?:minimal|clean)|dtc|d2c|e[- ]?commerce|ecommerce|shopify|calm|understated)\b/i,
   },
   {
     name: "motion",
     description: "Scroll choreography, entrances, kinetic type, springs, parallax, and transitions.",
     dependencies: ["ux", "mobile"],
-    signature: /\b(animat|motion|parallax|scroll[- ]?(driven|trigger|story|choreo)|gsap|framer|lenis|marquee|kinetic|stagger|reveal|transition)\b/i,
+    signature: /\b(animat\w*|motion|parallax|scroll[- ]?(driven|trigger|story|choreo)|gsap|framer|lenis|marquee|kinetic|stagger|reveal|transition)\b/i,
   },
   {
     name: "interaction",
     description: "Hover craft, magnetic controls, cursor effects, tactile feedback, and state morphs.",
     dependencies: ["ux", "mobile"],
-    signature: /\b(micro[- ]?interaction|hover (effect|state)s?|cursor|magnetic|tilt|spotlight|glow|ripple|tactile|interactive|draggable)\b/i,
+    signature: /\b(micro[- ]?interaction|hover (effect|state)s?|cursor|magnetic|tilt|spotlight|glow|ripple|tactile|interactive|draggable|authored|memorable|visually striking|impressive)\b/i,
   },
   {
     name: "media",
@@ -101,7 +101,7 @@ export const SKILL_DEFINITIONS: SkillDefinition[] = [
     name: "experimental",
     description: "Unconventional composition, material shifts, provocations, and high-variance creative direction.",
     dependencies: ["motion", "interaction", "media", "ux", "mobile"],
-    signature: /\b(experimental|crazy|bizarre|never seen before|more creative|wow factor|unconventional|unexpected|provocation)\b/i,
+    signature: /\b(experimental|crazy|bizarre|never seen before|more creative|creative|unique|wow factor|unconventional|unexpected|provocation)\b/i,
   },
 ];
 
@@ -196,7 +196,7 @@ export function resolveAmbitionTier(input: {
   const haystack = [input.aesthetic, ...(input.texts ?? [])].filter(Boolean).join(" ");
   if (/\b(award|awwwards|immersive|cinematic|experimental|unseen\.co)\b/i.test(haystack) || input.motion >= 9)
     return "award";
-  if (input.motion >= 7 || input.variance >= 8) return "expressive";
+  if (input.motion >= 7 || input.variance >= 8 || /\b(unique|creative|impressive|visually striking|authored|memorable)\b/i.test(haystack) && /\b(animat|motion|interactive|smooth|choreograph)\b/i.test(haystack)) return "expressive";
   if (input.motion >= 4 || input.variance >= 5) return "premium";
   return "solid";
 }

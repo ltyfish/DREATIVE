@@ -77,3 +77,13 @@ test("multi-page coherence records page registers without assigning a repeated s
   assert.deepEqual(coherence.pages.map((item) => item.register), ["task-transaction", "account-status"]);
   assert.ok(coherence.prohibitedRepeatedShells.some((item) => item.includes("unrelated routes")));
 });
+
+test("refined minimal surface does not clamp separately signaled creative motion", () => {
+  const prompt = "Clean luxury and minimalistic, but creative, unique and impressive with smooth animations";
+  const result = plan({ aesthetic: "minimal", variance: 5, motion: 3, notes: prompt });
+  assert.equal(result.tier, "expressive");
+  assert.ok(result.skills.includes("refined"));
+  assert.ok(result.skills.includes("motion"));
+  assert.match(result.directives.join(" "), /section motion treatments/i);
+  assert.doesNotMatch(result.directives.join(" "), /hover\/active states only/);
+});

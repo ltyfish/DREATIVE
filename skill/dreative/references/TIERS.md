@@ -48,3 +48,9 @@ Do not force Award requirements on product dashboards, checkout, forms, or users
 who asked for calm professional work. Ambition is a product decision, not a score.
 Transformation depth remains separate: `restructure + solid` changes page
 architecture, while `restyle + expressive` may retain it honestly.
+
+Aesthetic restraint is separate too. Refined controls finish and density; it
+does not clamp ambition or motion. When a prompt combines clean/minimal/luxury
+with creative, unique, impressive, authored, memorable, or smooth animation,
+recommend Expressive during the decision phase and let the user choose. Do not
+silently force the tier or suppress selected motion/interaction treatments.

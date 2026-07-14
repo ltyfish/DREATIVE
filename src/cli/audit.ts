@@ -3,12 +3,16 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   validateDecisionLedger,
+  validateDesignEquityBaseline,
   validatePlan,
   validatePreservationManifest,
   validateVerificationReport,
+  validateVisualCheckpoint,
+  type DesignEquityBaseline,
   type DirectDesignPlan,
   type PreservationManifest,
   type VerificationReport,
+  type VisualCheckpoint,
 } from "../shared/artifacts.js";
 import { resolveSkillDependencies, type SpecialistSkill } from "../shared/skillSystem.js";
 import {
@@ -104,7 +108,7 @@ function checkAssets(projectDir: string, plan: DirectDesignPlan): AuditFinding[]
 }
 
 function checkAntiSlopPlan(plan: DirectDesignPlan): AuditFinding[] {
-  if (plan.version !== 3) return [];
+  if (plan.version !== 3 && plan.version !== 4) return [];
   const findings: AuditFinding[] = [];
   const signatures = new Map<string, string[]>();
   for (const page of plan.pages) {
@@ -204,8 +208,8 @@ function checkVerificationProof(projectDir: string, verificationFile: string): A
 
 export function checkVerificationCoverage(plan: DirectDesignPlan, report: VerificationReport): AuditFinding[] {
   const findings: AuditFinding[] = [];
-  if (plan.version !== 3) return findings;
-  if (report.version !== 2) return [finding("error", "migration", "v3 plans require verify.json version 2; legacy verification cannot satisfy depth and mobile guarantees")];
+  if (plan.version !== 3 && plan.version !== 4) return findings;
+  if ((plan.version === 3 && report.version !== 2) || (plan.version === 4 && report.version !== 3)) return [finding("error", "migration", `${plan.version === 4 ? "v4" : "v3"} plans require verify.json version ${plan.version === 4 ? "3" : "2"}`)];
   const passing = report.evidence.filter((item) => item.status === "pass");
   for (const page of plan.pages) {
     for (const viewportClass of ["desktop", "mobile", "narrow-mobile"] as const) {
@@ -223,7 +227,7 @@ export function checkVerificationCoverage(plan: DirectDesignPlan, report: Verifi
     for (const section of page.sections) {
       for (const criterion of section.verification) {
         if (typeof criterion === "string") {
-          findings.push(finding("error", "verification", `${page.name}/${section.name}: v3 criteria must be typed objects, not strings`));
+          findings.push(finding("error", "verification", `${page.name}/${section.name}: modern criteria must be typed objects, not strings`));
           continue;
         }
         for (const viewport of criterion.viewports) {
@@ -238,6 +242,56 @@ export function checkVerificationCoverage(plan: DirectDesignPlan, report: Verifi
       }
     }
   }
+  return findings;
+}
+
+export function checkRedesignQualityArtifacts(projectDir: string, plan: DirectDesignPlan, report: VerificationReport | undefined): AuditFinding[] {
+  if (plan.version !== 4 || plan.scope !== "substantial") return [];
+  const findings: AuditFinding[] = [];
+  if (!plan.approval || plan.approval.status !== "approved" || !plan.approval.approvedAt || !plan.implementationStartedAt || Date.parse(plan.implementationStartedAt) <= Date.parse(plan.approval.approvedAt))
+    findings.push(finding("error", "approval", "substantial implementation began without final recorded approval, or implementationStartedAt is not later than approval"));
+  if (plan.projectKind !== "redesign") return findings;
+  const equityFile = path.resolve(projectDir, plan.designEquity ?? ".dreative/design-equity.json");
+  findings.push(...checkArtifact(equityFile, "design-equity", validateDesignEquityBaseline));
+  const checkpointFile = path.resolve(projectDir, plan.checkpoint ?? ".dreative/checkpoint.json");
+  if (plan.depth === "restructure" || plan.depth === "reimagine") findings.push(...checkArtifact(checkpointFile, "checkpoint", validateVisualCheckpoint));
+  if (findings.some((item) => item.level === "error")) return findings;
+  const equity = readJson(equityFile) as DesignEquityBaseline;
+  const checkpoint = (plan.depth === "restructure" || plan.depth === "reimagine") ? readJson(checkpointFile) as VisualCheckpoint : undefined;
+  const evidence = new Map((report?.evidence ?? []).map((item) => [item.id, item]));
+  for (const screenshot of [...equity.screenshots.desktop, ...equity.screenshots.mobile, ...(checkpoint ? [...checkpoint.baselineScreenshotPaths, ...checkpoint.screenshotPaths.desktop, ...checkpoint.screenshotPaths.mobile] : [])]) {
+    const target = path.resolve(projectDir, screenshot);
+    if (!target.startsWith(path.resolve(projectDir) + path.sep) || !fs.existsSync(target)) findings.push(finding("error", "visual-evidence", `referenced screenshot is missing: ${screenshot}`));
+  }
+  for (const item of equity.items) {
+    if (item.finalEvidenceIds.length === 0) findings.push(finding("error", "design-equity", `${item.id}: final evidence is required`));
+    for (const id of item.finalEvidenceIds) {
+      const proof = evidence.get(id);
+      if (!proof || proof.status !== "pass" || proof.kind !== "design-equity") findings.push(finding("error", "design-equity", `${item.id}: missing passing design-equity evidence ${id}`));
+    }
+    if (item.decision === "intentionally-remove" && !item.removalApprovalReference && item.finalEvidenceIds.length === 0)
+      findings.push(finding("error", "design-equity", `${item.id}: removal needs a demonstrably stronger replacement or explicit approval`));
+  }
+  for (const refinement of checkpoint?.refinements ?? []) for (const id of refinement.evidenceIds) {
+    const proof = evidence.get(id);
+    if (!proof || proof.status !== "pass") findings.push(finding("error", "checkpoint", `checkpoint refinement references missing or failing evidence ${id}`));
+  }
+  if (!report || report.version !== 3 || !report.perceptualComparison) findings.push(finding("error", "perceptual-comparison", "redesigns require verify.json v3 with a grounded before/after perceptual comparison"));
+  else {
+    const comparison = report.perceptualComparison;
+    for (const id of [...comparison.baselineEvidenceIds, ...comparison.finalEvidenceIds, ...comparison.signatureEvidenceIds]) {
+      const proof = evidence.get(id);
+      if (!proof || proof.status !== "pass") findings.push(finding("error", "perceptual-comparison", `missing passing comparison evidence ${id}`));
+    }
+    for (const id of [...comparison.baselineEvidenceIds, ...comparison.finalEvidenceIds]) {
+      const proof = evidence.get(id);
+      if (proof && (!proof.proof?.artifactPath || !["visual-regression", "perceptual-comparison"].includes(proof.kind ?? ""))) findings.push(finding("error", "perceptual-comparison", `${id}: before/after comparison evidence must reference an actual screenshot and use a perceptual evidence kind`));
+    }
+    if (!comparison.signatureEvidenceIds.some((id) => evidence.get(id)?.kind === "concept-fidelity")) findings.push(finding("error", "concept-fidelity", "the selected signature has no visible concept-fidelity evidence"));
+    for (const item of equity.items) if (!comparison.equityDecisionEvidence.some((entry) => entry.equityId === item.id && entry.evidenceIds.length > 0)) findings.push(finding("error", "perceptual-comparison", `${item.id}: comparison does not associate final evidence`));
+    if (comparison.weaknesses.length > 0 && comparison.refinementEvidenceIds.length === 0 && !comparison.explicitApprovalReference) findings.push(finding("error", "perceptual-comparison", "identified regressions must be refined or explicitly approved"));
+  }
+  if (checkpoint && report && Date.parse(checkpoint.capturedAt) >= Date.parse(report.generatedAt)) findings.push(finding("error", "checkpoint", "the visual checkpoint must occur before final verification"));
   return findings;
 }
 
@@ -257,8 +311,8 @@ export function runDirectDesignAudit(projectDir: string): AuditReport {
   findings.push(...checkArtifact(verificationFile, "verification", validateVerificationReport));
   findings.push(...checkVerificationProof(projectDir, verificationFile));
   const verification = fs.existsSync(verificationFile) ? (readJson(verificationFile) as VerificationReport) : undefined;
-  if (plan.version !== 3 || plan.doctrineVersion !== 3) {
-    findings.push(finding("warning", "migration", "legacy v2 plan accepted for compatibility only; migrate to plan v3 and verify v2 for structural-depth, mobile-blueprint, expression, and evidence-association guarantees"));
+  if (plan.version !== 4 || plan.doctrineVersion !== 4) {
+    findings.push(finding("warning", "migration", "legacy v2/v3 plan accepted for compatibility only; migrate to plan v4 and verify v3 for approval, design-equity, creative-parity, checkpoint, and perceptual-comparison guarantees"));
   } else {
     try {
       const { registry, reflexFonts } = loadRuleFiles();
@@ -273,6 +327,7 @@ export function runDirectDesignAudit(projectDir: string): AuditReport {
   findings.push(...checkAntiSlopPlan(plan));
   findings.push(...checkStaticQuality(projectDir, plan));
   if (verification) findings.push(...checkVerificationCoverage(plan, verification));
+  findings.push(...checkRedesignQualityArtifacts(projectDir, plan, verification));
 
   if (plan.version === 2) {
     const verifyText = verification ? JSON.stringify(verification) : "";

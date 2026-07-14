@@ -21,6 +21,16 @@ test("resolves ambition without forcing award tier", () => {
   assert.equal(resolveAmbitionTier({ variance: 7, motion: 7, texts: ["Awwwards immersive world"] }), "award");
 });
 
+test("clean luxury creativity recommends expressive and additive treatments", () => {
+  const prompt = "Redesign this existing website. Make it clean, luxury and minimalistic, but creative, unique and impressive. Use smooth animations. Avoid common AI fonts, oversized bold text, excessive rounded corners and AI-slop layouts. All design decisions are up to you.";
+  const detected = detectSpecialistSkills([prompt]);
+  assert.ok(detected.includes("refined"));
+  assert.ok(detected.includes("motion"));
+  assert.ok(detected.includes("interaction"));
+  assert.ok(detected.includes("experimental"));
+  assert.equal(resolveAmbitionTier({ variance: 5, motion: 3, aesthetic: "minimal", texts: [prompt] }), "expressive");
+});
+
 test("hybrid routing honors page pins and never activates unselected suggestions", () => {
   const routed = routeSkillsAcrossPages({
     pages: [

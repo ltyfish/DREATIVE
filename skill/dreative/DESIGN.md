@@ -64,9 +64,10 @@ Then run three tests on your intended output; restart if any fails:
 Never design by accretion, and never commit to the first concept. Three passes:
 
 1. **Explore** — sketch THREE genuinely divergent concepts, one line each:
-   palette strategy + type voice + signature element + hero thesis. Different
-   families of idea, not three shades of one (if two concepts share a palette
-   strategy or signature type, they are one concept — replace one). The slop
+   composition + focal hierarchy + material system + interaction model + type
+   voice + signature element + hero thesis. Palette or font changes alone do
+   not create a second concept. Different families of idea, not three shades
+   of one. The slop
    tests below are filters: they reject bad ideas but never generate better
    ones; this pass is where a better idea gets a chance to exist. Pick one,
    and record the two rejects with a one-line reason in the plan file
@@ -242,12 +243,12 @@ product, preserves its density metrics and translated layout, and changing it
 would damage brand continuity." Invalid reason: "Inter looks clean and modern."
 The goal is to stop reflex selection, not to declare common fonts inherently bad.
 
-**Serif discipline:** "creative/premium brief = serif" is the most-tested AI tell.
-Default is sans display. Serif only when the brief is genuinely editorial/luxury/
-publication AND you can articulate why this serif fits this brand. Emphasis inside a
-headline = italic/bold of the SAME family, never a serif word dropped into a sans
-headline. Italic display words with descenders (y g j p q) need `leading-[1.1]`+ and
-bottom padding reserve.
+**Typeface discipline:** neither serif nor sans is the default. Evaluate brand and
+content fit, visual character, language support, hierarchy, optical quality,
+continuity with valuable existing typography, and performance. A familiar face
+needs rationale; an uncommon face is not automatically better. Mixed-family
+emphasis is allowed when the hierarchy and brand concept earn it. Italic display
+words with descenders (y g j p q) need `leading-[1.1]`+ and bottom padding reserve.
 
 **Scale — pick by register:**
 - Brand: fluid `clamp()` headings, ratio ≥1.25 between steps, clamp max ≤ 6rem and
@@ -551,9 +552,12 @@ order — typography → spacing/rhythm → color recalibration → motion layer
 recomposition → full replacement only when unsalvageable. Honor existing
 accessibility wins and analytics hooks. `previousFile` is a composition source
 only for `restyle`. For `relayout`, old code is a content/behavior inventory. For
-`restructure` and `reimagine`, it is a wiring reference only: draft the new
-blueprint independently, then reconcile routes, handlers, data, fields, states,
-accessibility, analytics, required copy, and public APIs.
+`restructure` and `reimagine`, its DOM tree is not a composition template. The
+rendered interface remains a behavioral/content reference, quality baseline,
+and source of design equity. Draft a from-scratch counterfactual first, then
+reconcile routes, handlers, data, fields, states, accessibility, analytics,
+required copy, public APIs, and every valuable quality marked preserve,
+transform, or surpass.
 
 ### The preservation contract (mandatory for ANY redesign of existing code)
 

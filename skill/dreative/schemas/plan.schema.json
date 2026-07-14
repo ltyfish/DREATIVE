@@ -4,12 +4,19 @@
   "title": "Dreative Multi-Page Direct Design Plan",
   "type": "object",
   "additionalProperties": false,
-  "required": ["version", "doctrineVersion", "request", "createdAt", "tier", "depth", "skills", "skillPolicy", "designRead", "coherence", "pages", "preservationManifest", "decisionLedger"],
+  "required": ["version", "doctrineVersion", "request", "createdAt", "scope", "projectKind", "tier", "depth", "skills", "skillPolicy", "designRead", "coherence", "pages", "preservationManifest", "decisionLedger"],
+  "allOf": [
+    { "if": { "properties": { "scope": { "const": "substantial" } } }, "then": { "required": ["approval", "executionBrief", "commonPatternReview"] } },
+    { "if": { "properties": { "scope": { "const": "substantial" }, "projectKind": { "const": "redesign" } } }, "then": { "required": ["designEquity"] } },
+    { "if": { "properties": { "scope": { "const": "substantial" }, "projectKind": { "const": "redesign" }, "depth": { "enum": ["restructure", "reimagine"] } } }, "then": { "required": ["checkpoint", "creativeParity"] } }
+  ],
   "properties": {
-    "version": { "const": 3 },
-    "doctrineVersion": { "const": 3 },
+    "version": { "const": 4 },
+    "doctrineVersion": { "const": 4 },
     "request": { "type": "string", "minLength": 1 },
     "createdAt": { "type": "string", "format": "date-time" },
+    "scope": { "enum": ["tiny", "substantial"] },
+    "projectKind": { "enum": ["from-scratch", "redesign"] },
     "tier": { "enum": ["solid", "premium", "expressive", "award"] },
     "depth": { "enum": ["restyle", "relayout", "restructure", "reimagine"] },
     "skills": { "$ref": "#/$defs/skillList" },
@@ -46,6 +53,13 @@
       }
     },
     "implementationStartedAt": { "type": "string", "format": "date-time" },
+    "approval": { "$ref": "#/$defs/approval" },
+    "designEquity": { "type": "string", "minLength": 1 },
+    "checkpoint": { "type": "string", "minLength": 1 },
+    "mockupStrategy": { "enum": ["mockup-first", "straight-to-build"] },
+    "creativeParity": { "$ref": "#/$defs/creativeParity" },
+    "executionBrief": { "$ref": "#/$defs/executionBrief" },
+    "commonPatternReview": { "type": "array", "items": { "$ref": "#/$defs/commonPatternReview" } },
     "ruleExceptions": { "type": "array", "items": { "$ref": "#/$defs/ruleException" } },
     "creativeStrategy": { "$ref": "#/$defs/creativeStrategy" },
     "motionComplexityBudget": { "$ref": "#/$defs/motionComplexityBudget" },
@@ -72,6 +86,32 @@
       "items": { "$ref": "#/$defs/skill" }
     },
     "status": { "enum": ["planned", "shipped", "fallback", "cut"] },
+    "approval": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "approvedAt", "transcriptReferences", "approvedConcept", "approvedTransformationDepth", "approvedTier", "approvedTreatments", "selectedRecommendation", "decisions"],
+      "properties": {
+        "status": { "const": "approved" }, "approvedAt": { "type": "string", "format": "date-time" },
+        "transcriptReferences": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "approvedConcept": { "type": "string", "minLength": 12 }, "approvedTransformationDepth": { "enum": ["restyle", "relayout", "restructure", "reimagine"] },
+        "approvedTier": { "enum": ["solid", "premium", "expressive", "award"] }, "approvedTreatments": { "$ref": "#/$defs/treatmentList" },
+        "selectedRecommendation": { "type": "boolean" },
+        "decisions": { "type": "array", "minItems": 2, "items": { "type": "object", "additionalProperties": false, "required": ["kind", "at", "transcriptReference", "choice", "selectedRecommendation"], "properties": { "kind": { "enum": ["baseline", "concept", "final-plan"] }, "at": { "type": "string", "format": "date-time" }, "transcriptReference": { "type": "string", "minLength": 1 }, "choice": { "type": "string", "minLength": 12 }, "selectedRecommendation": { "type": "boolean" } } } }
+      }
+    },
+    "creativeParity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["fromScratchConcept", "reconciledConcept", "reconciliationChanges", "reconciliationWeakenedIdea", "retainedCreativeAmbition", "compromises"],
+      "properties": { "fromScratchConcept": { "type": "string", "minLength": 30 }, "reconciledConcept": { "type": "string", "minLength": 30 }, "reconciliationChanges": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 12 } }, "reconciliationWeakenedIdea": { "type": "boolean" }, "retainedCreativeAmbition": { "type": "string", "minLength": 20 }, "compromises": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["compromise", "reason"], "properties": { "compromise": { "type": "string", "minLength": 12 }, "reason": { "type": "string", "minLength": 12 } } } } }
+    },
+    "executionBrief": {
+      "type": "object", "additionalProperties": false,
+      "required": ["approvedDecisions", "baselineDesignEquity", "selectedConcept", "preservationContracts", "selectedTreatmentRules", "checkpointRequirement", "verificationCriteria"],
+      "properties": { "approvedDecisions": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 1 } }, "baselineDesignEquity": { "type": "array", "items": { "type": "string", "minLength": 1 } }, "selectedConcept": { "type": "string", "minLength": 20 }, "preservationContracts": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }, "selectedTreatmentRules": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }, "checkpointRequirement": { "type": "string", "minLength": 12 }, "verificationCriteria": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } } }
+    },
+    "commonPatternReview": {
+      "type": "object", "additionalProperties": false, "required": ["pattern", "decision", "rationale", "brandSpecificEvidence"],
+      "properties": { "pattern": { "type": "string", "minLength": 1 }, "decision": { "enum": ["use", "revise"] }, "rationale": { "type": "string", "minLength": 20 }, "brandSpecificEvidence": { "type": "string", "minLength": 20 } }
+    },
     "ruleException": {
       "type": "object",
       "additionalProperties": false,
@@ -261,11 +301,12 @@
     "section": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "name", "layoutFamily", "skills", "interactions", "mobile", "fallback", "verification", "assets", "status"],
+      "required": ["id", "name", "layoutFamily", "visualBlueprint", "skills", "interactions", "mobile", "fallback", "verification", "assets", "status"],
       "properties": {
         "id": { "type": "string", "minLength": 1 },
         "name": { "type": "string", "minLength": 1 },
         "layoutFamily": { "type": "string", "minLength": 1 },
+        "visualBlueprint": { "$ref": "#/$defs/visualBlueprint" },
         "skills": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/skill" } },
         "interactions": { "type": "array", "items": { "type": "string" } },
         "motionTreatment": { "$ref": "#/$defs/motionTreatment" },
@@ -302,13 +343,20 @@
       "properties": {
         "id": { "type": "string", "minLength": 1 },
         "claim": { "type": "string", "minLength": 12 },
-        "kind": { "enum": ["visual", "interaction", "responsive", "preservation", "structural-depth"] },
+        "kind": { "enum": ["visual", "interaction", "responsive", "preservation", "structural-depth", "design-equity", "concept-fidelity", "perceptual-comparison", "visual-regression"] },
         "pageId": { "type": "string", "minLength": 1 },
         "sectionId": { "type": "string", "minLength": 1 },
         "viewports": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["desktop", "mobile", "narrow-mobile", "non-visual"] } }
       }
     },
     "pageRegister": { "enum": ["marketing-storytelling", "discovery-browse", "task-transaction", "account-status", "administration", "data-dense-utility", "authentication", "system-state"] },
+    "visualBlueprint": {
+      "type": "object", "additionalProperties": false,
+      "required": ["viewportComposition", "spatialRatios", "primaryFocal", "secondaryFocal", "gridLogic", "typographyRoles", "materialRelationship", "brandMotif", "signatureLocation", "signatureRole", "interactionDriver", "motionStart", "motionEnd", "sectionHandoff", "mobileRecomposition", "reducedMotion", "commonTemplateRisk", "brandSpecificity"],
+      "properties": {
+        "viewportComposition": { "type": "string", "minLength": 12 }, "spatialRatios": { "type": "string", "minLength": 12 }, "primaryFocal": { "type": "string", "minLength": 12 }, "secondaryFocal": { "type": "string", "minLength": 12 }, "gridLogic": { "type": "string", "minLength": 12 }, "typographyRoles": { "type": "string", "minLength": 12 }, "materialRelationship": { "type": "string", "minLength": 12 }, "brandMotif": { "type": "string", "minLength": 12 }, "signatureLocation": { "type": "string", "minLength": 12 }, "signatureRole": { "type": "string", "minLength": 12 }, "interactionDriver": { "type": "string", "minLength": 12 }, "motionStart": { "type": "string", "minLength": 12 }, "motionEnd": { "type": "string", "minLength": 12 }, "sectionHandoff": { "type": "string", "minLength": 12 }, "mobileRecomposition": { "type": "string", "minLength": 12 }, "reducedMotion": { "type": "string", "minLength": 12 }, "commonTemplateRisk": { "type": "string", "minLength": 12 }, "brandSpecificity": { "type": "string", "minLength": 12 }
+      }
+    },
     "structuralDelta": {
       "type": "object",
       "additionalProperties": false,

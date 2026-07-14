@@ -36,6 +36,10 @@ Read this file first, then only the references selected by the plan:
    fallback selection, or repair of a weak concept.
 
 Detailed doctrine belongs in those references, not in this orchestration file.
+After approval, execute from `plan.executionBrief`, referenced preservation/
+equity contracts, selected specialist rules, and section blueprints. Treat the
+larger doctrine as lookup material instead of reloading every file into the
+implementation context.
 
 ## 3. Direct Design protocol
 
@@ -47,6 +51,11 @@ Detailed doctrine belongs in those references, not in this orchestration file.
   Include links, handlers, forms, visible copy, states, routes, analytics hooks,
   and accessibility contracts. Every item needs a stable `file` + `needle` that
   `dreative audit` can check mechanically.
+- Render the existing interface at desktop and mobile and create
+  `.dreative/design-equity.json`. Record baseline quality, typography, color and
+  material, composition, pacing, signature elements, interaction/motion, mobile
+  behavior, and a preserve/transform/surpass/intentionally-remove decision for
+  every valuable quality.
 - Read `.dreative/ledger.json` when it exists. Treat it as preference and failure
   history, never as proof that a new request is complete.
 
@@ -68,6 +77,10 @@ Detailed doctrine belongs in those references, not in this orchestration file.
   calls. Use the environment's structured question tool when available;
   otherwise ask in chat. Do not ask about implementation details the agent can
   infer safely.
+- Substantial from-scratch work requires concept-direction and final-plan
+  approval. A redesign also requires baseline/design-equity confirmation. “Use
+  your judgment,” “just start,” and similar authority grant recommendation
+  freedom, not permission to skip these approvals.
 - Write `.dreative/plan.json` using `references/ARTIFACTS.md`. For multi-page
   work, show a page × skill matrix: the user can assign treatments to specific
   pages, and approve routing for selected skills left unassigned. Every section
@@ -83,6 +96,11 @@ Detailed doctrine belongs in those references, not in this orchestration file.
   Expressive/award pages also need a content/state-specific expression contract
   or a documented intentional-calm rationale. Record project coherence without
   repeating one branded shell across unlike page registers.
+- For restructure/reimagine, design a from-scratch counterfactual using only the
+  brand, purpose, content, audience, assets, and register; select the strongest
+  concept, then reconcile function and design equity without weakening it.
+  Record the creative-parity contract, section visual blueprints, common-pattern
+  risk review, approval record, and compact execution brief in plan v4.
 - Render a concise `.dreative/plan.md` for the user and for session re-entry.
 
 The approved plan is a delivery contract. A section ends as `shipped`,
@@ -104,7 +122,7 @@ Add treatments from this complete picker:
 
 | Skill | Use it for |
 | --- | --- |
-| `refined` | Premium clean business, commerce, photography, and restrained motion |
+| `refined` | Finish, material, spacing, and craft discipline independent of motion ambition |
 | `motion` | Scroll choreography, entrances, parallax, kinetic type, and transitions |
 | `interaction` | Hover craft, magnetic controls, cursor effects, and tactile feedback |
 | `media` | Generated/sourced image and video production, grading, and media treatments |
@@ -141,8 +159,14 @@ must appear somewhere in the overall plan, but not on every page.
 - Do not open recipe catalogs before `conceptExploration` records three
   brand-native concepts. Record every recipe file and load time in `recipeAccess`.
 - A restructure or reimagine creates the new blueprint independently, uses old
-  code only as a behavior/wiring reference, and then reconciles preservation.
+  DOM only as a non-binding implementation reference, and then reconciles
+  behavior, content, preservation, and valuable design equity.
   It is not a stylesheet-only restyle.
+- After the first viewport, one representative core section, desktop/mobile
+  translations, and primary motion language exist, stop expansion. Capture
+  baseline/current screenshots, critique perceptual quality, refine meaningful
+  weaknesses, write `.dreative/checkpoint.json`, and obtain user approval before
+  spreading the system. Straight-to-build does not skip this checkpoint.
 - Every heavy effect ships with its planned reduced-motion, mobile, loading, and
   runtime fallback.
 
@@ -173,10 +197,15 @@ Verification is evidence, not prose asserting that something was checked.
 6. Reconcile every plan section and asset against what visibly shipped.
 7. At expressive/award, visually inspect the captured states, make at least one
    refinement to timing, composition, readability, or continuity, and record it.
-8. Write `.dreative/verify.json` v2. Associate each row to a typed criterion,
+8. For redesigns, compare actual baseline and final screenshots across
+   distinctiveness, hierarchy, typography, color/material identity, authorship,
+   brand specificity, motion/interaction, responsive quality, design-equity
+   retention, concept fidelity, and generic-template risk. Refine every genuine
+   weakness or record explicit approval.
+9. Write `.dreative/verify.json` v3. Associate each row to a typed criterion,
    page/section, evidence kind, viewport class, and artifact/test. Run
    `dreative audit`.
-9. Fix every error. Warnings require either a fix or a recorded justification.
+10. Fix every error. Warnings require either a fix or a recorded justification.
 
 Every evidence-backed substitution references passing evidence IDs whose proof
 meets its declared success criteria. Vague reasons such as "it did not fit",

@@ -7,9 +7,12 @@ All paths are relative to the target project.
 
 Required top-level fields:
 
-- `version: 3`, `doctrineVersion: 3`. Legacy v2 plans remain readable only for
-  compatibility and receive a migration warning; they do not satisfy v3 depth,
-  mobile, expression, or evidence guarantees.
+- `version: 4`, `doctrineVersion: 4`. Legacy v2/v3 plans remain readable only
+  for compatibility and receive a migration warning; they do not satisfy v4
+  approval, design-equity, creative-parity, checkpoint, or comparison gates.
+- `scope`: `tiny | substantial`; `projectKind`: `from-scratch | redesign`
+- `approval`: status/timestamp, transcript references, approved concept, depth,
+  tier/treatments, recommendation choice, and sequential decisions
 - `request`, `createdAt`
 - `tier`: `solid | premium | expressive | award`
 - `depth`: `restyle | relayout | restructure | reimagine`
@@ -23,7 +26,10 @@ Required top-level fields:
 - `decisionLedger`: normally `.dreative/ledger.json`
 - `pages`: ordered pages, each with its assigned skills and delivery sections
 - `implementationStartedAt`: timestamp used to prove rule substitutions were
-  declared during planning
+  declared during planning and implementation followed final approval
+- `designEquity` for redesigns; `checkpoint` and `creativeParity` for
+  restructure/reimagine; `executionBrief`, `commonPatternReview`, and concrete
+  section `visualBlueprint` for substantial work
 - `ruleExceptions`: bounded substitutions of evidence-backed defaults
 - `creativeStrategy`: `diversity` or `development` at expressive/award tiers
 - `motionComplexityBudget`: hero moments, calm sections, shared language,
@@ -116,7 +122,7 @@ category from the registry. Repeating a recent display font needs an additional
 
 ```json
 {
-  "version": 2,
+  "version": 1,
   "createdAt": "2026-01-01T00:00:00.000Z",
   "items": [
     {
@@ -140,7 +146,7 @@ Schema: `schemas/verify.schema.json`.
 
 ```json
 {
-  "version": 1,
+  "version": 3,
   "generatedAt": "2026-01-01T00:00:00.000Z",
   "evidence": [
     {
@@ -181,6 +187,28 @@ For expressive/award motion, tag evidence with `timelineState`: initial, early,
 mid-transition, final, handoff, mobile, and reduced-motion; add pinned midpoint
 and exit states when relevant. Record the post-inspection refinement in
 `refinement` with findings, changes, and passing evidence IDs.
+
+Redesign verification adds `design-equity`, `concept-fidelity`,
+`perceptual-comparison`, and `visual-regression` evidence plus a grounded
+`perceptualComparison`. It references baseline/final screenshots, every equity
+decision, and visible signature proof; records concrete observations across
+distinctiveness, hierarchy, typography, color/material, composition, brand,
+motion/interaction, responsive quality, retained strengths, concept fidelity,
+and generic-template risk; and requires refinement or explicit approval for
+every genuine weakness.
+
+## Redesign-only artifacts
+
+`.dreative/design-equity.json` follows `schemas/design-equity.schema.json` and
+records desktop/mobile baseline screenshots, quality, strengths/weaknesses,
+visual/motion/mobile character, and preserve/transform/surpass/intentionally-
+remove decisions for valuable qualities.
+
+`.dreative/checkpoint.json` follows `schemas/checkpoint.schema.json`. After the
+first viewport, representative core section, desktop/mobile translations, and
+primary motion language exist, it records baseline/current screenshots, the
+perceptual critique, refinements, user approval, and when system expansion
+started. Straight-to-build may skip a full mockup, never this gate.
 
 ## `.dreative/ledger.json`
 

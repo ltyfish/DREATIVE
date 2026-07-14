@@ -207,7 +207,9 @@ export function buildDesignPlan(page: Page, brief: DesignBrief | undefined, assi
 
   const spacing = dials.density <= 3 ? "py-24/py-32 section gaps" : dials.density <= 6 ? "py-16/py-20" : "py-8/py-12, hairline dividers, mono numerals";
   const motionBudget =
-    dials.motion <= 3
+    tier === "expressive" || tier === "award"
+      ? "write section motion treatments; concentrate structural/transformational choreography into a few hero moments with calm sections, mobile translations, and reduced-motion states"
+      : dials.motion <= 3
       ? "hover/active states only, no scroll animation"
       : dials.motion <= 6
         ? "purposeful local motion; use structural transitions only where content changes state, with visible defaults"
@@ -222,7 +224,7 @@ export function buildDesignPlan(page: Page, brief: DesignBrief | undefined, assi
     "choose the simplest mechanism that makes each intended transformation convincing; do not default blindly to fade/slide/scale or to WebGL/3D",
     "one accent color, one neutral family, one radius system, locked across ALL pages of this project",
     "section entries describe existing semantic roles only; author the proposed composition from the structural delta instead of cycling through layout families",
-    "preserve routes, handlers, data flow, fields, states, accessibility, analytics, required copy, and public APIs; do not preserve DOM hierarchy, card shells, section order, desktop composition, visual grouping, or motion by default",
+    "preserve routes, handlers, data flow, fields, states, accessibility, analytics, required copy, and public APIs; treat the existing rendered interface as a quality baseline and preserve, transform, or surpass its valuable typography, composition, motion, interaction, and brand equity without letting its DOM tree dictate the new composition",
     ...(dials.variance > 4 ? ["avoid centered-hero-over-gradient; use split or asymmetric composition"] : []),
     ...(skills.length
       ? [
@@ -287,7 +289,7 @@ export function buildDesignSourceContext(depth: TransformationDepth, generatedFi
   return {
     strategy,
     behaviorReferenceFile: generatedFile,
-    compositionDirective: "Create the blueprint independently from the previous visual tree. Read the reference only for routes, handlers, data flow, fields, states, accessibility, analytics, copy, and public APIs; rebuild markup and component boundaries from the approved contracts.",
+    compositionDirective: "Create a from-scratch counterfactual independently from the previous visual tree, then reconcile it with routes, handlers, data flow, fields, states, accessibility, analytics, copy, public APIs, and the rendered interface's valuable design equity. Rebuild markup and component boundaries without lowering the approved concept's creative ambition.",
   };
 }
 

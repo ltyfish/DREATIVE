@@ -2,6 +2,9 @@ import type { AmbitionTier, SpecialistSkill } from "./skillSystem.js";
 import type { ExpressionContract, MobileBlueprint, MobileVerificationCheck, PageRegister, SourceStrategy, StructuralDelta, TransformationDepth } from "./types.js";
 
 export type DeliveryStatus = "planned" | "shipped" | "fallback" | "cut";
+export type WorkScope = "tiny" | "substantial";
+export type ProjectKind = "from-scratch" | "redesign";
+export type VerificationKind = "visual" | "interaction" | "responsive" | "preservation" | "structural-depth" | "design-equity" | "concept-fidelity" | "perceptual-comparison" | "visual-regression";
 
 export interface PlanAsset {
   id: string;
@@ -44,6 +47,28 @@ export interface PlanSection {
   assets: PlanAsset[];
   status: DeliveryStatus;
   reason?: string;
+  visualBlueprint?: VisualBlueprint;
+}
+
+export interface VisualBlueprint {
+  viewportComposition: string;
+  spatialRatios: string;
+  primaryFocal: string;
+  secondaryFocal: string;
+  gridLogic: string;
+  typographyRoles: string;
+  materialRelationship: string;
+  brandMotif: string;
+  signatureLocation: string;
+  signatureRole: string;
+  interactionDriver: string;
+  motionStart: string;
+  motionEnd: string;
+  sectionHandoff: string;
+  mobileRecomposition: string;
+  reducedMotion: string;
+  commonTemplateRisk: string;
+  brandSpecificity: string;
 }
 
 export interface PlanPage {
@@ -62,7 +87,7 @@ export interface PlanPage {
 export interface VerificationCriterion {
   id: string;
   claim: string;
-  kind: "visual" | "interaction" | "responsive" | "preservation" | "structural-depth";
+  kind: VerificationKind;
   pageId: string;
   sectionId?: string;
   viewports: ("desktop" | "mobile" | "narrow-mobile" | "non-visual")[];
@@ -78,9 +103,9 @@ export interface MultiPageCoherence {
 }
 
 export interface DirectDesignPlan {
-  /** v2 remains readable as legacy; new artifacts must write v3. */
-  version: 2 | 3;
-  doctrineVersion?: 2 | 3;
+  /** v2/v3 remain readable as legacy; new artifacts must write v4. */
+  version: 2 | 3 | 4;
+  doctrineVersion?: 2 | 3 | 4;
   request: string;
   createdAt: string;
   tier: AmbitionTier;
@@ -94,6 +119,15 @@ export interface DirectDesignPlan {
     userAssignments: { pageId: string; skills: SpecialistSkill[] }[];
   };
   designRead: { register: string; concept: string; signature: string };
+  scope?: WorkScope;
+  projectKind?: ProjectKind;
+  approval?: ApprovalRecord;
+  designEquity?: string;
+  checkpoint?: string;
+  mockupStrategy?: "mockup-first" | "straight-to-build";
+  creativeParity?: CreativeParityContract;
+  executionBrief?: ExecutionBrief;
+  commonPatternReview?: CommonPatternReview[];
   implementationStartedAt?: string;
   ruleExceptions?: RuleException[];
   creativeStrategy?: CreativeStrategy;
@@ -106,6 +140,52 @@ export interface DirectDesignPlan {
   pages: PlanPage[];
   preservationManifest: string;
   decisionLedger: string;
+}
+
+export interface ApprovalDecision {
+  kind: "baseline" | "concept" | "final-plan";
+  at: string;
+  transcriptReference: string;
+  choice: string;
+  selectedRecommendation: boolean;
+}
+
+export interface ApprovalRecord {
+  status: "pending" | "approved" | "rejected";
+  approvedAt?: string;
+  transcriptReferences: string[];
+  approvedConcept: string;
+  approvedTransformationDepth: TransformationDepth;
+  approvedTier: AmbitionTier;
+  approvedTreatments: SpecialistSkill[];
+  selectedRecommendation: boolean;
+  decisions: ApprovalDecision[];
+}
+
+export interface CreativeParityContract {
+  fromScratchConcept: string;
+  reconciledConcept: string;
+  reconciliationChanges: string[];
+  reconciliationWeakenedIdea: boolean;
+  retainedCreativeAmbition: string;
+  compromises: { compromise: string; reason: string }[];
+}
+
+export interface ExecutionBrief {
+  approvedDecisions: string[];
+  baselineDesignEquity: string[];
+  selectedConcept: string;
+  preservationContracts: string[];
+  selectedTreatmentRules: string[];
+  checkpointRequirement: string;
+  verificationCriteria: string[];
+}
+
+export interface CommonPatternReview {
+  pattern: string;
+  decision: "use" | "revise";
+  rationale: string;
+  brandSpecificEvidence: string;
 }
 
 export interface MotionComplexityBudget {
@@ -218,7 +298,7 @@ export interface VerificationEvidence {
   criterion: string;
   status: "pass" | "fail" | "not-applicable";
   evidence: string;
-  kind?: "visual" | "interaction" | "responsive" | "preservation" | "structural-depth";
+  kind?: VerificationKind;
   criterionId?: string;
   pageId?: string;
   sectionId?: string;
@@ -249,7 +329,7 @@ export interface VerificationEvidence {
 }
 
 export interface VerificationReport {
-  version: 1 | 2;
+  version: 1 | 2 | 3;
   generatedAt: string;
   evidence: VerificationEvidence[];
   refinement?: {
@@ -258,6 +338,73 @@ export interface VerificationReport {
     changes: string[];
     evidenceIds: string[];
   };
+  perceptualComparison?: PerceptualComparison;
+}
+
+export interface PerceptualComparison {
+  baselineEvidenceIds: string[];
+  finalEvidenceIds: string[];
+  observations: {
+    distinctiveness: string;
+    hierarchy: string;
+    typography: string;
+    colorMaterialIdentity: string;
+    compositionalAuthorship: string;
+    brandSpecificity: string;
+    motionInteractionQuality: string;
+    responsiveQuality: string;
+    retainedOrSurpassedStrengths: string;
+    conceptFidelity: string;
+    genericTemplateRisk: string;
+  };
+  weaknesses: string[];
+  refinementEvidenceIds: string[];
+  explicitApprovalReference?: string;
+  equityDecisionEvidence: { equityId: string; evidenceIds: string[] }[];
+  signatureEvidenceIds: string[];
+}
+
+export interface DesignEquityItem {
+  id: string;
+  quality: string;
+  decision: "preserve" | "transform" | "surpass" | "intentionally-remove";
+  rationale: string;
+  replacementOrEvolution: string;
+  successCriteria: string[];
+  finalEvidenceIds: string[];
+  removalApprovalReference?: string;
+}
+
+export interface DesignEquityBaseline {
+  version: 1;
+  capturedAt: string;
+  baselineQuality: "weak" | "ordinary" | "polished" | "exceptional";
+  screenshots: { desktop: string[]; mobile: string[] };
+  strongestVisualQualities: string[];
+  weakestVisualQualities: string[];
+  typographyCharacter: string;
+  colorMaterialCharacter: string;
+  compositionalStrengths: string[];
+  hierarchyAndPacing: string;
+  signatureVisualElements: string[];
+  animationInteractionInventory: string[];
+  mobileStrengthsAndFailures: string[];
+  distinctivePatterns: string[];
+  genericOrDatedPatterns: string[];
+  items: DesignEquityItem[];
+}
+
+export interface VisualCheckpoint {
+  version: 1;
+  capturedAt: string;
+  implementation: { hero: boolean; coreSection: boolean; desktop: boolean; mobile: boolean; primaryMotionLanguage: boolean };
+  baselineScreenshotPaths: string[];
+  screenshotPaths: { desktop: string[]; mobile: string[] };
+  critique: Record<"distinctiveness" | "hierarchy" | "brandVisibility" | "signatureLegibility" | "equityRetention" | "saasTemplateRisk" | "brandSwapRisk" | "mobileAuthorship" | "motionPurpose" | "counterfactualStrength", string>;
+  meaningfulWeaknessFound: boolean;
+  refinements: { finding: string; change: string; evidenceIds: string[] }[];
+  approval: { status: "pending" | "approved" | "rejected"; approvedAt?: string; transcriptReferences: string[] };
+  systemSpreadStartedAt?: string;
 }
 
 function nonEmpty(value: unknown): value is string {
@@ -268,7 +415,79 @@ function concreteList(value: unknown, minimum = 1): value is string[] {
   return Array.isArray(value) && value.length >= minimum && value.every((item) => nonEmpty(item) && !/^(improve|modernize|make better|n\/a|none)$/i.test(item.trim()));
 }
 
-function validateV3Page(page: PlanPage, prefix: string, depth: TransformationDepth, tier: AmbitionTier): string[] {
+function validDate(value: unknown): value is string {
+  return nonEmpty(value) && !Number.isNaN(Date.parse(value));
+}
+
+function specificText(value: unknown, minimum = 12): value is string {
+  return nonEmpty(value) && value.trim().length >= minimum && !/^(modern|clean|premium|creative|unique|impressive|better|n\/a|none)$/i.test(value.trim());
+}
+
+const COMMON_PATTERN = /\b(split hero|left[- ]copy|right[- ]image|three[- ]column|2x2|two[- ]by[- ]two|feature cards?|stat(?:istic)? row|pale (?:logo )?box|hairline divider|dark rectangle|standard saas|hero.*features.*stats.*cta)\b/i;
+
+function validateVisualBlueprint(blueprint: VisualBlueprint | undefined, prefix: string): string[] {
+  if (!blueprint) return [`${prefix}.visualBlueprint is required for substantial v4 work`];
+  const errors: string[] = [];
+  for (const [key, value] of Object.entries(blueprint)) {
+    if (!specificText(value)) errors.push(`${prefix}.visualBlueprint.${key} must be concrete and implementation-ready`);
+  }
+  if (/^(split hero|large logo|hairline rules?|feature grid)$/i.test(blueprint.viewportComposition.trim()))
+    errors.push(`${prefix}.visualBlueprint.viewportComposition is a generic label, not a composition`);
+  return errors;
+}
+
+function validateV4Controls(plan: Partial<DirectDesignPlan>): string[] {
+  const errors: string[] = [];
+  if (plan.doctrineVersion !== 4) errors.push("plan.doctrineVersion must be 4 for v4 plans");
+  if (!plan.scope || !["tiny", "substantial"].includes(plan.scope)) errors.push("plan.scope must classify tiny or substantial work");
+  if (!plan.projectKind || !["from-scratch", "redesign"].includes(plan.projectKind)) errors.push("plan.projectKind must classify from-scratch or redesign work");
+  if (plan.scope !== "substantial") return errors;
+  const approval = plan.approval;
+  if (!approval || approval.status !== "approved" || !validDate(approval.approvedAt)) errors.push("substantial work requires an approved typed approval record");
+  else {
+    if (!concreteList(approval.transcriptReferences) || !specificText(approval.approvedConcept) || approval.approvedTransformationDepth !== plan.depth || approval.approvedTier !== plan.tier || !Array.isArray(approval.approvedTreatments))
+      errors.push("approval must record transcripts, concept, transformation depth, tier, and treatments");
+    const decisions = new Set((approval.decisions ?? []).map((item) => item.kind));
+    for (const required of plan.projectKind === "redesign" ? ["baseline", "concept", "final-plan"] : ["concept", "final-plan"])
+      if (!decisions.has(required as ApprovalDecision["kind"])) errors.push(`approval is missing the ${required} decision`);
+    for (const [index, decision] of (approval.decisions ?? []).entries())
+      if (!validDate(decision.at) || !specificText(decision.transcriptReference, 3) || !specificText(decision.choice)) errors.push(`approval.decisions[${index}] is incomplete`);
+    const ordered = approval.decisions ?? [];
+    if (ordered.some((decision, index) => index > 0 && Date.parse(decision.at) <= Date.parse(ordered[index - 1].at))) errors.push("approval decisions must be sequential and chronologically ordered");
+    const finalDecision = ordered.find((decision) => decision.kind === "final-plan");
+    if (finalDecision && Date.parse(finalDecision.at) !== Date.parse(approval.approvedAt!)) errors.push("approval.approvedAt must equal the final-plan decision timestamp");
+    if (validDate(plan.createdAt) && Date.parse(plan.createdAt) > Date.parse(approval.approvedAt!)) errors.push("the plan must be created before final approval");
+    if (plan.implementationStartedAt && (!validDate(plan.implementationStartedAt) || Date.parse(plan.implementationStartedAt) <= Date.parse(approval.approvedAt!)))
+      errors.push("implementationStartedAt must be later than final plan approval");
+  }
+  if (plan.projectKind === "redesign" && !nonEmpty(plan.designEquity)) errors.push("substantial redesigns require a design-equity artifact reference");
+  if (plan.projectKind === "redesign" && (plan.depth === "restructure" || plan.depth === "reimagine")) {
+    if (!nonEmpty(plan.checkpoint)) errors.push(`${plan.depth} requires a visual checkpoint artifact reference`);
+    const parity = plan.creativeParity;
+    if (!parity || !specificText(parity.fromScratchConcept, 30) || !specificText(parity.reconciledConcept, 30) || !concreteList(parity.reconciliationChanges) || !specificText(parity.retainedCreativeAmbition, 20) || !Array.isArray(parity.compromises))
+      errors.push(`${plan.depth} requires a concrete from-scratch creative-parity contract`);
+    const implementationText = [parity?.fromScratchConcept, parity?.reconciledConcept, ...(parity?.reconciliationChanges ?? []), ...(plan.pages ?? []).flatMap((page) => page.sections.map((section) => `${section.layoutFamily} ${section.interactions.join(" ")} ${section.motionTreatment?.mechanism ?? ""}`))].join(" ");
+    const fakeParts = [/(new|different) font/i, /(new|different) colou?r/i, /split hero/i, /feature cards?/i, /(entrance|fade)/i].filter((pattern) => pattern.test(implementationText)).length;
+    if (fakeParts >= 4 && !/\b(custom|brand-derived|procedural|kinetic|editorial|spatial|interactive|asymmetric|choreograph|transform)\b/i.test(implementationText))
+      errors.push(`${plan.depth} fails creative parity: font, color, split hero, cards, and entrance fades do not constitute an authored redesign`);
+  }
+  const brief = plan.executionBrief;
+  if (!brief || !concreteList(brief.approvedDecisions, 2) || !specificText(brief.selectedConcept, 20) || !concreteList(brief.preservationContracts) || !concreteList(brief.selectedTreatmentRules) || !specificText(brief.checkpointRequirement) || !concreteList(brief.verificationCriteria))
+    errors.push("substantial work requires a compact executable creative brief");
+  if (!Array.isArray(plan.commonPatternReview)) errors.push("substantial work requires a common-pattern risk review");
+  for (const [pageIndex, page] of (plan.pages ?? []).entries()) for (const [sectionIndex, section] of page.sections.entries())
+    errors.push(...validateVisualBlueprint(section.visualBlueprint, `pages[${pageIndex}].sections[${sectionIndex}]`));
+  const usedCommonPatterns = (plan.pages ?? []).flatMap((page) => page.sections).filter((section) => COMMON_PATTERN.test(`${section.layoutFamily} ${section.visualBlueprint?.viewportComposition ?? ""}`));
+  for (const section of usedCommonPatterns) {
+    const review = plan.commonPatternReview?.find((item) => normalizedPattern(item.pattern) === normalizedPattern(section.layoutFamily) || COMMON_PATTERN.test(item.pattern));
+    if (!review || !specificText(review.rationale, 20) || !specificText(review.brandSpecificEvidence, 20)) errors.push(`${section.name}: common layout family requires project-specific rationale and brand evidence`);
+  }
+  return errors;
+}
+
+function normalizedPattern(value: string): string { return value.trim().toLowerCase(); }
+
+function validateModernPage(page: PlanPage, prefix: string, depth: TransformationDepth, tier: AmbitionTier): string[] {
   const errors: string[] = [];
   const validRegisters: PageRegister[] = ["marketing-storytelling", "discovery-browse", "task-transaction", "account-status", "administration", "data-dense-utility", "authentication", "system-state"];
   if (!page.register || !validRegisters.includes(page.register)) errors.push(`${prefix}.register is required`);
@@ -319,8 +538,9 @@ export function validatePlan(value: unknown): string[] {
   const errors: string[] = [];
   const plan = value as Partial<DirectDesignPlan> | null;
   if (!plan || typeof plan !== "object") return ["plan must be an object"];
-  if (plan.version !== 2 && plan.version !== 3) errors.push("plan.version must be 2 (legacy) or 3");
+  if (plan.version !== 2 && plan.version !== 3 && plan.version !== 4) errors.push("plan.version must be 2/3 (legacy) or 4");
   if (plan.version === 3 && plan.doctrineVersion !== 3) errors.push("plan.doctrineVersion must be 3 for v3 plans");
+  if (plan.version === 4) errors.push(...validateV4Controls(plan));
   if (!nonEmpty(plan.request)) errors.push("plan.request is required");
   if (!nonEmpty(plan.createdAt) || Number.isNaN(Date.parse(plan.createdAt))) errors.push("plan.createdAt must be an ISO date");
   if (!["solid", "premium", "expressive", "award"].includes(String(plan.tier))) errors.push("plan.tier is invalid");
@@ -343,7 +563,7 @@ export function validatePlan(value: unknown): string[] {
   for (const [pageIndex, page] of (plan.pages ?? []).entries()) {
     const pagePrefix = `pages[${pageIndex}]`;
     if (!nonEmpty(page.id) || !nonEmpty(page.name)) errors.push(`${pagePrefix} requires id and name`);
-    if (plan.version === 3 && plan.depth && plan.tier) errors.push(...validateV3Page(page, pagePrefix, plan.depth, plan.tier));
+    if ((plan.version === 3 || plan.version === 4) && plan.depth && plan.tier) errors.push(...validateModernPage(page, pagePrefix, plan.depth, plan.tier));
     if (!Array.isArray(page.skills) || !page.skills.includes("ux") || !page.skills.includes("mobile"))
       errors.push(`${pagePrefix}.skills must include ux and mobile`);
     for (const globalSkill of plan.skillPolicy?.global ?? []) {
@@ -359,7 +579,7 @@ export function validatePlan(value: unknown): string[] {
       if (!nonEmpty(section.id) || !nonEmpty(section.name) || !nonEmpty(section.layoutFamily)) errors.push(`${prefix} requires id, name, and layoutFamily`);
       if (!nonEmpty(section.mobile) || !nonEmpty(section.fallback)) errors.push(`${prefix} requires mobile and fallback treatments`);
       if (!Array.isArray(section.verification) || section.verification.length === 0) errors.push(`${prefix}.verification cannot be empty`);
-      if (plan.version === 3) {
+      if (plan.version === 3 || plan.version === 4) {
         for (const [criterionIndex, criterion] of (section.verification ?? []).entries()) {
           const criterionPrefix = `${prefix}.verification[${criterionIndex}]`;
           if (typeof criterion === "string") errors.push(`${criterionPrefix} must be a typed verification criterion`);
@@ -408,7 +628,7 @@ export function validatePlan(value: unknown): string[] {
       }
     }
   }
-  if (plan.version === 3) {
+  if (plan.version === 3 || plan.version === 4) {
     if (!plan.coherence || !nonEmpty(plan.coherence.globalVisualLanguage) || !nonEmpty(plan.coherence.globalInteractionLanguage) || !concreteList(plan.coherence.sharedPrimitives) || !concreteList(plan.coherence.crossPageContinuity) || !concreteList(plan.coherence.prohibitedRepeatedShells))
       errors.push("plan.coherence must define global languages, shared primitives, continuity, and prohibited repeated shells");
     if (!Array.isArray(plan.coherence?.pageSpecificCompositions) || plan.coherence.pageSpecificCompositions.length !== (plan.pages?.length ?? 0))
@@ -459,11 +679,49 @@ export function validateDecisionLedger(value: unknown): string[] {
   return [];
 }
 
+export function validateDesignEquityBaseline(value: unknown): string[] {
+  const baseline = value as Partial<DesignEquityBaseline> | null;
+  if (!baseline || typeof baseline !== "object") return ["design equity baseline must be an object"];
+  const errors: string[] = [];
+  if (baseline.version !== 1) errors.push("design equity version must be 1");
+  if (!validDate(baseline.capturedAt)) errors.push("design equity capturedAt must be a valid date");
+  if (!baseline.baselineQuality || !["weak", "ordinary", "polished", "exceptional"].includes(baseline.baselineQuality)) errors.push("design equity baselineQuality is invalid");
+  if (!concreteList(baseline.screenshots?.desktop) || !concreteList(baseline.screenshots?.mobile)) errors.push("design equity requires desktop and mobile baseline screenshots");
+  for (const [name, value] of Object.entries({
+    strongestVisualQualities: baseline.strongestVisualQualities, weakestVisualQualities: baseline.weakestVisualQualities,
+    compositionalStrengths: baseline.compositionalStrengths, signatureVisualElements: baseline.signatureVisualElements,
+    animationInteractionInventory: baseline.animationInteractionInventory, mobileStrengthsAndFailures: baseline.mobileStrengthsAndFailures,
+    distinctivePatterns: baseline.distinctivePatterns, genericOrDatedPatterns: baseline.genericOrDatedPatterns,
+  })) if (!concreteList(value)) errors.push(`design equity ${name} cannot be empty`);
+  for (const [name, value] of Object.entries({ typographyCharacter: baseline.typographyCharacter, colorMaterialCharacter: baseline.colorMaterialCharacter, hierarchyAndPacing: baseline.hierarchyAndPacing }))
+    if (!specificText(value)) errors.push(`design equity ${name} must be concrete`);
+  if (!Array.isArray(baseline.items) || baseline.items.length === 0) errors.push("design equity requires at least one valuable-quality decision");
+  for (const [index, item] of (baseline.items ?? []).entries()) {
+    if (!nonEmpty(item.id) || !specificText(item.quality) || !["preserve", "transform", "surpass", "intentionally-remove"].includes(item.decision) || !specificText(item.rationale) || !specificText(item.replacementOrEvolution) || !concreteList(item.successCriteria) || !Array.isArray(item.finalEvidenceIds)) errors.push(`design equity item ${index} is incomplete`);
+  }
+  return errors;
+}
+
+export function validateVisualCheckpoint(value: unknown): string[] {
+  const checkpoint = value as Partial<VisualCheckpoint> | null;
+  if (!checkpoint || typeof checkpoint !== "object") return ["visual checkpoint must be an object"];
+  const errors: string[] = [];
+  if (checkpoint.version !== 1 || !validDate(checkpoint.capturedAt)) errors.push("visual checkpoint needs version 1 and a valid capturedAt");
+  if (!checkpoint.implementation || Object.values(checkpoint.implementation).some((done) => done !== true)) errors.push("visual checkpoint must cover hero, core section, desktop, mobile, and primary motion language");
+  if (!concreteList(checkpoint.baselineScreenshotPaths) || !concreteList(checkpoint.screenshotPaths?.desktop) || !concreteList(checkpoint.screenshotPaths?.mobile)) errors.push("visual checkpoint requires baseline, desktop, and mobile screenshots");
+  const critiqueKeys = ["distinctiveness", "hierarchy", "brandVisibility", "signatureLegibility", "equityRetention", "saasTemplateRisk", "brandSwapRisk", "mobileAuthorship", "motionPurpose", "counterfactualStrength"];
+  if (!checkpoint.critique || critiqueKeys.some((key) => !specificText(checkpoint.critique?.[key as keyof VisualCheckpoint["critique"]], 20))) errors.push("visual checkpoint critique must answer every perceptual question concretely");
+  if (!Array.isArray(checkpoint.refinements) || (checkpoint.meaningfulWeaknessFound === true && checkpoint.refinements.length === 0)) errors.push("a meaningful checkpoint weakness requires at least one refinement");
+  if (!checkpoint.approval || checkpoint.approval.status !== "approved" || !validDate(checkpoint.approval.approvedAt) || !concreteList(checkpoint.approval.transcriptReferences)) errors.push("visual checkpoint requires recorded user approval");
+  if (checkpoint.systemSpreadStartedAt && (!validDate(checkpoint.systemSpreadStartedAt) || Date.parse(checkpoint.systemSpreadStartedAt) <= Date.parse(checkpoint.approval?.approvedAt ?? ""))) errors.push("systemSpreadStartedAt must be later than checkpoint approval");
+  return errors;
+}
+
 export function validateVerificationReport(value: unknown): string[] {
   const report = value as Partial<VerificationReport> | null;
   if (!report || typeof report !== "object") return ["verification report must be an object"];
   const errors: string[] = [];
-  if (report.version !== 1 && report.version !== 2) errors.push("verification report version must be 1 (legacy) or 2");
+  if (report.version !== 1 && report.version !== 2 && report.version !== 3) errors.push("verification report version must be 1/2 (legacy) or 3");
   if (!Array.isArray(report.evidence)) errors.push("verification evidence must be an array");
   if (report.refinement) {
     if (!nonEmpty(report.refinement.inspectedAt) || Number.isNaN(Date.parse(report.refinement.inspectedAt)))
@@ -493,8 +751,8 @@ export function validateVerificationReport(value: unknown): string[] {
   for (const [index, item] of (report.evidence ?? []).entries()) {
     if (!nonEmpty(item.id) || !nonEmpty(item.criterion) || !nonEmpty(item.evidence)) errors.push(`verification.evidence[${index}] is incomplete`);
     if (item.timelineState && !timelineStates.has(item.timelineState)) errors.push(`verification.evidence[${index}].timelineState is invalid`);
-    if (report.version === 2) {
-      if (!item.kind || !["visual", "interaction", "responsive", "preservation", "structural-depth"].includes(item.kind)) errors.push(`verification.evidence[${index}].kind is required`);
+    if (report.version === 2 || report.version === 3) {
+      if (!item.kind || !["visual", "interaction", "responsive", "preservation", "structural-depth", "design-equity", "concept-fidelity", "perceptual-comparison", "visual-regression"].includes(item.kind)) errors.push(`verification.evidence[${index}].kind is required`);
       if (!nonEmpty(item.criterionId) || !nonEmpty(item.pageId) || !item.viewportClass) errors.push(`verification.evidence[${index}] must associate criterionId, pageId, and viewportClass`);
       if (item.viewportClass !== "non-visual" && !item.proof?.viewport) errors.push(`verification.evidence[${index}] visual/responsive evidence requires an exact viewport`);
       if (item.viewportClass === "desktop" && item.proof?.viewport && item.proof.viewport.width < 1200) errors.push(`verification.evidence[${index}] desktop evidence must be at least 1200px wide`);
@@ -522,6 +780,13 @@ export function validateVerificationReport(value: unknown): string[] {
       errors.push(`verification.evidence[${index}] cannot pass with exitCode ${proof.exitCode}`);
     if (item.status === "pass" && typeof proof.consoleErrorCount === "number" && proof.consoleErrorCount !== 0)
       errors.push(`verification.evidence[${index}] cannot pass with console errors`);
+  }
+  if (report.version === 3 && report.perceptualComparison) {
+    const comparison = report.perceptualComparison;
+    if (!concreteList(comparison.baselineEvidenceIds) || !concreteList(comparison.finalEvidenceIds) || !concreteList(comparison.signatureEvidenceIds) || !Array.isArray(comparison.equityDecisionEvidence)) errors.push("perceptual comparison requires baseline, final, signature, and equity evidence associations");
+    if (!comparison.observations || Object.values(comparison.observations).some((value) => !specificText(value, 20))) errors.push("perceptual comparison observations must be concrete, not ‘looks better’");
+    if (!Array.isArray(comparison.weaknesses) || !Array.isArray(comparison.refinementEvidenceIds)) errors.push("perceptual comparison must record weaknesses and refinement evidence");
+    if (comparison.weaknesses.length > 0 && comparison.refinementEvidenceIds.length === 0 && !specificText(comparison.explicitApprovalReference, 3)) errors.push("perceptual weaknesses require refinement evidence or explicit approval");
   }
   return errors;
 }
