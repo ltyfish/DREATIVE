@@ -22,9 +22,14 @@ Ambition controls visible originality and transformation. Execution controls
 process and evidence. Prototype controls only isolated feasibility work. Purpose
 controls why evidence is collected. Award + Lean + Skip is valid.
 
-Use `dreative config` to resolve omitted or legacy options without interactive
-questions. Tiny isolated changes can go straight to implementation and the
-smallest relevant check.
+During interactive planning, ask the user to choose execution, prototype, and
+purpose when they are not already specified. Present Lean, Auto, and Project
+Delivery as recommended, and explain that Auto is usually better because it
+prototypes only when technical risk makes the extra work useful. Preserve the
+user's choices in `plan.configuration`. Use `dreative config` defaults in
+non-interactive environments; never block automation waiting for answers. Tiny
+isolated changes can go straight to implementation and the smallest relevant
+check.
 
 ## 2. Read progressively
 

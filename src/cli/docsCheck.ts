@@ -165,6 +165,10 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
     for (const control of ["ambition", "execution", "prototype", "purpose"]) if (!content.includes(control)) add(findings, "workflow-controls", file, `missing independent ${control} control`);
     if (/full (?:Q&A|conversation) transcript|verbatim conversation/i.test(content) && !/do not store|without storing/i.test(content)) add(findings, "artifacts", file, "requires a verbatim transcript");
   }
+  const planning = contents.get("PLAN.md") ?? "";
+  for (const choice of ["Lean (Recommended)", "Auto (Recommended)", "Project Delivery (Recommended)", "Fast", "Full Audit", "Skip", "Required", "Production Certification", "Dreative Dogfood"])
+    if (!planning.includes(choice)) add(findings, "workflow-choices", "PLAN.md", `missing user-facing configuration choice: ${choice}`);
+  if (!/non-interactive/i.test(planning) || !/plan\.configuration/.test(planning)) add(findings, "workflow-choices", "PLAN.md", "configuration choices must preserve non-interactive defaults and persist to plan.configuration");
 
   return { ok: findings.length === 0, findings };
 }

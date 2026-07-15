@@ -10,6 +10,34 @@ prototype, and purpose. Omitted values resolve to
 Lean + Auto + Project Delivery while preserving inferred ambition. Legacy audit,
 prototype, and Dogfood flags map explicitly and emit concise deprecations.
 
+In an interactive planning session, if the user has not already specified these
+controls, present execution, prototype, and purpose together as concise choices
+before concept planning. Use the environment's structured question tool when
+available:
+
+```text
+Execution mode:
+- Lean (Recommended) — keeps the quality-driving work with proportionate evidence.
+- Fast — uses the smallest safe process for early or lower-risk work.
+- Full Audit — adds relevant certification, regression, and traceability evidence.
+
+Prototype policy:
+- Auto (Recommended) — usually the better balance; prototype only when a risky
+  mechanism would benefit, otherwise build directly in production.
+- Skip — never create a separate prototype.
+- Required — always prototype the uncertain mechanism before integration.
+
+Purpose:
+- Project Delivery (Recommended) — build and verify the requested website.
+- Production Certification — collect release-oriented certification evidence.
+- Dreative Dogfood — evaluate Dreative's own behavior with extra diagnostics.
+```
+
+Record the selected values in `plan.configuration`. Do not silently replace a
+user selection with the recommendation. If the environment is non-interactive,
+or the user explicitly asks the agent to decide, use the defaults without
+blocking. Do not ask again when the prompt already provides the values.
+
 Fast is compact delivery. Lean is the normal quality workflow. Full Audit adds
 relevant certification and traceability. Dreative Dogfood studies Dreative's own
 behavior and is separate from certification.
