@@ -1,5 +1,7 @@
 # Dreative Specialist Skill — Mobile Excellence
 
+Selected mobile coverage requires authored phone composition and touch interaction with exact viewport evidence, not desktop stacking or disabled motion.
+
 ## Contract
 
 Universal foundation: ux and baseline mobile apply to every web page.

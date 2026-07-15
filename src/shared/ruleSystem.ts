@@ -52,7 +52,7 @@ export function validateRuleControls(
   reflexFonts: ReflexFontRegistry,
   verification?: VerificationReport,
 ): string[] {
-  if (plan.doctrineVersion !== 2 && plan.doctrineVersion !== 3 && plan.doctrineVersion !== 4 && plan.doctrineVersion !== 5) return [];
+  if (![2, 3, 4, 5, 6].includes(Number(plan.doctrineVersion))) return [];
   const errors: string[] = [];
   const rules = new Map(registry.rules.map((rule) => [rule.id, rule]));
   const evidence = new Map((verification?.evidence ?? []).map((item) => [item.id, item]));

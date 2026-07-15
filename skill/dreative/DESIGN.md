@@ -1,5 +1,13 @@
 # Dreative Design Doctrine
 
+Runtime truth outranks descriptive sophistication. A section is not Award
+because its JSON uses cinematic language: mounted selectors, dependencies,
+assets, temporal states, input response, mobile translation, and current-build
+evidence must agree. Award requires a developing first viewport, at least two
+structural or transformational moments, genuine input response, a persistent
+system spanning two compositions, and a final resolution. Entrances, tiny
+parallax, infinite rings, hover lift, and unused canvases do not fill those roles.
+
 You MUST read this file before servicing any `propose-skeletons`, `propose-variants`,
 `design-page`, or `edit-element` request, and run §12 before every respond. It exists
 because LLM-designed UIs converge on one templated look. Every rule corrects a known

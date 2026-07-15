@@ -31,6 +31,8 @@ export interface CriticInput {
   baselineAvailable: boolean;
   motionRequired?: boolean;
   motionMomentIds?: string[];
+  verificationRunId?: string;
+  buildIdentityHash?: string;
   evidence: CriticEvidenceInput[];
   contextPolicy: {
     firstPass: "objective-only";
@@ -89,6 +91,16 @@ export interface VisualCriticReport {
   conceptFidelityFindings: string[];
   mobileFindings: string[];
   motionFindings: string[];
+  temporalAssessment?: {
+    firstViewportResponsive: boolean;
+    developsBeyondEntrances: boolean;
+    crossSectionHandoffs: boolean;
+    signatureDevelops: boolean;
+    interactionPhysical: boolean;
+    primarilyStaticStack: boolean;
+    symbolicDowngrades: string[];
+    evidenceIds: string[];
+  };
   requiredRevisionSet: string[];
   nonBlockingExperiments: string[];
   revision?: {
@@ -163,6 +175,7 @@ export function validateCriticInput(value: unknown): string[] {
       if (!recorded && !sampled) errors.push(`${item.id}: critic temporal evidence lacks timestamps or controlled-progress observations`);
     }
     if (!input.evidence?.some((item) => item.kind === "reduced-motion-capture")) errors.push("motion-required critic input needs reduced-motion evidence");
+    if ((input.verificationRunId || input.buildIdentityHash) && (!nonEmpty(input.verificationRunId) || !nonEmpty(input.buildIdentityHash))) errors.push("critic run and build identity must appear together");
   }
   return errors;
 }
@@ -213,6 +226,11 @@ export function validateVisualCriticReport(value: unknown, input?: CriticInput):
     const hasMotionEvidence = input.evidence.some((item) => ["motion-recording", "interaction-recording", "state-capture", "browser-trace", "live-url"].includes(item.kind));
     if (input.motionRequired && !hasMotionEvidence && report.verdict !== "INSUFFICIENT EVIDENCE") errors.push("missing required motion evidence must produce INSUFFICIENT EVIDENCE");
     if (input.motionRequired && hasMotionEvidence && !report.reviewContext?.motionInspected) errors.push("motion-required work must be directly inspected by the critic");
+    if (input.motionRequired && input.verificationRunId) {
+      const temporal = report.temporalAssessment;
+      if (!temporal || !nonEmptyList(temporal.evidenceIds) || !Array.isArray(temporal.symbolicDowngrades)) errors.push("motion-required critic report needs an evidence-grounded temporal assessment");
+      else if ((temporal.primarilyStaticStack || !temporal.firstViewportResponsive || !temporal.developsBeyondEntrances || !temporal.signatureDevelops || temporal.symbolicDowngrades.length > 0) && (report.verdict === "PASS" || report.verdict === "PASS AFTER REVISION")) errors.push("critic cannot pass a static-feeling or symbolically downgraded ambitious runtime");
+    }
     if (report.reviewContext?.motionInspected && !hasMotionEvidence) errors.push("motionInspected requires live or recorded interactive evidence");
     if (input.baselineAvailable === false && (report.baselineRegressions?.length ?? 0) > 0) errors.push("new builds without a baseline cannot claim baseline regressions");
     for (const resolution of report.revision?.resolutions ?? []) if (resolution.evidenceIds.some((id) => !inputEvidence.has(id))) errors.push(`${resolution.findingId}: resolution references unknown recaptured evidence`);

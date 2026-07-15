@@ -7,17 +7,16 @@ human report. File count is not a quality score.
 
 - Fast: `.dreative/plan.json`, `.dreative/verify.json`.
 - Lean: add `.dreative/critic.json`.
-- Full Audit may add `preservation.json`, `ledger.json`, and
-  `certification.json` when they have a consumer.
-- Dreative Dogfood may add behavioral, doctrine, cost, or regression records.
+- Full Audit requires `preservation.json`, `ledger.json`, and `certification.json`.
+- Dreative Dogfood additionally requires `behaviour-analysis.json`.
 
 Do not maintain `plan.md`, `verify.md`, transcripts, skipped-question lists, or
 duplicate rationales. Generate any human summary from the canonical JSON.
 
 ## `plan.json`
 
-Plan v5 follows `schemas/plan.schema.json`. Legacy v2-v4 plans remain readable
-with migration warnings. Important fields include:
+Plan v6 follows `schemas/plan.schema.json`. Legacy v2-v5 plans remain readable
+with migration warnings; ambitious Full Audit work must migrate. Important fields include:
 
 - `configuration`: independent ambition, execution, prototype, and purpose;
 - `tier` and `depth`: legacy ambition delivery tier and independent redesign
@@ -28,6 +27,8 @@ with migration warnings. Important fields include:
   expression contracts, selected specialist skills, assets, interactions, and
   typed verification criteria;
 - `motionMoments` for planned signature motion;
+- `preflight`, `runtimeStack`, `skillCoverage`, `runtimeBindings`, the
+  implementation `foundation`, and compact `awardJourney` where applicable;
 - one optional `signatureMedia` production contract;
 - `critic` (normally `.dreative/critic.json`) for Lean/Full Audit;
 - optional trace artifacts required by Full Audit or Dogfood.
@@ -70,7 +71,7 @@ plans but new runs use the canonical artifact.
 
 ## `verify.json`
 
-Verify v3 follows `schemas/verify.schema.json`. Each row associates a criterion,
+Verify v4 follows `schemas/verify.schema.json`. Each row associates a criterion,
 page/section, evidence kind, viewport class, timestamp, and concrete proof.
 Desktop and ~390px mobile are the Lean baseline. Narrow-mobile evidence is added
 only for identified risk, Full Audit coverage, or Dogfood analysis.
@@ -82,3 +83,9 @@ resize, mobile/reduced-motion, and performance only when risk warrants it.
 
 Passing implementation claims require shipped behavior. Planning prose,
 documentation, or unused assets are not proof.
+
+Verify v4 carries a deterministic dirty-worktree build identity: source,
+package, active lockfile, public/media and production-build hashes plus framework,
+commands, origin, URL, and times. Evidence and critic input name the same run and
+source hash. Reconciliation reports planned, observed, missing, substituted and
+extra owners. Old verify v3 evidence cannot certify current ambitious work.

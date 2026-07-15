@@ -4,10 +4,13 @@
   "title": "Dreative Verification Report",
   "type": "object",
   "additionalProperties": false,
-  "required": ["version", "generatedAt", "evidence"],
+  "required": ["version", "generatedAt", "runId", "buildIdentity", "evidence", "reconciliation"],
   "properties": {
-    "version": { "const": 3 },
+    "version": { "const": 4 },
     "generatedAt": { "type": "string", "format": "date-time" },
+    "runId": { "type": "string", "minLength": 1 },
+    "buildIdentity": { "type": "object", "required": ["algorithm", "runId", "dreativeVersion", "schemaVersion", "sourceTreeHash", "packageJsonHash", "lockfileHash", "publicAssetHash", "productionBuildHash", "framework", "packageManager", "buildCommand", "serverCommand", "testedOrigin", "testedUrl", "serverStartedAt", "verificationStartedAt", "verificationFinishedAt"] },
+    "reconciliation": { "type": "object", "required": ["planned", "observed", "missing", "substituted", "extra"] },
     "evidence": {
       "type": "array",
       "items": {
@@ -30,6 +33,8 @@
           },
           "motionMomentId": { "type": "string", "minLength": 1 },
           "mediaTransformationId": { "type": "string", "minLength": 1 },
+          "verificationRunId": { "type": "string", "minLength": 1 },
+          "buildIdentityHash": { "type": "string", "minLength": 64 },
           "proof": {
             "type": "object",
             "additionalProperties": false,
@@ -67,6 +72,8 @@
               ,"reversePlayResult": { "type": "string", "minLength": 12 }
               ,"mobileResult": { "type": "string", "minLength": 12 }
               ,"reducedMotionResult": { "type": "string", "minLength": 12 }
+              ,"artifactHash": { "type": "string", "minLength": 64 }
+              ,"captureSource": { "enum": ["browser", "playwright", "devtools", "runtime-instrumentation"] }
             },
             "anyOf": [
               { "required": ["artifactPath"] },

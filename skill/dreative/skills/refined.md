@@ -1,5 +1,7 @@
 # Dreative Specialist Skill — Refined Craft
 
+Selected refined coverage owns finish, typography, material and optical craft in named production files and current visual evidence.
+
 ## Contract
 
 Follow `../references/SKILL_CONTRACT.md`. Dependencies: `ux`, `mobile`; add

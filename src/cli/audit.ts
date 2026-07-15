@@ -23,6 +23,7 @@ import {
 } from "../shared/ruleSystem.js";
 import { motionIsSelected, validateMotionCheckpoint, validateMotionExecution } from "../shared/motionSystem.js";
 import { resolveWorkflowConfiguration, resolveWorkflowPolicy, shouldCreatePrototype, type InteractionRisk } from "../shared/workflow.js";
+import { checkBuildFreshness, checkExecutionContracts, checkLegacyAmbitiousRuntime, checkPolicyRecords, checkTemporalEvidence } from "./executionAudit.js";
 
 export interface AuditFinding {
   level: "error" | "warning";
@@ -111,7 +112,7 @@ function checkAssets(projectDir: string, plan: DirectDesignPlan): AuditFinding[]
 }
 
 function checkAntiSlopPlan(plan: DirectDesignPlan): AuditFinding[] {
-  if (plan.version !== 3 && plan.version !== 4 && plan.version !== 5) return [];
+  if (![3, 4, 5, 6].includes(plan.version)) return [];
   const findings: AuditFinding[] = [];
   const signatures = new Map<string, string[]>();
   for (const page of plan.pages) {
@@ -248,7 +249,7 @@ function referencedAssetExists(projectDir: string, plan: DirectDesignPlan, refer
 }
 
 export function checkMotionExecutionArtifacts(projectDir: string, plan: DirectDesignPlan, report?: VerificationReport): AuditFinding[] {
-  if (plan.version !== 5 || plan.doctrineVersion !== 5) return [];
+  if ((plan.version !== 5 && plan.version !== 6) || (plan.doctrineVersion !== 5 && plan.doctrineVersion !== 6)) return [];
   const findings = validateMotionExecution(plan, report).map((message) => finding("error", "motion-execution", message));
   const root = path.resolve(projectDir) + path.sep;
   for (const moment of plan.motionMoments ?? []) {
@@ -303,8 +304,8 @@ export function checkMotionExecutionArtifacts(projectDir: string, plan: DirectDe
 
 export function checkVerificationCoverage(plan: DirectDesignPlan, report: VerificationReport): AuditFinding[] {
   const findings: AuditFinding[] = [];
-  if (plan.version !== 3 && plan.version !== 4 && plan.version !== 5) return findings;
-  if ((plan.version === 3 && report.version !== 2) || ((plan.version === 4 || plan.version === 5) && report.version !== 3)) return [finding("error", "migration", `${plan.version === 5 ? "v5" : plan.version === 4 ? "v4" : "v3"} plans require verify.json version ${plan.version === 3 ? "2" : "3"}`)];
+  if (![3, 4, 5, 6].includes(plan.version)) return findings;
+  if ((plan.version === 3 && report.version !== 2) || ((plan.version === 4 || plan.version === 5) && report.version !== 3) || (plan.version === 6 && report.version !== 4)) return [finding("error", "migration", `plan v${plan.version} requires verify.json v${plan.version === 3 ? 2 : plan.version === 6 ? 4 : 3}`)];
   const passing = report.evidence.filter((item) => item.status === "pass");
   const configuration = resolveWorkflowConfiguration(plan.configuration, { tier: plan.tier }).configuration;
   for (const page of plan.pages) {
@@ -344,7 +345,7 @@ export function checkVerificationCoverage(plan: DirectDesignPlan, report: Verifi
 }
 
 export function checkRedesignQualityArtifacts(projectDir: string, plan: DirectDesignPlan, report: VerificationReport | undefined): AuditFinding[] {
-  if ((plan.version !== 4 && plan.version !== 5) || plan.scope !== "substantial") return [];
+  if (![4, 5, 6].includes(plan.version) || plan.scope !== "substantial") return [];
   const findings: AuditFinding[] = [];
   if (!plan.approval || plan.approval.status !== "approved" || !plan.approval.approvedAt || !plan.implementationStartedAt || Date.parse(plan.implementationStartedAt) <= Date.parse(plan.approval.approvedAt))
     findings.push(finding("error", "approval", "substantial implementation began without final recorded approval, or implementationStartedAt is not later than approval"));
@@ -403,7 +404,7 @@ function criticArtifactPath(projectDir: string, value: string | undefined, fallb
 }
 
 export function checkCriticArtifacts(projectDir: string, plan: DirectDesignPlan, verification?: VerificationReport): AuditFinding[] {
-  if (plan.version !== 5 || plan.scope !== "substantial") return [];
+  if ((plan.version !== 5 && plan.version !== 6) || plan.scope !== "substantial") return [];
   const findings: AuditFinding[] = [];
   const configuration = resolveWorkflowConfiguration(plan.configuration, { tier: plan.tier }).configuration;
   if (configuration.execution === "fast") return [];
@@ -413,6 +414,11 @@ export function checkCriticArtifacts(projectDir: string, plan: DirectDesignPlan,
     if (findings.some((item) => item.level === "error")) return findings;
     const artifact = readJson(criticFile) as CriticArtifact;
     if (!artifact.report) return [...findings, finding("error", "critic", "critic.json is missing its independent report")];
+    if (plan.version === 6 && verification?.buildIdentity) {
+      const input = artifact.input as CriticInput & { verificationRunId?: string; buildIdentityHash?: string };
+      if (input.verificationRunId !== verification.runId || input.buildIdentityHash !== verification.buildIdentity.sourceTreeHash) findings.push(finding("error", "critic", "critic input belongs to another verification run or build"));
+      if (!artifact.report.reviewContext.motionInspected && (plan.configuration?.ambition === "award" || plan.tier === "award")) findings.push(finding("error", "critic", "Award critic must inspect temporal evidence"));
+    }
     if (artifact.report.verdict !== "PASS" && artifact.report.verdict !== "PASS AFTER REVISION") findings.push(finding("error", "critic", `completion is blocked by critic verdict ${artifact.report.verdict}`));
     if (configuration.purpose === "dreative-dogfood" && !artifact.report.dogfood) findings.push(finding("error", "critic", "Dreative Dogfood requires critic behavioural observations"));
     if (verification && Date.parse(artifact.report.revision?.followUpReviewedAt ?? artifact.report.reviewedAt) >= Date.parse(verification.generatedAt)) findings.push(finding("error", "critic", "critic review must complete before final verification"));
@@ -459,10 +465,10 @@ export function runDirectDesignAudit(projectDir: string): AuditReport {
   const root = path.join(projectDir, ".dreative");
   const planFile = path.join(root, "plan.json");
   const findings = checkArtifact(planFile, "plan", validatePlan);
-  if (!fs.existsSync(planFile) || findings.some((item) => item.level === "error"))
-    return { ok: false, findings };
-
-  const plan = readJson(planFile) as DirectDesignPlan;
+  if (!fs.existsSync(planFile)) return { ok: false, findings };
+  let plan: DirectDesignPlan;
+  try { plan = readJson(planFile) as DirectDesignPlan; }
+  catch { return { ok: false, findings }; }
   const configuration = resolveWorkflowConfiguration(plan.configuration, { tier: plan.tier }).configuration;
   const policy = resolveWorkflowPolicy(configuration);
   const preservationFile = plan.preservationManifest ? path.resolve(projectDir, plan.preservationManifest) : undefined;
@@ -475,8 +481,9 @@ export function runDirectDesignAudit(projectDir: string): AuditReport {
   findings.push(...checkArtifact(verificationFile, "verification", validateVerificationReport));
   findings.push(...checkVerificationProof(projectDir, verificationFile));
   const verification = fs.existsSync(verificationFile) ? (readJson(verificationFile) as VerificationReport) : undefined;
-  if (plan.version !== 5 || plan.doctrineVersion !== 5) {
-    findings.push(finding("warning", "migration", "legacy v2-v4 plan accepted for compatibility only; migrate to plan v5 and verify v3 for independent critic, approval, design-equity, checkpoint, and perceptual-comparison guarantees"));
+  if (plan.version !== 6 || plan.doctrineVersion !== 6) {
+    findings.push(finding("warning", "migration", "legacy v2-v5 plan accepted for compatibility only; migrate v5 plans and v3 verification to plan v6 / verify v4 for runtime contracts and cryptographic freshness"));
+    if ((configuration.ambition === "award" || configuration.ambition === "experimental") && configuration.execution === "full-audit") findings.push(finding("error", "migration", "legacy plans cannot certify ambitious Full Audit completion; migrate to v6"));
   } else {
     try {
       const { registry, reflexFonts } = loadRuleFiles();
@@ -494,6 +501,11 @@ export function runDirectDesignAudit(projectDir: string): AuditReport {
   findings.push(...checkMotionExecutionArtifacts(projectDir, plan, verification));
   findings.push(...checkRedesignQualityArtifacts(projectDir, plan, verification));
   findings.push(...checkCriticArtifacts(projectDir, plan, verification));
+  findings.push(...checkExecutionContracts(projectDir, plan, verification));
+  findings.push(...checkLegacyAmbitiousRuntime(projectDir, plan, verification));
+  findings.push(...checkBuildFreshness(projectDir, verification));
+  findings.push(...checkTemporalEvidence(projectDir, plan, verification));
+  findings.push(...checkPolicyRecords(projectDir, plan, verification));
 
   if (plan.version === 2) {
     const verifyText = verification ? JSON.stringify(verification) : "";

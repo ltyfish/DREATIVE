@@ -74,6 +74,10 @@ cannot satisfy the effect.
 Record:
 
 - `configuration` and independent transformation depth;
+- `preflight`, then a mechanism-led `runtimeStack` with package/version/install,
+  integration files, provider/ticker/scroll owner, fallback, and status;
+- `skillCoverage` for every selected specialist and `runtimeBindings` for every
+  shipped section, motion, interaction, and Signature Media owner;
 - baseline strengths, weaknesses, and functional constraints;
 - selected concept and implementation-ready page/section blueprints;
 - preservation, motion, media, and mobile strategies;

@@ -136,7 +136,7 @@ function temporalProof(item: VerificationEvidence, requireVisualCapture = false)
 }
 
 export function validateMotionExecution(plan: DirectDesignPlan, verification?: VerificationReport): string[] {
-  if (plan.version !== 5 || plan.doctrineVersion !== 5) return [];
+  if ((plan.version !== 5 && plan.version !== 6) || (plan.doctrineVersion !== 5 && plan.doctrineVersion !== 6)) return [];
   const errors: string[] = [];
   const selected = motionIsSelected(plan);
   const ambitious = plan.tier === "expressive" || plan.tier === "award";

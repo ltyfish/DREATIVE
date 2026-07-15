@@ -1,5 +1,7 @@
 # Dreative Specialist Skill — Media as Motion Material
 
+Selected media owns a real source/derivative pipeline, production loading and stateful visible evidence. A flat image plus scale, clip, parallax, gradient or noise is not Signature Media.
+
 ## Contract
 
 Follow `../references/SKILL_CONTRACT.md`. Dependencies: `ux`, `mobile`; add

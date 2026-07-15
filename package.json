@@ -1,6 +1,6 @@
 {
   "name": "dreative",
-  "version": "0.5.4",
+  "version": "0.6.0",
   "description": "Frontend design skill for coding CLIs with typed planning, specialist treatments, verification, and an optional visual editor.",
   "type": "module",
   "bin": {

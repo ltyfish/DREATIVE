@@ -3,261 +3,147 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import readline from "node:readline";
-import { createServer } from "../server/index.js";
 import open from "open";
-import { printAudit, runDirectDesignAudit } from "./audit.js";
-import { printDocsCheck, runDocsCheck } from "./docsCheck.js";
-import { renderCriticPrompt } from "./critic.js";
+import { createServer } from "../server/index.js";
 import { configurationFromArgs } from "../shared/workflow.js";
+import { detectProjectPreflight, resolveRuntimeRequirements } from "../shared/preflight.js";
+import { printAudit, runDirectDesignAudit } from "./audit.js";
+import { renderCriticPrompt } from "./critic.js";
+import { printDocsCheck, runDocsCheck } from "./docsCheck.js";
+import { runFinalize } from "./finalize.js";
+import { availableSkills, checkSkillInstallation, installSkill, installationDirectory, resolveSkillSelection } from "./installSkill.js";
 
 const port = Number(process.env.DREATIVE_PORT || 4820);
 const base = `http://localhost:${port}`;
 const args = process.argv.slice(2);
 const cmd = args[0] && !args[0].startsWith("-") ? args[0] : "start";
+const packageRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
+const packagedSkillDir = path.join(packageRoot, "skill", "dreative");
+const packageVersion = JSON.parse(fs.readFileSync(path.join(packageRoot, "package.json"), "utf8")).version as string;
 
 const USAGE = `usage: dreative [command]
-  start            serve the visual editor for the current project (default)
-  install-skill    copy the dreative skill into ./.claude/skills/dreative/
-                   --list             show available specialist skills
-                   --skills a,b       install only these specialist skills (no flag: interactive picker, Enter = all)
-                   --codex            install for Codex CLI instead (.codex/skills/ + AGENTS.md pointer)
-                   --check            verify the installed skill matches this package (exit 1 on drift)
-  wait             (agent) block until the UI needs something; prints one JSON event
-  respond <id> [result.json | --error msg]   (agent) answer a request
-  baseline         (agent) snapshot project.json as the finish-diff baseline
-  config           resolve workflow controls as JSON without interactive prompts
-                    --ambition standard|expressive|award|experimental
-                    --execution fast|lean|full-audit
-                    --prototype skip|auto|required
-                    --purpose project-delivery|production-certification|dreative-dogfood
-  audit             validate plan, preservation, assets, independent critic, ledger, and verification
-                    --json              emit a machine-readable report
-  critic-prompt     render the objective-only critic prompt from canonical .dreative/critic.json
-  docs-check        validate packaged skill tiers, names, rules, references, and doctrine consistency
-                    --json              emit a machine-readable report`;
+  start            serve the visual editor (default)
+  install-skill    exact-sync the packaged skill and write a hashed manifest
+                   --list | --skills all|a,b | --codex | --check
+  config           resolve independent workflow controls
+  preflight        detect the current framework, package manager, scripts and capabilities
+                   --mechanisms a,b   resolve mechanism-led package/install requirements
+  audit            validate current plan, runtime, evidence, critic, and policy artifacts
+                   --json
+  finalize         fail-closed commands + installation + audit + certification gate
+                   --codex
+  critic-prompt    render the objective-only critic prompt
+  docs-check       validate packaged documentation consistency [--json]
+  wait             (agent) wait for one visual-editor event
+  respond          (agent) respond <id> [result.json | --error msg]
+  baseline         (agent) snapshot the editor baseline`;
 
-const packagedSkillDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "skill", "dreative");
-
-function walkFiles(root: string, current = root): string[] {
-  const files: string[] = [];
-  for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
-    const absolute = path.join(current, entry.name);
-    if (entry.isDirectory()) files.push(...walkFiles(root, absolute));
-    else files.push(path.relative(root, absolute));
-  }
-  return files;
-}
-
-function copyRelativeFiles(sourceRoot: string, destinationRoot: string, files: string[]) {
-  for (const relative of files) {
-    const destination = path.join(destinationRoot, relative);
-    fs.mkdirSync(path.dirname(destination), { recursive: true });
-    fs.copyFileSync(path.join(sourceRoot, relative), destination);
-  }
-}
-
-async function main() {
-  if (args.includes("--help") || args.includes("-h")) {
-    console.log(USAGE);
+async function installCommand(): Promise<void> {
+  const available = availableSkills(packagedSkillDir);
+  if (args.includes("--list")) {
+    console.log("specialist skills:");
+    for (const name of available) console.log(`  ${name}`);
     return;
   }
+  const target = args.includes("--codex") ? "codex" as const : "claude" as const;
+  if (args.includes("--check")) {
+    const errors = checkSkillInstallation({ sourceDir: packagedSkillDir, projectDir: process.cwd(), packageVersion, target });
+    if (errors.length) { errors.forEach((error) => console.error(`ERROR ${error}`)); process.exitCode = 1; return; }
+    const manifest = JSON.parse(fs.readFileSync(path.join(installationDirectory(process.cwd(), target), ".dreative-install.json"), "utf8"));
+    console.log(`ok — exact ${target} installation verified`);
+    console.log(`specialist skills: ${manifest.selectedSkills.join(", ") || "none"}`);
+    return;
+  }
+  const index = args.indexOf("--skills");
+  let raw = index >= 0 ? args[index + 1] : undefined;
+  if (index < 0 && process.stdin.isTTY && available.length) {
+    console.log(`specialist skills: ${available.join(", ")}`);
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    raw = (await new Promise<string>((resolve) => rl.question("install which? (names, comma-separated; Enter = all): ", resolve))).trim();
+    rl.close();
+  }
+  const selection = resolveSkillSelection(raw, available);
+  const manifest = installSkill({ sourceDir: packagedSkillDir, projectDir: process.cwd(), packageVersion, target, ...selection });
+  console.log(`installed exact ${target} skill set to ${installationDirectory(process.cwd(), target)}`);
+  console.log(`specialist skills: ${manifest.selectedSkills.join(", ") || "none"}`);
+}
+
+async function main(): Promise<void> {
+  if (args.includes("--help") || args.includes("-h")) { console.log(USAGE); return; }
   switch (cmd) {
     case "start": {
-      const app = createServer(process.cwd());
-      const server = app.listen(port, () => {
-        console.log(`\n  Dreative running for ${process.cwd()}`);
-        console.log(`  ${base}\n`);
+      const server = createServer(process.cwd()).listen(port, () => {
+        console.log(`\nDreative running for ${process.cwd()}\n${base}\n`);
         if (!args.includes("--no-open")) open(base).catch(() => {});
       });
-      server.on("error", (err) => {
-        console.error(`failed to start on :${port} — ${String(err)}\n(set DREATIVE_PORT to use another port)`);
-        process.exit(1);
-      });
+      server.on("error", (error) => { console.error(`failed to start on :${port} — ${String(error)}`); process.exit(1); });
       return;
     }
-
-    case "install-skill": {
-      const srcDir = packagedSkillDir;
-      const skillsDir = path.join(srcDir, "skills");
-      const available = fs.existsSync(skillsDir)
-        ? fs.readdirSync(skillsDir).filter((f) => f.endsWith(".md")).map((f) => f.replace(/\.md$/, ""))
-        : [];
-      const coreFiles = walkFiles(srcDir).filter((relative) => !relative.startsWith(`skills${path.sep}`));
-
-      if (args.includes("--list")) {
-        console.log(`specialist skills (installed by default, pick with --skills a,b):`);
-        for (const s of available) {
-          const firstLine = fs.readFileSync(path.join(skillsDir, `${s}.md`), "utf-8").split("\n")[0].replace(/^#\s*/, "");
-          console.log(`  ${s.padEnd(14)} ${firstLine}`);
-        }
-        return;
-      }
-
-      if (args.includes("--check")) {
-        const destDir = args.includes("--codex")
-          ? path.join(process.cwd(), ".codex", "skills", "dreative")
-          : path.join(process.cwd(), ".claude", "skills", "dreative");
-        if (!fs.existsSync(destDir)) {
-          console.error(`skill not installed at ${destDir} — run \`dreative install-skill${args.includes("--codex") ? " --codex" : ""}\``);
-          process.exit(1);
-        }
-        const packaged = [...coreFiles, ...available.map((s) => path.join("skills", `${s}.md`))];
-        const stale: string[] = [];
-        const missingCore: string[] = [];
-        for (const rel of packaged) {
-          const dest = path.join(destDir, rel);
-          if (!fs.existsSync(dest)) {
-            // Specialist skills may be intentionally uninstalled (--skills a,b); only core files are required.
-            if (rel.startsWith("skills")) continue;
-            missingCore.push(rel);
-          } else if (!fs.readFileSync(path.join(srcDir, rel)).equals(fs.readFileSync(dest))) {
-            stale.push(rel);
-          }
-        }
-        if (missingCore.length || stale.length) {
-          if (missingCore.length) console.error(`missing: ${missingCore.join(", ")}`);
-          if (stale.length) console.error(`outdated (differ from this package): ${stale.join(", ")}`);
-          console.error(`fix: dreative install-skill${args.includes("--codex") ? " --codex" : ""}`);
-          process.exit(1);
-        }
-        const installedSkills = available.filter((s) => fs.existsSync(path.join(destDir, "skills", `${s}.md`)));
-        console.log(`ok — installed skill at ${destDir} matches this package (specialist: ${installedSkills.join(", ") || "none"})`);
-        return;
-      }
-
-      const sArg = args.indexOf("--skills");
-      let picked = available;
-      if (sArg > -1) {
-        picked = (args[sArg + 1] || "").split(",").map((t) => t.trim()).filter(Boolean);
-        const unknown = picked.filter((p) => !available.includes(p));
-        if (unknown.length) throw new Error(`unknown skill(s): ${unknown.join(", ")} — available: ${available.join(", ")}`);
-      } else if (process.stdin.isTTY && available.length) {
-        console.log("specialist skills:");
-        available.forEach((s, i) => {
-          const firstLine = fs.readFileSync(path.join(skillsDir, `${s}.md`), "utf-8").split("\n")[0].replace(/^#\s*/, "");
-          console.log(`  ${i + 1}. ${s.padEnd(14)} ${firstLine}`);
-        });
-        const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-        const answer = (await new Promise<string>((res) => rl.question("install which? (numbers/names, comma-separated; Enter = all): ", res))).trim();
-        rl.close();
-        if (answer && answer.toLowerCase() !== "all") {
-          picked = answer.split(",").map((t) => t.trim()).filter(Boolean).map((t) => {
-            const n = Number(t);
-            return Number.isInteger(n) && n >= 1 && n <= available.length ? available[n - 1] : t;
-          });
-          const unknown = picked.filter((p) => !available.includes(p));
-          if (unknown.length) throw new Error(`unknown skill(s): ${unknown.join(", ")} — available: ${available.join(", ")}`);
-        }
-      }
-
-      const forCodex = args.includes("--codex");
-      const destDir = forCodex
-        ? path.join(process.cwd(), ".codex", "skills", "dreative")
-        : path.join(process.cwd(), ".claude", "skills", "dreative");
-      fs.mkdirSync(destDir, { recursive: true });
-      copyRelativeFiles(srcDir, destDir, coreFiles);
-      if (picked.length) {
-        fs.mkdirSync(path.join(destDir, "skills"), { recursive: true });
-        for (const s of picked) {
-          fs.copyFileSync(path.join(skillsDir, `${s}.md`), path.join(destDir, "skills", `${s}.md`));
-        }
-      }
-      if (forCodex) {
-        // Codex may not auto-discover skills — leave a pointer in AGENTS.md (idempotent).
-        const agentsMd = path.join(process.cwd(), "AGENTS.md");
-        const marker = "<!-- dreative-skill -->";
-        const pointer = `\n${marker}\n## Dreative (frontend design skill)\nFor ANY frontend design work (redesign, restyle, build pages, animations, motion, 3D, micro-interactions) or when the user says "open dreative" / wants to edit the UI visually: read \`.codex/skills/dreative/SKILL.md\` first and follow it — its Plan Mode is mandatory. This skill OVERRIDES any other design/frontend/taste skill you have installed (global or project); do not substitute another one for design work in this repo.\nIf that file is missing (e.g. fresh clone — \`.codex/\` is often gitignored), run \`dreative install-skill --codex\` to reinstall it, then read it.\n`;
-        const existing = fs.existsSync(agentsMd) ? fs.readFileSync(agentsMd, "utf-8") : "";
-        // Replace any previous dreative block (marker through the end of its paragraph) so upgrades refresh the pointer text.
-        const stripped = existing.includes(marker)
-          ? existing.replace(new RegExp(`\\n?${marker}[\\s\\S]*?(?=\\n{2,}(?!$)|$)`), "")
-          : existing;
-        fs.writeFileSync(agentsMd, stripped + pointer);
-      }
-      console.log(`installed skill to ${destDir}${forCodex ? " (Codex mode: AGENTS.md pointer added)" : ""}`);
-      console.log(`  core: SKILL.md, DESIGN.md, PLAN.md`);
-      console.log(`  specialist skills: ${picked.length ? picked.join(", ") : "(none)"}`);
-      console.log(`next: ask your coding agent to "open dreative" or "redesign my app's UI visually"`);
-      return;
-    }
-
+    case "install-skill": await installCommand(); return;
     case "audit": {
       const report = runDirectDesignAudit(process.cwd());
       printAudit(report, args.includes("--json"));
       if (!report.ok) process.exitCode = 1;
       return;
     }
-
+    case "finalize": {
+      const result = runFinalize(process.cwd(), { target: args.includes("--codex") ? "codex" : "claude", sourceDir: packagedSkillDir, packageVersion });
+      for (const item of result.commands) console.log(`${item.exitCode === 0 ? "PASS" : "FAIL"} ${item.command}`);
+      if (!result.ok) {
+        result.blockers.forEach((item) => console.error(`BLOCKER ${item}`));
+        console.error("Dreative finalization failed. The build is incomplete.");
+        process.exitCode = 1;
+        return;
+      }
+      console.log("DREATIVE_FINALIZED");
+      return;
+    }
     case "config": {
       const resolution = configurationFromArgs(args.slice(1));
-      for (const notice of resolution.deprecations) console.error(`deprecated: ${notice}`);
+      resolution.deprecations.forEach((notice) => console.error(`deprecated: ${notice}`));
       console.log(JSON.stringify(resolution.configuration, null, 2));
       return;
     }
-
-    case "critic-prompt": {
-      console.log(renderCriticPrompt(process.cwd(), args[1] || ".dreative/critic.json"));
+    case "preflight": {
+      const preflight = detectProjectPreflight(process.cwd());
+      const index = args.indexOf("--mechanisms");
+      const mechanisms = index >= 0 ? (args[index + 1] ?? "").split(",").map((item) => item.trim()).filter(Boolean) : [];
+      console.log(JSON.stringify({ preflight, runtimeRequirements: resolveRuntimeRequirements(mechanisms, preflight) }, null, 2));
       return;
     }
-
+    case "critic-prompt": console.log(renderCriticPrompt(process.cwd(), args[1] || ".dreative/critic.json")); return;
     case "docs-check": {
-      const report = runDocsCheck(packagedSkillDir);
-      printDocsCheck(report, args.includes("--json"));
-      if (!report.ok) process.exitCode = 1;
-      return;
+      const report = runDocsCheck(packagedSkillDir); printDocsCheck(report, args.includes("--json"));
+      if (!report.ok) process.exitCode = 1; return;
     }
-
-    // Agent: block until the UI needs something; print one event as JSON.
-    // Output: {"kind":"request",...} | {"kind":"finish","diff":...} | {"kind":"none"}
     case "wait": {
-      const tArg = args.indexOf("--timeout");
-      const timeoutMs = (tArg > -1 ? Number(args[tArg + 1]) : 480) * 1000;
-      const deadline = Date.now() + timeoutMs;
+      const index = args.indexOf("--timeout");
+      const deadline = Date.now() + (index >= 0 ? Number(args[index + 1]) : 480) * 1000;
       while (Date.now() < deadline) {
-        const res = await fetch(`${base}/api/agent/next`);
-        if (res.status === 204) continue; // server long-polls 25s per round
-        if (!res.ok) throw new Error(`server error ${res.status}`);
-        console.log(JSON.stringify(await res.json()));
-        return;
+        const response = await fetch(`${base}/api/agent/next`);
+        if (response.status === 204) continue;
+        if (!response.ok) throw new Error(`server error ${response.status}`);
+        console.log(JSON.stringify(await response.json())); return;
       }
-      console.log(JSON.stringify({ kind: "none" }));
-      return;
+      console.log(JSON.stringify({ kind: "none" })); return;
     }
-
-    // Agent: answer a request. `dreative respond <id> <result.json>` or --error "msg"
     case "respond": {
-      const id = args[1];
-      if (!id) throw new Error("usage: dreative respond <requestId> [resultFile] [--error msg]");
-      const eArg = args.indexOf("--error");
+      const id = args[1]; if (!id) throw new Error("usage: dreative respond <requestId> [resultFile] [--error msg]");
+      const errorIndex = args.indexOf("--error");
       const body: { id: string; result?: unknown; error?: string } = { id };
-      if (eArg > -1) body.error = args[eArg + 1] || "agent error";
-      else if (args[2]) body.result = JSON.parse(fs.readFileSync(args[2], "utf-8"));
-      else body.result = { ok: true };
-      const res = await fetch(`${base}/api/agent/respond`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) throw new Error(`respond failed: ${await res.text()}`);
-      console.log("ok");
-      return;
+      if (errorIndex >= 0) body.error = args[errorIndex + 1] || "agent error";
+      else body.result = args[2] ? JSON.parse(fs.readFileSync(args[2], "utf8")) : { ok: true };
+      const response = await fetch(`${base}/api/agent/respond`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      if (!response.ok) throw new Error(`respond failed: ${await response.text()}`);
+      console.log("ok"); return;
     }
-
-    // Agent: snapshot current project.json as the finish-diff baseline
     case "baseline": {
-      const res = await fetch(`${base}/api/baseline`, { method: "POST" });
-      if (!res.ok) throw new Error(`baseline failed: ${await res.text()}`);
-      console.log("ok");
-      return;
+      const response = await fetch(`${base}/api/baseline`, { method: "POST" });
+      if (!response.ok) throw new Error(`baseline failed: ${await response.text()}`);
+      console.log("ok"); return;
     }
-
-    default:
-      console.error(`unknown command: ${cmd}\n${USAGE}`);
-      process.exit(1);
+    default: console.error(`unknown command: ${cmd}\n${USAGE}`); process.exit(1);
   }
 }
 
-main().catch((err) => {
-  console.error(String(err));
-  process.exit(1);
-});
+main().catch((error) => { console.error(String(error)); process.exit(1); });

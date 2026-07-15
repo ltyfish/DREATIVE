@@ -1,5 +1,7 @@
 # Dreative Specialist Skill — Cinematic Pacing & Experiential Framing
 
+Selected cinematic treatment owns observable staging, pacing or scene transitions in the temporal arc, with current-build evidence beyond entrances.
+
 ## Contract
 
 Follow `../references/SKILL_CONTRACT.md`. Dependencies: `motion`, `interaction`,

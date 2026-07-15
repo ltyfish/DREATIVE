@@ -61,6 +61,12 @@ Do not load catalogs to inflate exploration.
 - Record a compact approved concept and implementation-ready page/section
   blueprint. Do not store verbatim conversations, skipped questions, repeated
   rationales, or parallel Markdown sources of truth.
+- Run project preflight before implementation and record framework/version,
+  package manager/lockfile, source layout, scripts, capabilities, reduced-motion,
+  browser verification, and scroll/ticker ownership.
+- Write plan v6 `runtimeStack`, `skillCoverage`, and `runtimeBindings`. Every
+  selected skill needs a substantive page/section/file/component/evidence owner.
+  Explicit `all` means all ten remain materially routed, not all on every page.
 
 ### Prototype routing
 
@@ -93,6 +99,13 @@ prototype.
   or unrelated fragments is basic image animation, not substantive media.
 - Run one finish pass for typography, optical alignment, surfaces, states,
   media crop/edges, motion pacing, touch targets, overflow, and accessibility.
+- Install each mechanism's compatible runtime package before its owner ships.
+  It must occur in the active lockfile, be imported by the named production
+  file, and be observably used. Award does not imply 3D.
+- Expressive/Award/Experimental work must pass the implementation foundation:
+  dependencies, lifecycle and cleanup, reduced motion, visible unenhanced
+  content, first composition, structural change, input response, mobile, and
+  representative real assets. Prototype Skip does not skip this gate.
 
 ### Critic and correction
 
@@ -118,6 +131,20 @@ refinement. Fast may skip the critic.
   recompose the concept rather than merely stack desktop blocks.
 - Store canonical evidence in `.dreative/verify.json` and run `dreative audit`.
   Documentation never substitutes for shipped behavior or visible output.
+- Verify v4 binds evidence and critic input to one run and deterministic current
+  source/package/lock/public/build identity. Browser captures require distinct
+  grounded start/mid/end observations and hashed artifacts.
+- Reconcile planned sections, motion, interaction, media, assets, and stable
+  `data-dreative-*` selectors against the current runtime.
+
+### Completion rule
+
+For substantial Expressive, Award, Experimental, Full Audit, or Dogfood work,
+run `dreative finalize` (`--codex` for Codex). Never claim completion unless it
+exits zero and prints `DREATIVE_FINALIZED`. On failure, report the build as
+incomplete and list blockers. Full Audit requires plan, critic, verification,
+preservation, ledger, and certification; Dogfood additionally requires behaviour
+analysis and a focused follow-up critic.
 
 ## 4. Artifact policy
 

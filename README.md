@@ -19,14 +19,27 @@ Install the skill, then ask your coding agent to design or redesign a page. The 
   artifacts, with audit/certification additions only when relevant;
 - `dreative audit`, which checks delivery status, preservation, assets,
   independent critic completion, evidence, and common frontend risks.
+- exact hashed skill installation, project preflight/runtime-stack resolution,
+  source/build freshness, and fail-closed `dreative finalize` certification.
 
 ```sh
-dreative install-skill --codex   # or omit --codex for Claude Code
+dreative install-skill --codex --skills all   # or omit --codex for Claude Code
+dreative install-skill --codex --check        # exact manifest + file hashes
 dreative config --ambition award --execution lean --prototype skip
+dreative preflight --mechanisms "GSAP pinned narrative,Three.js stage"
 dreative critic-prompt           # objective-only prompt for a fresh critic context
 dreative audit                   # run after implementation
+dreative finalize --codex        # only successful completion path for ambitious work
 dreative docs-check              # validate the packaged doctrine and references
 ```
+
+Selecting all specialist skills means every packaged skill is installed and
+every treatment receives a substantive owner and runtime evidence. It does not
+mean every treatment appears on every page. Runtime packages are chosen by the
+approved mechanisms: Award does not automatically install or require 3D. Full
+Audit is fail-closed; Dogfood adds behavioural evaluation and is not ordinary
+certification. Old evidence cannot certify new source because verification v4
+hashes source, package, lockfile, public assets, and the production build.
 
 The browser workflow below is optional and only used when explicitly requested.
 

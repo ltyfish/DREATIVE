@@ -1,5 +1,7 @@
 # Dreative Specialist Skill — Experimental / Creative-Mindset Dial
 
+Selected experimental treatment owns one purposeful non-generic provocation with an implementation binding and evidence; an unusual label is not coverage.
+
 ## Contract
 
 Follow `../references/SKILL_CONTRACT.md`. Dependencies: `motion`, `interaction`,

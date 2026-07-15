@@ -1,5 +1,7 @@
 # Dreative Specialist Skill — Motion & Scroll Choreography
 
+Selected motion names its mounted owner, start/intermediate/end/fallback states and distinct browser-grounded observations bound to the current build.
+
 ## Contract
 
 Follow `../references/SKILL_CONTRACT.md`. Dependencies: `ux`, `mobile`. Deliver a

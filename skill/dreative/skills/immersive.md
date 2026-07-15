@@ -1,5 +1,7 @@
 # Dreative Specialist Skill — Immersive Worlds & Spatial Transitions
 
+Selected immersive treatment owns continuity, presence or environmental progression across compositions and proves the handoff temporally.
+
 ## Contract
 
 Follow `../references/SKILL_CONTRACT.md`. Dependencies: `motion`, `interaction`,

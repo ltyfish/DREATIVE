@@ -1,5 +1,7 @@
 # Dreative Specialist Skill — Functional UX (everything works)
 
+Selected UX coverage owns working functionality, semantics, keyboard access, focus, accessibility and application states with runtime evidence.
+
 ## Contract
 
 Universal foundation: ux and baseline mobile apply to every web page.

@@ -16,6 +16,8 @@
     "baselineAvailable": { "type": "boolean" },
     "motionRequired": { "type": "boolean" },
     "motionMomentIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "verificationRunId": { "type": "string", "minLength": 1 },
+    "buildIdentityHash": { "type": "string", "minLength": 64 },
     "evidence": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/evidence" } },
     "contextPolicy": { "type": "object", "additionalProperties": false, "required": ["firstPass", "excluded"], "properties": { "firstPass": { "const": "objective-only" }, "excluded": { "type": "array", "uniqueItems": true, "allOf": [
       { "contains": { "const": "builder-self-review" } }, { "contains": { "const": "implementation-rationale" } }, { "contains": { "const": "quality-claims" } }, { "contains": { "const": "difficulty-excuses" } }, { "contains": { "const": "builder-score" } }

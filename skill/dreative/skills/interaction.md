@@ -1,5 +1,7 @@
 # Dreative Specialist Skill — Micro-interactions & Effect Craft
 
+Selected interaction proves pointer/touch/keyboard input, observable state response, and release/settling or repeat/reverse behavior where planned; hover styling is not a drag.
+
 ## Contract
 
 Follow `../references/SKILL_CONTRACT.md`. Dependencies: `ux`, `mobile`; add
