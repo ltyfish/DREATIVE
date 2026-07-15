@@ -1,8 +1,30 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import type { DirectDesignPlan, MediaTransformation, MotionExecutionMoment, StaticFeelingReview, VerificationEvidence, VerificationReport, VisualCheckpoint } from "./artifacts.js";
+import type { DirectDesignPlan, MediaTransformation, MotionExecutionMoment, SignatureMediaPackage, StaticFeelingReview, VerificationEvidence, VerificationReport, VisualCheckpoint } from "./artifacts.js";
 import { validateVerificationReport } from "./artifacts.js";
-import { validateMotionCheckpoint, validateMotionExecution } from "./motionSystem.js";
+import { validateMotionCheckpoint, validateMotionExecution, validateSignatureMediaPackage } from "./motionSystem.js";
+
+const signaturePackage = (type: SignatureMediaPackage["type"]): SignatureMediaPackage => ({
+  id: `hero-${type}`, type, pageId: "home", sectionId: "hero",
+  purpose: "Reconstruct the source product into independently controlled narrative depth regions.",
+  sourceAssets: ["assets/hero-master.webp"], derivatives: [{ path: "assets/hero-subject.webp", role: "subject" }],
+  implementationFile: "src/hero.tsx", runtimeReferences: ["hero-subject.webp"],
+  independentlyControlledElements: ["source-derived subject layer", "clean background and contact shadow state"],
+  mobileFallback: "Mobile resolves fewer layers over a shorter transformation.", reducedMotionFallback: "The completed layered composition renders as a still.",
+  performanceSafeguards: ["Pause rendering off-screen and cap device pixel ratio."], evidenceIds: ["hero-media-final"],
+});
+
+test("one Signature Media contract supports substantive package categories", () => {
+  for (const type of ["layered-subject", "depth-separated", "fragment-reconstruction", "tile-atlas", "generated-states", "frame-sequence", "canvas", "webgl", "editorial-cut-up", "clean-plate"] as const)
+    assert.deepEqual(validateSignatureMediaPackage(signaturePackage(type)), [], type);
+});
+
+test("Signature Media rejects flat-image tricks and missing delivery safeguards", () => {
+  for (const description of ["one image scale", "one image clip", "one image parallax", "one image gradient noise"])
+    assert.ok(validateSignatureMediaPackage({ ...signaturePackage("layered-subject"), purpose: `${description} provides a decorative reveal only.`, independentlyControlledElements: [description, "opacity transition"] }).some((error) => error.includes("flat-image")));
+  assert.ok(validateSignatureMediaPackage({ ...signaturePackage("webgl"), performanceSafeguards: [] }).some((error) => error.includes("performance safeguards")));
+  assert.ok(validateSignatureMediaPackage({ ...signaturePackage("canvas"), mobileFallback: "disabled on mobile" }).some((error) => error.includes("mobile")));
+});
 
 const states = ["initial", "early", "mid-transition", "final", "handoff", "reverse-interaction", "mobile", "reduced-motion"] as const;
 

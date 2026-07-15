@@ -7,7 +7,7 @@ Universal foundation: ux and baseline mobile apply to every web page.
 Follow `../references/SKILL_CONTRACT.md`. Dependency: `ux`. This skill is
 universal for web work. Deliver a section-by-section mobile translation, touch
 targets, responsive media/effect budgets, a page-level mobile blueprint, and
-390×844 plus 320px verification.
+representative 390×844 verification. Add 320px only when narrow-width risk exists.
 It is never satisfied by shrinking desktop. Done means navigation, content,
 forms, orientation/viewport behavior, performance, and reduced motion pass on a
 coarse pointer.
@@ -120,7 +120,8 @@ The motion inventory scaled to touch (extends motion.md §5):
 
 ## 5. Mobile verification (part of the runtime pass)
 
-At 390×844 (plus one small check at 320px):
+At 390×844 (plus 320px when text, controls, dense composition, layered media, a
+critic finding, Full Audit, or Dogfood identifies narrow-width risk):
 
 1. Walk every section: no horizontal body scroll, no clipped text/controls,
    no element under fixed bars (DESIGN.md §15 at mobile widths).

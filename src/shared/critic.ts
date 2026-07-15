@@ -98,7 +98,7 @@ export interface VisualCriticReport {
     recapturedEvidenceIds: string[];
     followUpReviewedAt: string;
   };
-  dogfood: {
+  dogfood?: {
     falsePositives: string[];
     vagueFindings: string[];
     humanMisses: string[];
@@ -107,6 +107,13 @@ export interface VisualCriticReport {
     motionEvidenceRisk: string[];
     experimentsForRecipes: string[];
   };
+}
+
+/** Canonical Lean critic artifact: objective input and its independent result. */
+export interface CriticArtifact {
+  version: 1;
+  input: CriticInput;
+  report?: VisualCriticReport;
 }
 
 function nonEmpty(value: unknown, min = 1): value is string {
@@ -211,7 +218,15 @@ export function validateVisualCriticReport(value: unknown, input?: CriticInput):
     for (const resolution of report.revision?.resolutions ?? []) if (resolution.evidenceIds.some((id) => !inputEvidence.has(id))) errors.push(`${resolution.findingId}: resolution references unknown recaptured evidence`);
     for (const id of report.revision?.recapturedEvidenceIds ?? []) if (!inputEvidence.has(id)) errors.push(`critic revision references unknown recaptured evidence ${id}`);
   }
-  if (!report.dogfood || Object.values(report.dogfood).some((item) => !Array.isArray(item))) errors.push("visual critic report requires lightweight dogfood observability arrays");
+  if (report.dogfood && Object.values(report.dogfood).some((item) => !Array.isArray(item))) errors.push("visual critic dogfood observability values must be arrays");
+  return errors;
+}
+
+export function validateCriticArtifact(value: unknown): string[] {
+  const artifact = value as Partial<CriticArtifact> | null;
+  if (!artifact || typeof artifact !== "object" || artifact.version !== 1) return ["critic artifact needs version 1"];
+  const errors = validateCriticInput(artifact.input);
+  if (artifact.report) errors.push(...validateVisualCriticReport(artifact.report, artifact.input));
   return errors;
 }
 

@@ -2,6 +2,7 @@ import type {
   DirectDesignPlan,
   MediaTransformation,
   MotionExecutionMoment,
+  SignatureMediaPackage,
   StaticFeelingReview,
   VerificationEvidence,
   VerificationReport,
@@ -11,6 +12,7 @@ import type {
 const MOTION_SKILLS = new Set(["motion", "interaction", "immersive", "cinematic", "experimental", "3d"]);
 const VAGUE = /^(?:smooth animation|subtle movement|gsap effects?|cinematic reveal|cool distortion|add a shader|use particles|image reveal on scroll|parallax the background|add a frame sequence)[.!]?$/i;
 const BASIC_ONLY = /\b(?:opacity|fade|translate|slide|scale|stagger|light parallax|hover scale)\b/i;
+const FLAT_MEDIA_ONLY = /\b(?:opacity|fade|translate|scale|clip(?:-path)?|mask|parallax|gradient|noise|blur)\b/i;
 const COMPOSITION_CHANGE = /\b(?:mask|clip|pixel|fragment|fold|tear|slice|smear|refract|dissolv|rebuild|depth|layer|pin|persist|handoff|morph|reorder|layout|composition|geometry|camera|type|image sequence|canvas|svg|shader|media)\b/i;
 const DISABLED_MOBILE = /^(?:disable[sd]?|removed?|none|static only|turn(?:ed)? off)(?: on mobile)?[.!]?$/i;
 
@@ -78,7 +80,7 @@ function validateTransformation(item: MediaTransformation, momentIds: Set<string
   const errors: string[] = [];
   if (!concrete(item.id, 3) || !concrete(item.sourceAsset, 3) || !concrete(item.implementationFile, 3)) errors.push(`${prefix} requires an id, named source asset, and implementation file`);
   if (!momentIds.has(item.motionMomentId)) errors.push(`${prefix}.motionMomentId references an unknown motion moment`);
-  if (!Array.isArray(item.candidates) || item.candidates.length !== 3) errors.push(`${prefix}.candidates must contain exactly three original transformation candidates`);
+  if (!Array.isArray(item.candidates) || item.candidates.length < 1 || item.candidates.length > 3) errors.push(`${prefix}.candidates must contain one to three plausible transformation directions`);
   const selected = (item.candidates ?? []).filter((candidate) => candidate.selected);
   if (selected.length !== 1 || selected[0]?.id !== item.selectedCandidateId) errors.push(`${prefix} must select exactly one recorded candidate`);
   for (const [index, candidate] of (item.candidates ?? []).entries()) {
@@ -97,7 +99,25 @@ function validateTransformation(item: MediaTransformation, momentIds: Set<string
   const selectedMechanism = item.mechanismComparison?.find((entry) => entry.decision === "selected")?.mechanism;
   if (selectedMechanism === "image sequence" && !item.frameSequence) errors.push(`${prefix} selects an image sequence without a frame-production plan`);
   if ((item.derivatives ?? []).some((entry) => entry.aiInstruction) && !concrete(item.consistencyInspection, 20)) errors.push(`${prefix} AI-assisted derivatives require a consistency inspection`);
-  if (!Array.isArray(item.prototypeEvidenceIds) || item.prototypeEvidenceIds.length === 0 || !Array.isArray(item.finalEvidenceIds) || item.finalEvidenceIds.length === 0) errors.push(`${prefix} requires prototype and final evidence`);
+  if (!Array.isArray(item.finalEvidenceIds) || item.finalEvidenceIds.length === 0) errors.push(`${prefix} requires final evidence`);
+  return errors;
+}
+
+export function validateSignatureMediaPackage(item: SignatureMediaPackage | undefined, prefix = "signatureMedia"): string[] {
+  if (!item) return [`${prefix} is required`];
+  const errors: string[] = [];
+  const types = ["layered-subject", "depth-separated", "fragment-reconstruction", "tile-atlas", "generated-states", "frame-sequence", "canvas", "webgl", "editorial-cut-up", "clean-plate"];
+  if (!concrete(item.id, 3) || !types.includes(item.type)) errors.push(`${prefix} requires a stable id and supported package type`);
+  if (!concrete(item.pageId, 2) || !concrete(item.sectionId, 2) || !concrete(item.purpose, 20)) errors.push(`${prefix} must identify its location and concept-specific purpose`);
+  if (!Array.isArray(item.sourceAssets) || item.sourceAssets.length === 0) errors.push(`${prefix} must consume at least one source asset`);
+  if (!Array.isArray(item.runtimeReferences) || item.runtimeReferences.length === 0) errors.push(`${prefix} must name runtime-loaded assets or states`);
+  if (!Array.isArray(item.independentlyControlledElements) || item.independentlyControlledElements.length < 2) errors.push(`${prefix} must independently control at least two internal media elements, states, or regions`);
+  if (!concrete(item.mobileFallback, 12) || DISABLED_MOBILE.test(item.mobileFallback)) errors.push(`${prefix} requires a simplified mobile interpretation`);
+  if (!concrete(item.reducedMotionFallback, 12)) errors.push(`${prefix} requires a resolved reduced-motion fallback`);
+  if (!Array.isArray(item.evidenceIds) || item.evidenceIds.length === 0) errors.push(`${prefix} requires visible production evidence`);
+  if (["frame-sequence", "canvas", "webgl"].includes(item.type) && (!Array.isArray(item.performanceSafeguards) || item.performanceSafeguards.length === 0)) errors.push(`${prefix}.${item.type} requires performance safeguards`);
+  const claim = `${item.purpose} ${item.independentlyControlledElements.join(" ")}`;
+  if (FLAT_MEDIA_ONLY.test(claim) && !/\b(layer|subject|plate|shadow|depth|fragment|tile|state|frame|pixel|texture|reconstruct|separate)\b/i.test(claim)) errors.push(`${prefix} only describes flat-image animation`);
   return errors;
 }
 
@@ -152,6 +172,11 @@ export function validateMotionExecution(plan: DirectDesignPlan, verification?: V
   const transformations = plan.mediaTransformations ?? [];
   if (!unique(transformations.map((item) => item.id))) errors.push("media transformation IDs must be unique");
   transformations.forEach((item, index) => errors.push(...validateTransformation(item, new Set(momentsById.keys()), `mediaTransformations[${index}]`)));
+  const configuredAmbition = plan.configuration?.ambition;
+  const mediaLedAmbition = plan.skills.includes("media") && (["expressive", "award", "experimental"].includes(configuredAmbition ?? "") || (!configuredAmbition && ambitious));
+  if (plan.signatureMedia) errors.push(...validateSignatureMediaPackage(plan.signatureMedia));
+  else if (mediaLedAmbition && !concrete(plan.signatureMediaExemption, 20)) errors.push("media-led ambitious work requires one Signature Media Production Package or a concept-specific exemption");
+  if (plan.configuration?.prototype === "required" && transformations.some((item) => item.prototypeEvidenceIds.length === 0)) errors.push("prototype=required media transformations require prototype evidence");
   if (verification) {
     const evidence = new Map(verification.evidence.map((item) => [item.id, item]));
     for (const moment of moments) {

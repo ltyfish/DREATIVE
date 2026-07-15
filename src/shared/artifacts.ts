@@ -1,6 +1,7 @@
 import type { AmbitionTier, SpecialistSkill } from "./skillSystem.js";
 import type { ExpressionContract, MobileBlueprint, MobileVerificationCheck, PageRegister, SourceStrategy, StructuralDelta, TransformationDepth } from "./types.js";
 import { validateMotionExecution } from "./motionSystem.js";
+import type { WorkflowConfiguration } from "./workflow.js";
 
 export type DeliveryStatus = "planned" | "shipped" | "fallback" | "cut";
 export type WorkScope = "tiny" | "substantial";
@@ -145,6 +146,28 @@ export interface MediaTransformation {
   implementationFile: string;
 }
 
+export type SignatureMediaPackageType =
+  | "layered-subject" | "depth-separated" | "fragment-reconstruction" | "tile-atlas"
+  | "generated-states" | "frame-sequence" | "canvas" | "webgl" | "editorial-cut-up" | "clean-plate";
+
+/** One compact production contract for every substantive media mechanism. */
+export interface SignatureMediaPackage {
+  id: string;
+  type: SignatureMediaPackageType;
+  pageId: string;
+  sectionId: string;
+  purpose: string;
+  sourceAssets: string[];
+  derivatives: { path: string; role: string }[];
+  implementationFile: string;
+  runtimeReferences: string[];
+  independentlyControlledElements: string[];
+  mobileFallback: string;
+  reducedMotionFallback: string;
+  performanceSafeguards: string[];
+  evidenceIds: string[];
+}
+
 export interface FallbackExecution {
   sectionId: string;
   motionMomentId?: string;
@@ -250,6 +273,8 @@ export interface DirectDesignPlan {
   request: string;
   createdAt: string;
   tier: AmbitionTier;
+  /** Independent workflow controls. Missing legacy values resolve through shared defaults. */
+  configuration?: WorkflowConfiguration;
   depth: TransformationDepth;
   /** User-approved pool. Every selected treatment must appear on at least one page. */
   skills: SpecialistSkill[];
@@ -269,6 +294,7 @@ export interface DirectDesignPlan {
   creativeParity?: CreativeParityContract;
   executionBrief?: ExecutionBrief;
   commonPatternReview?: CommonPatternReview[];
+  critic?: string;
   criticInput?: string;
   visualCritic?: string;
   implementationStartedAt?: string;
@@ -277,6 +303,8 @@ export interface DirectDesignPlan {
   motionComplexityBudget?: MotionComplexityBudget;
   motionMoments?: MotionExecutionMoment[];
   mediaTransformations?: MediaTransformation[];
+  signatureMedia?: SignatureMediaPackage;
+  signatureMediaExemption?: string;
   fallbackExecutions?: FallbackExecution[];
   fontDecision?: FontDecision;
   experimentalPlan?: ExperimentalPlan;
@@ -284,14 +312,14 @@ export interface DirectDesignPlan {
   recipeAccess?: RecipeAccess[];
   coherence?: MultiPageCoherence;
   pages: PlanPage[];
-  preservationManifest: string;
-  decisionLedger: string;
+  preservationManifest?: string;
+  decisionLedger?: string;
 }
 
 export interface ApprovalDecision {
   kind: "baseline" | "concept" | "final-plan";
   at: string;
-  transcriptReference: string;
+  transcriptReference?: string;
   choice: string;
   selectedRecommendation: boolean;
 }
@@ -299,7 +327,7 @@ export interface ApprovalDecision {
 export interface ApprovalRecord {
   status: "pending" | "approved" | "rejected";
   approvedAt?: string;
-  transcriptReferences: string[];
+  transcriptReferences?: string[];
   approvedConcept: string;
   approvedTransformationDepth: TransformationDepth;
   approvedTier: AmbitionTier;
@@ -567,7 +595,7 @@ export interface VisualCheckpoint {
   critique: Record<"distinctiveness" | "hierarchy" | "brandVisibility" | "signatureLegibility" | "equityRetention" | "saasTemplateRisk" | "brandSwapRisk" | "mobileAuthorship" | "motionPurpose" | "counterfactualStrength", string>;
   meaningfulWeaknessFound: boolean;
   refinements: { finding: string; change: string; evidenceIds: string[] }[];
-  approval: { status: "pending" | "approved" | "rejected"; approvedAt?: string; transcriptReferences: string[] };
+  approval: { status: "pending" | "approved" | "rejected"; approvedAt?: string; transcriptReferences?: string[] };
   systemSpreadStartedAt?: string;
   motionPrototype?: {
     motionMomentIds: string[];
@@ -620,17 +648,18 @@ function validateQualityControls(plan: Partial<DirectDesignPlan>, doctrineVersio
   if (!plan.scope || !["tiny", "substantial"].includes(plan.scope)) errors.push("plan.scope must classify tiny or substantial work");
   if (!plan.projectKind || !["from-scratch", "redesign"].includes(plan.projectKind)) errors.push("plan.projectKind must classify from-scratch or redesign work");
   if (plan.scope !== "substantial") return errors;
-  if (doctrineVersion === 5 && (!nonEmpty(plan.criticInput) || !nonEmpty(plan.visualCritic))) errors.push("substantial v5 work must reference criticInput and visualCritic artifacts");
+  if (doctrineVersion === 5 && !plan.configuration && (!nonEmpty(plan.criticInput) || !nonEmpty(plan.visualCritic))) errors.push("legacy substantial v5 work must reference criticInput and visualCritic artifacts");
+  if (doctrineVersion === 5 && plan.configuration && plan.configuration.execution !== "fast" && !nonEmpty(plan.critic)) errors.push("Lean and Full Audit work must reference canonical critic.json");
   const approval = plan.approval;
   if (!approval || approval.status !== "approved" || !validDate(approval.approvedAt)) errors.push("substantial work requires an approved typed approval record");
   else {
-    if (!concreteList(approval.transcriptReferences) || !specificText(approval.approvedConcept) || approval.approvedTransformationDepth !== plan.depth || approval.approvedTier !== plan.tier || !Array.isArray(approval.approvedTreatments))
-      errors.push("approval must record transcripts, concept, transformation depth, tier, and treatments");
+    if (!specificText(approval.approvedConcept) || approval.approvedTransformationDepth !== plan.depth || approval.approvedTier !== plan.tier || !Array.isArray(approval.approvedTreatments))
+      errors.push("approval must record concept, transformation depth, tier, and treatments");
     const decisions = new Set((approval.decisions ?? []).map((item) => item.kind));
     for (const required of plan.projectKind === "redesign" ? ["baseline", "concept", "final-plan"] : ["concept", "final-plan"])
       if (!decisions.has(required as ApprovalDecision["kind"])) errors.push(`approval is missing the ${required} decision`);
     for (const [index, decision] of (approval.decisions ?? []).entries())
-      if (!validDate(decision.at) || !specificText(decision.transcriptReference, 3) || !specificText(decision.choice)) errors.push(`approval.decisions[${index}] is incomplete`);
+      if (!validDate(decision.at) || !specificText(decision.choice)) errors.push(`approval.decisions[${index}] is incomplete`);
     const ordered = approval.decisions ?? [];
     if (ordered.some((decision, index) => index > 0 && Date.parse(decision.at) <= Date.parse(ordered[index - 1].at))) errors.push("approval decisions must be sequential and chronologically ordered");
     const finalDecision = ordered.find((decision) => decision.kind === "final-plan");
@@ -639,9 +668,10 @@ function validateQualityControls(plan: Partial<DirectDesignPlan>, doctrineVersio
     if (plan.implementationStartedAt && (!validDate(plan.implementationStartedAt) || Date.parse(plan.implementationStartedAt) <= Date.parse(approval.approvedAt!)))
       errors.push("implementationStartedAt must be later than final plan approval");
   }
-  if (plan.projectKind === "redesign" && !nonEmpty(plan.designEquity)) errors.push("substantial redesigns require a design-equity artifact reference");
+  const traceArtifactsRequired = plan.configuration?.execution === "full-audit" || plan.configuration?.purpose === "dreative-dogfood";
+  if (traceArtifactsRequired && plan.projectKind === "redesign" && !nonEmpty(plan.designEquity)) errors.push("audited redesigns require a design-equity artifact reference");
   if (plan.projectKind === "redesign" && (plan.depth === "restructure" || plan.depth === "reimagine")) {
-    if (!nonEmpty(plan.checkpoint)) errors.push(`${plan.depth} requires a visual checkpoint artifact reference`);
+    if (traceArtifactsRequired && !nonEmpty(plan.checkpoint)) errors.push(`${plan.depth} audited redesign requires a visual checkpoint artifact reference`);
     const parity = plan.creativeParity;
     if (!parity || !specificText(parity.fromScratchConcept, 30) || !specificText(parity.reconciledConcept, 30) || !concreteList(parity.reconciliationChanges) || !specificText(parity.retainedCreativeAmbition, 20) || !Array.isArray(parity.compromises))
       errors.push(`${plan.depth} requires a concrete from-scratch creative-parity contract`);
@@ -724,6 +754,12 @@ export function validatePlan(value: unknown): string[] {
   if (!nonEmpty(plan.request)) errors.push("plan.request is required");
   if (!nonEmpty(plan.createdAt) || Number.isNaN(Date.parse(plan.createdAt))) errors.push("plan.createdAt must be an ISO date");
   if (!["solid", "premium", "expressive", "award"].includes(String(plan.tier))) errors.push("plan.tier is invalid");
+  if (plan.configuration) {
+    if (!["standard", "expressive", "award", "experimental"].includes(plan.configuration.ambition)) errors.push("plan.configuration.ambition is invalid");
+    if (!["fast", "lean", "full-audit"].includes(plan.configuration.execution)) errors.push("plan.configuration.execution is invalid");
+    if (!["skip", "auto", "required"].includes(plan.configuration.prototype)) errors.push("plan.configuration.prototype is invalid");
+    if (!["project-delivery", "production-certification", "dreative-dogfood"].includes(plan.configuration.purpose)) errors.push("plan.configuration.purpose is invalid");
+  }
   if (!["restyle", "relayout", "restructure", "reimagine"].includes(String(plan.depth))) errors.push("plan.depth is invalid");
   if (!Array.isArray(plan.skills) || !plan.skills.includes("ux") || !plan.skills.includes("mobile"))
     errors.push("plan.skills must include ux and mobile");
@@ -830,7 +866,7 @@ export function validatePlan(value: unknown): string[] {
       if (!page.skills.includes(skill)) errors.push(`user-pinned skill ${skill} is missing from page ${page.name}`);
     }
   }
-  if (!nonEmpty(plan.preservationManifest) || !nonEmpty(plan.decisionLedger)) errors.push("plan must reference preservationManifest and decisionLedger");
+  if (plan.configuration?.execution === "full-audit" && (!nonEmpty(plan.preservationManifest) || !nonEmpty(plan.decisionLedger))) errors.push("full-audit plans must reference preservationManifest and decisionLedger");
   if (plan.version === 5 && Array.isArray(plan.pages) && Array.isArray(plan.skills)) errors.push(...validateMotionExecution(plan as DirectDesignPlan));
   return errors;
 }
@@ -893,7 +929,7 @@ export function validateVisualCheckpoint(value: unknown): string[] {
   const critiqueKeys = ["distinctiveness", "hierarchy", "brandVisibility", "signatureLegibility", "equityRetention", "saasTemplateRisk", "brandSwapRisk", "mobileAuthorship", "motionPurpose", "counterfactualStrength"];
   if (!checkpoint.critique || critiqueKeys.some((key) => !specificText(checkpoint.critique?.[key as keyof VisualCheckpoint["critique"]], 20))) errors.push("visual checkpoint critique must answer every perceptual question concretely");
   if (!Array.isArray(checkpoint.refinements) || (checkpoint.meaningfulWeaknessFound === true && checkpoint.refinements.length === 0)) errors.push("a meaningful checkpoint weakness requires at least one refinement");
-  if (!checkpoint.approval || checkpoint.approval.status !== "approved" || !validDate(checkpoint.approval.approvedAt) || !concreteList(checkpoint.approval.transcriptReferences)) errors.push("visual checkpoint requires recorded user approval");
+  if (!checkpoint.approval || checkpoint.approval.status !== "approved" || !validDate(checkpoint.approval.approvedAt)) errors.push("visual checkpoint requires recorded user approval");
   if (checkpoint.systemSpreadStartedAt && (!validDate(checkpoint.systemSpreadStartedAt) || Date.parse(checkpoint.systemSpreadStartedAt) <= Date.parse(checkpoint.approval?.approvedAt ?? ""))) errors.push("systemSpreadStartedAt must be later than checkpoint approval");
   if (checkpoint.motionPrototype) {
     const prototype = checkpoint.motionPrototype;

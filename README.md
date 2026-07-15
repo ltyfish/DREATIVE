@@ -15,13 +15,14 @@ Install the skill, then ask your coding agent to design or redesign a page. The 
   creative provocations, with audited substitutions for equally ambitious alternatives;
 - reflex-font review and diversity-or-development planning instead of fixed aesthetic recipes;
 - framework adapters for React/Vite, Next.js, Vue/Nuxt, SvelteKit, and styling systems;
-- typed plan, preservation, critic-input, independent visual-critic,
-  decision-ledger, and verification artifacts;
+- independent workflow controls and compact typed plan, critic, and verification
+  artifacts, with audit/certification additions only when relevant;
 - `dreative audit`, which checks delivery status, preservation, assets,
   independent critic completion, evidence, and common frontend risks.
 
 ```sh
 dreative install-skill --codex   # or omit --codex for Claude Code
+dreative config --ambition award --execution lean --prototype skip
 dreative critic-prompt           # objective-only prompt for a fresh critic context
 dreative audit                   # run after implementation
 dreative docs-check              # validate the packaged doctrine and references

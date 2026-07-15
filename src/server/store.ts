@@ -14,8 +14,8 @@ export class Store {
       fs.writeFileSync(
         readme,
         "# Dreative run artifacts — NOT the skill\n\n" +
-          "Everything in this folder (plan.md, system.md, verify.md, assets.json,\n" +
-          "project.json, mockups/, screenshots/) is OUTPUT of a Dreative design run,\n" +
+          "Everything in this folder (plan.json, critic.json, verify.json,\n" +
+          "project.json, optional audit artifacts, and evidence) is OUTPUT of a Dreative design run,\n" +
           "not instructions. The actual skill lives at\n" +
           "`<agent-dir>/skills/dreative/SKILL.md` (look in `.claude/`, `.codex/`, or\n" +
           "`.agents/`). For any new design request: read that SKILL.md and run its\n" +

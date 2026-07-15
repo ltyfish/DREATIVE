@@ -78,7 +78,7 @@ Never design by accretion, and never commit to the first concept. Three passes:
    after run. So the variance comes from OUTSIDE your head: roll a real random
    number (`node -e "console.log(1+require('crypto').randomInt(20))"`, or
    `$RANDOM % 20 + 1`, or read digits off `date +%N`) and record the literal
-   command AND its output in plan.md. The roll picks one **provocation** from
+   command AND its output in canonical plan data. The roll picks one **provocation** from
    the table below; at least ONE of the three explore concepts must take it
    literally. If that concept wins, the provocation becomes a candidate;
    experimental delivery selects only the strongest two or three peaks instead
@@ -627,9 +627,9 @@ does not count; entrance choreography, scroll behavior, and micro-interactions
 must be literally present. If zero animations survive to the final code, the
 request was not fulfilled — go back and add them before reporting done.
 
-Motion-selected work prototypes the first viewport and one core transformation
-before section expansion. Record controlled-state, trace, or recording evidence,
-reverse behavior, mobile, reduced motion, and implementation mappings. Static
+Motion-selected work prototypes the uncertain mechanism only when the resolved
+prototype policy requires it. Record interaction-appropriate evidence, mobile,
+reduced motion, and implementation mappings. Static
 screenshots, a tested URL, prose, or a clean console cannot prove choreography.
 
 ### The transformation-depth ladder (offer it, then execute it)
@@ -731,7 +731,8 @@ the output is not done.
     code; preservation ledger reported. If motion skills were chosen, the
     implemented animations are named and present in the code.
 17. Spatial integrity (§15): every positioned/fixed element has an anchor and
-    reserved space; no interactive element overlaps another at 320/768/1280;
+    reserved space; no interactive element overlaps another at representative
+    desktop/mobile widths or a risk-triggered narrow width;
     one occupant per overlay corner; overflow-capable rows wrap or scroll
     inside their container (nothing clips at a viewport edge); animation
     end-states and parallax extremes collide with nothing; decoration layers
@@ -786,10 +787,10 @@ effects" toggle when the brief allows.
 
 **Layout & ergonomics floor** (extends checklist §12.12): tap targets ≥ 44px
 with ≥ 8px gaps; primary actions in thumb reach (bottom half) on app-register
-mobile; `100dvh` not `100vh`; no horizontal body scroll at 320px; type scale
+mobile; `100dvh` not `100vh`; no horizontal body scroll at the narrowest tested width; type scale
 clamps DOWN gracefully (hero ≥ 2rem, body stays ≥ 16px — iOS zooms inputs
-under 16px); sticky navs shrink rather than stack; test the three widths 320 /
-768 / 1280 mentally before responding.
+under 16px); sticky navs shrink rather than stack; test representative desktop
+and mobile widths, adding 320px when the composition is at risk.
 
 **Motion budget on mobile**: shorten travel and timelines according to content,
 viewport, and measured device cost. Preserve one defining idea when feasible;
@@ -922,7 +923,8 @@ counts, localized labels: size the container for the longest realistic value.
 Fixed bars get matching `padding` on the scroll container (or `scroll-margin`)
 so content can't hide beneath them — anchored headings included.
 
-**Verification is spatial, not stylistic.** At 320 / 768 / 1280, walk the page
+**Verification is spatial, not stylistic.** At representative desktop/mobile
+widths and any risk-triggered narrow width, walk the page
 top to bottom and ask of every element: what is under it, what is above it, and
 was that intentional? Any unintentional occlusion, clipped edge, or double-booked
 corner gets fixed before the respond — this is checklist §12 item 17.

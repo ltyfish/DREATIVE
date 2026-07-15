@@ -71,17 +71,12 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
     const expected = ["solid", "premium", "expressive", "award"];
     if (JSON.stringify(tiers) !== JSON.stringify(expected))
       add(findings, "tiers", schemaFile, `tier enum must be ${expected.join(" | ")}`);
-    for (const file of ["SKILL.md", "PLAN.md", "references/ARTIFACTS.md", "references/TIERS.md"]) {
+    for (const file of ["SKILL.md", "references/TIERS.md"]) {
       const content = contents.get(file) ?? "";
       for (const tier of expected) {
         if (!new RegExp(`\\b${tier}\\b`, "i").test(content)) add(findings, "tiers", file, `does not mention canonical tier ${tier}`);
       }
     }
-    const plan = contents.get("PLAN.md") ?? "";
-    for (const tier of expected) {
-      if (!plan.includes(`(\`${tier}\`)`)) add(findings, "tiers", "PLAN.md", `choice label must expose stored id (${tier})`);
-    }
-    if (/\*\*(safe|award-site)\*\*/i.test(plan)) add(findings, "tiers", "PLAN.md", "contains a legacy tier choice label");
   } catch (error) {
     add(findings, "tiers", schemaFile, `cannot parse tier schema: ${String(error)}`);
   }
@@ -97,10 +92,10 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   }
 
   const planSchema = contents.get("schemas/plan.schema.json") ?? "";
-  for (const field of ["doctrineVersion", "approval", "designEquity", "checkpoint", "creativeParity", "executionBrief", "criticRequirement", "commonPatternReview", "visualBlueprint", "criticInput", "visualCritic", "ruleExceptions", "creativeStrategy", "motionComplexityBudget", "motionTreatment", "preparation", "fontDecision", "experimentalPlan", "conceptExploration", "recipeAccess"]) {
+  for (const field of ["doctrineVersion", "configuration", "ambition", "execution", "prototype", "purpose", "approval", "creativeParity", "executionBrief", "commonPatternReview", "visualBlueprint", "critic", "signatureMedia", "ruleExceptions", "creativeStrategy", "motionComplexityBudget", "motionTreatment", "preparation", "fontDecision", "experimentalPlan", "conceptExploration", "recipeAccess"]) {
     if (!planSchema.includes(`\"${field}\"`)) add(findings, "schema", "schemas/plan.schema.json", `missing creative-control field ${field}`);
   }
-  for (const file of ["schemas/plan.schema.json", "schemas/verify.schema.json", "schemas/critic-input.schema.json", "schemas/visual-critic.schema.json", "schemas/design-equity.schema.json", "schemas/checkpoint.schema.json"]) {
+  for (const file of ["schemas/plan.schema.json", "schemas/verify.schema.json", "schemas/critic.schema.json", "schemas/critic-input.schema.json", "schemas/visual-critic.schema.json", "schemas/design-equity.schema.json", "schemas/checkpoint.schema.json"]) {
     try { JSON.parse(contents.get(file) ?? ""); }
     catch (error) { add(findings, "schema", file, `cannot parse schema: ${String(error)}`); }
   }
@@ -165,9 +160,10 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
     if (contradictory) add(findings, "doctrine", "DESIGN.md", `implementation ${token} is both banned and presented positively`);
   }
 
-  const phaseRule = "Run one short decision phase containing several sequential single-question";
   for (const file of ["SKILL.md", "PLAN.md"]) {
-    if (!(contents.get(file) ?? "").includes(phaseRule)) add(findings, "questions", file, "decision-phase rule is inconsistent");
+    const content = contents.get(file) ?? "";
+    for (const control of ["ambition", "execution", "prototype", "purpose"]) if (!content.includes(control)) add(findings, "workflow-controls", file, `missing independent ${control} control`);
+    if (/full (?:Q&A|conversation) transcript|verbatim conversation/i.test(content) && !/do not store|without storing/i.test(content)) add(findings, "artifacts", file, "requires a verbatim transcript");
   }
 
   return { ok: findings.length === 0, findings };

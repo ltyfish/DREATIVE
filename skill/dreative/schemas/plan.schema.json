@@ -4,11 +4,10 @@
   "title": "Dreative Multi-Page Direct Design Plan",
   "type": "object",
   "additionalProperties": false,
-  "required": ["version", "doctrineVersion", "request", "createdAt", "scope", "projectKind", "tier", "depth", "skills", "skillPolicy", "designRead", "coherence", "pages", "preservationManifest", "decisionLedger"],
+  "required": ["version", "doctrineVersion", "request", "createdAt", "scope", "projectKind", "tier", "depth", "skills", "skillPolicy", "designRead", "coherence", "pages"],
   "allOf": [
-    { "if": { "properties": { "scope": { "const": "substantial" } } }, "then": { "required": ["approval", "executionBrief", "commonPatternReview", "criticInput", "visualCritic"] } },
-    { "if": { "properties": { "scope": { "const": "substantial" }, "projectKind": { "const": "redesign" } } }, "then": { "required": ["designEquity"] } },
-    { "if": { "properties": { "scope": { "const": "substantial" }, "projectKind": { "const": "redesign" }, "depth": { "enum": ["restructure", "reimagine"] } } }, "then": { "required": ["checkpoint", "creativeParity"] } }
+    { "if": { "properties": { "scope": { "const": "substantial" } } }, "then": { "required": ["approval", "executionBrief", "commonPatternReview"] } },
+    { "if": { "properties": { "scope": { "const": "substantial" }, "projectKind": { "const": "redesign" }, "depth": { "enum": ["restructure", "reimagine"] } } }, "then": { "required": ["creativeParity"] } }
   ],
   "properties": {
     "version": { "const": 5 },
@@ -18,6 +17,7 @@
     "scope": { "enum": ["tiny", "substantial"] },
     "projectKind": { "enum": ["from-scratch", "redesign"] },
     "tier": { "enum": ["solid", "premium", "expressive", "award"] },
+    "configuration": { "$ref": "#/$defs/configuration" },
     "depth": { "enum": ["restyle", "relayout", "restructure", "reimagine"] },
     "skills": { "$ref": "#/$defs/skillList" },
     "skillPolicy": {
@@ -60,6 +60,7 @@
     "creativeParity": { "$ref": "#/$defs/creativeParity" },
     "executionBrief": { "$ref": "#/$defs/executionBrief" },
     "commonPatternReview": { "type": "array", "items": { "$ref": "#/$defs/commonPatternReview" } },
+    "critic": { "type": "string", "minLength": 1 },
     "criticInput": { "type": "string", "minLength": 1 },
     "visualCritic": { "type": "string", "minLength": 1 },
     "ruleExceptions": { "type": "array", "items": { "$ref": "#/$defs/ruleException" } },
@@ -67,6 +68,8 @@
     "motionComplexityBudget": { "$ref": "#/$defs/motionComplexityBudget" },
     "motionMoments": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/motionMoment" } },
     "mediaTransformations": { "type": "array", "items": { "$ref": "#/$defs/mediaTransformation" } },
+    "signatureMedia": { "$ref": "#/$defs/signatureMedia" },
+    "signatureMediaExemption": { "type": "string", "minLength": 20 },
     "fallbackExecutions": { "type": "array", "items": { "$ref": "#/$defs/fallbackExecution" } },
     "fontDecision": { "$ref": "#/$defs/fontDecision" },
     "experimentalPlan": { "$ref": "#/$defs/experimentalPlan" },
@@ -78,6 +81,16 @@
     "decisionLedger": { "type": "string", "minLength": 1 }
   },
   "$defs": {
+    "configuration": {
+      "type": "object", "additionalProperties": false,
+      "required": ["ambition", "execution", "prototype", "purpose"],
+      "properties": {
+        "ambition": { "enum": ["standard", "expressive", "award", "experimental"] },
+        "execution": { "enum": ["fast", "lean", "full-audit"] },
+        "prototype": { "enum": ["skip", "auto", "required"] },
+        "purpose": { "enum": ["project-delivery", "production-certification", "dreative-dogfood"] }
+      }
+    },
     "skill": { "enum": ["ux", "mobile", "refined", "motion", "interaction", "media", "3d", "immersive", "cinematic", "experimental"] },
     "skillList": {
       "type": "array",
@@ -93,14 +106,14 @@
     "status": { "enum": ["planned", "shipped", "fallback", "cut"] },
     "approval": {
       "type": "object", "additionalProperties": false,
-      "required": ["status", "approvedAt", "transcriptReferences", "approvedConcept", "approvedTransformationDepth", "approvedTier", "approvedTreatments", "selectedRecommendation", "decisions"],
+      "required": ["status", "approvedAt", "approvedConcept", "approvedTransformationDepth", "approvedTier", "approvedTreatments", "selectedRecommendation", "decisions"],
       "properties": {
         "status": { "const": "approved" }, "approvedAt": { "type": "string", "format": "date-time" },
         "transcriptReferences": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
         "approvedConcept": { "type": "string", "minLength": 12 }, "approvedTransformationDepth": { "enum": ["restyle", "relayout", "restructure", "reimagine"] },
         "approvedTier": { "enum": ["solid", "premium", "expressive", "award"] }, "approvedTreatments": { "$ref": "#/$defs/treatmentList" },
         "selectedRecommendation": { "type": "boolean" },
-        "decisions": { "type": "array", "minItems": 2, "items": { "type": "object", "additionalProperties": false, "required": ["kind", "at", "transcriptReference", "choice", "selectedRecommendation"], "properties": { "kind": { "enum": ["baseline", "concept", "final-plan"] }, "at": { "type": "string", "format": "date-time" }, "transcriptReference": { "type": "string", "minLength": 1 }, "choice": { "type": "string", "minLength": 12 }, "selectedRecommendation": { "type": "boolean" } } } }
+        "decisions": { "type": "array", "minItems": 2, "items": { "type": "object", "additionalProperties": false, "required": ["kind", "at", "choice", "selectedRecommendation"], "properties": { "kind": { "enum": ["baseline", "concept", "final-plan"] }, "at": { "type": "string", "format": "date-time" }, "transcriptReference": { "type": "string", "minLength": 1 }, "choice": { "type": "string", "minLength": 12 }, "selectedRecommendation": { "type": "boolean" } } } }
       }
     },
     "creativeParity": {
@@ -365,14 +378,30 @@
     },
     "mediaTransformation": {
       "type": "object", "additionalProperties": false,
-      "required": ["id", "pageId", "sectionId", "motionMomentId", "sourceAsset", "candidates", "selectedCandidateId", "mechanismComparison", "derivatives", "consistencyInspection", "prototypeEvidenceIds", "finalEvidenceIds", "implementationFile"],
+      "required": ["id", "pageId", "sectionId", "motionMomentId", "sourceAsset", "candidates", "selectedCandidateId", "mechanismComparison", "derivatives", "consistencyInspection", "finalEvidenceIds", "implementationFile"],
       "properties": {
         "id": { "type": "string", "minLength": 3 }, "pageId": { "type": "string", "minLength": 1 }, "sectionId": { "type": "string", "minLength": 1 }, "motionMomentId": { "type": "string", "minLength": 1 }, "sourceAsset": { "type": "string", "minLength": 3 }, "selectedCandidateId": { "type": "string", "minLength": 1 }, "implementationFile": { "type": "string", "minLength": 3 }, "consistencyInspection": { "$ref": "#/$defs/concrete" },
-        "candidates": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "$ref": "#/$defs/transformationCandidate" } },
-        "mechanismComparison": { "type": "array", "minItems": 2, "items": { "type": "object", "additionalProperties": false, "required": ["mechanism", "feasibility", "decision", "reason"], "properties": { "mechanism": { "enum": ["DOM/CSS", "SVG", "Canvas 2D", "WebGL shader", "Three.js scene", "image sequence", "pre-rendered video", "hybrid composition"] }, "feasibility": { "$ref": "#/$defs/concrete" }, "decision": { "enum": ["selected", "rejected"] }, "reason": { "$ref": "#/$defs/concrete" } } } },
+        "candidates": { "type": "array", "minItems": 1, "maxItems": 3, "items": { "$ref": "#/$defs/transformationCandidate" } },
+        "mechanismComparison": { "type": "array", "minItems": 1, "items": { "type": "object", "additionalProperties": false, "required": ["mechanism", "feasibility", "decision", "reason"], "properties": { "mechanism": { "enum": ["DOM/CSS", "SVG", "Canvas 2D", "WebGL shader", "Three.js scene", "image sequence", "pre-rendered video", "hybrid composition"] }, "feasibility": { "$ref": "#/$defs/concrete" }, "decision": { "enum": ["selected", "rejected"] }, "reason": { "$ref": "#/$defs/concrete" } } } },
         "derivatives": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/transformationDerivative" } },
         "frameSequence": { "$ref": "#/$defs/frameSequence" },
-        "prototypeEvidenceIds": { "$ref": "#/$defs/evidenceIds" }, "finalEvidenceIds": { "$ref": "#/$defs/evidenceIds" }
+        "prototypeEvidenceIds": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }, "finalEvidenceIds": { "$ref": "#/$defs/evidenceIds" }
+      }
+    },
+    "signatureMedia": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "type", "pageId", "sectionId", "purpose", "sourceAssets", "derivatives", "implementationFile", "runtimeReferences", "independentlyControlledElements", "mobileFallback", "reducedMotionFallback", "performanceSafeguards", "evidenceIds"],
+      "properties": {
+        "id": { "type": "string", "minLength": 3 },
+        "type": { "enum": ["layered-subject", "depth-separated", "fragment-reconstruction", "tile-atlas", "generated-states", "frame-sequence", "canvas", "webgl", "editorial-cut-up", "clean-plate"] },
+        "pageId": { "type": "string", "minLength": 1 }, "sectionId": { "type": "string", "minLength": 1 }, "purpose": { "type": "string", "minLength": 20 },
+        "sourceAssets": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "derivatives": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["path", "role"], "properties": { "path": { "type": "string", "minLength": 1 }, "role": { "type": "string", "minLength": 1 } } } },
+        "implementationFile": { "type": "string", "minLength": 1 },
+        "runtimeReferences": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "independentlyControlledElements": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 3 } },
+        "mobileFallback": { "type": "string", "minLength": 12 }, "reducedMotionFallback": { "type": "string", "minLength": 12 },
+        "performanceSafeguards": { "type": "array", "items": { "type": "string", "minLength": 3 } }, "evidenceIds": { "$ref": "#/$defs/evidenceIds" }
       }
     },
     "transformationCandidate": {

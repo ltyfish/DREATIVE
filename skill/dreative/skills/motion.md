@@ -113,18 +113,17 @@ layers separate; the headline compresses into a mask; that mask tiles the scene
 into the next section; mobile uses a short clip-path handoff.” Copy neither
 literally—match that level of state change and continuity to the brief.
 
-Prototype the first viewport, one core composition, a structural or
-transformational handoff, and one response in the real project before expanding.
-Desktop, mobile, reduced motion, representative assets, and temporal evidence
-must pass `.dreative/checkpoint.json`.
+Prototype only an uncertain mechanism when `prototype=auto` selects its risk or
+when `prototype=required`. `prototype=skip` implements directly in the real
+component without lowering ambition.
 
 Runtime proof uses a recording/trace with timestamps or controlled progress with
 expected/observed DOM, layout, canvas, shader, scene, or application state. A URL,
 clean console, prose claim, or unproven screenshots cannot prove motion. Inspect
-initial, early, midpoint, end, handoff, reverse, mobile, and reduced-motion states;
-add pinned midpoint/exit when relevant. Check
+states selected by interaction type; add pinned entry/midpoint/exit/release when
+relevant. Check
 readability, continuity, collisions, empty frames, timing, concept expression,
-and usability. Expressive/award work requires at least one refinement after this
-inspection. A static screenshot cannot prove choreography.
+and usability. Refine when inspection finds a meaningful weakness; a clean pass
+does not require an arbitrary change. A static screenshot cannot prove choreography.
 
 Recipe reference: `../recipes/motion-recipes.md`, after concept exploration only.

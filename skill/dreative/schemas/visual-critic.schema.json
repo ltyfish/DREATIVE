@@ -4,7 +4,7 @@
   "title": "Dreative Independent Visual Critic Report",
   "type": "object",
   "additionalProperties": false,
-  "required": ["version", "reviewedAt", "inputArtifact", "contextIsolation", "reviewContext", "independentReading", "initialVerdict", "verdict", "strongestQualities", "findings", "baselineRegressions", "conceptFidelityFindings", "mobileFindings", "motionFindings", "requiredRevisionSet", "nonBlockingExperiments", "dogfood"],
+  "required": ["version", "reviewedAt", "inputArtifact", "contextIsolation", "reviewContext", "independentReading", "initialVerdict", "verdict", "strongestQualities", "findings", "baselineRegressions", "conceptFidelityFindings", "mobileFindings", "motionFindings", "requiredRevisionSet", "nonBlockingExperiments"],
   "properties": {
     "version": { "const": 1 }, "reviewedAt": { "type": "string", "format": "date-time" }, "inputArtifact": { "type": "string", "minLength": 1 },
     "contextIsolation": { "type": "object", "additionalProperties": false, "required": ["mode", "independentReadingRecordedAt", "limitation"], "properties": { "mode": { "enum": ["fresh-subagent", "fresh-context", "isolated-prompt", "best-effort"] }, "independentReadingRecordedAt": { "type": "string", "format": "date-time" }, "builderContextOpenedAt": { "type": "string", "format": "date-time" }, "limitation": { "type": "string", "minLength": 1 } } },

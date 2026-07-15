@@ -15,13 +15,14 @@ import {
   type VisualCheckpoint,
 } from "../shared/artifacts.js";
 import { resolveSkillDependencies, type SpecialistSkill } from "../shared/skillSystem.js";
-import { validateCriticInput, validateVisualCriticReport, type CriticInput, type VisualCriticReport } from "../shared/critic.js";
+import { validateCriticArtifact, validateCriticInput, validateVisualCriticReport, type CriticArtifact, type CriticInput, type VisualCriticReport } from "../shared/critic.js";
 import {
   validateRuleControls,
   type ReflexFontRegistry,
   type RuleRegistry,
 } from "../shared/ruleSystem.js";
 import { motionIsSelected, validateMotionCheckpoint, validateMotionExecution } from "../shared/motionSystem.js";
+import { resolveWorkflowConfiguration, resolveWorkflowPolicy, shouldCreatePrototype, type InteractionRisk } from "../shared/workflow.js";
 
 export interface AuditFinding {
   level: "error" | "warning";
@@ -263,11 +264,28 @@ export function checkMotionExecutionArtifacts(projectDir: string, plan: DirectDe
       if (!derivativePath.startsWith(root) || !fs.existsSync(derivativePath)) findings.push(finding("error", "media-transformation", `${transformation.id}/${derivative.id}: shipped derivative is missing at ${derivative.path}`));
     }
   }
+  if (plan.signatureMedia) {
+    const item = plan.signatureMedia;
+    const implementation = path.resolve(projectDir, item.implementationFile);
+    if (!implementation.startsWith(root) || !fs.existsSync(implementation)) findings.push(finding("error", "signature-media", `${item.id}: implementation file is missing at ${item.implementationFile}`));
+    const source = fs.existsSync(implementation) ? fs.readFileSync(implementation, "utf-8") : "";
+    for (const asset of [...item.sourceAssets, ...item.derivatives.map((entry) => entry.path)]) {
+      const target = path.resolve(projectDir, asset);
+      if (!target.startsWith(root) || !fs.existsSync(target) || fs.statSync(target).size === 0) findings.push(finding("error", "signature-media", `${item.id}: production asset is missing or empty at ${asset}`));
+    }
+    for (const reference of item.runtimeReferences) if (!source.includes(reference)) findings.push(finding("error", "signature-media", `${item.id}: runtime reference is not consumed by ${item.implementationFile}: ${reference}`));
+    const evidence = new Map((report?.evidence ?? []).map((entry) => [entry.id, entry]));
+    for (const id of item.evidenceIds) if (evidence.get(id)?.status !== "pass" || evidence.get(id)?.kind !== "media-transformation") findings.push(finding("error", "signature-media", `${item.id}: missing passing visible media evidence ${id}`));
+  }
   for (const page of plan.pages) for (const section of page.sections) if (section.status === "fallback") {
     const record = (plan.fallbackExecutions ?? []).find((item) => item.sectionId === section.id);
     if (!record) findings.push(finding("error", "fallback", `${page.id}/${section.id}: fallback shipped without a typed primary-attempt record`));
   }
-  if (motionIsSelected(plan) || plan.tier === "expressive" || plan.tier === "award") {
+  const risks: InteractionRisk[] = (plan.motionMoments ?? []).map((moment) => /canvas|webgl|shader/i.test(moment.renderingMechanism) ? "canvas-webgl" : /frame sequence/i.test(moment.renderingMechanism) ? "frame-sequence" : /pin/i.test(`${moment.renderingMechanism} ${moment.handoff}`) ? "pinned-scroll" : "simple-motion");
+  const prototypeRequired = plan.configuration
+    ? shouldCreatePrototype(plan.configuration, risks)
+    : motionIsSelected(plan) || plan.tier === "expressive" || plan.tier === "award";
+  if (prototypeRequired) {
     const checkpointFile = path.resolve(projectDir, plan.checkpoint ?? ".dreative/checkpoint.json");
     findings.push(...checkArtifact(checkpointFile, "motion-prototype", validateVisualCheckpoint));
     if (fs.existsSync(checkpointFile)) {
@@ -288,8 +306,11 @@ export function checkVerificationCoverage(plan: DirectDesignPlan, report: Verifi
   if (plan.version !== 3 && plan.version !== 4 && plan.version !== 5) return findings;
   if ((plan.version === 3 && report.version !== 2) || ((plan.version === 4 || plan.version === 5) && report.version !== 3)) return [finding("error", "migration", `${plan.version === 5 ? "v5" : plan.version === 4 ? "v4" : "v3"} plans require verify.json version ${plan.version === 3 ? "2" : "3"}`)];
   const passing = report.evidence.filter((item) => item.status === "pass");
+  const configuration = resolveWorkflowConfiguration(plan.configuration, { tier: plan.tier }).configuration;
   for (const page of plan.pages) {
-    for (const viewportClass of ["desktop", "mobile", "narrow-mobile"] as const) {
+    const narrowRisk = page.sections.some((section) => section.verification.some((criterion) => typeof criterion !== "string" && criterion.viewports.includes("narrow-mobile")));
+    const viewports = resolveWorkflowPolicy(configuration, narrowRisk).representativeWidths.includes(320) ? ["desktop", "mobile", "narrow-mobile"] as const : ["desktop", "mobile"] as const;
+    for (const viewportClass of viewports) {
       if (!passing.some((item) => item.pageId === page.id && item.viewportClass === viewportClass && item.proof?.viewport))
         findings.push(finding("error", "verification", `${page.name}: missing passing ${viewportClass} evidence with an exact viewport`));
     }
@@ -328,6 +349,11 @@ export function checkRedesignQualityArtifacts(projectDir: string, plan: DirectDe
   if (!plan.approval || plan.approval.status !== "approved" || !plan.approval.approvedAt || !plan.implementationStartedAt || Date.parse(plan.implementationStartedAt) <= Date.parse(plan.approval.approvedAt))
     findings.push(finding("error", "approval", "substantial implementation began without final recorded approval, or implementationStartedAt is not later than approval"));
   if (plan.projectKind !== "redesign") return findings;
+  const configuration = resolveWorkflowConfiguration(plan.configuration, { tier: plan.tier }).configuration;
+  if (plan.configuration && configuration.execution !== "full-audit" && configuration.purpose !== "dreative-dogfood") {
+    if (!report?.perceptualComparison) findings.push(finding("error", "perceptual-comparison", "Lean redesigns require canonical before/after comparison evidence in verify.json"));
+    return findings;
+  }
   const equityFile = path.resolve(projectDir, plan.designEquity ?? ".dreative/design-equity.json");
   findings.push(...checkArtifact(equityFile, "design-equity", validateDesignEquityBaseline));
   const checkpointFile = path.resolve(projectDir, plan.checkpoint ?? ".dreative/checkpoint.json");
@@ -379,6 +405,19 @@ function criticArtifactPath(projectDir: string, value: string | undefined, fallb
 export function checkCriticArtifacts(projectDir: string, plan: DirectDesignPlan, verification?: VerificationReport): AuditFinding[] {
   if (plan.version !== 5 || plan.scope !== "substantial") return [];
   const findings: AuditFinding[] = [];
+  const configuration = resolveWorkflowConfiguration(plan.configuration, { tier: plan.tier }).configuration;
+  if (configuration.execution === "fast") return [];
+  if (plan.configuration || plan.critic) {
+    const criticFile = criticArtifactPath(projectDir, plan.critic, ".dreative/critic.json");
+    findings.push(...checkArtifact(criticFile, "critic", validateCriticArtifact));
+    if (findings.some((item) => item.level === "error")) return findings;
+    const artifact = readJson(criticFile) as CriticArtifact;
+    if (!artifact.report) return [...findings, finding("error", "critic", "critic.json is missing its independent report")];
+    if (artifact.report.verdict !== "PASS" && artifact.report.verdict !== "PASS AFTER REVISION") findings.push(finding("error", "critic", `completion is blocked by critic verdict ${artifact.report.verdict}`));
+    if (configuration.purpose === "dreative-dogfood" && !artifact.report.dogfood) findings.push(finding("error", "critic", "Dreative Dogfood requires critic behavioural observations"));
+    if (verification && Date.parse(artifact.report.revision?.followUpReviewedAt ?? artifact.report.reviewedAt) >= Date.parse(verification.generatedAt)) findings.push(finding("error", "critic", "critic review must complete before final verification"));
+    return findings;
+  }
   const inputFile = criticArtifactPath(projectDir, plan.criticInput, ".dreative/critic-input.json");
   const reportFile = criticArtifactPath(projectDir, plan.visualCritic, ".dreative/visual-critic.json");
   const projectRoot = path.resolve(projectDir) + path.sep;
@@ -424,11 +463,15 @@ export function runDirectDesignAudit(projectDir: string): AuditReport {
     return { ok: false, findings };
 
   const plan = readJson(planFile) as DirectDesignPlan;
-  const preservationFile = path.resolve(projectDir, plan.preservationManifest);
-  const ledgerFile = path.resolve(projectDir, plan.decisionLedger);
+  const configuration = resolveWorkflowConfiguration(plan.configuration, { tier: plan.tier }).configuration;
+  const policy = resolveWorkflowPolicy(configuration);
+  const preservationFile = plan.preservationManifest ? path.resolve(projectDir, plan.preservationManifest) : undefined;
+  const ledgerFile = plan.decisionLedger ? path.resolve(projectDir, plan.decisionLedger) : undefined;
   const verificationFile = path.join(root, "verify.json");
-  findings.push(...checkPreservation(projectDir, preservationFile));
-  findings.push(...checkArtifact(ledgerFile, "ledger", validateDecisionLedger));
+  if (preservationFile) findings.push(...checkPreservation(projectDir, preservationFile));
+  else if (policy.artifacts.includes("preservation.json")) findings.push(finding("error", "preservation", "full-audit requires preservation.json"));
+  if (ledgerFile) findings.push(...checkArtifact(ledgerFile, "ledger", validateDecisionLedger));
+  else if (policy.artifacts.includes("ledger.json")) findings.push(finding("error", "ledger", "full-audit requires ledger.json"));
   findings.push(...checkArtifact(verificationFile, "verification", validateVerificationReport));
   findings.push(...checkVerificationProof(projectDir, verificationFile));
   const verification = fs.existsSync(verificationFile) ? (readJson(verificationFile) as VerificationReport) : undefined;
