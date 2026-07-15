@@ -10,10 +10,13 @@ prototype, and purpose. Omitted values resolve to
 Lean + Auto + Project Delivery while preserving inferred ambition. Legacy audit,
 prototype, and Dogfood flags map explicitly and emit concise deprecations.
 
-In an interactive planning session, if the user has not already specified these
-controls, present execution, prototype, and purpose together as concise choices
-before concept planning. Use the environment's structured question tool when
-available:
+If the user has not already specified these controls, present execution,
+prototype, and purpose together as concise choices before concept planning. A
+user-facing task is interactive regardless of collaboration mode, Plan mode, or
+structured-question-tool availability. Use the environment's structured
+question tool when available; otherwise ask the same choices in plain text and
+wait for the answer. Never silently default these controls on a non-trivial
+design run:
 
 ```text
 Execution mode:
@@ -34,9 +37,11 @@ Purpose:
 ```
 
 Record the selected values in `plan.configuration`. Do not silently replace a
-user selection with the recommendation. If the environment is non-interactive,
-or the user explicitly asks the agent to decide, use the defaults without
-blocking. Do not ask again when the prompt already provides the values.
+user selection with the recommendation. Use defaults without blocking only in
+genuinely headless, non-interactive automation or when the user explicitly asks
+the agent to decide. The absence of a structured question tool does not make a
+user-facing task non-interactive. Do not ask again when the prompt already
+provides the values.
 
 Fast is compact delivery. Lean is the normal quality workflow. Full Audit adds
 relevant certification and traceability. Dreative Dogfood studies Dreative's own

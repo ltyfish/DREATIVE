@@ -23,13 +23,17 @@ process and evidence. Prototype controls only isolated feasibility work. Purpose
 controls why evidence is collected. Award + Lean + Skip is valid.
 
 During interactive planning, ask the user to choose execution, prototype, and
-purpose when they are not already specified. Present Lean, Auto, and Project
-Delivery as recommended, and explain that Auto is usually better because it
-prototypes only when technical risk makes the extra work useful. Preserve the
-user's choices in `plan.configuration`. Use `dreative config` defaults in
-non-interactive environments; never block automation waiting for answers. Tiny
-isolated changes can go straight to implementation and the smallest relevant
-check.
+purpose when they are not already specified. A user-facing task is interactive
+regardless of collaboration mode, Plan mode, or structured-question-tool
+availability. Use the structured tool when available; otherwise ask the same
+choices in plain text and wait for the answer. Never silently default these
+controls on a non-trivial design run. Present Lean, Auto, and Project Delivery
+as recommended, and explain that Auto is usually better because it prototypes
+only when technical risk makes the extra work useful. Preserve the user's
+choices in `plan.configuration`. Use `dreative config` defaults only for
+genuinely headless automation or when the user explicitly asks the agent to
+decide; never block automation waiting for answers. Tiny isolated changes can
+go straight to implementation and the smallest relevant check.
 
 ## 2. Read progressively
 

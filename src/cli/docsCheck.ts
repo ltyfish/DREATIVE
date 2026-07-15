@@ -169,6 +169,11 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   for (const choice of ["Lean (Recommended)", "Auto (Recommended)", "Project Delivery (Recommended)", "Fast", "Full Audit", "Skip", "Required", "Production Certification", "Dreative Dogfood"])
     if (!planning.includes(choice)) add(findings, "workflow-choices", "PLAN.md", `missing user-facing configuration choice: ${choice}`);
   if (!/non-interactive/i.test(planning) || !/plan\.configuration/.test(planning)) add(findings, "workflow-choices", "PLAN.md", "configuration choices must preserve non-interactive defaults and persist to plan.configuration");
+  for (const file of ["SKILL.md", "PLAN.md"]) {
+    const content = contents.get(file) ?? "";
+    if (!/user-facing task is interactive/i.test(content) || !/plain text/i.test(content) || !/never silently default/i.test(content))
+      add(findings, "workflow-choices", file, "user-facing runs must ask configuration choices even without a structured question tool");
+  }
 
   return { ok: findings.length === 0, findings };
 }
