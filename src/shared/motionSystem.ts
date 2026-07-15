@@ -5,6 +5,7 @@ import type {
   StaticFeelingReview,
   VerificationEvidence,
   VerificationReport,
+  VisualCheckpoint,
 } from "./artifacts.js";
 
 const MOTION_SKILLS = new Set(["motion", "interaction", "immersive", "cinematic", "experimental", "3d"]);
@@ -45,12 +46,31 @@ function validateMoment(moment: MotionExecutionMoment, pages: Map<string, Set<st
   return errors;
 }
 
-function validateStaticFeeling(review: StaticFeelingReview | undefined, prefix: string): string[] {
+const STATIC_FEELING_KEYS = ["developsWithoutEntrances", "firstViewportMeaningfulResponse", "beyondOpacityAndPosition", "crossSectionInfluence", "signatureDevelops", "brandSpecificMotion", "memorableSequence", "primarilyStaticStack"] as const;
+
+function validateStaticFeeling(review: StaticFeelingReview | undefined, prefix: string, evidence?: Map<string, VerificationEvidence>): string[] {
   if (!review) return [`${prefix} is required`];
   const errors: string[] = [];
-  for (const key of ["developsWithoutEntrances", "firstViewportMeaningfulResponse", "beyondOpacityAndPosition", "crossSectionInfluence", "signatureDevelops", "brandSpecificMotion", "memorableSequence"] as const) if (review[key] !== true) errors.push(`${prefix}.${key} must pass`);
-  if (review.primarilyStaticStack !== false) errors.push(`${prefix}.primarilyStaticStack must be false`);
-  if (!Array.isArray(review.evidenceIds) || review.evidenceIds.length === 0) errors.push(`${prefix}.evidenceIds must ground the answers`);
+  const referenced: VerificationEvidence[] = [];
+  for (const key of STATIC_FEELING_KEYS) {
+    const answer = review[key];
+    const expected = key === "primarilyStaticStack" ? false : true;
+    if (!answer || answer.answer !== expected) errors.push(`${prefix}.${key}.answer must be ${expected}`);
+    if (!answer || !concrete(answer.observation, 20)) errors.push(`${prefix}.${key}.observation must describe the visible result`);
+    if (!answer || !Array.isArray(answer.evidenceIds) || answer.evidenceIds.length === 0) {
+      errors.push(`${prefix}.${key}.evidenceIds must ground this answer`);
+      continue;
+    }
+    if (evidence) for (const id of answer.evidenceIds) {
+      const item = evidence.get(id);
+      if (!item) errors.push(`${prefix}.${key} references missing evidence ${id}`);
+      else if (item.status !== "pass") errors.push(`${prefix}.${key} references non-passing evidence ${id}`);
+      else if (!["motion", "interaction", "media-transformation"].includes(item.kind ?? "") || !temporalProof(item)) errors.push(`${prefix}.${key} evidence ${id} is not grounded temporal proof`);
+      else referenced.push(item);
+    }
+  }
+  if (evidence && !referenced.some((item) => item.viewportClass === "desktop")) errors.push(`${prefix} requires passing desktop temporal evidence`);
+  if (evidence && !referenced.some((item) => item.viewportClass === "mobile")) errors.push(`${prefix} requires passing mobile temporal evidence`);
   return errors;
 }
 
@@ -81,12 +101,18 @@ function validateTransformation(item: MediaTransformation, momentIds: Set<string
   return errors;
 }
 
-function temporalProof(item: VerificationEvidence): boolean {
+function validInterval(start: unknown, end: unknown): boolean {
+  return typeof start === "string" && typeof end === "string" && !Number.isNaN(Date.parse(start)) && !Number.isNaN(Date.parse(end)) && Date.parse(end) > Date.parse(start);
+}
+
+function temporalProof(item: VerificationEvidence, requireVisualCapture = false): boolean {
   const proof = item.proof;
-  const recording = Boolean(proof.recordingPath && proof.startTimestamp && proof.endTimestamp);
-  const trace = Boolean(proof.tracePath && proof.startTimestamp && proof.endTimestamp);
-  const sampled = proof.controlledProgress !== undefined && (proof.observedProperties?.length ?? 0) > 0 && concrete(proof.expectedState) && concrete(proof.observedState);
-  return recording || trace || sampled;
+  const recording = Boolean(proof.recordingPath && validInterval(proof.startTimestamp, proof.endTimestamp));
+  const trace = Boolean(proof.tracePath && validInterval(proof.startTimestamp, proof.endTimestamp));
+  const groundedSample = Boolean(proof.artifactPath || (proof.command && proof.exitCode === 0) || proof.playwrightTestId || proof.tracePath || proof.captureManifestPath);
+  const visualCapture = Boolean(proof.artifactPath && /\.(?:png|jpe?g|webp|avif|gif)$/i.test(proof.artifactPath));
+  const sampled = proof.controlledProgress !== undefined && (proof.observedProperties?.length ?? 0) > 0 && concrete(proof.expectedState) && concrete(proof.observedState) && groundedSample && (!requireVisualCapture || visualCapture);
+  return proof.controlledProgress !== undefined ? sampled : recording || trace;
 }
 
 export function validateMotionExecution(plan: DirectDesignPlan, verification?: VerificationReport): string[] {
@@ -135,11 +161,15 @@ export function validateMotionExecution(plan: DirectDesignPlan, verification?: V
         if (!item || item.status !== "pass") errors.push(`${moment.id}: missing passing temporal evidence ${id}`);
         else if (item.motionMomentId !== moment.id) errors.push(`${moment.id}: evidence ${id} is not mapped to the motion moment`);
         else if (!["motion", "interaction", "media-transformation"].includes(item.kind ?? "")) errors.push(`${moment.id}: evidence ${id} has a non-temporal kind`);
-        else if (!temporalProof(item)) errors.push(`${moment.id}: evidence ${id} lacks recording, trace, or controlled-progress provenance`);
+        else if (!temporalProof(item, /\b(?:canvas|webgl|shader|pixel|image|frame)\b/i.test(moment.renderingMechanism))) errors.push(`${moment.id}: evidence ${id} lacks recording, trace, or grounded controlled-progress provenance`);
       }
       const states = new Set(items.map((item) => item?.timelineState));
       for (const state of ["initial", "early", "mid-transition", "final", "reverse-interaction", "mobile", "reduced-motion"] as const) if (!states.has(state)) errors.push(`${moment.id}: temporal evidence is missing ${state}`);
       if (!/^no handoff/i.test(moment.handoff) && !states.has("handoff")) errors.push(`${moment.id}: temporal evidence is missing handoff`);
+      const controlled = items.filter((item): item is VerificationEvidence => Boolean(item && item.proof.controlledProgress !== undefined));
+      if (controlled.length >= 3 && new Set(controlled.map((item) => String(item.proof.controlledProgress))).size < 3) errors.push(`${moment.id}: controlled-progress timeline must contain at least three distinct progress values`);
+      const keyStates = ["initial", "mid-transition", "final"].map((state) => items.find((item) => item?.timelineState === state));
+      if (keyStates.every(Boolean) && new Set(keyStates.map((item) => JSON.stringify(item?.proof.observedProperties?.map((property) => [property.property, property.observed])))).size < 3) errors.push(`${moment.id}: initial, mid-transition, and final evidence must contain distinct observed values`);
       const section = plan.pages.find((page) => page.id === moment.pageId)?.sections.find((item) => item.id === moment.sectionId);
       if (section?.status === "shipped" && items.some((item) => !item || item.status !== "pass")) errors.push(`${moment.pageId}/${moment.sectionId}: section is shipped before motion evidence passes`);
     }
@@ -153,22 +183,37 @@ export function validateMotionExecution(plan: DirectDesignPlan, verification?: V
         const item = evidence.get(id);
         if (!item || item.status !== "pass") errors.push(`${transformation.id}: missing passing transformation evidence ${id}`);
         else if (item.mediaTransformationId !== transformation.id || item.motionMomentId !== transformation.motionMomentId) errors.push(`${transformation.id}: evidence ${id} is not mapped to the transformation and owning motion moment`);
-        else if (item.kind !== "media-transformation" || !temporalProof(item)) errors.push(`${transformation.id}: evidence ${id} lacks temporal media-transformation proof`);
+        else if (item.kind !== "media-transformation" || !temporalProof(item, true)) errors.push(`${transformation.id}: evidence ${id} lacks screenshot-backed temporal media-transformation proof`);
       }
       for (const derivative of transformation.derivatives) for (const id of derivative.evidenceIds) if (!evidence.get(id) || evidence.get(id)?.status !== "pass") errors.push(`${transformation.id}/${derivative.id}: missing passing derivative evidence ${id}`);
     }
-    if (ambitious) errors.push(...validateStaticFeeling(verification.staticFeelingReview, "verification.staticFeelingReview"));
+    if (ambitious) errors.push(...validateStaticFeeling(verification.staticFeelingReview, "verification.staticFeelingReview", evidence));
   }
   return errors;
 }
 
-export function validateMotionCheckpoint(plan: DirectDesignPlan, checkpoint: { motionPrototype?: { motionMomentIds: string[]; firstViewport: boolean; importantComposition: boolean; structuralOrTransformationalTransition: boolean; interactionResponse: boolean; desktop: boolean; mobile: boolean; reducedMotion: boolean; realProject: boolean; representativeAssets: boolean; evidenceIds: string[]; staticFeelingReview: StaticFeelingReview } }): string[] {
+export function validateMotionCheckpoint(plan: DirectDesignPlan, checkpoint: VisualCheckpoint, verification?: VerificationReport): string[] {
   if (!motionIsSelected(plan) && plan.tier !== "expressive" && plan.tier !== "award") return [];
   const prototype = checkpoint.motionPrototype;
   if (!prototype) return ["motion-selected work requires an approved motion prototype checkpoint"];
   const errors: string[] = [];
+  const approvalAt = checkpoint.approval.approvedAt;
+  if (!checkpoint.systemSpreadStartedAt) errors.push("motion prototype requires systemSpreadStartedAt");
+  if (!approvalAt || Date.parse(checkpoint.capturedAt) >= Date.parse(approvalAt)) errors.push("motion prototype capturedAt must predate checkpoint approval");
+  if (approvalAt && checkpoint.systemSpreadStartedAt && Date.parse(approvalAt) >= Date.parse(checkpoint.systemSpreadStartedAt)) errors.push("checkpoint approval must predate systemSpreadStartedAt");
+  if (checkpoint.systemSpreadStartedAt && verification && Date.parse(checkpoint.systemSpreadStartedAt) >= Date.parse(verification.generatedAt)) errors.push("systemSpreadStartedAt must predate final verification generatedAt");
   for (const key of ["firstViewport", "importantComposition", "structuralOrTransformationalTransition", "interactionResponse", "desktop", "mobile", "reducedMotion", "realProject", "representativeAssets"] as const) if (!prototype[key]) errors.push(`motion prototype ${key} must be implemented`);
   if (prototype.motionMomentIds.length === 0 || prototype.evidenceIds.length === 0) errors.push("motion prototype requires mapped moments and temporal evidence");
-  if (plan.tier === "expressive" || plan.tier === "award") errors.push(...validateStaticFeeling(prototype.staticFeelingReview, "motionPrototype.staticFeelingReview"));
+  const evidence = new Map((verification?.evidence ?? []).map((item) => [item.id, item]));
+  for (const id of prototype.evidenceIds) {
+    const item = evidence.get(id);
+    if (!item) errors.push(`motion prototype references missing evidence ${id}`);
+    else if (item.status !== "pass") errors.push(`motion prototype evidence ${id} must pass`);
+    else if (!["motion", "interaction", "media-transformation"].includes(item.kind ?? "") || !temporalProof(item, item.kind === "media-transformation")) errors.push(`motion prototype evidence ${id} must contain grounded temporal provenance`);
+    else if (!item.motionMomentId || !prototype.motionMomentIds.includes(item.motionMomentId)) errors.push(`motion prototype evidence ${id} is not mapped to a prototype motion moment`);
+    else if (approvalAt && Date.parse(item.proof.timestamp) > Date.parse(approvalAt)) errors.push(`motion prototype evidence ${id} was captured after checkpoint approval`);
+    if (item && checkpoint.systemSpreadStartedAt && Date.parse(item.proof.timestamp) >= Date.parse(checkpoint.systemSpreadStartedAt)) errors.push(`motion prototype evidence ${id} was captured after system spread started`);
+  }
+  if (plan.tier === "expressive" || plan.tier === "award") errors.push(...validateStaticFeeling(prototype.staticFeelingReview, "motionPrototype.staticFeelingReview", evidence));
   return errors;
 }

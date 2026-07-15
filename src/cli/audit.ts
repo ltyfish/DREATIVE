@@ -179,7 +179,7 @@ function checkStaticQuality(projectDir: string, plan: DirectDesignPlan): AuditFi
   return findings;
 }
 
-function checkVerificationProof(projectDir: string, verificationFile: string): AuditFinding[] {
+export function checkVerificationProof(projectDir: string, verificationFile: string): AuditFinding[] {
   if (!fs.existsSync(verificationFile)) return [];
   let report: VerificationReport;
   try {
@@ -188,6 +188,37 @@ function checkVerificationProof(projectDir: string, verificationFile: string): A
     return [];
   }
   const findings: AuditFinding[] = [];
+  const checkTemporalArtifact = (itemId: string, artifactPath: string, label: string) => {
+    const target = path.resolve(projectDir, artifactPath);
+    if (!target.startsWith(path.resolve(projectDir) + path.sep)) {
+      findings.push(finding("error", "motion-evidence", `${itemId}: ${label} path escapes the project root`));
+      return;
+    }
+    if (!fs.existsSync(target)) {
+      findings.push(finding("error", "motion-evidence", `${itemId}: ${label} is missing at ${artifactPath}`));
+      return;
+    }
+    const stat = fs.statSync(target);
+    if (!stat.isFile() || stat.size === 0) {
+      findings.push(finding("error", "motion-evidence", `${itemId}: ${label} is empty or not a file at ${artifactPath}`));
+      return;
+    }
+    const extension = path.extname(target).toLowerCase();
+    const header = fs.readFileSync(target).subarray(0, 16);
+    const validImage = extension === ".png" ? header.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
+      : [".jpg", ".jpeg"].includes(extension) ? header[0] === 0xff && header[1] === 0xd8 && header[2] === 0xff
+      : extension === ".webp" ? header.subarray(0, 4).toString() === "RIFF" && header.subarray(8, 12).toString() === "WEBP"
+      : extension === ".gif" ? header.subarray(0, 4).toString() === "GIF8"
+      : true;
+    const validMedia = extension === ".mp4" ? header.subarray(4, 8).toString() === "ftyp"
+      : extension === ".webm" ? header.subarray(0, 4).equals(Buffer.from([0x1a, 0x45, 0xdf, 0xa3]))
+      : true;
+    let validStructured = true;
+    if ([".json", ".jsonl"].includes(extension)) {
+      try { JSON.parse(fs.readFileSync(target, "utf-8")); } catch { validStructured = false; }
+    }
+    if (!validImage || !validMedia || !validStructured) findings.push(finding("error", "motion-evidence", `${itemId}: ${label} is obviously invalid at ${artifactPath}`));
+  };
   for (const item of report.evidence ?? []) {
     const proof = item.proof;
     if (!proof) continue;
@@ -198,11 +229,8 @@ function checkVerificationProof(projectDir: string, verificationFile: string): A
       else if (!fs.existsSync(target))
         findings.push(finding("error", "verification", `${item.id}: evidence artifact is missing at ${proof.artifactPath}`));
     }
-    for (const temporalPath of [proof.recordingPath, proof.tracePath]) if (temporalPath) {
-      const target = path.resolve(projectDir, temporalPath);
-      if (!target.startsWith(path.resolve(projectDir) + path.sep)) findings.push(finding("error", "motion-evidence", `${item.id}: temporal artifact path escapes the project root`));
-      else if (!fs.existsSync(target)) findings.push(finding("error", "motion-evidence", `${item.id}: temporal artifact is missing at ${temporalPath}`));
-    }
+    const temporalPaths = [[proof.recordingPath, "recording artifact"], [proof.tracePath, "trace artifact"], [proof.captureManifestPath, "capture manifest"], [proof.controlledProgress !== undefined ? proof.artifactPath : undefined, "controlled-progress artifact"]] as const;
+    for (const [temporalPath, label] of temporalPaths) if (temporalPath) checkTemporalArtifact(item.id, temporalPath, label);
     if (proof.viewport && (proof.viewport.width <= 0 || proof.viewport.height <= 0 || (proof.viewport.dpr ?? 1) <= 0))
       findings.push(finding("error", "verification", `${item.id}: viewport dimensions and DPR must be positive`));
     if (typeof proof.averageFps === "number" && proof.averageFps <= 0)
@@ -245,7 +273,7 @@ export function checkMotionExecutionArtifacts(projectDir: string, plan: DirectDe
     if (fs.existsSync(checkpointFile)) {
       try {
         const checkpoint = readJson(checkpointFile) as VisualCheckpoint;
-        findings.push(...validateMotionCheckpoint(plan, checkpoint).map((message) => finding("error", "motion-prototype", message)));
+        findings.push(...validateMotionCheckpoint(plan, checkpoint, report).map((message) => finding("error", "motion-prototype", message)));
         const evidence = new Set((report?.evidence ?? []).map((item) => item.id));
         for (const id of checkpoint.motionPrototype?.evidenceIds ?? []) if (!evidence.has(id)) findings.push(finding("error", "motion-prototype", `prototype references missing verification evidence ${id}`));
         for (const id of checkpoint.motionPrototype?.motionMomentIds ?? []) if (!(plan.motionMoments ?? []).some((moment) => moment.id === id)) findings.push(finding("error", "motion-prototype", `approved prototype moment ${id} is absent from runtime plan`));

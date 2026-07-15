@@ -1,7 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import type { DirectDesignPlan, MediaTransformation, MotionExecutionMoment, VerificationEvidence, VerificationReport } from "./artifacts.js";
-import { validateMotionExecution } from "./motionSystem.js";
+import type { DirectDesignPlan, MediaTransformation, MotionExecutionMoment, StaticFeelingReview, VerificationEvidence, VerificationReport, VisualCheckpoint } from "./artifacts.js";
+import { validateVerificationReport } from "./artifacts.js";
+import { validateMotionCheckpoint, validateMotionExecution } from "./motionSystem.js";
 
 const states = ["initial", "early", "mid-transition", "final", "handoff", "reverse-interaction", "mobile", "reduced-motion"] as const;
 
@@ -23,8 +24,28 @@ function plan(item = moment(), tier: DirectDesignPlan["tier"] = "expressive"): D
 }
 
 function evidence(item = moment()): VerificationReport {
-  const entries: VerificationEvidence[] = states.map((timelineState, index) => ({ id: `hero-${timelineState}`, criterion: `Observe ${timelineState} state`, criterionId: `criterion-${timelineState}`, pageId: "home", sectionId: "hero", kind: "motion", viewportClass: timelineState === "mobile" ? "mobile" : "desktop", mobileChecks: timelineState === "mobile" ? ["motion-media-translated"] : undefined, timelineState, motionMomentId: item.id, status: "pass", evidence: "Controlled progress sample from the production runtime.", proof: { timestamp: "2026-01-01T02:00:00.000Z", viewport: { width: timelineState === "mobile" ? 390 : 1440, height: 900 }, controlledProgress: index / (states.length - 1), observedProperties: [{ property: "clip-path", expected: `state ${index}`, observed: `state ${index}` }], expectedState: `The composition reaches the planned ${timelineState} state.`, observedState: `The rendered composition visibly matches the ${timelineState} state.` } }));
-  return { version: 3, generatedAt: "2026-01-01T03:00:00.000Z", evidence: entries, staticFeelingReview: { developsWithoutEntrances: true, firstViewportMeaningfulResponse: true, beyondOpacityAndPosition: true, crossSectionInfluence: true, signatureDevelops: true, brandSpecificMotion: true, memorableSequence: true, primarilyStaticStack: false, evidenceIds: entries.map((entry) => entry.id) } };
+  const entries: VerificationEvidence[] = states.map((timelineState, index) => ({ id: `hero-${timelineState}`, criterion: `Observe ${timelineState} state`, criterionId: `criterion-${timelineState}`, pageId: "home", sectionId: "hero", kind: "motion", viewportClass: timelineState === "mobile" ? "mobile" : "desktop", mobileChecks: timelineState === "mobile" ? ["motion-media-translated"] : undefined, timelineState, motionMomentId: item.id, status: "pass", evidence: "Controlled progress sample from the production runtime.", proof: { timestamp: "2026-01-01T02:00:00.000Z", artifactPath: `.dreative/captures/hero-${timelineState}.png`, viewport: { width: timelineState === "mobile" ? 390 : 1440, height: 900 }, controlledProgress: index / (states.length - 1), observedProperties: [{ property: "clip-path", expected: `state ${index}`, observed: `state ${index}` }], expectedState: `The composition reaches the planned ${timelineState} state.`, observedState: `The rendered composition visibly matches the ${timelineState} state.` } }));
+  return { version: 3, generatedAt: "2026-01-01T03:00:00.000Z", evidence: entries, staticFeelingReview: staticReview(entries.map((entry) => entry.id)) };
+}
+
+function staticReview(evidenceIds: string[]): StaticFeelingReview {
+  const answer = (value: boolean, observation: string) => ({ answer: value, evidenceIds, observation });
+  return {
+    developsWithoutEntrances: answer(true, "The document visibly changes composition after entrance motion is excluded."),
+    firstViewportMeaningfulResponse: answer(true, "The first viewport visibly responds by folding the source into navigation."),
+    beyondOpacityAndPosition: answer(true, "The clip geometry and structural role change beyond opacity and position."),
+    crossSectionInfluence: answer(true, "The folded edge persists into and controls the following section composition."),
+    signatureDevelops: answer(true, "The signature document develops from source artifact into chapter control."),
+    brandSpecificMotion: answer(true, "Archival handling visibly supplies a brand-specific folding motion language."),
+    memorableSequence: answer(true, "The source-to-control transformation creates a distinct repeatable sequence."),
+    primarilyStaticStack: answer(false, "Captured desktop and mobile states show a developing composition, not a static stack."),
+  };
+}
+
+function checkpoint(report: VerificationReport): VisualCheckpoint {
+  return {
+    version: 1, capturedAt: "2026-01-01T01:00:00.000Z", implementation: { hero: true, coreSection: true, desktop: true, mobile: true, primaryMotionLanguage: true }, baselineScreenshotPaths: [".dreative/before.png"], screenshotPaths: { desktop: [".dreative/prototype-desktop.png"], mobile: [".dreative/prototype-mobile.png"] }, critique: Object.fromEntries(["distinctiveness", "hierarchy", "brandVisibility", "signatureLegibility", "equityRetention", "saasTemplateRisk", "brandSwapRisk", "mobileAuthorship", "motionPurpose", "counterfactualStrength"].map((key) => [key, `The rendered prototype provides a concrete ${key} comparison against the baseline.`])) as VisualCheckpoint["critique"], meaningfulWeaknessFound: false, refinements: [], approval: { status: "approved", approvedAt: "2026-01-01T02:30:00.000Z", transcriptReferences: ["chat:prototype-approved"] }, systemSpreadStartedAt: "2026-01-01T02:40:00.000Z", motionPrototype: { motionMomentIds: ["hero-fold"], firstViewport: true, importantComposition: true, structuralOrTransformationalTransition: true, interactionResponse: true, desktop: true, mobile: true, reducedMotion: true, realProject: true, representativeAssets: true, evidenceIds: report.evidence.map((entry) => entry.id), staticFeelingReview: staticReview(report.evidence.map((entry) => entry.id)) },
+  };
 }
 
 for (const [name, mechanism] of [
@@ -52,7 +73,43 @@ test("rejects motion plans with no temporal evidence", () => {
 
 test("rejects fake midpoint screenshots without controlled progress", () => {
   const report = evidence(); const middle = report.evidence.find((item) => item.timelineState === "mid-transition")!; middle.proof = { timestamp: middle.proof.timestamp, artifactPath: ".dreative/fake-middle.png", viewport: { width: 1440, height: 900 } };
-  assert.ok(validateMotionExecution(plan(), report).some((error) => error.includes("lacks recording, trace, or controlled-progress provenance")));
+  assert.ok(validateMotionExecution(plan(), report).some((error) => error.includes("lacks recording, trace, or grounded controlled-progress provenance")));
+});
+
+test("rejects controlled-progress evidence with no artifact, test, command, trace, or capture manifest", () => {
+  const report = evidence(); for (const item of report.evidence) delete item.proof.artifactPath;
+  assert.ok(validateMotionExecution(plan(), report).some((error) => error.includes("grounded controlled-progress provenance")));
+});
+
+test("rejects seven timeline states that all use the same progress value", () => {
+  const report = evidence(); for (const item of report.evidence.slice(0, 7)) item.proof.controlledProgress = 0.5; report.evidence[7].proof.controlledProgress = 0.5;
+  assert.ok(validateMotionExecution(plan(), report).some((error) => error.includes("three distinct progress values")));
+});
+
+test("rejects initial, mid-transition, and final evidence with identical observed values", () => {
+  const report = evidence(); for (const state of ["initial", "mid-transition", "final"]) report.evidence.find((item) => item.timelineState === state)!.proof.observedProperties![0].observed = "identical rendered state";
+  assert.ok(validateMotionExecution(plan(), report).some((error) => error.includes("distinct observed values")));
+});
+
+test("rejects prototype evidence captured after systemSpreadStartedAt", () => {
+  const report = evidence(); const value = checkpoint(report); report.evidence[0].proof.timestamp = "2026-01-01T02:45:00.000Z";
+  assert.ok(validateMotionCheckpoint(plan(), value, report).some((error) => error.includes("after system spread started")));
+});
+
+test("rejects prototype evidence that exists but is not temporal or passing", () => {
+  const report = evidence(); const value = checkpoint(report); report.evidence[0].status = "fail"; report.evidence[1].kind = "visual";
+  const errors = validateMotionCheckpoint(plan(), value, report);
+  assert.ok(errors.some((error) => error.includes("must pass")) && errors.some((error) => error.includes("grounded temporal provenance")));
+});
+
+test("rejects staticFeelingReview containing nonexistent evidence IDs", () => {
+  const report = evidence(); report.staticFeelingReview!.signatureDevelops.evidenceIds = ["made-up-evidence"];
+  assert.ok(validateMotionExecution(plan(), report).some((error) => error.includes("references missing evidence made-up-evidence")));
+});
+
+test("rejects a recording whose end timestamp is not later than its start timestamp", () => {
+  const report = evidence(); const proof = report.evidence[0].proof; proof.recordingPath = ".dreative/captures/hero.webm"; proof.startTimestamp = "2026-01-01T02:00:00.000Z"; proof.endTimestamp = proof.startTimestamp;
+  assert.ok(validateVerificationReport(report).some((error) => error.includes("endTimestamp must be later")));
 });
 
 test("rejects shipped sections before required motion evidence exists", () => {

@@ -236,9 +236,10 @@ Verification is evidence, not prose asserting that something was checked.
 9. Write `.dreative/verify.json` v3. Associate each row to a typed criterion,
    page/section, evidence kind, viewport class, and artifact/test. Run
    `dreative audit`.
-10. Answer the static-feeling rejection test in `staticFeelingReview`: without
-    entrances, does composition/media/interaction/spatial state still develop?
-    At expressive/award, “no” fails.
+10. Answer each static-feeling rejection question with `{ answer, evidenceIds,
+    observation }`. Every ID must resolve to passing desktop/mobile temporal
+    evidence; without entrances, composition/media/interaction/spatial state
+    must still develop. At expressive/award, “no” fails.
 11. Fix every error. Warnings require either a fix or a recorded justification.
 
 Every evidence-backed substitution references passing evidence IDs whose proof

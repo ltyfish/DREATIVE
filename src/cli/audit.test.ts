@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { checkCriticArtifacts, checkMotionExecutionArtifacts, checkRedesignQualityArtifacts, checkVerificationCoverage, runDirectDesignAudit } from "./audit.js";
+import { checkCriticArtifacts, checkMotionExecutionArtifacts, checkRedesignQualityArtifacts, checkVerificationCoverage, checkVerificationProof, runDirectDesignAudit } from "./audit.js";
 import type { DirectDesignPlan, VerificationReport } from "../shared/artifacts.js";
 
 test("direct-design audit verifies artifacts and preservation needles", () => {
@@ -159,6 +159,17 @@ test("motion audit rejects missing implementation-file mappings", () => {
     const plan = { version: 5, doctrineVersion: 5, tier: "solid", skills: ["ux", "mobile", "motion"], motionMoments: [{ id: "hero-motion", implementationFile: "src/missing-motion.tsx" }], pages: [] } as unknown as DirectDesignPlan;
     const findings = checkMotionExecutionArtifacts(root, plan);
     assert.ok(findings.some((item) => item.message.includes("implementation file does not exist")));
+  } finally { fs.rmSync(root, { recursive: true, force: true }); }
+});
+
+test("rejects a zero-byte or obviously invalid temporal artifact", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-empty-temporal-"));
+  try {
+    fs.mkdirSync(path.join(root, ".dreative"));
+    fs.writeFileSync(path.join(root, ".dreative", "empty.png"), "");
+    const verificationFile = path.join(root, ".dreative", "verify.json");
+    fs.writeFileSync(verificationFile, JSON.stringify({ version: 3, generatedAt: "2026-01-01T03:00:00.000Z", evidence: [{ id: "hero-mid", criterion: "Observe midpoint", criterionId: "hero-mid", pageId: "home", sectionId: "hero", kind: "motion", viewportClass: "desktop", timelineState: "mid-transition", motionMomentId: "hero-fold", status: "pass", evidence: "Browser-controlled midpoint capture.", proof: { timestamp: "2026-01-01T02:00:00.000Z", artifactPath: ".dreative/empty.png", viewport: { width: 1440, height: 900 }, controlledProgress: 0.5, observedProperties: [{ property: "clip-path", expected: "folded midpoint", observed: "folded midpoint" }], expectedState: "The document reaches its folded midpoint.", observedState: "The captured frame shows the folded midpoint." } }] }));
+    assert.ok(checkVerificationProof(root, verificationFile).some((item) => item.message.includes("empty or not a file")));
   } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });
 

@@ -156,16 +156,21 @@ export interface FallbackExecution {
   userApprovalReference?: string;
 }
 
-export interface StaticFeelingReview {
-  developsWithoutEntrances: boolean;
-  firstViewportMeaningfulResponse: boolean;
-  beyondOpacityAndPosition: boolean;
-  crossSectionInfluence: boolean;
-  signatureDevelops: boolean;
-  brandSpecificMotion: boolean;
-  memorableSequence: boolean;
-  primarilyStaticStack: boolean;
+export interface StaticFeelingAnswer {
+  answer: boolean;
   evidenceIds: string[];
+  observation: string;
+}
+
+export interface StaticFeelingReview {
+  developsWithoutEntrances: StaticFeelingAnswer;
+  firstViewportMeaningfulResponse: StaticFeelingAnswer;
+  beyondOpacityAndPosition: StaticFeelingAnswer;
+  crossSectionInfluence: StaticFeelingAnswer;
+  signatureDevelops: StaticFeelingAnswer;
+  brandSpecificMotion: StaticFeelingAnswer;
+  memorableSequence: StaticFeelingAnswer;
+  primarilyStaticStack: StaticFeelingAnswer;
 }
 
 export interface PlanSection {
@@ -472,6 +477,7 @@ export interface VerificationEvidence {
     playwrightTestId?: string;
     recordingPath?: string;
     tracePath?: string;
+    captureManifestPath?: string;
     startTimestamp?: string;
     endTimestamp?: string;
     controlledProgress?: number | string;
@@ -902,6 +908,7 @@ export function validateVerificationReport(value: unknown): string[] {
   if (!report || typeof report !== "object") return ["verification report must be an object"];
   const errors: string[] = [];
   if (report.version !== 1 && report.version !== 2 && report.version !== 3) errors.push("verification report version must be 1/2 (legacy) or 3");
+  if (!validDate(report.generatedAt)) errors.push("verification report generatedAt must be a valid date");
   if (!Array.isArray(report.evidence)) errors.push("verification evidence must be an array");
   if (report.refinement) {
     if (!nonEmpty(report.refinement.inspectedAt) || Number.isNaN(Date.parse(report.refinement.inspectedAt)))
@@ -956,6 +963,7 @@ export function validateVerificationReport(value: unknown): string[] {
       nonEmpty(proof.playwrightTestId) ||
       nonEmpty(proof.recordingPath) ||
       nonEmpty(proof.tracePath) ||
+      nonEmpty(proof.captureManifestPath) ||
       proof.controlledProgress !== undefined;
     if (!hasConcreteProof) errors.push(`verification.evidence[${index}].proof needs a command, artifact, URL, runtime measurement, or test id`);
     if ((nonEmpty(proof.command) && typeof proof.exitCode !== "number") || (!nonEmpty(proof.command) && typeof proof.exitCode === "number"))
@@ -964,6 +972,8 @@ export function validateVerificationReport(value: unknown): string[] {
       errors.push(`verification.evidence[${index}] cannot pass with exitCode ${proof.exitCode}`);
     if (item.status === "pass" && typeof proof.consoleErrorCount === "number" && proof.consoleErrorCount !== 0)
       errors.push(`verification.evidence[${index}] cannot pass with console errors`);
+    if ((nonEmpty(proof.startTimestamp) || nonEmpty(proof.endTimestamp)) && (!validDate(proof.startTimestamp) || !validDate(proof.endTimestamp) || Date.parse(proof.endTimestamp) <= Date.parse(proof.startTimestamp)))
+      errors.push(`verification.evidence[${index}] recording endTimestamp must be later than startTimestamp`);
   }
   if (report.version === 3 && report.perceptualComparison) {
     const comparison = report.perceptualComparison;
