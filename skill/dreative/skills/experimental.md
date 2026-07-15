@@ -109,3 +109,5 @@ When the user has opted into `experimental`:
 - Every ambitious idea still needs 3d.md §5 / motion.md §5 performance
   budgets and a concrete fallback (PLAN.md §2) — experimental means bolder
   ideas, not exemption from the runtime verification gate.
+- A selected provocation maps to typed motion/media-transformation contracts and
+  must survive the static-feeling rejection test with controlled temporal proof.

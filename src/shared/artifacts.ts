@@ -1,10 +1,11 @@
 import type { AmbitionTier, SpecialistSkill } from "./skillSystem.js";
 import type { ExpressionContract, MobileBlueprint, MobileVerificationCheck, PageRegister, SourceStrategy, StructuralDelta, TransformationDepth } from "./types.js";
+import { validateMotionExecution } from "./motionSystem.js";
 
 export type DeliveryStatus = "planned" | "shipped" | "fallback" | "cut";
 export type WorkScope = "tiny" | "substantial";
 export type ProjectKind = "from-scratch" | "redesign";
-export type VerificationKind = "visual" | "interaction" | "responsive" | "preservation" | "structural-depth" | "design-equity" | "concept-fidelity" | "perceptual-comparison" | "visual-regression";
+export type VerificationKind = "visual" | "interaction" | "motion" | "media-transformation" | "responsive" | "preservation" | "structural-depth" | "design-equity" | "concept-fidelity" | "perceptual-comparison" | "visual-regression";
 
 export interface PlanAsset {
   id: string;
@@ -34,6 +35,139 @@ export interface MotionTreatment {
   reducedMotion: string;
 }
 
+export type MotionClass = "decorative" | "structural" | "transformational";
+export type MotionDriver = "load" | "scroll-progress" | "pointer" | "drag" | "velocity" | "click" | "route-transition" | "time" | string;
+
+export interface MotionExecutionMoment {
+  id: string;
+  pageId: string;
+  sectionId: string;
+  owner: string;
+  class: MotionClass;
+  driver: MotionDriver;
+  staticComposition: string;
+  startState: string;
+  intermediateState: string;
+  endState: string;
+  handoff: string;
+  purpose: string;
+  renderingMechanism: string;
+  implementationFile: string;
+  implementationComponent: string;
+  observedProperties: string[];
+  desktop: string;
+  mobile: string;
+  reducedMotion: string;
+  primaryImplementation: string;
+  runtimeFallback: string;
+  successCriteria: string[];
+  requiredEvidenceIds: string[];
+  hero: boolean;
+}
+
+export type TransformationDerivativeRole =
+  | "base-image" | "edited-state-image" | "subject-cutout" | "foreground-plate" | "midground-plate"
+  | "background-plate" | "depth-map" | "segmentation-mask" | "displacement-map" | "normal-map"
+  | "matte" | "texture-atlas" | "generated-transitional-frame" | "rendered-animation-frame"
+  | "video-loop" | "poster-frame" | "mobile-specific" | "reduced-motion-still";
+
+export interface TransformationCandidate {
+  id: string;
+  visitorExperience: string;
+  brandRationale: string;
+  sourceAsset: string;
+  requiredDerivatives: string[];
+  execution: "real-time" | "pre-rendered" | "hybrid";
+  driver: string;
+  startState: string;
+  intermediateState: string;
+  endState: string;
+  desktopFeasibility: string;
+  mobile: string;
+  reducedMotion: string;
+  performanceRisk: string;
+  fallback: string;
+  selected: boolean;
+  rejectionReason?: string;
+}
+
+export interface TransformationDerivative {
+  id: string;
+  path: string;
+  role: TransformationDerivativeRole;
+  sourceAsset: string;
+  productionMethod: string;
+  aiInstruction?: string;
+  dimensions: string;
+  aspectRatio: string;
+  frameCount?: number;
+  format: string;
+  expectedUse: string;
+  optimizationTarget: string;
+  implementationConsumer: string;
+  status: DeliveryStatus;
+  evidenceIds: string[];
+}
+
+export interface FrameSequencePlan {
+  sourceMethod: string;
+  keyStateCount: number;
+  targetFrameCount: number;
+  productionMethod: string;
+  scrollRange: string;
+  frameProgressMapping: string;
+  preloadStrategy: string;
+  decodingStrategy: string;
+  renderingStrategy: string;
+  desktopDimensions: string;
+  mobileStrategy: string;
+  format: string;
+  transferBudget: string;
+  droppedFrameHandling: string;
+  fallback: string;
+  reducedMotion: string;
+}
+
+export interface MediaTransformation {
+  id: string;
+  pageId: string;
+  sectionId: string;
+  motionMomentId: string;
+  sourceAsset: string;
+  candidates: TransformationCandidate[];
+  selectedCandidateId: string;
+  mechanismComparison: { mechanism: "DOM/CSS" | "SVG" | "Canvas 2D" | "WebGL shader" | "Three.js scene" | "image sequence" | "pre-rendered video" | "hybrid composition"; feasibility: string; decision: "selected" | "rejected"; reason: string }[];
+  derivatives: TransformationDerivative[];
+  frameSequence?: FrameSequencePlan;
+  consistencyInspection: string;
+  prototypeEvidenceIds: string[];
+  finalEvidenceIds: string[];
+  implementationFile: string;
+}
+
+export interface FallbackExecution {
+  sectionId: string;
+  motionMomentId?: string;
+  primaryAttempted: boolean;
+  failureEvidenceIds: string[];
+  fallbackSuccessEvidenceIds: string[];
+  finalTierSatisfied: boolean;
+  reason: string;
+  userApprovalReference?: string;
+}
+
+export interface StaticFeelingReview {
+  developsWithoutEntrances: boolean;
+  firstViewportMeaningfulResponse: boolean;
+  beyondOpacityAndPosition: boolean;
+  crossSectionInfluence: boolean;
+  signatureDevelops: boolean;
+  brandSpecificMotion: boolean;
+  memorableSequence: boolean;
+  primarilyStaticStack: boolean;
+  evidenceIds: string[];
+}
+
 export interface PlanSection {
   id: string;
   name: string;
@@ -41,6 +175,8 @@ export interface PlanSection {
   skills: SpecialistSkill[];
   interactions: string[];
   motionTreatment?: MotionTreatment;
+  motionMomentIds?: string[];
+  mediaTransformationIds?: string[];
   mobile: string;
   fallback: string;
   verification: (string | VerificationCriterion)[];
@@ -134,6 +270,9 @@ export interface DirectDesignPlan {
   ruleExceptions?: RuleException[];
   creativeStrategy?: CreativeStrategy;
   motionComplexityBudget?: MotionComplexityBudget;
+  motionMoments?: MotionExecutionMoment[];
+  mediaTransformations?: MediaTransformation[];
+  fallbackExecutions?: FallbackExecution[];
   fontDecision?: FontDecision;
   experimentalPlan?: ExperimentalPlan;
   conceptExploration?: ConceptExploration;
@@ -315,8 +454,11 @@ export interface VerificationEvidence {
     | "handoff"
     | "pinned-midpoint"
     | "pinned-exit"
+    | "reverse-interaction"
     | "mobile"
     | "reduced-motion";
+  motionMomentId?: string;
+  mediaTransformationId?: string;
   proof: {
     timestamp: string;
     artifactPath?: string;
@@ -328,6 +470,18 @@ export interface VerificationEvidence {
     averageFps?: number;
     maxFrameTimeMs?: number;
     playwrightTestId?: string;
+    recordingPath?: string;
+    tracePath?: string;
+    startTimestamp?: string;
+    endTimestamp?: string;
+    controlledProgress?: number | string;
+    triggerValue?: string;
+    observedProperties?: { property: string; expected: string; observed: string }[];
+    expectedState?: string;
+    observedState?: string;
+    reversePlayResult?: string;
+    mobileResult?: string;
+    reducedMotionResult?: string;
   };
 }
 
@@ -342,6 +496,7 @@ export interface VerificationReport {
     evidenceIds: string[];
   };
   perceptualComparison?: PerceptualComparison;
+  staticFeelingReview?: StaticFeelingReview;
 }
 
 export interface PerceptualComparison {
@@ -408,6 +563,20 @@ export interface VisualCheckpoint {
   refinements: { finding: string; change: string; evidenceIds: string[] }[];
   approval: { status: "pending" | "approved" | "rejected"; approvedAt?: string; transcriptReferences: string[] };
   systemSpreadStartedAt?: string;
+  motionPrototype?: {
+    motionMomentIds: string[];
+    firstViewport: boolean;
+    importantComposition: boolean;
+    structuralOrTransformationalTransition: boolean;
+    interactionResponse: boolean;
+    desktop: boolean;
+    mobile: boolean;
+    reducedMotion: boolean;
+    realProject: boolean;
+    representativeAssets: boolean;
+    evidenceIds: string[];
+    staticFeelingReview: StaticFeelingReview;
+  };
 }
 
 function nonEmpty(value: unknown): value is string {
@@ -656,6 +825,7 @@ export function validatePlan(value: unknown): string[] {
     }
   }
   if (!nonEmpty(plan.preservationManifest) || !nonEmpty(plan.decisionLedger)) errors.push("plan must reference preservationManifest and decisionLedger");
+  if (plan.version === 5 && Array.isArray(plan.pages) && Array.isArray(plan.skills)) errors.push(...validateMotionExecution(plan as DirectDesignPlan));
   return errors;
 }
 
@@ -719,6 +889,11 @@ export function validateVisualCheckpoint(value: unknown): string[] {
   if (!Array.isArray(checkpoint.refinements) || (checkpoint.meaningfulWeaknessFound === true && checkpoint.refinements.length === 0)) errors.push("a meaningful checkpoint weakness requires at least one refinement");
   if (!checkpoint.approval || checkpoint.approval.status !== "approved" || !validDate(checkpoint.approval.approvedAt) || !concreteList(checkpoint.approval.transcriptReferences)) errors.push("visual checkpoint requires recorded user approval");
   if (checkpoint.systemSpreadStartedAt && (!validDate(checkpoint.systemSpreadStartedAt) || Date.parse(checkpoint.systemSpreadStartedAt) <= Date.parse(checkpoint.approval?.approvedAt ?? ""))) errors.push("systemSpreadStartedAt must be later than checkpoint approval");
+  if (checkpoint.motionPrototype) {
+    const prototype = checkpoint.motionPrototype;
+    if (!concreteList(prototype.motionMomentIds) || !concreteList(prototype.evidenceIds)) errors.push("motion prototype requires mapped moments and temporal evidence IDs");
+    if ([prototype.firstViewport, prototype.importantComposition, prototype.structuralOrTransformationalTransition, prototype.interactionResponse, prototype.desktop, prototype.mobile, prototype.reducedMotion, prototype.realProject, prototype.representativeAssets].some((value) => value !== true)) errors.push("motion prototype must run the complete real vertical slice");
+  }
   return errors;
 }
 
@@ -750,6 +925,7 @@ export function validateVerificationReport(value: unknown): string[] {
     "handoff",
     "pinned-midpoint",
     "pinned-exit",
+    "reverse-interaction",
     "mobile",
     "reduced-motion",
   ]);
@@ -757,7 +933,7 @@ export function validateVerificationReport(value: unknown): string[] {
     if (!nonEmpty(item.id) || !nonEmpty(item.criterion) || !nonEmpty(item.evidence)) errors.push(`verification.evidence[${index}] is incomplete`);
     if (item.timelineState && !timelineStates.has(item.timelineState)) errors.push(`verification.evidence[${index}].timelineState is invalid`);
     if (report.version === 2 || report.version === 3) {
-      if (!item.kind || !["visual", "interaction", "responsive", "preservation", "structural-depth", "design-equity", "concept-fidelity", "perceptual-comparison", "visual-regression"].includes(item.kind)) errors.push(`verification.evidence[${index}].kind is required`);
+      if (!item.kind || !["visual", "interaction", "motion", "media-transformation", "responsive", "preservation", "structural-depth", "design-equity", "concept-fidelity", "perceptual-comparison", "visual-regression"].includes(item.kind)) errors.push(`verification.evidence[${index}].kind is required`);
       if (!nonEmpty(item.criterionId) || !nonEmpty(item.pageId) || !item.viewportClass) errors.push(`verification.evidence[${index}] must associate criterionId, pageId, and viewportClass`);
       if (item.viewportClass !== "non-visual" && !item.proof?.viewport) errors.push(`verification.evidence[${index}] visual/responsive evidence requires an exact viewport`);
       if (item.viewportClass === "desktop" && item.proof?.viewport && item.proof.viewport.width < 1200) errors.push(`verification.evidence[${index}] desktop evidence must be at least 1200px wide`);
@@ -777,7 +953,10 @@ export function validateVerificationReport(value: unknown): string[] {
       nonEmpty(proof.testedUrl) ||
       typeof proof.averageFps === "number" ||
       typeof proof.maxFrameTimeMs === "number" ||
-      nonEmpty(proof.playwrightTestId);
+      nonEmpty(proof.playwrightTestId) ||
+      nonEmpty(proof.recordingPath) ||
+      nonEmpty(proof.tracePath) ||
+      proof.controlledProgress !== undefined;
     if (!hasConcreteProof) errors.push(`verification.evidence[${index}].proof needs a command, artifact, URL, runtime measurement, or test id`);
     if ((nonEmpty(proof.command) && typeof proof.exitCode !== "number") || (!nonEmpty(proof.command) && typeof proof.exitCode === "number"))
       errors.push(`verification.evidence[${index}] command and exitCode must appear together`);

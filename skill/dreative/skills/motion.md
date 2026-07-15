@@ -93,11 +93,13 @@ three sections does not.
 
 ## 5. Planning and verification
 
-Before implementation, complete the section-level motion treatment in the plan:
-static composition, start/end state, changes, pinned elements, handoff, purpose,
-mechanism, mobile translation, and reduced-motion state. Choose the simplest
-mechanism that produces the intended transformation convincingly; CSS is valid,
-and WebGL/3D is never required as a creativity badge.
+Before implementation, complete the section treatment and one typed
+`motionMoments[]` contract per important moment. It names the owner and driver;
+static/start/intermediate/end/handoff states; purpose; implementation file and
+component; measurable properties; desktop, authored mobile, and reduced-motion
+states; primary/fallback implementation; observable criteria; and evidence IDs.
+The section maps those IDs. Choose the simplest capable mechanism; CSS/SVG,
+Motion, GSAP, canvas, WebGL, sequences, and hybrids are peers judged by outcome.
 
 Run the anti-default review before approval: identify whether imagery only
 fades/scales/slides, sections reveal independently, the page lacks a composition
@@ -111,14 +113,16 @@ layers separate; the headline compresses into a mask; that mask tiles the scene
 into the next section; mobile uses a short clip-path handoff.” Copy neither
 literally—match that level of state change and continuity to the brief.
 
-For each moment record element, trigger/driver, purpose, state range, duration or
-spring, mobile translation, reduced-motion behavior, fallback, and evidence.
+Prototype the first viewport, one core composition, a structural or
+transformational handoff, and one response in the real project before expanding.
+Desktop, mobile, reduced motion, representative assets, and temporal evidence
+must pass `.dreative/checkpoint.json`.
 
-Runtime proof includes changing transforms/uniforms/state at two timestamps,
-trigger positions, tested scroll-back, hidden-tab recovery, cleanup after route
-changes, mobile viewport, reduced motion, console count, and frame-time sampling
-for heavy work. Visually inspect initial, early, mid-transition, final, handoff,
-mobile, and reduced-motion states; add pinned midpoint/exit when relevant. Check
+Runtime proof uses a recording/trace with timestamps or controlled progress with
+expected/observed DOM, layout, canvas, shader, scene, or application state. A URL,
+clean console, prose claim, or unproven screenshots cannot prove motion. Inspect
+initial, early, midpoint, end, handoff, reverse, mobile, and reduced-motion states;
+add pinned midpoint/exit when relevant. Check
 readability, continuity, collisions, empty frames, timing, concept expression,
 and usability. Expressive/award work requires at least one refinement after this
 inspection. A static screenshot cannot prove choreography.

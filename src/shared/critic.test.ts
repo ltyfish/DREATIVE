@@ -71,6 +71,13 @@ test("motion claims are limited without live or recorded evidence", () => {
   assert.ok(validateVisualCriticReport(value, input()).some((error) => error.includes("without direct motion evidence")));
 });
 
+test("motion critic input rejects desktop screenshots without temporal and reduced-motion evidence", () => {
+  const value = input(false); value.motionRequired = true; value.motionMomentIds = ["hero-transform"];
+  assert.ok(validateCriticInput(value).some((error) => error.includes("motion evidence unavailable")));
+  value.evidence.push({ id: "motion", kind: "motion-recording", description: "Hero transformation recording", artifactPath: ".dreative/hero.webm", motionMomentId: "hero-transform", viewport: { width: 1440, height: 1000 } });
+  assert.ok(validateCriticInput(value).some((error) => error.includes("reduced-motion evidence")));
+});
+
 test("technique absence cannot block and experiments are non-blocking", () => {
   const value = report();
   value.findings = [{ id: "tech", severity: "BLOCKER", category: "authorship", location: "Home hero composition", observedIssue: "The hero lacks WebGL and therefore does not deliver a sufficiently ambitious technical treatment.", whyItMatters: "This criticism incorrectly substitutes a technology preference for visible design evidence.", correctionDirection: "Judge the visible composition and concept fidelity instead of prescribing rendering technology.", evidenceIds: ["final-desktop"], blocksCompletion: true }];

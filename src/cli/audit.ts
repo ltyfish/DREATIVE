@@ -21,6 +21,7 @@ import {
   type ReflexFontRegistry,
   type RuleRegistry,
 } from "../shared/ruleSystem.js";
+import { motionIsSelected, validateMotionCheckpoint, validateMotionExecution } from "../shared/motionSystem.js";
 
 export interface AuditFinding {
   level: "error" | "warning";
@@ -197,12 +198,59 @@ function checkVerificationProof(projectDir: string, verificationFile: string): A
       else if (!fs.existsSync(target))
         findings.push(finding("error", "verification", `${item.id}: evidence artifact is missing at ${proof.artifactPath}`));
     }
+    for (const temporalPath of [proof.recordingPath, proof.tracePath]) if (temporalPath) {
+      const target = path.resolve(projectDir, temporalPath);
+      if (!target.startsWith(path.resolve(projectDir) + path.sep)) findings.push(finding("error", "motion-evidence", `${item.id}: temporal artifact path escapes the project root`));
+      else if (!fs.existsSync(target)) findings.push(finding("error", "motion-evidence", `${item.id}: temporal artifact is missing at ${temporalPath}`));
+    }
     if (proof.viewport && (proof.viewport.width <= 0 || proof.viewport.height <= 0 || (proof.viewport.dpr ?? 1) <= 0))
       findings.push(finding("error", "verification", `${item.id}: viewport dimensions and DPR must be positive`));
     if (typeof proof.averageFps === "number" && proof.averageFps <= 0)
       findings.push(finding("error", "verification", `${item.id}: averageFps must be positive`));
     if (typeof proof.maxFrameTimeMs === "number" && proof.maxFrameTimeMs < 0)
       findings.push(finding("error", "verification", `${item.id}: maxFrameTimeMs cannot be negative`));
+  }
+  return findings;
+}
+
+function referencedAssetExists(projectDir: string, plan: DirectDesignPlan, reference: string): boolean {
+  if (fs.existsSync(path.resolve(projectDir, reference))) return true;
+  return plan.pages.some((page) => page.sections.some((section) => section.assets.some((asset) => asset.id === reference || asset.path === reference)));
+}
+
+export function checkMotionExecutionArtifacts(projectDir: string, plan: DirectDesignPlan, report?: VerificationReport): AuditFinding[] {
+  if (plan.version !== 5 || plan.doctrineVersion !== 5) return [];
+  const findings = validateMotionExecution(plan, report).map((message) => finding("error", "motion-execution", message));
+  const root = path.resolve(projectDir) + path.sep;
+  for (const moment of plan.motionMoments ?? []) {
+    const file = path.resolve(projectDir, moment.implementationFile);
+    if (!file.startsWith(root) || !fs.existsSync(file)) findings.push(finding("error", "motion-execution", `${moment.id}: implementation file does not exist at ${moment.implementationFile}`));
+  }
+  for (const transformation of plan.mediaTransformations ?? []) {
+    const file = path.resolve(projectDir, transformation.implementationFile);
+    if (!file.startsWith(root) || !fs.existsSync(file)) findings.push(finding("error", "media-transformation", `${transformation.id}: implementation file does not exist at ${transformation.implementationFile}`));
+    if (!referencedAssetExists(projectDir, plan, transformation.sourceAsset)) findings.push(finding("error", "media-transformation", `${transformation.id}: named source asset does not exist: ${transformation.sourceAsset}`));
+    for (const derivative of transformation.derivatives) if (derivative.status === "shipped") {
+      const derivativePath = path.resolve(projectDir, derivative.path);
+      if (!derivativePath.startsWith(root) || !fs.existsSync(derivativePath)) findings.push(finding("error", "media-transformation", `${transformation.id}/${derivative.id}: shipped derivative is missing at ${derivative.path}`));
+    }
+  }
+  for (const page of plan.pages) for (const section of page.sections) if (section.status === "fallback") {
+    const record = (plan.fallbackExecutions ?? []).find((item) => item.sectionId === section.id);
+    if (!record) findings.push(finding("error", "fallback", `${page.id}/${section.id}: fallback shipped without a typed primary-attempt record`));
+  }
+  if (motionIsSelected(plan) || plan.tier === "expressive" || plan.tier === "award") {
+    const checkpointFile = path.resolve(projectDir, plan.checkpoint ?? ".dreative/checkpoint.json");
+    findings.push(...checkArtifact(checkpointFile, "motion-prototype", validateVisualCheckpoint));
+    if (fs.existsSync(checkpointFile)) {
+      try {
+        const checkpoint = readJson(checkpointFile) as VisualCheckpoint;
+        findings.push(...validateMotionCheckpoint(plan, checkpoint).map((message) => finding("error", "motion-prototype", message)));
+        const evidence = new Set((report?.evidence ?? []).map((item) => item.id));
+        for (const id of checkpoint.motionPrototype?.evidenceIds ?? []) if (!evidence.has(id)) findings.push(finding("error", "motion-prototype", `prototype references missing verification evidence ${id}`));
+        for (const id of checkpoint.motionPrototype?.motionMomentIds ?? []) if (!(plan.motionMoments ?? []).some((moment) => moment.id === id)) findings.push(finding("error", "motion-prototype", `approved prototype moment ${id} is absent from runtime plan`));
+      } catch { /* checkArtifact reports parse failures */ }
+    }
   }
   return findings;
 }
@@ -310,6 +358,9 @@ export function checkCriticArtifacts(projectDir: string, plan: DirectDesignPlan,
   findings.push(...checkArtifact(inputFile, "critic-input", validateCriticInput));
   if (findings.some((item) => item.level === "error")) return findings;
   const input = readJson(inputFile) as CriticInput;
+  const motionRequired = motionIsSelected(plan) || plan.tier === "expressive" || plan.tier === "award";
+  if (motionRequired && !input.motionRequired) findings.push(finding("error", "visual-critic", "motion-related treatments require motionRequired critic input"));
+  if (motionRequired && !(plan.motionMoments ?? []).every((moment) => input.motionMomentIds?.includes(moment.id))) findings.push(finding("error", "visual-critic", "critic input does not cover every planned motion moment"));
   if (!fs.existsSync(reportFile)) return [...findings, finding("error", "visual-critic", "missing visual-critic.json")];
   let report: VisualCriticReport;
   try {
@@ -369,6 +420,7 @@ export function runDirectDesignAudit(projectDir: string): AuditReport {
   findings.push(...checkAntiSlopPlan(plan));
   findings.push(...checkStaticQuality(projectDir, plan));
   if (verification) findings.push(...checkVerificationCoverage(plan, verification));
+  findings.push(...checkMotionExecutionArtifacts(projectDir, plan, verification));
   findings.push(...checkRedesignQualityArtifacts(projectDir, plan, verification));
   findings.push(...checkCriticArtifacts(projectDir, plan, verification));
 

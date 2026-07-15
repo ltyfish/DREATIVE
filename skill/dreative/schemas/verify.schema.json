@@ -17,7 +17,7 @@
         "properties": {
           "id": { "type": "string", "minLength": 1 },
           "criterion": { "type": "string", "minLength": 1 },
-          "kind": { "enum": ["visual", "interaction", "responsive", "preservation", "structural-depth", "design-equity", "concept-fidelity", "perceptual-comparison", "visual-regression"] },
+          "kind": { "enum": ["visual", "interaction", "motion", "media-transformation", "responsive", "preservation", "structural-depth", "design-equity", "concept-fidelity", "perceptual-comparison", "visual-regression"] },
           "criterionId": { "type": "string", "minLength": 1 },
           "pageId": { "type": "string", "minLength": 1 },
           "sectionId": { "type": "string", "minLength": 1 },
@@ -26,8 +26,10 @@
           "status": { "enum": ["pass", "fail", "not-applicable"] },
           "evidence": { "type": "string", "minLength": 1 },
           "timelineState": {
-            "enum": ["initial", "early", "mid-transition", "final", "handoff", "pinned-midpoint", "pinned-exit", "mobile", "reduced-motion"]
+            "enum": ["initial", "early", "mid-transition", "final", "handoff", "pinned-midpoint", "pinned-exit", "reverse-interaction", "mobile", "reduced-motion"]
           },
+          "motionMomentId": { "type": "string", "minLength": 1 },
+          "mediaTransformationId": { "type": "string", "minLength": 1 },
           "proof": {
             "type": "object",
             "additionalProperties": false,
@@ -52,6 +54,18 @@
               "averageFps": { "type": "number", "exclusiveMinimum": 0 },
               "maxFrameTimeMs": { "type": "number", "minimum": 0 },
               "playwrightTestId": { "type": "string", "minLength": 1 }
+              ,"recordingPath": { "type": "string", "minLength": 1 }
+              ,"tracePath": { "type": "string", "minLength": 1 }
+              ,"startTimestamp": { "type": "string", "format": "date-time" }
+              ,"endTimestamp": { "type": "string", "format": "date-time" }
+              ,"controlledProgress": { "type": ["number", "string"] }
+              ,"triggerValue": { "type": "string", "minLength": 1 }
+              ,"observedProperties": { "type": "array", "minItems": 1, "items": { "type": "object", "additionalProperties": false, "required": ["property", "expected", "observed"], "properties": { "property": { "type": "string", "minLength": 1 }, "expected": { "type": "string", "minLength": 1 }, "observed": { "type": "string", "minLength": 1 } } } }
+              ,"expectedState": { "type": "string", "minLength": 12 }
+              ,"observedState": { "type": "string", "minLength": 12 }
+              ,"reversePlayResult": { "type": "string", "minLength": 12 }
+              ,"mobileResult": { "type": "string", "minLength": 12 }
+              ,"reducedMotionResult": { "type": "string", "minLength": 12 }
             },
             "anyOf": [
               { "required": ["artifactPath"] },
@@ -61,10 +75,18 @@
               { "required": ["averageFps"] },
               { "required": ["maxFrameTimeMs"] },
               { "required": ["playwrightTestId"] }
+              ,{ "required": ["recordingPath", "startTimestamp", "endTimestamp"] }
+              ,{ "required": ["tracePath", "startTimestamp", "endTimestamp"] }
+              ,{ "required": ["controlledProgress", "observedProperties", "expectedState", "observedState"] }
             ]
           }
         }
       }
+    },
+    "staticFeelingReview": {
+      "type": "object", "additionalProperties": false,
+      "required": ["developsWithoutEntrances", "firstViewportMeaningfulResponse", "beyondOpacityAndPosition", "crossSectionInfluence", "signatureDevelops", "brandSpecificMotion", "memorableSequence", "primarilyStaticStack", "evidenceIds"],
+      "properties": { "developsWithoutEntrances": { "const": true }, "firstViewportMeaningfulResponse": { "const": true }, "beyondOpacityAndPosition": { "const": true }, "crossSectionInfluence": { "const": true }, "signatureDevelops": { "const": true }, "brandSpecificMotion": { "const": true }, "memorableSequence": { "const": true }, "primarilyStaticStack": { "const": false }, "evidenceIds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } } }
     },
     "perceptualComparison": {
       "type": "object", "additionalProperties": false,

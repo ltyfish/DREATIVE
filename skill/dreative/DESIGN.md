@@ -401,6 +401,11 @@ class (hidden tabs and headless renderers ship blank sections). Max one marquee 
 page. `prefers-reduced-motion: reduce` alternative for everything. Optimistic UI for
 low-stakes actions; never for payments or destructive ops.
 
+**Execution gate:** important motion is a typed before/during/after contract,
+not prose. Expressive/award needs observable composition development, continuous
+input, continuity/handoff, authored mobile behavior, and temporal evidence from
+the real runtime. A page that becomes static when entrances are removed fails.
+
 ## 7. Imagery
 
 When the brief implies imagery (restaurant, hotel, product, travel, fashion,
@@ -621,6 +626,11 @@ and appear in the self-critique screenshots. "The design system implies motion"
 does not count; entrance choreography, scroll behavior, and micro-interactions
 must be literally present. If zero animations survive to the final code, the
 request was not fulfilled — go back and add them before reporting done.
+
+Motion-selected work prototypes the first viewport and one core transformation
+before section expansion. Record controlled-state, trace, or recording evidence,
+reverse behavior, mobile, reduced motion, and implementation mappings. Static
+screenshots, a tested URL, prose, or a clean console cannot prove choreography.
 
 ### The transformation-depth ladder (offer it, then execute it)
 

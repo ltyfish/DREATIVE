@@ -129,6 +129,10 @@ the static design, not a broken half-effect. All of these are decoration — cap
 
 ## 6. Guardrails
 
+Map every important gesture to its `motionMomentId` and prove input, intermediate,
+settled, reverse, mobile/touch, keyboard, and reduced-motion states with temporal
+evidence. Hover screenshots alone do not prove interaction response.
+
 - Decorative pointer effects: max 1-2 distinct kinds per page, desktop-only,
   `prefers-reduced-motion` disables tracking (element stays styled, static).
 - Nothing in this file may cause layout shift, block scrolling, steal focus, or

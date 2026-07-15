@@ -1,7 +1,7 @@
 export type CriticVerdict = "PASS" | "PASS AFTER REVISION" | "MAJOR REVISION REQUIRED" | "INSUFFICIENT EVIDENCE";
 export type CriticSeverity = "BLOCKER" | "MAJOR" | "MINOR" | "EXPERIMENT";
 export type CriticCategory = "authorship" | "concept-fidelity" | "hierarchy-composition" | "mobile" | "brand-specificity" | "motion-interaction" | "baseline-regression" | "generic-template-risk" | "usability";
-export type CriticEvidenceKind = "baseline-screenshot" | "final-screenshot" | "motion-recording" | "live-url" | "interaction-recording";
+export type CriticEvidenceKind = "baseline-screenshot" | "final-screenshot" | "motion-recording" | "interaction-recording" | "state-capture" | "browser-trace" | "reduced-motion-capture" | "live-url";
 
 export interface CriticEvidenceInput {
   id: string;
@@ -11,6 +11,13 @@ export interface CriticEvidenceInput {
   url?: string;
   pageId?: string;
   viewport?: { width: number; height: number };
+  motionMomentId?: string;
+  temporal?: {
+    startTimestamp?: string;
+    endTimestamp?: string;
+    controlledProgress?: number | string;
+    observedProperties?: string[];
+  };
 }
 
 export interface CriticInput {
@@ -22,6 +29,8 @@ export interface CriticInput {
   visualBlueprints: { pageId: string; sectionId: string; blueprint: string }[];
   intendedSignature: string;
   baselineAvailable: boolean;
+  motionRequired?: boolean;
+  motionMomentIds?: string[];
   evidence: CriticEvidenceInput[];
   contextPolicy: {
     firstPass: "objective-only";
@@ -126,7 +135,7 @@ export function validateCriticInput(value: unknown): string[] {
   if (!input.contextPolicy || input.contextPolicy.firstPass !== "objective-only" || REQUIRED_EXCLUSIONS.some((item) => !input.contextPolicy?.excluded?.includes(item))) errors.push("critic first pass must exclude builder review, rationale, quality claims, difficulty excuses, and scores");
   const ids = new Set<string>();
   for (const [index, item] of (input.evidence ?? []).entries()) {
-    if (!nonEmpty(item.id) || !nonEmpty(item.description, 8) || !["baseline-screenshot", "final-screenshot", "motion-recording", "live-url", "interaction-recording"].includes(item.kind)) errors.push(`critic input evidence[${index}] is incomplete`);
+    if (!nonEmpty(item.id) || !nonEmpty(item.description, 8) || !["baseline-screenshot", "final-screenshot", "motion-recording", "interaction-recording", "state-capture", "browser-trace", "reduced-motion-capture", "live-url"].includes(item.kind)) errors.push(`critic input evidence[${index}] is incomplete`);
     if (!item.artifactPath && !item.url) errors.push(`critic input evidence[${index}] needs artifactPath or url`);
     if (ids.has(item.id)) errors.push(`duplicate critic evidence id: ${item.id}`);
     ids.add(item.id);
@@ -136,6 +145,18 @@ export function validateCriticInput(value: unknown): string[] {
   if (!finals.some((item) => (item.viewport?.width ?? Infinity) >= 320 && (item.viewport?.width ?? 0) <= 430)) errors.push("critic input requires a final mobile screenshot");
   const baselines = input.evidence?.filter((item) => item.kind === "baseline-screenshot") ?? [];
   if (input.baselineAvailable && (!baselines.some((item) => (item.viewport?.width ?? 0) >= 1200) || !baselines.some((item) => (item.viewport?.width ?? Infinity) <= 430))) errors.push("redesign critic input requires desktop and mobile baseline screenshots");
+  if (input.motionRequired) {
+    const temporal = input.evidence?.filter((item) => ["motion-recording", "interaction-recording", "state-capture", "browser-trace"].includes(item.kind)) ?? [];
+    if (!Array.isArray(input.motionMomentIds) || input.motionMomentIds.length === 0) errors.push("motion-required critic input must name motionMomentIds");
+    if (temporal.length === 0) errors.push("motion evidence unavailable: critic verdict must be INSUFFICIENT EVIDENCE");
+    for (const id of input.motionMomentIds ?? []) if (!temporal.some((item) => item.motionMomentId === id)) errors.push(`critic input has no temporal evidence for motion moment ${id}`);
+    for (const item of temporal) {
+      const recorded = ["motion-recording", "interaction-recording", "browser-trace"].includes(item.kind) && validDate(item.temporal?.startTimestamp) && validDate(item.temporal?.endTimestamp);
+      const sampled = item.kind === "state-capture" && item.temporal?.controlledProgress !== undefined && nonEmptyList(item.temporal?.observedProperties);
+      if (!recorded && !sampled) errors.push(`${item.id}: critic temporal evidence lacks timestamps or controlled-progress observations`);
+    }
+    if (!input.evidence?.some((item) => item.kind === "reduced-motion-capture")) errors.push("motion-required critic input needs reduced-motion evidence");
+  }
   return errors;
 }
 
@@ -182,7 +203,9 @@ export function validateVisualCriticReport(value: unknown, input?: CriticInput):
     for (const [index, resolution] of (report.revision.resolutions ?? []).entries()) if (!nonEmpty(resolution.findingId) || !["resolved", "partially-resolved", "unresolved", "intentionally-rejected"].includes(resolution.status) || !nonEmptyList(resolution.evidenceIds) || !nonEmpty(resolution.reason, 12)) errors.push(`critic revision resolution[${index}] is incomplete`);
   }
   if (input) {
-    const hasMotionEvidence = input.evidence.some((item) => item.kind === "motion-recording" || item.kind === "interaction-recording" || item.kind === "live-url");
+    const hasMotionEvidence = input.evidence.some((item) => ["motion-recording", "interaction-recording", "state-capture", "browser-trace", "live-url"].includes(item.kind));
+    if (input.motionRequired && !hasMotionEvidence && report.verdict !== "INSUFFICIENT EVIDENCE") errors.push("missing required motion evidence must produce INSUFFICIENT EVIDENCE");
+    if (input.motionRequired && hasMotionEvidence && !report.reviewContext?.motionInspected) errors.push("motion-required work must be directly inspected by the critic");
     if (report.reviewContext?.motionInspected && !hasMotionEvidence) errors.push("motionInspected requires live or recorded interactive evidence");
     if (input.baselineAvailable === false && (report.baselineRegressions?.length ?? 0) > 0) errors.push("new builds without a baseline cannot claim baseline regressions");
     for (const resolution of report.revision?.resolutions ?? []) if (resolution.evidenceIds.some((id) => !inputEvidence.has(id))) errors.push(`${resolution.findingId}: resolution references unknown recaptured evidence`);
@@ -201,7 +224,7 @@ export function buildIndependentCriticPrompt(input: CriticInput): string {
     "Use the supplied desktop/mobile evidence and live or recorded interaction evidence when present. Do not infer motion quality from static screenshots.",
     "Ground every finding in an exact location or interaction and an evidence id. Experiments never block completion. Limit required revisions to five.",
     "Review authorship, concept fidelity, hierarchy/composition, mobile authorship, brand specificity, and generic-template risk. Ask whether another company could use the design unchanged after swapping logo and copy.",
-    "For redesigns, compare the complete baseline journey with the final result and name lost equity or regressions. For motion, judge coordination, purpose, readability, usability, and reduced-motion only when interactive evidence exists.",
+    "For redesigns, compare the complete baseline journey with the final result and name lost equity or regressions. When motion is required, judge whether the page still feels static, composition change versus entrances, continuity and handoffs, pacing peaks and rests, brand relationship, signature development, media transformation, first-viewport movement, mobile authorship, and generic template risk. Missing temporal evidence requires INSUFFICIENT EVIDENCE.",
     "Return a VisualCriticReport v1 matching schemas/visual-critic.schema.json.",
     `OBJECTIVE INPUT:\n${JSON.stringify(input, null, 2)}`,
   ].join("\n\n");

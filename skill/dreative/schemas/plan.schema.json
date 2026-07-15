@@ -65,6 +65,9 @@
     "ruleExceptions": { "type": "array", "items": { "$ref": "#/$defs/ruleException" } },
     "creativeStrategy": { "$ref": "#/$defs/creativeStrategy" },
     "motionComplexityBudget": { "$ref": "#/$defs/motionComplexityBudget" },
+    "motionMoments": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/motionMoment" } },
+    "mediaTransformations": { "type": "array", "items": { "$ref": "#/$defs/mediaTransformation" } },
+    "fallbackExecutions": { "type": "array", "items": { "$ref": "#/$defs/fallbackExecution" } },
     "fontDecision": { "$ref": "#/$defs/fontDecision" },
     "experimentalPlan": { "$ref": "#/$defs/experimentalPlan" },
     "conceptExploration": { "$ref": "#/$defs/conceptExploration" },
@@ -312,6 +315,8 @@
         "skills": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/skill" } },
         "interactions": { "type": "array", "items": { "type": "string" } },
         "motionTreatment": { "$ref": "#/$defs/motionTreatment" },
+        "motionMomentIds": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "mediaTransformationIds": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
         "mobile": { "type": "string", "minLength": 1 },
         "fallback": { "type": "string", "minLength": 1 },
         "verification": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/verificationCriterion" } },
@@ -338,6 +343,52 @@
         "reducedMotion": { "type": "string", "minLength": 12 }
       }
     },
+    "motionMoment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "pageId", "sectionId", "owner", "class", "driver", "staticComposition", "startState", "intermediateState", "endState", "handoff", "purpose", "renderingMechanism", "implementationFile", "implementationComponent", "observedProperties", "desktop", "mobile", "reducedMotion", "primaryImplementation", "runtimeFallback", "successCriteria", "requiredEvidenceIds", "hero"],
+      "properties": {
+        "id": { "type": "string", "minLength": 3 }, "pageId": { "type": "string", "minLength": 1 }, "sectionId": { "type": "string", "minLength": 1 },
+        "owner": { "type": "string", "minLength": 12 }, "class": { "enum": ["decorative", "structural", "transformational"] }, "driver": { "type": "string", "minLength": 3 },
+        "staticComposition": { "$ref": "#/$defs/concrete" }, "startState": { "$ref": "#/$defs/concrete" }, "intermediateState": { "$ref": "#/$defs/concrete" }, "endState": { "$ref": "#/$defs/concrete" },
+        "handoff": { "$ref": "#/$defs/concrete" }, "purpose": { "$ref": "#/$defs/concrete" }, "renderingMechanism": { "$ref": "#/$defs/concrete" },
+        "implementationFile": { "type": "string", "minLength": 3 }, "implementationComponent": { "type": "string", "minLength": 3 },
+        "observedProperties": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 3 } },
+        "desktop": { "$ref": "#/$defs/concrete" }, "mobile": { "$ref": "#/$defs/concrete" }, "reducedMotion": { "$ref": "#/$defs/concrete" },
+        "primaryImplementation": { "$ref": "#/$defs/concrete" }, "runtimeFallback": { "$ref": "#/$defs/concrete" },
+        "successCriteria": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 20 } },
+        "requiredEvidenceIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }, "hero": { "type": "boolean" }
+      }
+    },
+    "fallbackExecution": {
+      "type": "object", "additionalProperties": false, "required": ["sectionId", "primaryAttempted", "failureEvidenceIds", "fallbackSuccessEvidenceIds", "finalTierSatisfied", "reason"],
+      "properties": { "sectionId": { "type": "string", "minLength": 1 }, "motionMomentId": { "type": "string", "minLength": 1 }, "primaryAttempted": { "const": true }, "failureEvidenceIds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }, "fallbackSuccessEvidenceIds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }, "finalTierSatisfied": { "type": "boolean" }, "reason": { "$ref": "#/$defs/concrete" }, "userApprovalReference": { "type": "string", "minLength": 1 } }
+    },
+    "mediaTransformation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "pageId", "sectionId", "motionMomentId", "sourceAsset", "candidates", "selectedCandidateId", "mechanismComparison", "derivatives", "consistencyInspection", "prototypeEvidenceIds", "finalEvidenceIds", "implementationFile"],
+      "properties": {
+        "id": { "type": "string", "minLength": 3 }, "pageId": { "type": "string", "minLength": 1 }, "sectionId": { "type": "string", "minLength": 1 }, "motionMomentId": { "type": "string", "minLength": 1 }, "sourceAsset": { "type": "string", "minLength": 3 }, "selectedCandidateId": { "type": "string", "minLength": 1 }, "implementationFile": { "type": "string", "minLength": 3 }, "consistencyInspection": { "$ref": "#/$defs/concrete" },
+        "candidates": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "$ref": "#/$defs/transformationCandidate" } },
+        "mechanismComparison": { "type": "array", "minItems": 2, "items": { "type": "object", "additionalProperties": false, "required": ["mechanism", "feasibility", "decision", "reason"], "properties": { "mechanism": { "enum": ["DOM/CSS", "SVG", "Canvas 2D", "WebGL shader", "Three.js scene", "image sequence", "pre-rendered video", "hybrid composition"] }, "feasibility": { "$ref": "#/$defs/concrete" }, "decision": { "enum": ["selected", "rejected"] }, "reason": { "$ref": "#/$defs/concrete" } } } },
+        "derivatives": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/transformationDerivative" } },
+        "frameSequence": { "$ref": "#/$defs/frameSequence" },
+        "prototypeEvidenceIds": { "$ref": "#/$defs/evidenceIds" }, "finalEvidenceIds": { "$ref": "#/$defs/evidenceIds" }
+      }
+    },
+    "transformationCandidate": {
+      "type": "object", "additionalProperties": false, "required": ["id", "visitorExperience", "brandRationale", "sourceAsset", "requiredDerivatives", "execution", "driver", "startState", "intermediateState", "endState", "desktopFeasibility", "mobile", "reducedMotion", "performanceRisk", "fallback", "selected"],
+      "properties": { "id": { "type": "string", "minLength": 1 }, "visitorExperience": { "$ref": "#/$defs/concrete" }, "brandRationale": { "$ref": "#/$defs/concrete" }, "sourceAsset": { "type": "string", "minLength": 3 }, "requiredDerivatives": { "type": "array", "items": { "type": "string", "minLength": 1 } }, "execution": { "enum": ["real-time", "pre-rendered", "hybrid"] }, "driver": { "$ref": "#/$defs/concrete" }, "startState": { "$ref": "#/$defs/concrete" }, "intermediateState": { "$ref": "#/$defs/concrete" }, "endState": { "$ref": "#/$defs/concrete" }, "desktopFeasibility": { "$ref": "#/$defs/concrete" }, "mobile": { "$ref": "#/$defs/concrete" }, "reducedMotion": { "$ref": "#/$defs/concrete" }, "performanceRisk": { "$ref": "#/$defs/concrete" }, "fallback": { "$ref": "#/$defs/concrete" }, "selected": { "type": "boolean" }, "rejectionReason": { "$ref": "#/$defs/concrete" } }
+    },
+    "transformationDerivative": {
+      "type": "object", "additionalProperties": false, "required": ["id", "path", "role", "sourceAsset", "productionMethod", "dimensions", "aspectRatio", "format", "expectedUse", "optimizationTarget", "implementationConsumer", "status", "evidenceIds"],
+      "properties": { "id": { "type": "string", "minLength": 1 }, "path": { "type": "string", "minLength": 1 }, "role": { "enum": ["base-image", "edited-state-image", "subject-cutout", "foreground-plate", "midground-plate", "background-plate", "depth-map", "segmentation-mask", "displacement-map", "normal-map", "matte", "texture-atlas", "generated-transitional-frame", "rendered-animation-frame", "video-loop", "poster-frame", "mobile-specific", "reduced-motion-still"] }, "sourceAsset": { "type": "string", "minLength": 1 }, "productionMethod": { "type": "string", "minLength": 3 }, "aiInstruction": { "type": "string", "minLength": 3 }, "dimensions": { "type": "string", "minLength": 3 }, "aspectRatio": { "type": "string", "minLength": 3 }, "frameCount": { "type": "integer", "minimum": 1 }, "format": { "type": "string", "minLength": 2 }, "expectedUse": { "type": "string", "minLength": 3 }, "optimizationTarget": { "type": "string", "minLength": 3 }, "implementationConsumer": { "type": "string", "minLength": 3 }, "status": { "$ref": "#/$defs/status" }, "evidenceIds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } } }
+    },
+    "frameSequence": {
+      "type": "object", "additionalProperties": false, "required": ["sourceMethod", "keyStateCount", "targetFrameCount", "productionMethod", "scrollRange", "frameProgressMapping", "preloadStrategy", "decodingStrategy", "renderingStrategy", "desktopDimensions", "mobileStrategy", "format", "transferBudget", "droppedFrameHandling", "fallback", "reducedMotion"],
+      "properties": { "sourceMethod": { "$ref": "#/$defs/concrete" }, "keyStateCount": { "type": "integer", "minimum": 3 }, "targetFrameCount": { "type": "integer", "minimum": 3 }, "productionMethod": { "$ref": "#/$defs/concrete" }, "scrollRange": { "$ref": "#/$defs/concrete" }, "frameProgressMapping": { "$ref": "#/$defs/concrete" }, "preloadStrategy": { "$ref": "#/$defs/concrete" }, "decodingStrategy": { "$ref": "#/$defs/concrete" }, "renderingStrategy": { "$ref": "#/$defs/concrete" }, "desktopDimensions": { "$ref": "#/$defs/concrete" }, "mobileStrategy": { "$ref": "#/$defs/concrete" }, "format": { "type": "string", "minLength": 2 }, "transferBudget": { "$ref": "#/$defs/concrete" }, "droppedFrameHandling": { "$ref": "#/$defs/concrete" }, "fallback": { "$ref": "#/$defs/concrete" }, "reducedMotion": { "$ref": "#/$defs/concrete" } }
+    },
+    "concrete": { "type": "string", "minLength": 12 },
+    "evidenceIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
     "verificationCriterion": {
       "type": "object",
       "additionalProperties": false,
@@ -345,7 +396,7 @@
       "properties": {
         "id": { "type": "string", "minLength": 1 },
         "claim": { "type": "string", "minLength": 12 },
-        "kind": { "enum": ["visual", "interaction", "responsive", "preservation", "structural-depth", "design-equity", "concept-fidelity", "perceptual-comparison", "visual-regression"] },
+        "kind": { "enum": ["visual", "interaction", "motion", "media-transformation", "responsive", "preservation", "structural-depth", "design-equity", "concept-fidelity", "perceptual-comparison", "visual-regression"] },
         "pageId": { "type": "string", "minLength": 1 },
         "sectionId": { "type": "string", "minLength": 1 },
         "viewports": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["desktop", "mobile", "narrow-mobile", "non-visual"] } }

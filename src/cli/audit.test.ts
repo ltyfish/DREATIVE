@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { checkCriticArtifacts, checkRedesignQualityArtifacts, checkVerificationCoverage, runDirectDesignAudit } from "./audit.js";
+import { checkCriticArtifacts, checkMotionExecutionArtifacts, checkRedesignQualityArtifacts, checkVerificationCoverage, runDirectDesignAudit } from "./audit.js";
 import type { DirectDesignPlan, VerificationReport } from "../shared/artifacts.js";
 
 test("direct-design audit verifies artifacts and preservation needles", () => {
@@ -151,6 +151,15 @@ test("v4 audit gate rejects implementation that predates approval", () => {
   const plan = { version: 4, doctrineVersion: 4, scope: "substantial", projectKind: "from-scratch", implementationStartedAt: "2026-07-14T00:09:00.000Z", approval: { status: "approved", approvedAt: "2026-07-14T00:10:00.000Z" } } as DirectDesignPlan;
   const findings = checkRedesignQualityArtifacts(process.cwd(), plan, undefined);
   assert.ok(findings.some((item) => item.check === "approval" && item.level === "error"));
+});
+
+test("motion audit rejects missing implementation-file mappings", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-motion-map-"));
+  try {
+    const plan = { version: 5, doctrineVersion: 5, tier: "solid", skills: ["ux", "mobile", "motion"], motionMoments: [{ id: "hero-motion", implementationFile: "src/missing-motion.tsx" }], pages: [] } as unknown as DirectDesignPlan;
+    const findings = checkMotionExecutionArtifacts(root, plan);
+    assert.ok(findings.some((item) => item.message.includes("implementation file does not exist")));
+  } finally { fs.rmSync(root, { recursive: true, force: true }); }
 });
 
 test("v5 critic stage is required before completion and accepts an objective pass", () => {

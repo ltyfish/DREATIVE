@@ -14,6 +14,8 @@
     "visualBlueprints": { "type": "array", "minItems": 1, "items": { "type": "object", "additionalProperties": false, "required": ["pageId", "sectionId", "blueprint"], "properties": { "pageId": { "type": "string", "minLength": 1 }, "sectionId": { "type": "string", "minLength": 1 }, "blueprint": { "type": "string", "minLength": 20 } } } },
     "intendedSignature": { "type": "string", "minLength": 6 },
     "baselineAvailable": { "type": "boolean" },
+    "motionRequired": { "type": "boolean" },
+    "motionMomentIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
     "evidence": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/evidence" } },
     "contextPolicy": { "type": "object", "additionalProperties": false, "required": ["firstPass", "excluded"], "properties": { "firstPass": { "const": "objective-only" }, "excluded": { "type": "array", "uniqueItems": true, "allOf": [
       { "contains": { "const": "builder-self-review" } }, { "contains": { "const": "implementation-rationale" } }, { "contains": { "const": "quality-claims" } }, { "contains": { "const": "difficulty-excuses" } }, { "contains": { "const": "builder-score" } }
@@ -21,7 +23,7 @@
   },
   "$defs": {
     "evidence": { "type": "object", "additionalProperties": false, "required": ["id", "kind", "description"], "properties": {
-      "id": { "type": "string", "minLength": 1 }, "kind": { "enum": ["baseline-screenshot", "final-screenshot", "motion-recording", "live-url", "interaction-recording"] }, "description": { "type": "string", "minLength": 8 }, "artifactPath": { "type": "string", "minLength": 1 }, "url": { "type": "string", "minLength": 1 }, "pageId": { "type": "string", "minLength": 1 }, "viewport": { "type": "object", "additionalProperties": false, "required": ["width", "height"], "properties": { "width": { "type": "number", "exclusiveMinimum": 0 }, "height": { "type": "number", "exclusiveMinimum": 0 } } }
+      "id": { "type": "string", "minLength": 1 }, "kind": { "enum": ["baseline-screenshot", "final-screenshot", "motion-recording", "interaction-recording", "state-capture", "browser-trace", "reduced-motion-capture", "live-url"] }, "description": { "type": "string", "minLength": 8 }, "artifactPath": { "type": "string", "minLength": 1 }, "url": { "type": "string", "minLength": 1 }, "pageId": { "type": "string", "minLength": 1 }, "motionMomentId": { "type": "string", "minLength": 1 }, "viewport": { "type": "object", "additionalProperties": false, "required": ["width", "height"], "properties": { "width": { "type": "number", "exclusiveMinimum": 0 }, "height": { "type": "number", "exclusiveMinimum": 0 } } }, "temporal": { "type": "object", "additionalProperties": false, "properties": { "startTimestamp": { "type": "string", "format": "date-time" }, "endTimestamp": { "type": "string", "format": "date-time" }, "controlledProgress": { "type": ["number", "string"] }, "observedProperties": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } } } }
     }, "anyOf": [{ "required": ["artifactPath"] }, { "required": ["url"] }] }
   }
 }

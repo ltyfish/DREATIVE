@@ -58,4 +58,8 @@ Verify cold URLs, route forward/back, full scroll and reverse, focus/keyboard,
 mobile, reduced motion, occlusion at multiple progress points, real asset load,
 console, frame time, transferred weight, and failure fallback.
 
+The persistent stage and every chapter transition map to typed motion moments;
+record scene/camera/application state at controlled progress, not screenshots or
+console status alone.
+
 Recipe reference: `../recipes/immersive-recipes.md`, after exploration only.

@@ -164,12 +164,12 @@ must appear somewhere in the overall plan, but not on every page.
   DOM only as a non-binding implementation reference, and then reconciles
   behavior, content, preservation, and valuable design equity.
   It is not a stylesheet-only restyle.
-- After the first viewport, one representative core section, desktop/mobile
-  translations, and primary motion language exist, stop expansion. Capture
-  baseline/current screenshots, critique perceptual quality, refine meaningful
-  weaknesses, write `.dreative/checkpoint.json`, and obtain user approval before
-  spreading the system. “Build after plan, with visual checkpoint” names this
-  workflow honestly; it does not skip the checkpoint.
+- Build in this order: motion-ready assets; shared animation clock/foundation;
+  real first-viewport/core-section motion prototype; checkpoint; then each row's
+  composition, states, interaction, mobile, reduced motion, and proof; final
+  handoffs; craft; critic; verification/audit. Stop expansion at the prototype.
+  Record its moment/evidence IDs and approval in `.dreative/checkpoint.json`.
+  If removing entrances leaves a static stack, revise the language before spread.
 - Every heavy effect ships with its planned reduced-motion, mobile, loading, and
   runtime fallback.
 
@@ -188,8 +188,9 @@ Run one dedicated finish pass with no new features:
 
 Run this after the complete build and craft pass, before final verification:
 
-1. Capture final desktop/mobile states and motion or interaction evidence when
-   available.
+1. Capture final desktop/mobile states. Motion-selected work must include mapped
+   recordings/traces or controlled-progress state captures plus reduced motion;
+   missing temporal evidence means `INSUFFICIENT EVIDENCE`.
 2. Write `.dreative/critic-input.json` from objective material only: original
    brief, user constraints, approved concept, visual blueprints, signature,
    baseline evidence when available, and final evidence. Exclude the builder's
@@ -220,9 +221,10 @@ Verification is evidence, not prose asserting that something was checked.
    narrow-mobile fallback for every important page.
 4. Check the console, links, forms, keyboard path, states, reduced motion,
    responsive overflow, and pointer hit areas.
-5. For motion/WebGL/video, record runtime evidence and performance numbers.
-   Capture initial, early, mid-transition, final, handoff, mobile, and
-   reduced-motion states; add pinned midpoint/exit states when pinning exists.
+5. For every motion moment, record temporal provenance: recording/trace path and
+   timestamps, or controlled progress with observed expected/actual properties.
+   Capture initial, early, midpoint, end, handoff, reverse, mobile, and reduced-
+   motion states; add pinned midpoint/exit and FPS/frame time for heavy effects.
 6. Reconcile every plan section and asset against what visibly shipped.
 7. At expressive/award, visually inspect the captured states, make at least one
    refinement to timing, composition, readability, or continuity, and record it.
@@ -234,7 +236,10 @@ Verification is evidence, not prose asserting that something was checked.
 9. Write `.dreative/verify.json` v3. Associate each row to a typed criterion,
    page/section, evidence kind, viewport class, and artifact/test. Run
    `dreative audit`.
-10. Fix every error. Warnings require either a fix or a recorded justification.
+10. Answer the static-feeling rejection test in `staticFeelingReview`: without
+    entrances, does composition/media/interaction/spatial state still develop?
+    At expressive/award, “no” fails.
+11. Fix every error. Warnings require either a fix or a recorded justification.
 
 Every evidence-backed substitution references passing evidence IDs whose proof
 meets its declared success criteria. Vague reasons such as "it did not fit",

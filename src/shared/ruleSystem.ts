@@ -1,4 +1,5 @@
 import type { DirectDesignPlan, VerificationReport } from "./artifacts.js";
+import { validateMotionExecution } from "./motionSystem.js";
 
 export type RuleCategory = "hard-gate" | "evidence-backed-default" | "creative-provocation";
 
@@ -235,5 +236,6 @@ export function validateRuleControls(
     }
   }
 
+  errors.push(...validateMotionExecution(plan, verification));
   return errors;
 }

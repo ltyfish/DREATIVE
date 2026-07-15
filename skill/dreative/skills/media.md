@@ -132,10 +132,23 @@ are invalid implementations.
 
 ## 6. Planning and verification
 
-The blueprint records asset path/source, importance, preparation decision and
-derivatives, purpose, treatment class, driver, mobile behavior, fallback, and
-success criteria. At expressive/award, record the page's `creativeStrategy` and
-contextual `motionComplexityBudget`.
+For each important transforming set-piece, record `mediaTransformations[]`:
+exactly three brand-native candidates and rejection reasons; selected candidate;
+named source; DOM/CSS, SVG, Canvas, WebGL, Three.js, sequence, video, and hybrid
+feasibility comparison; typed derivative manifest; implementation file; and
+prototype/final evidence IDs. Derivatives name their path, role, production
+method/AI instruction, dimensions/aspect, frames/format, use, optimization,
+consumer, status, and evidence. Inspect AI state consistency before coding.
+
+When a sequence wins, add the source/generation method, key and total frames,
+production/interpolation, scroll mapping, preload/decode/render strategy,
+desktop dimensions, authored mobile path, compression/transfer budget, dropped-
+frame handling, fallback, and reduced-motion still. Offline rendering is valid
+when it delivers the visible outcome more reliably than live computation.
+
+Prototype the actual media change with representative assets, at least three
+material states, forward/reverse input, mobile, reduced motion, and performance.
+Decoration over an unchanged source fails.
 
 Verification records:
 

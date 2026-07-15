@@ -55,4 +55,8 @@ Verify live surface change, media identity/alignment, gesture alternatives,
 sound consent/mute, full journey and reverse, mobile, reduced motion, console,
 frame-time/FPS, asset weight, hidden-tab pause, and context-loss fallback.
 
+Each scene peak and handoff maps to a typed motion moment. The critic receives
+recordings/traces and state captures so it can judge pacing, rests, continuity,
+brand relationship, and whether media itself transforms.
+
 Recipe reference: `../recipes/cinematic-recipes.md`, after exploration only.

@@ -154,17 +154,15 @@ presents choices about a concrete plan, not abstractions. Per section:
 
 ### Motion treatment and complexity budget
 
-At expressive/award, write a coherent scene sequence before implementation. For
-every major section record in `motionTreatment`:
-
-- static composition and motion class (`none`, `decorative`, `structural`, or
-  `transformational`);
-- starting and ending visual states;
-- what changes, persists, pins, enters, transforms, combines, fragments, or exits;
-- the handoff into the next composition;
-- narrative/emotional purpose;
-- rendering mechanism;
-- mobile translation and reduced-motion state.
+At expressive/award, write a coherent scene sequence before implementation.
+`motionTreatment` remains the short section summary. Every important moment is
+also a typed `motionMoments[]` record with a stable ID, page/section, owner,
+decorative/structural/transformational class, real input driver, static/start/
+intermediate/end states, handoff, purpose, rendering mechanism, implementation
+file/component, observed properties, desktop/mobile/reduced-motion treatments,
+primary and fallback implementations, observable success criteria, and required
+evidence IDs. Map it from the section with `motionMomentIds`; vague effect labels
+are invalid.
 
 Decorative motion introduces or responds. Structural motion controls hierarchy,
 pacing, pinning, and composition. Transformational motion changes form or turns
@@ -188,6 +186,12 @@ fading/scaling/sliding; are sections independent reveals; where is the major
 composition handoff; how does motion change visual state; could this system fit
 an unrelated site; what is memorable; and how does movement express the concept?
 If the result is generic at expressive/award, revise the scene plan now.
+
+Expressive requires a structural/transformational composition moment, continuous
+input-driven development, an authored handoff/persistence, responsive feedback,
+and one coherent motion language. Award additionally requires a developing
+signature with materially different states and a transformational hero. Mobile
+must re-author the concept; disabling desktop motion is not a translation.
 
 Plus four page-level lines: register + design read (DESIGN.md §2), signature
 element, animation stack (ONE system: GSAP+Lenis or motion/react — motion.md §2),
@@ -617,14 +621,19 @@ tweak feedback into the plan file before building.
 2. **Foundation.** Install and wire the animation stack (motion.md §2 and the
    motion recipe reference), fonts,
    tokens, providers — before any section code.
-3. **Sections** in blueprint order, each honoring its row (skills tagged per
-   section apply to that section).
-4. **Effects + choreography** across sections (page-level timelines, transitions,
-   the signature element).
-5. **Independent visual critic** — capture objective desktop/mobile and
+3. **Motion prototype.** In the real project, build first viewport + one core
+   composition + one structural/transformational transition + one interaction,
+   including desktop, mobile, and reduced motion. Capture temporal evidence,
+   run the checkpoint, and record approval in `.dreative/checkpoint.json`.
+4. **Sections** in blueprint order. Finish static composition, planned states,
+   interaction, mobile, reduced motion, and runtime proof before marking a row
+   shipped; planned motion is never a later TODO.
+5. **Cross-section choreography** — final handoffs and signature continuity.
+6. **Craft pass** — finish without adding unrelated mechanisms.
+7. **Independent visual critic** — capture objective desktop/mobile and
    interactive evidence, run the objective-only packet in fresh context, apply
    at most one focused required-revision pass, and retain the critic verdict.
-6. **Verification** — the full runtime protocol (SKILL.md §3.7: runtime gates +
+8. **Verification + audit** — the full runtime protocol (SKILL.md §3.7: runtime gates +
    self-critique, mobile first, evidence written to `.dreative/verify.json` and
    summarized in `.dreative/verify.md`).
    Any effect that fails gets its planned fallback, and the final report says
@@ -634,7 +643,7 @@ tweak feedback into the plan file before building.
 carried out in full:
 
 - Work through blueprint rows top to bottom; a row is only closed when its code
-  is written AND its verification gate passes (or its named fallback shipped).
+  is written AND its motion evidence passes (or its evidenced fallback ships).
 - Never end the session, summarize, or declare done while unshipped rows
   remain. If interrupted or the context is compacted, re-read
   `.dreative/plan.json` (using `plan.md` for narrative context) and resume from
