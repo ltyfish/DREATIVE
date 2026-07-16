@@ -162,6 +162,29 @@ export function resolveRuntimeRequirements(mechanisms: string[], preflight: Proj
   });
 }
 
+export function renderCreativeCapabilityPreflight(preflight: ProjectPreflight): string {
+  const byCategory = (category: CapabilityAssessment["category"]) =>
+    preflight.creativeCapabilities.filter((item) => item.category === category);
+  const render = (item: CapabilityAssessment) =>
+    `  - ${item.id}: ${item.status} (${item.source}). ${item.notes}`;
+
+  return [
+    "Creative capability preflight:",
+    `  Project runtime: ${preflight.framework} ${preflight.frameworkVersion}; ${preflight.packageManager}; installed creative packages: ${preflight.installedCapabilities.join(", ") || "none"}.`,
+    "  User permission is recorded separately from capability. Permission never proves that an authoring or sourcing tool exists.",
+    "Runtime rendering/editing packages:",
+    ...byCategory("runtime").map(render),
+    "Creative authoring tools:",
+    ...byCategory("authoring").map(render),
+    "Creative sourcing tools:",
+    ...byCategory("sourcing").map(render),
+    "Verification tools:",
+    ...byCategory("verification").map(render),
+    "  Honesty constraints: Three.js renders spatial assets but does not create models. GSAP coordinates animation but does not author choreography. FFmpeg edits or compiles existing footage/frames but does not generate original video.",
+    "  If model generation/authoring is unavailable, a selected 3D treatment must use an honestly classified supplied/sourced model, spatial cutout, layered billboard, pre-rendered angles, frame sequence, WebGL media plane, or declared static fallback.",
+  ].join("\n");
+}
+
 export function detectProjectPreflight(
   projectDir: string,
   options: { permissions?: Partial<CreativePermissions>; explicitCapabilities?: CapabilityInput[] } = {},

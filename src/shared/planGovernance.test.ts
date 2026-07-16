@@ -15,6 +15,16 @@ function root(): string {
   return dir;
 }
 
+const resolvedCreativeArgs = [
+  "--no-references",
+  "--generated-images", "deny",
+  "--sourced-images", "deny",
+  "--generated-video", "deny",
+  "--sourced-video", "deny",
+  "--3d-assets", "not-allowed",
+  "--package-install", "deny",
+];
+
 function completePlan(dir: string): CanonicalPlan {
   const plan = createPlan(dir, {
     workflow: { ambition: "award", execution: "full-audit", prototype: "required", purpose: "dreative-dogfood" },
@@ -73,7 +83,7 @@ test("creative-source intake asks unresolved reference, media, 3D and package-pe
 
 test("values supplied by the user are recorded without being replaced", () => {
   const dir = root();
-  assert.equal(runPlanCommand(dir, ["init", "--ambition", "experimental", "--execution", "fast", "--prototype", "skip", "--purpose", "project-delivery", "--preview-url", "http://localhost:4173", "--routes", "/work", "--references", "https://example.com/ref", "--generated-images", "ask", "--sourced-images", "allow", "--generated-video", "deny", "--sourced-video", "ask", "--3d-assets", "supplied-only", "--supplied-3d", "assets/product.glb"]), 0);
+  assert.equal(runPlanCommand(dir, ["init", "--ambition", "experimental", "--execution", "fast", "--prototype", "skip", "--purpose", "project-delivery", "--preview-url", "http://localhost:4173", "--routes", "/work", "--references", "https://example.com/ref", "--generated-images", "ask", "--sourced-images", "allow", "--generated-video", "deny", "--sourced-video", "ask", "--3d-assets", "supplied-only", "--supplied-3d", "assets/product.glb", "--package-install", "allow"]), 0);
   const plan = readPlan(dir);
   assert.deepEqual(plan.contract.workflow, { ambition: "experimental", execution: "fast", prototype: "skip", purpose: "project-delivery" });
   assert.deepEqual(plan.contract.target.routeScope.routes, ["/work"]);
@@ -88,12 +98,33 @@ test("values supplied by the user are recorded without being replaced", () => {
 
 test("all treatments require confirmation and remain selected", () => {
   const dir = root();
-  const args = ["init", "--ambition", "award", "--execution", "lean", "--prototype", "auto", "--purpose", "project-delivery", "--preview-url", "http://localhost:4173", "--routes", "/", "--treatments", "all"];
+  const args = ["init", "--ambition", "award", "--execution", "lean", "--prototype", "auto", "--purpose", "project-delivery", "--preview-url", "http://localhost:4173", "--routes", "/", "--treatments", "all", ...resolvedCreativeArgs];
   assert.equal(runPlanCommand(dir, args), 2);
+  assert.equal(fs.existsSync(path.join(dir, ".dreative", "plan.yaml")), false);
   assert.equal(runPlanCommand(dir, [...args, "--confirm-all"]), 0);
   const plan = readPlan(dir);
   assert.equal(plan.contract.allTreatmentsExplicit, true);
   assert.equal(plan.contract.selectedTreatments.length, 10);
+});
+
+test("unresolved creative capability intake never writes a contract", () => {
+  const dir = root();
+  const result = runPlanCommand(dir, ["init", "--ambition", "experimental", "--execution", "full-audit", "--prototype", "required", "--purpose", "dreative-dogfood", "--preview-url", "http://localhost:4173", "--routes", "/", "--treatments", "all"]);
+  assert.equal(result, 2);
+  assert.equal(fs.existsSync(path.join(dir, ".dreative", "plan.yaml")), false);
+});
+
+test("validation rejects placeholder treatment allocations", () => {
+  const dir = root();
+  const plan = createPlan(dir, {
+    workflow: { ambition: "standard", execution: "lean", prototype: "auto", purpose: "project-delivery" },
+    target: { previewUrl: "http://localhost:4173", routeScope: { mode: "one-page", routes: ["/"] } },
+    treatments: ["ux", "mobile"],
+  });
+  const errors = validateCanonicalPlan(plan);
+  assert.ok(errors.some((item) => item.includes("concrete page or section locations")));
+  assert.ok(errors.some((item) => item.includes("substantive delivery contribution")));
+  assert.ok(errors.some((item) => item.includes("observable acceptance condition")));
 });
 
 test("contract edits invalidate approval while execution updates do not", () => {

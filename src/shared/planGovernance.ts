@@ -485,6 +485,9 @@ export function validateCanonicalPlan(value: unknown): string[] {
     if (!Array.isArray(allocation.dependencies) || definition.dependencies.some((dependency) => !allocation.dependencies.includes(dependency)))
       errors.push(`${allocation.treatment} allocation does not disclose required dependencies`);
     if (!["peak", "connective-tissue", "foundation"].includes(allocation.routeRole)) errors.push(`${allocation.treatment} allocation needs a route role`);
+    if (!strings(allocation.locations) || allocation.locations.length === 0) errors.push(`${allocation.treatment} allocation needs concrete page or section locations`);
+    if (!concrete(allocation.contribution, 12)) errors.push(`${allocation.treatment} allocation needs a substantive delivery contribution`);
+    if (!strings(allocation.acceptance) || allocation.acceptance.length === 0) errors.push(`${allocation.treatment} allocation needs at least one observable acceptance condition`);
   }
   if ((contract.selectedTreatments.includes("immersive") || contract.selectedTreatments.includes("cinematic")) && contract.continuityOwner === "none")
     errors.push("Immersive or Cinematic selection requires one primary continuity owner");

@@ -21,9 +21,9 @@ import {
   type PlanTarget,
 } from "../shared/planGovernance.js";
 import type { SpecialistSkill } from "../shared/skillSystem.js";
-import { renderProposedTreatmentAllocation, renderTreatmentSummary } from "../shared/treatments.js";
+import { renderCompleteTreatmentReview } from "../shared/treatments.js";
 import type { WorkflowConfiguration } from "../shared/workflow.js";
-import { detectProjectPreflight } from "../shared/preflight.js";
+import { detectProjectPreflight, renderCreativeCapabilityPreflight } from "../shared/preflight.js";
 
 const value = (args: string[], flag: string) => {
   const index = args.indexOf(flag);
@@ -136,14 +136,35 @@ function init(projectDir: string, args: string[]): number {
   };
   const creativeQuestions = unresolvedCreativeSourceQuestions(args);
   if (creativeQuestions.length) {
-    console.log("Unresolved creative-source intake:");
+    console.error("Unresolved creative-source intake blocks contract creation:");
     creativeQuestions.forEach((question) => console.log(`- ${question}`));
+    console.error("No .dreative/plan.yaml was written. Resolve permission separately from runtime and authoring capability, then re-run planning.");
+    return 2;
   }
   const treatmentSelection = parseTreatments(args);
-  console.log(renderTreatmentSummary(treatmentSelection.treatments, treatmentSelection.explicitAll));
-  console.log(renderProposedTreatmentAllocation(treatmentSelection.treatments, routes));
+  const generatedImages = permission(value(args, "--generated-images"));
+  const sourcedImages = permission(value(args, "--sourced-images"));
+  const generatedVideo = permission(value(args, "--generated-video"));
+  const sourcedVideo = permission(value(args, "--sourced-video"));
+  const threeD = value(args, "--3d-assets");
+  const allowed3d = ["not-allowed", "supplied-only", "external-sourcing-allowed", "generation-and-sourcing-allowed", "ask-per-asset"];
+  if (threeD && !allowed3d.includes(threeD)) throw new Error(`invalid --3d-assets: ${threeD}`);
+  const packagePermission = value(args, "--package-install");
+  if (packagePermission && !["allow", "deny"].includes(packagePermission)) throw new Error("invalid --package-install: use allow or deny");
+  const capabilityPreflight = detectProjectPreflight(projectDir, {
+    permissions: {
+      generatedImagesAllowed: generatedImages === "allowed",
+      externalImagesAllowed: sourcedImages === "allowed",
+      generatedVideoAllowed: generatedVideo === "allowed",
+      externalVideoAllowed: sourcedVideo === "allowed",
+      threeDPolicy: threeD === "ask-per-asset" ? "not-allowed" : threeD as "not-allowed" | "supplied-only" | "external-sourcing-allowed" | "generation-and-sourcing-allowed",
+      packageInstallationAllowed: packagePermission === "allow",
+    },
+  });
+  console.log(renderCompleteTreatmentReview(treatmentSelection.treatments, routes));
+  console.log(renderCreativeCapabilityPreflight(capabilityPreflight));
   if (treatmentSelection.explicitAll && !args.includes("--confirm-all")) {
-    console.error("\nExplicit all-treatment selection requires one confirmation. Re-run with --confirm-all after reviewing the tension and cost summary.");
+    console.error("\nExplicit all-treatment selection requires confirmation after the complete allocation and capability preflight. No .dreative/plan.yaml was written. Re-run with --confirm-all.");
     return 2;
   }
   const plan = createPlan(projectDir, {
@@ -167,33 +188,17 @@ function init(projectDir: string, args: string[]): number {
   plan.contract.creativeSources.references.urls = references;
   plan.contract.creativeSources.references.notes = values(value(args, "--reference-notes"));
   plan.contract.creativeSources.references.antiReferences = values(value(args, "--anti-references"));
-  plan.contract.creativeSources.generatedImages = permission(value(args, "--generated-images"));
-  plan.contract.creativeSources.sourcedImages = permission(value(args, "--sourced-images"));
-  plan.contract.creativeSources.generatedVideo = permission(value(args, "--generated-video"));
-  plan.contract.creativeSources.sourcedVideo = permission(value(args, "--sourced-video"));
-  const threeD = value(args, "--3d-assets");
-  const allowed3d = ["not-allowed", "supplied-only", "external-sourcing-allowed", "generation-and-sourcing-allowed", "ask-per-asset"];
-  if (threeD && !allowed3d.includes(threeD)) throw new Error(`invalid --3d-assets: ${threeD}`);
+  plan.contract.creativeSources.generatedImages = generatedImages;
+  plan.contract.creativeSources.sourcedImages = sourcedImages;
+  plan.contract.creativeSources.generatedVideo = generatedVideo;
+  plan.contract.creativeSources.sourcedVideo = sourcedVideo;
   plan.contract.creativeSources.threeDAssets = threeD as typeof plan.contract.creativeSources.threeDAssets ?? null;
   plan.contract.creativeSources.suppliedImageAssets = values(value(args, "--supplied-images"));
   plan.contract.creativeSources.suppliedVideoAssets = values(value(args, "--supplied-video"));
   plan.contract.creativeSources.suppliedThreeDAssets = values(value(args, "--supplied-3d"));
   plan.contract.creativeSources.missingOrNeededAssets = values(value(args, "--missing-assets"));
-  const packagePermission = value(args, "--package-install");
-  if (packagePermission && !["allow", "deny"].includes(packagePermission)) throw new Error("invalid --package-install: use allow or deny");
   plan.contract.scope.dependencyInstallationAllowed = packagePermission ? packagePermission === "allow" : null;
-  plan.contract.capabilityPreflight = detectProjectPreflight(projectDir, {
-    permissions: {
-      generatedImagesAllowed: plan.contract.creativeSources.generatedImages === "allowed",
-      externalImagesAllowed: plan.contract.creativeSources.sourcedImages === "allowed",
-      generatedVideoAllowed: plan.contract.creativeSources.generatedVideo === "allowed",
-      externalVideoAllowed: plan.contract.creativeSources.sourcedVideo === "allowed",
-      threeDPolicy: plan.contract.creativeSources.threeDAssets === "ask-per-asset" || plan.contract.creativeSources.threeDAssets === null
-        ? "not-allowed"
-        : plan.contract.creativeSources.threeDAssets,
-      packageInstallationAllowed: plan.contract.scope.dependencyInstallationAllowed === true,
-    },
-  });
+  plan.contract.capabilityPreflight = capabilityPreflight;
   writePlan(projectDir, plan);
   console.log(`Created editable plan at ${PLAN_FILE}.`);
   console.log(`Workflow: ${workflow.ambition} ambition, ${workflow.execution} execution, ${workflow.prototype} prototype, ${workflow.purpose}.`);

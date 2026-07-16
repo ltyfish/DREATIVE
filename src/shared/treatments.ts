@@ -66,3 +66,39 @@ export function renderProposedTreatmentAllocation(selected: SpecialistSkill[], r
     }),
   ].join("\n");
 }
+
+export function renderCompleteTreatmentReview(selected: SpecialistSkill[], routes: string[] = []): string {
+  const selectedSet = new Set(selected);
+  const route = routes.length ? routes.join(", ") : "target route (must be resolved)";
+  const location = (name: SpecialistSkill) =>
+    name === "ux" || name === "mobile" || name === "refined" ? `${route}: full route`
+      : name === "immersive" || name === "cinematic" ? `${route}: opening, downstream chapters, and resolution`
+        : name === "experimental" ? `${route}: two or three distributed peaks`
+          : `${route}: opening plus at least one downstream chapter`;
+  const routeRole = (item: TreatmentDefinition) =>
+    item.defaultRole === "foundation" ? "foundation"
+      : item.name === "immersive" || item.name === "cinematic" ? "connective tissue"
+        : "peak";
+
+  return [
+    "Complete Dreative treatment review (all ten treatments are disclosed before contract creation):",
+    ...TREATMENT_DEFINITIONS.map((item) => [
+      `${item.name.toUpperCase()} [${selectedSet.has(item.name) ? "SELECTED" : "NOT SELECTED"}]`,
+      `  Meaning: ${item.explanation}`,
+      `  Substantive delivery: ${item.substantive.join(" ")}`,
+      `  Does not count: ${item.insufficient.join(" ")}`,
+      `  Proposed page/section allocation: ${location(item.name)}.`,
+      `  Proposed role: ${item.defaultRole}; route role: ${routeRole(item)}.`,
+      `  Dependencies: ${item.dependencies.join(", ") || "none"}.`,
+      `  Tensions/conflicts: ${item.tensions.join(" ") || "Shared implementation and accessibility budgets still apply."}`,
+      `  Cost: ${item.cost}. Mobile/performance/accessibility risk: ${item.risk}`,
+      `  Observable acceptance: ${item.acceptanceExample}`,
+    ].join("\n")),
+    "Overlap ownership:",
+    "  Immersive owns full-route continuity when selected; Cinematic owns pacing, framing, peaks, rests, and scene handoffs.",
+    "  Motion owns the single normalized scroll/timeline clock. Media owns source pixels, derivatives, loading, and visual states. 3D consumes shared progress/input and owns only its render scene.",
+    "  Refined disciplines hierarchy and finish without pruning Experimental peaks. Experimental selects two or three unconventional behaviours rather than making every section noisy.",
+    "  Mobile and reduced motion must translate each defining state and interaction; disabling or deleting the concept does not count.",
+    "  Interaction must change media, layout, viewpoint, navigation structure, or meaningful application state; ordinary tabs, buttons, cards, and hover styling do not count.",
+  ].join("\n");
+}

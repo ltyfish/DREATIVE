@@ -13,6 +13,15 @@ import { runFinalize } from "./finalize.js";
 const packageRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const sourceDir = path.join(packageRoot, "skill", "dreative");
 const packageVersion = JSON.parse(fs.readFileSync(path.join(packageRoot, "package.json"), "utf8")).version;
+const resolvedCreativeArgs = [
+  "--no-references",
+  "--generated-images", "deny",
+  "--sourced-images", "deny",
+  "--generated-video", "deny",
+  "--sourced-video", "deny",
+  "--3d-assets", "not-allowed",
+  "--package-install", "allow",
+];
 
 test("focused simulated workflow covers intake, edit, approval, drift, broken media and valid finalization", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-simulation-"));
@@ -20,7 +29,7 @@ test("focused simulated workflow covers intake, edit, approval, drift, broken me
   fs.writeFileSync(path.join(root, "package.json"), JSON.stringify({ name: "simulation", version: "1.0.0", scripts: { dev: "vite" }, dependencies: { vite: "^5" } }));
   fs.writeFileSync(path.join(root, "package-lock.json"), "{}");
   fs.writeFileSync(path.join(root, "src", "App.tsx"), `export const App=()=> <main><img src="/hero.jpg" alt="Hero"/></main>`);
-  assert.equal(runPlanCommand(root, ["init", "--ambition", "award", "--execution", "full-audit", "--prototype", "required", "--purpose", "dreative-dogfood", "--preview-url", "http://localhost:4173", "--routes", "/", "--treatments", "all", "--confirm-all"]), 0);
+  assert.equal(runPlanCommand(root, ["init", "--ambition", "award", "--execution", "full-audit", "--prototype", "required", "--purpose", "dreative-dogfood", "--preview-url", "http://localhost:4173", "--routes", "/", "--treatments", "all", "--confirm-all", ...resolvedCreativeArgs]), 0);
 
   const plan = readPlan(root);
   plan.contract.scope.requiredFunctionality = ["The primary route and controls remain operational."];
@@ -65,7 +74,7 @@ test("focused simulated workflow covers intake, edit, approval, drift, broken me
   fs.writeFileSync(path.join(validRoot, "package.json"), JSON.stringify({ name: "valid", version: "1.0.0" }));
   fs.writeFileSync(path.join(validRoot, "package-lock.json"), "{}");
   fs.writeFileSync(path.join(validRoot, "src", "App.tsx"), `export const App=()=> <main>Ready</main>`);
-  assert.equal(runPlanCommand(validRoot, ["init", "--ambition", "standard", "--execution", "fast", "--prototype", "skip", "--purpose", "project-delivery", "--preview-url", "http://localhost:4173", "--routes", "/"]), 0);
+  assert.equal(runPlanCommand(validRoot, ["init", "--ambition", "standard", "--execution", "fast", "--prototype", "skip", "--purpose", "project-delivery", "--preview-url", "http://localhost:4173", "--routes", "/", ...resolvedCreativeArgs]), 0);
   const valid = readPlan(validRoot);
   valid.contract.scope.requiredFunctionality = ["Render the ready state."];
   valid.contract.scope.dependencyInstallationAllowed = false;
