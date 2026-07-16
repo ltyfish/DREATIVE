@@ -16,7 +16,7 @@ test("resolves universal and transitive skill dependencies", () => {
 });
 
 test("resolves ambition without forcing award tier", () => {
-  assert.equal(resolveAmbitionTier({ variance: 3, motion: 2, aesthetic: "trust" }), "solid");
+  assert.equal(resolveAmbitionTier({ variance: 3, motion: 2, aesthetic: "trust" }), "standard");
   assert.equal(resolveAmbitionTier({ variance: 7, motion: 7 }), "expressive");
   assert.equal(resolveAmbitionTier({ variance: 7, motion: 7, texts: ["Awwwards immersive world"] }), "award");
 });
@@ -39,6 +39,7 @@ test("hybrid routing honors page pins and never activates unselected suggestions
     ],
     selected: ["cinematic", "refined"],
     assignments: { shop: ["refined"] },
+    autoRouteUnassigned: true,
   });
   assert.ok(routed.byPage.shop.includes("refined"));
   assert.ok(routed.byPage.home.includes("cinematic"));
@@ -57,6 +58,7 @@ test("select all covers all skills across the build without putting all on every
       { id: "about", texts: ["experimental editorial"] },
     ],
     selected: [...all],
+    autoRouteUnassigned: true,
   });
   const used = new Set(Object.values(routed.byPage).flat());
   assert.deepEqual([...all].filter((skill) => !used.has(skill)), []);

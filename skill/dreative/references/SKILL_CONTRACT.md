@@ -1,30 +1,22 @@
-# Specialist skill contract
-
-Every specialist skill follows this contract, in addition to its own doctrine:
+# Specialist treatment contract
 
 Universal foundation: ux and baseline mobile apply to every web page.
 
-1. **Load when:** selected in `plan.skills` or clearly triggered by the brief.
-2. **Do not load when:** the treatment adds cost without serving the request.
-3. **Dependencies:** resolve the skill graph in `SKILL.md`; `ux` and `mobile`
-   are universal.
-4. **Deliverables:** name concrete components, effects, assets, and states in the
-   plan—never select a skill as a mood label.
-5. **Budget:** define asset/runtime limits appropriate to the ambition tier.
-6. **Accessibility:** provide keyboard, reduced-motion, semantic, and readable
-   fallbacks for every treatment.
-7. **Fallback:** name the cheaper robust version before implementation.
-8. **Definition of done:** pass the independent visual critic for substantial
-   work, record observable evidence in `verify.json`, and pass `dreative audit`.
+Every treatment shown to the user must include a plain explanation,
+dependencies, low/medium/high cost, mobile/performance risk, tensions,
+substantive delivery examples and insufficient examples.
 
-A specialist file may strengthen these floors but may not weaken them.
+Treatments are selected by the user and allocated by concept. Keyword detection
+may suggest but never decide the architecture. A selected treatment needs named
+locations, a perceptible contribution, implementation bindings and evidence.
+Do not silently remove it.
 
-Rules use three categories from `RULES.json`:
+All-treatment selection requires one confirmation after a complexity summary.
+Immersive and Cinematic normally need one primary continuity owner. 3D, large
+media sequences and cinematic effects together carry high load, battery and
+mobile risk. Multiple tickers or scroll owners are runtime conflicts.
+Fine-pointer behavior needs touch alternatives. Experimental behavior belongs
+at selected peaks.
 
-- hard gates are objective delivery failures and cannot be waived;
-- evidence-backed defaults are proven remedies with bounded substitutions;
-- creative provocations generate exploration candidates, not mandatory clutter.
-
-Follow the proven default, or outperform it with a named alternative,
-measurable success criteria, and runtime evidence. Generate and record three
-brand-native concepts before loading any `recipes/` reference.
+Load specialist summaries first. Load recipes only for approved mechanisms.
+Fallbacks need prior approval and may not materially weaken the contract.

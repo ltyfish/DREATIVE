@@ -24,6 +24,8 @@ import {
 import { motionIsSelected, validateMotionCheckpoint, validateMotionExecution } from "../shared/motionSystem.js";
 import { resolveWorkflowConfiguration, resolveWorkflowPolicy, shouldCreatePrototype, type InteractionRisk } from "../shared/workflow.js";
 import { checkBuildFreshness, checkExecutionContracts, checkLegacyAmbitiousRuntime, checkPolicyRecords, checkTemporalEvidence } from "./executionAudit.js";
+import { PLAN_FILE, approvalStatus, readPlan, validateCanonicalPlan, type CanonicalPlan } from "../shared/planGovernance.js";
+import { validateExperienceDelivery } from "../shared/experienceGates.js";
 
 export interface AuditFinding {
   level: "error" | "warning";
@@ -34,6 +36,73 @@ export interface AuditFinding {
 export interface AuditReport {
   ok: boolean;
   findings: AuditFinding[];
+}
+
+function runCanonicalPlanAudit(projectDir: string): AuditReport {
+  const findings: AuditFinding[] = [];
+  let plan: CanonicalPlan;
+  try { plan = readPlan(projectDir); }
+  catch (error) { return { ok: false, findings: [finding("error", "plan", String(error))] }; }
+  for (const message of validateCanonicalPlan(plan)) findings.push(finding("error", "plan", message));
+  const approval = approvalStatus(plan);
+  if (!approval.approved) findings.push(finding("error", "approval", approval.drifted
+    ? `approved contract drifted (${approval.approvedHash} -> ${approval.currentHash}); record a change request and re-approve`
+    : "substantial implementation requires an approved contract"));
+  for (const item of validateExperienceDelivery(plan)) findings.push(finding("error", item.check, item.message));
+  const root = path.resolve(projectDir) + path.sep;
+  for (const binding of plan.execution.bindings) {
+    if (!plan.contract.selectedTreatments.includes(binding.treatment)) findings.push(finding("error", "runtime-binding", `${binding.id}: binds unselected treatment ${binding.treatment}`));
+    if (binding.files.length === 0 || binding.selectors.length === 0 || binding.evidenceIds.length === 0) findings.push(finding("error", "runtime-binding", `${binding.id}: files, stable selectors and evidence are required`));
+    for (const relative of binding.files) {
+      const file = path.resolve(projectDir, relative);
+      if (!file.startsWith(root) || !fs.existsSync(file)) findings.push(finding("error", "runtime-binding", `${binding.id}: missing implementation file ${relative}`));
+    }
+  }
+  for (const treatment of plan.contract.selectedTreatments) {
+    const allocation = plan.contract.treatmentAllocation.find((item) => item.treatment === treatment);
+    if (!allocation || allocation.locations.length === 0 || allocation.contribution.trim().length < 12 || allocation.acceptance.length === 0)
+      findings.push(finding("error", "treatment-allocation", `${treatment} needs concept-led locations, substantive contribution and acceptance criteria`));
+    if (!plan.execution.bindings.some((item) => item.treatment === treatment) && !["ux", "mobile", "refined"].includes(treatment))
+      findings.push(finding("error", "treatment-allocation", `${treatment} has no real implementation binding`));
+  }
+  if (plan.execution.runtime?.competingOwners.length) findings.push(finding("error", "runtime-owner", `competing ticker/scroll/render owners: ${plan.execution.runtime.competingOwners.join(", ")}`));
+  if (plan.execution.runtime?.packageTransactions.some((item) => item.status === "failed")) findings.push(finding("error", "runtime-install", "a runtime package transaction failed without a completed rollback/recovery"));
+  const criticRequired = plan.contract.scope.substantial && plan.contract.workflow.execution !== "fast";
+  if (criticRequired) {
+    const critic = plan.execution.critic;
+    if (!critic) findings.push(finding("error", "critic", "substantial Lean, Full Audit and Dogfood work requires an independent perceptual critic"));
+    else {
+      const currentContractHash = approvalStatus(plan).currentHash;
+      if (critic.approvedContractHash !== currentContractHash) findings.push(finding("error", "critic", "critic reviewed a different contract revision"));
+      const requiredInputs = ["approved-contract", "original-baseline", "desktop-captures", "mobile-captures", "runtime-traces", "interaction-instructions", "treatment-allocation", "acceptance-criteria"];
+      for (const input of requiredInputs) if (!critic.firstPassInputs.includes(input)) findings.push(finding("error", "critic", `critic first pass is missing ${input}`));
+      if (!critic.builderContextExcluded) findings.push(finding("error", "critic", "critic first pass must exclude builder rationale, excuses and self-authored quality claims"));
+      const scoreKeys = ["ambitionFidelity", "conceptFidelity", "authorship", "staticFeeling", "temporalDevelopment", "treatmentPerceptibility", "mediaIntegrity", "typographyHierarchy", "mobileComposition", "interactionPurpose", "brandAppropriateness", "functionalHonesty", "visibleRegressions"];
+      for (const key of scoreKeys) if (typeof critic.scores[key] !== "number") findings.push(finding("error", "critic", `critic score missing: ${key}`));
+      const temporal = ["motion", "immersive", "cinematic", "experimental"].some((item) => plan.contract.selectedTreatments.includes(item as SpecialistSkill)) || plan.contract.workflow.ambition === "award";
+      if (temporal && critic.recordings.desktop.length === 0) findings.push(finding("error", "critic", "motion-led or Award work requires at least one continuous desktop recording"));
+      if (plan.contract.workflow.purpose === "dreative-dogfood" && temporal && plan.execution.evidence.mobileNative.length && critic.recordings.mobile.length === 0) findings.push(finding("error", "critic", "Dogfood requires a mobile recording when the defining experience exists on mobile"));
+      if (critic.verdict === "fail" || critic.blockers.length) findings.push(finding("error", "critic", "critic blockers remain unresolved"));
+      if ((plan.contract.workflow.execution === "full-audit" || plan.contract.workflow.purpose === "dreative-dogfood") && critic.majorIssues.length) findings.push(finding("error", "critic", "Full Audit and Dogfood require correction of all major critic issues"));
+    }
+  }
+  if (plan.contract.workflow.purpose === "dreative-dogfood") {
+    const dogfood = plan.execution.dogfood;
+    if (!dogfood) findings.push(finding("error", "dogfood", "Dreative Dogfood requires a workflow behaviour report"));
+    else {
+      for (const question of dogfood.questionsRequired) if (!dogfood.questionsAsked.includes(question)) findings.push(finding("error", "dogfood", `required question was omitted: ${question}`));
+      if (dogfood.incorrectlyDefaulted.length) findings.push(finding("error", "dogfood", "workflow information was incorrectly defaulted or inferred"));
+      if (dogfood.verdict === "fail") findings.push(finding("error", "dogfood", "Dogfood workflow verdict is fail"));
+      if (/yes|true|would have/i.test(dogfood.falsePositiveRisk)) findings.push(finding("error", "dogfood", "Dogfood detected false-positive finalization risk"));
+    }
+  }
+  const verificationFile = path.join(projectDir, ".dreative", "verify.json");
+  if (!fs.existsSync(verificationFile)) findings.push(finding("error", "verification", "missing verify.json for the current implementation"));
+  else {
+    findings.push(...checkArtifact(verificationFile, "verification", validateVerificationReport));
+    findings.push(...checkVerificationProof(projectDir, verificationFile));
+  }
+  return { ok: !findings.some((item) => item.level === "error"), findings };
 }
 
 function readJson(file: string): unknown {
@@ -463,6 +532,7 @@ export function checkCriticArtifacts(projectDir: string, plan: DirectDesignPlan,
 
 export function runDirectDesignAudit(projectDir: string): AuditReport {
   const root = path.join(projectDir, ".dreative");
+  if (fs.existsSync(path.join(projectDir, PLAN_FILE))) return runCanonicalPlanAudit(projectDir);
   const planFile = path.join(root, "plan.json");
   const findings = checkArtifact(planFile, "plan", validatePlan);
   if (!fs.existsSync(planFile)) return { ok: false, findings };
@@ -482,8 +552,8 @@ export function runDirectDesignAudit(projectDir: string): AuditReport {
   findings.push(...checkVerificationProof(projectDir, verificationFile));
   const verification = fs.existsSync(verificationFile) ? (readJson(verificationFile) as VerificationReport) : undefined;
   if (plan.version !== 6 || plan.doctrineVersion !== 6) {
-    findings.push(finding("warning", "migration", "legacy v2-v5 plan accepted for compatibility only; migrate v5 plans and v3 verification to plan v6 / verify v4 for runtime contracts and cryptographic freshness"));
-    if ((configuration.ambition === "award" || configuration.ambition === "experimental") && configuration.execution === "full-audit") findings.push(finding("error", "migration", "legacy plans cannot certify ambitious Full Audit completion; migrate to v6"));
+    findings.push(finding("warning", "migration", "legacy plan.json is accepted for compatibility only; migrate v3-v6 plans to canonical plan.yaml v7 and recapture current verification evidence"));
+    if ((configuration.ambition === "award" || configuration.ambition === "experimental") && configuration.execution === "full-audit") findings.push(finding("error", "migration", "legacy plans cannot certify ambitious Full Audit completion; migrate to plan.yaml v7"));
   } else {
     try {
       const { registry, reflexFonts } = loadRuleFiles();

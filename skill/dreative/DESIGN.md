@@ -151,7 +151,7 @@ alongside choices, so the same critique never has to be given twice.
 
 **No-media builds: structure IS the media.** When a build ships zero
 imagery (no image-gen tool, product register, or the user chose
-placeholders), the ambition tier does NOT tier down — it transfers whole
+placeholders), Ambition does not drop — it transfers whole
 onto layout, type, and motion, and this is where no-media builds die: the
 executor, with no assets to arrange, collapses to the one layout it knows
 (a vertical list of rounded cards in a centered column) and ships slop that
@@ -220,7 +220,7 @@ a headline, an image, a live demo, an interactive moment. Whatever form fits.
 - `dark-tech` — off-black surfaces, restrained neon, terminal cues used sparingly.
 - `trust` — public-sector/regulated: symmetric, motion ≤2, maximum legibility.
 
-### The three dials (1-10, resolved in `plan.dials`)
+### Optional design inputs (1-10, resolved before writing the v7 contract)
 
 - `variance` — 1 symmetry → 10 masonry/offsets/20vw empty zones. >4 forbids the
   centered-hero default. Any asymmetry collapses to clean single-column < 768px.

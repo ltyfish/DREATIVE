@@ -34,9 +34,9 @@ test("case A: restyle + expressive retains structure without claiming transforma
   assert.match(result.structuralDelta.depthHonesty, /restyle/i);
 });
 
-test("case B: restructure + solid produces a task-specific architecture", () => {
+test("case B: restructure + standard produces a task-specific architecture", () => {
   const result = plan({ transformationDepth: "restructure", aesthetic: "trust", variance: 3, motion: 2 });
-  assert.equal(result.tier, "solid");
+  assert.equal(result.tier, "standard");
   assert.equal(result.depth, "restructure");
   assert.equal(result.register, "task-transaction");
   assert.match(result.structuralDelta.proposedModel, /task-first.*workspace/i);

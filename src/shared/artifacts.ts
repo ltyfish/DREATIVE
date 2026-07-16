@@ -1,4 +1,4 @@
-import type { AmbitionTier, SpecialistSkill } from "./skillSystem.js";
+import type { AmbitionTier, LegacyAmbitionTier, SpecialistSkill } from "./skillSystem.js";
 import type { ExpressionContract, MobileBlueprint, MobileVerificationCheck, PageRegister, SourceStrategy, StructuralDelta, TransformationDepth } from "./types.js";
 import { validateMotionExecution } from "./motionSystem.js";
 import type { WorkflowConfiguration } from "./workflow.js";
@@ -342,7 +342,7 @@ export interface DirectDesignPlan {
   doctrineVersion?: 2 | 3 | 4 | 5 | 6;
   request: string;
   createdAt: string;
-  tier: AmbitionTier;
+  tier: AmbitionTier | LegacyAmbitionTier;
   /** Independent workflow controls. Missing legacy values resolve through shared defaults. */
   configuration?: WorkflowConfiguration;
   depth: TransformationDepth;
@@ -407,7 +407,7 @@ export interface ApprovalRecord {
   transcriptReferences?: string[];
   approvedConcept: string;
   approvedTransformationDepth: TransformationDepth;
-  approvedTier: AmbitionTier;
+  approvedTier: AmbitionTier | LegacyAmbitionTier;
   approvedTreatments: SpecialistSkill[];
   selectedRecommendation: boolean;
   decisions: ApprovalDecision[];
@@ -533,7 +533,7 @@ export interface PreservationManifest {
 export interface DecisionEntry {
   at: string;
   request: string;
-  tier: AmbitionTier;
+  tier: AmbitionTier | LegacyAmbitionTier;
   chosen: string[];
   rejected: string[];
   failures: { treatment: string; evidence: string; fallback: string }[];
@@ -787,7 +787,7 @@ function validateQualityControls(plan: Partial<DirectDesignPlan>, doctrineVersio
 
 function normalizedPattern(value: string): string { return value.trim().toLowerCase(); }
 
-function validateModernPage(page: PlanPage, prefix: string, depth: TransformationDepth, tier: AmbitionTier): string[] {
+function validateModernPage(page: PlanPage, prefix: string, depth: TransformationDepth, tier: AmbitionTier | LegacyAmbitionTier): string[] {
   const errors: string[] = [];
   const validRegisters: PageRegister[] = ["marketing-storytelling", "discovery-browse", "task-transaction", "account-status", "administration", "data-dense-utility", "authentication", "system-state"];
   if (!page.register || !validRegisters.includes(page.register)) errors.push(`${prefix}.register is required`);

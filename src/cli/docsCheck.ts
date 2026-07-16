@@ -66,19 +66,21 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
 
   const schemaFile = "schemas/plan.schema.json";
   try {
-    const schema = JSON.parse(contents.get(schemaFile) ?? "{}") as { properties?: { tier?: { enum?: string[] } } };
-    const tiers = schema.properties?.tier?.enum ?? [];
-    const expected = ["solid", "premium", "expressive", "award"];
-    if (JSON.stringify(tiers) !== JSON.stringify(expected))
-      add(findings, "tiers", schemaFile, `tier enum must be ${expected.join(" | ")}`);
+    const schema = JSON.parse(contents.get(schemaFile) ?? "{}") as any;
+    const ambitions = schema.properties?.contract?.properties?.workflow?.$ref
+      ? schema.$defs?.workflow?.properties?.ambition?.enum ?? []
+      : [];
+    const expected = ["standard", "expressive", "award", "experimental"];
+    if (JSON.stringify(ambitions) !== JSON.stringify(expected))
+      add(findings, "ambition", schemaFile, `ambition enum must be ${expected.join(" | ")}`);
     for (const file of ["SKILL.md", "references/TIERS.md"]) {
       const content = contents.get(file) ?? "";
-      for (const tier of expected) {
-        if (!new RegExp(`\\b${tier}\\b`, "i").test(content)) add(findings, "tiers", file, `does not mention canonical tier ${tier}`);
+      for (const ambition of expected) {
+        if (!new RegExp(`\\b${ambition}\\b`, "i").test(content)) add(findings, "ambition", file, `does not mention canonical ambition ${ambition}`);
       }
     }
   } catch (error) {
-    add(findings, "tiers", schemaFile, `cannot parse tier schema: ${String(error)}`);
+    add(findings, "ambition", schemaFile, `cannot parse ambition schema: ${String(error)}`);
   }
 
   for (const skill of ["media", "motion", "3d", "immersive", "cinematic"]) {
@@ -92,7 +94,7 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   }
 
   const planSchema = contents.get("schemas/plan.schema.json") ?? "";
-  for (const field of ["doctrineVersion", "configuration", "ambition", "execution", "prototype", "purpose", "approval", "creativeParity", "executionBrief", "commonPatternReview", "visualBlueprint", "critic", "signatureMedia", "ruleExceptions", "creativeStrategy", "motionComplexityBudget", "motionTreatment", "preparation", "fontDecision", "experimentalPlan", "conceptExploration", "recipeAccess"]) {
+  for (const field of ["contract", "target", "workflow", "ambition", "execution", "prototype", "purpose", "transformationDepth", "selectedTreatments", "treatmentAllocation", "experienceArc", "approval", "contractHash", "changeRequests"]) {
     if (!planSchema.includes(`\"${field}\"`)) add(findings, "schema", "schemas/plan.schema.json", `missing creative-control field ${field}`);
   }
   for (const file of ["schemas/plan.schema.json", "schemas/verify.schema.json", "schemas/critic.schema.json", "schemas/critic-input.schema.json", "schemas/visual-critic.schema.json", "schemas/design-equity.schema.json", "schemas/checkpoint.schema.json"]) {
@@ -168,7 +170,7 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   const planning = contents.get("PLAN.md") ?? "";
   for (const choice of ["Lean (Recommended)", "Auto (Recommended)", "Project Delivery (Recommended)", "Fast", "Full Audit", "Skip", "Required", "Production Certification", "Dreative Dogfood"])
     if (!planning.includes(choice)) add(findings, "workflow-choices", "PLAN.md", `missing user-facing configuration choice: ${choice}`);
-  if (!/non-interactive/i.test(planning) || !/plan\.configuration/.test(planning)) add(findings, "workflow-choices", "PLAN.md", "configuration choices must preserve non-interactive defaults and persist to plan.configuration");
+  if (!/non-interactive/i.test(planning) || !/contract\.workflow/.test(planning)) add(findings, "workflow-choices", "PLAN.md", "configuration choices must preserve explicit automation input and persist to contract.workflow");
   for (const file of ["SKILL.md", "PLAN.md"]) {
     const content = contents.get(file) ?? "";
     if (!/user-facing task is interactive/i.test(content) || !/plain text/i.test(content) || !/never silently default/i.test(content))

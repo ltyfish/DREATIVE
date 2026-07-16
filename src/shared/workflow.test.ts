@@ -22,7 +22,7 @@ test("safe defaults and legacy flags resolve without interaction", () => {
 
 test("shared policy keeps Lean compact and separates Full Audit from Dogfood", () => {
   const lean = resolveWorkflowPolicy(configurations[0]);
-  assert.deepEqual(lean.artifacts, ["plan.json", "critic.json", "verify.json"]);
+  assert.deepEqual(lean.artifacts, ["plan.yaml", "critic.json", "verify.json"]);
   assert.deepEqual(lean.representativeWidths, [1440, 390]);
   const audit = resolveWorkflowPolicy({ ...configurations[0], execution: "full-audit", purpose: "production-certification" });
   assert.ok(audit.artifacts.includes("certification.json"));

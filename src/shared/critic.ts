@@ -257,6 +257,7 @@ export function buildIndependentCriticPrompt(input: CriticInput): string {
     "Use the supplied desktop/mobile evidence and live or recorded interaction evidence when present. Do not infer motion quality from static screenshots.",
     "Ground every finding in an exact location or interaction and an evidence id. Experiments never block completion. Limit required revisions to five.",
     "Review authorship, concept fidelity, hierarchy/composition, mobile authorship, brand specificity, and generic-template risk. Ask whether another company could use the design unchanged after swapping logo and copy.",
+    "Explicitly score and discuss ambition fidelity, concept fidelity, authorship/generic-template risk, static feeling, temporal development, selected-treatment perceptibility, media integrity, typography/hierarchy, mobile composition, interaction purpose, brand/product appropriateness, functional honesty, and visible regressions.",
     "For redesigns, compare the complete baseline journey with the final result and name lost equity or regressions. When motion is required, judge whether the page still feels static, composition change versus entrances, continuity and handoffs, pacing peaks and rests, brand relationship, signature development, media transformation, first-viewport movement, mobile authorship, and generic template risk. Missing temporal evidence requires INSUFFICIENT EVIDENCE.",
     "Return a VisualCriticReport v1 matching schemas/visual-critic.schema.json.",
     `OBJECTIVE INPUT:\n${JSON.stringify(input, null, 2)}`,

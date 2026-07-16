@@ -12,6 +12,10 @@ import { renderCriticPrompt } from "./critic.js";
 import { printDocsCheck, runDocsCheck } from "./docsCheck.js";
 import { runFinalize } from "./finalize.js";
 import { availableSkills, checkSkillInstallation, installSkill, installationDirectory, resolveSkillSelection } from "./installSkill.js";
+import { runPlanCommand } from "./plan.js";
+import { printDoctor, resumePlan, runDoctor } from "./doctor.js";
+import { renderTreatmentSummary } from "../shared/treatments.js";
+import { TREATMENTS } from "../shared/planGovernance.js";
 
 const port = Number(process.env.DREATIVE_PORT || 4820);
 const base = `http://localhost:${port}`;
@@ -28,6 +32,10 @@ const USAGE = `usage: dreative [command]
   config           resolve independent workflow controls
   preflight        detect the current framework, package manager, scripts and capabilities
                    --mechanisms a,b   resolve mechanism-led package/install requirements
+  plan             init | validate | status | diff | approve | export-json | migrate
+  treatments       explain selected treatments [--all | --treatments a,b]
+  doctor           verify skill, schema, packages, browser, source and current plan
+  resume           continue safely from the last valid phase checkpoint
   audit            validate current plan, runtime, evidence, critic, and policy artifacts
                    --json
   finalize         fail-closed commands + installation + audit + certification gate
@@ -80,6 +88,24 @@ async function main(): Promise<void> {
       return;
     }
     case "install-skill": await installCommand(); return;
+    case "plan": {
+      const exitCode = runPlanCommand(process.cwd(), args.slice(1));
+      if (exitCode) process.exitCode = exitCode;
+      return;
+    }
+    case "treatments": {
+      const index = args.indexOf("--treatments");
+      const selected = args.includes("--all") ? [...TREATMENTS] : index >= 0 ? (args[index + 1] ?? "").split(",").map((item) => item.trim()).filter(Boolean) as typeof TREATMENTS : [...TREATMENTS];
+      console.log(renderTreatmentSummary(selected, args.includes("--all")));
+      return;
+    }
+    case "doctor": {
+      const report = runDoctor(process.cwd(), { target: args.includes("--codex") ? "codex" : "claude", sourceDir: packagedSkillDir, packageVersion });
+      printDoctor(report);
+      if (!report.ok) process.exitCode = 1;
+      return;
+    }
+    case "resume": console.log(resumePlan(process.cwd())); return;
     case "audit": {
       const report = runDirectDesignAudit(process.cwd());
       printAudit(report, args.includes("--json"));

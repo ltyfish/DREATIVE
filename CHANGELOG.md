@@ -1,13 +1,20 @@
 # Changelog
 
+## 0.6.1 — plan governance and perceptual quality
+
+- Added canonical plan v7 at `.dreative/plan.yaml`, contract-only approval
+  hashing, material drift rejection and v3-v6 migration diagnostics.
+- Unified Ambition as Standard, Expressive, Award or Experimental and separated
+  it from Execution, Prototype and Purpose.
+- Added mandatory target/scope intake, treatment explanations, all-treatment
+  confirmation and concept-led allocation.
+- Separated mechanism prototypes from real-application concept checkpoints.
+- Added fail-closed anti-static, treatment-perceptibility, browser media,
+  WebGL, runtime-owner, independent critic and Dogfood gates.
+- Added transactional runtime package rollback, `dreative doctor`,
+  `dreative resume`, and regression coverage for the failed dogfood run.
+
 ## 0.6.0 — fail-closed ambitious frontend delivery
 
-- Added plan v6 and verification v4 with preflight, runtime stack, exact skill
-  coverage, runtime bindings, foundation and Award gates.
-- Added deterministic dirty-worktree source/build identity and hashed,
-  browser-grounded temporal evidence.
-- Added exact skill manifests, explicit `--skills all`, drift detection, obsolete
-  specialist cleanup, and idempotent Codex/Claude synchronization.
-- Added fail-closed Full Audit/Dogfood records and `dreative finalize`.
-- Added failed-testbed and technology-neutral adversarial regression conditions.
-  Legacy plan v5 / verify v3 remains readable with migration warnings.
+- Added plan v6 and verification v4 runtime, source identity, specialist
+  coverage, foundation, temporal evidence and finalization guarantees.

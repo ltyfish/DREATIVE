@@ -1,95 +1,78 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://dreative.local/schemas/plan.schema.json",
-  "title": "Dreative Multi-Page Direct Design Plan",
+  "title": "Dreative Canonical Plan v7",
   "type": "object",
   "additionalProperties": false,
-  "required": ["version", "doctrineVersion", "request", "createdAt", "scope", "projectKind", "tier", "depth", "skills", "skillPolicy", "designRead", "preflight", "runtimeStack", "skillCoverage", "runtimeBindings", "coherence", "pages"],
-  "allOf": [
-    { "if": { "properties": { "scope": { "const": "substantial" } } }, "then": { "required": ["approval", "executionBrief", "commonPatternReview"] } },
-    { "if": { "properties": { "scope": { "const": "substantial" }, "projectKind": { "const": "redesign" }, "depth": { "enum": ["restructure", "reimagine"] } } }, "then": { "required": ["creativeParity"] } }
-  ],
+  "required": ["version", "contract", "approval", "execution"],
   "properties": {
-    "version": { "const": 6 },
-    "doctrineVersion": { "const": 6 },
-    "request": { "type": "string", "minLength": 1 },
-    "createdAt": { "type": "string", "format": "date-time" },
-    "scope": { "enum": ["tiny", "substantial"] },
-    "projectKind": { "enum": ["from-scratch", "redesign"] },
-    "tier": { "enum": ["solid", "premium", "expressive", "award"] },
-    "configuration": { "$ref": "#/$defs/configuration" },
-    "depth": { "enum": ["restyle", "relayout", "restructure", "reimagine"] },
-    "skills": { "$ref": "#/$defs/skillList" },
-    "skillPolicy": {
+    "version": { "const": 7 },
+    "contract": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["mode", "global", "routingApproved", "userAssignments"],
+      "required": [
+        "target", "scope", "workflow", "transformationDepth", "selectedTreatments",
+        "allTreatmentsExplicit", "allTreatmentsConfirmed", "treatmentAllocation",
+        "preservationRequirements", "selectedConcept", "blueprint", "motionAndMediaStrategy",
+        "mobileTranslation", "functionalTruthRequirements", "performanceBudget",
+        "acceptanceCriteria", "mechanismFallbacks", "conceptExemptions", "changeRequests"
+      ],
       "properties": {
-        "mode": { "const": "hybrid" },
-        "global": { "$ref": "#/$defs/skillList" },
-        "routingApproved": { "const": true },
-        "userAssignments": {
+        "target": { "$ref": "#/$defs/target" },
+        "scope": { "type": "object" },
+        "workflow": { "$ref": "#/$defs/workflow" },
+        "transformationDepth": { "enum": ["restyle", "relayout", "restructure", "reimagine"] },
+        "selectedTreatments": { "$ref": "#/$defs/treatments" },
+        "allTreatmentsExplicit": { "type": "boolean" },
+        "allTreatmentsConfirmed": { "type": "boolean" },
+        "treatmentAllocation": {
           "type": "array",
           "items": {
             "type": "object",
-            "additionalProperties": false,
-            "required": ["pageId", "skills"],
+            "required": ["treatment", "priority", "locations", "contribution", "dependencies", "acceptance"],
             "properties": {
-              "pageId": { "type": "string", "minLength": 1 },
-              "skills": { "$ref": "#/$defs/treatmentList" }
+              "treatment": { "$ref": "#/$defs/treatment" },
+              "priority": { "enum": ["primary", "supporting", "foundation"] },
+              "locations": { "type": "array", "items": { "type": "string" } },
+              "contribution": { "type": "string" },
+              "dependencies": { "$ref": "#/$defs/treatments" },
+              "acceptance": { "type": "array", "items": { "type": "string" } }
             }
           }
-        }
+        },
+        "preservationRequirements": { "type": "array", "items": { "type": "string" } },
+        "selectedConcept": { "type": "string" },
+        "blueprint": { "type": "array", "items": { "type": "object" } },
+        "experienceArc": { "$ref": "#/$defs/experienceArc" },
+        "motionAndMediaStrategy": { "type": "string" },
+        "mobileTranslation": { "type": "string" },
+        "functionalTruthRequirements": { "type": "array", "items": { "type": "string" } },
+        "performanceBudget": { "type": "array", "items": { "type": "string" } },
+        "acceptanceCriteria": { "type": "array", "items": { "type": "string" } },
+        "mechanismFallbacks": { "type": "array", "items": { "type": "object" } },
+        "conceptExemptions": { "type": "array", "items": { "type": "object" } },
+        "changeRequests": { "type": "array", "items": { "type": "object" } }
       }
     },
-    "designRead": {
+    "approval": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["register", "concept", "signature"],
+      "required": ["status", "revision", "contractHash", "approvedAt", "approvedBy", "decisionHistory"],
       "properties": {
-        "register": { "type": "string", "minLength": 1 },
-        "concept": { "type": "string", "minLength": 1 },
-        "signature": { "type": "string", "minLength": 1 }
+        "status": { "enum": ["pending", "approved", "invalidated"] },
+        "revision": { "type": "integer", "minimum": 0 },
+        "contractHash": { "type": ["string", "null"] },
+        "approvedAt": { "type": ["string", "null"] },
+        "approvedBy": { "type": ["string", "null"] },
+        "decisionHistory": { "type": "array", "items": { "type": "object" } }
       }
     },
-    "implementationStartedAt": { "type": "string", "format": "date-time" },
-    "approval": { "$ref": "#/$defs/approval" },
-    "designEquity": { "type": "string", "minLength": 1 },
-    "checkpoint": { "type": "string", "minLength": 1 },
-    "mockupStrategy": { "enum": ["mockup-first", "two-divergent-mockups", "build-with-checkpoint"] },
-    "creativeParity": { "$ref": "#/$defs/creativeParity" },
-    "executionBrief": { "$ref": "#/$defs/executionBrief" },
-    "commonPatternReview": { "type": "array", "items": { "$ref": "#/$defs/commonPatternReview" } },
-    "critic": { "type": "string", "minLength": 1 },
-    "criticInput": { "type": "string", "minLength": 1 },
-    "visualCritic": { "type": "string", "minLength": 1 },
-    "ruleExceptions": { "type": "array", "items": { "$ref": "#/$defs/ruleException" } },
-    "creativeStrategy": { "$ref": "#/$defs/creativeStrategy" },
-    "motionComplexityBudget": { "$ref": "#/$defs/motionComplexityBudget" },
-    "motionMoments": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/motionMoment" } },
-    "mediaTransformations": { "type": "array", "items": { "$ref": "#/$defs/mediaTransformation" } },
-    "signatureMedia": { "$ref": "#/$defs/signatureMedia" },
-    "signatureMediaExemption": { "type": "string", "minLength": 20 },
-    "fallbackExecutions": { "type": "array", "items": { "$ref": "#/$defs/fallbackExecution" } },
-    "allSkillsExplicit": { "type": "boolean" },
-    "preflight": { "type": "object", "minProperties": 10 },
-    "runtimeStack": { "type": "array", "items": { "type": "object", "required": ["mechanism", "reason", "ownerIds", "requiredPackages", "installCommand", "packageManager", "integrationFiles", "provider", "tickerOrScrollOwner", "fallback", "installationStatus", "importUseStatus"] } },
-    "skillCoverage": { "type": "array", "items": { "type": "object", "required": ["skill", "level", "pageIds", "sectionIds", "implementationFiles", "components", "contribution", "relatedOwnerIds", "evidenceIds"] } },
-    "runtimeBindings": { "type": "array", "items": { "type": "object", "required": ["id", "kind", "pageId", "sectionId", "sourceFile", "component", "selector", "mechanism", "dependencies", "assets", "states", "observableProperties", "evidenceIds"] } },
-    "foundation": { "type": "object", "required": ["passed", "sourceRevisionHash", "dependencyEvidenceIds", "lifecycleOwner", "cleanup", "reducedMotion", "contentBeforeEnhancement", "firstCompositionEvidenceIds", "structuralChangeEvidenceIds", "inputResponseEvidenceIds", "mobileEvidenceIds", "representativeAssetPaths"] },
-    "awardJourney": { "type": "object", "required": ["firstViewportMomentId", "structuralMomentIds", "inputInteractionId", "persistentSystemId", "persistentSectionIds", "finalResolutionMomentId", "temporalArc"] },
-    "fontDecision": { "$ref": "#/$defs/fontDecision" },
-    "experimentalPlan": { "$ref": "#/$defs/experimentalPlan" },
-    "conceptExploration": { "$ref": "#/$defs/conceptExploration" },
-    "recipeAccess": { "type": "array", "items": { "$ref": "#/$defs/recipeAccess" } },
-    "coherence": { "$ref": "#/$defs/coherence" },
-    "pages": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/page" } },
-    "preservationManifest": { "type": "string", "minLength": 1 },
-    "decisionLedger": { "type": "string", "minLength": 1 }
+    "execution": { "type": "object" }
   },
   "$defs": {
-    "configuration": {
-      "type": "object", "additionalProperties": false,
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
       "required": ["ambition", "execution", "prototype", "purpose"],
       "properties": {
         "ambition": { "enum": ["standard", "expressive", "award", "experimental"] },
@@ -98,431 +81,40 @@
         "purpose": { "enum": ["project-delivery", "production-certification", "dreative-dogfood"] }
       }
     },
-    "skill": { "enum": ["ux", "mobile", "refined", "motion", "interaction", "media", "3d", "immersive", "cinematic", "experimental"] },
-    "skillList": {
-      "type": "array",
-      "uniqueItems": true,
-      "allOf": [{ "contains": { "const": "ux" } }, { "contains": { "const": "mobile" } }],
-      "items": { "$ref": "#/$defs/skill" }
-    },
-    "treatmentList": {
-      "type": "array",
-      "uniqueItems": true,
-      "items": { "$ref": "#/$defs/skill" }
-    },
-    "status": { "enum": ["planned", "shipped", "fallback", "cut"] },
-    "approval": {
-      "type": "object", "additionalProperties": false,
-      "required": ["status", "approvedAt", "approvedConcept", "approvedTransformationDepth", "approvedTier", "approvedTreatments", "selectedRecommendation", "decisions"],
-      "properties": {
-        "status": { "const": "approved" }, "approvedAt": { "type": "string", "format": "date-time" },
-        "transcriptReferences": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-        "approvedConcept": { "type": "string", "minLength": 12 }, "approvedTransformationDepth": { "enum": ["restyle", "relayout", "restructure", "reimagine"] },
-        "approvedTier": { "enum": ["solid", "premium", "expressive", "award"] }, "approvedTreatments": { "$ref": "#/$defs/treatmentList" },
-        "selectedRecommendation": { "type": "boolean" },
-        "decisions": { "type": "array", "minItems": 2, "items": { "type": "object", "additionalProperties": false, "required": ["kind", "at", "choice", "selectedRecommendation"], "properties": { "kind": { "enum": ["baseline", "concept", "final-plan"] }, "at": { "type": "string", "format": "date-time" }, "transcriptReference": { "type": "string", "minLength": 1 }, "choice": { "type": "string", "minLength": 12 }, "selectedRecommendation": { "type": "boolean" } } } }
-      }
-    },
-    "creativeParity": {
-      "type": "object", "additionalProperties": false,
-      "required": ["fromScratchConcept", "reconciledConcept", "reconciliationChanges", "reconciliationWeakenedIdea", "retainedCreativeAmbition", "compromises"],
-      "properties": { "fromScratchConcept": { "type": "string", "minLength": 30 }, "reconciledConcept": { "type": "string", "minLength": 30 }, "reconciliationChanges": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 12 } }, "reconciliationWeakenedIdea": { "type": "boolean" }, "retainedCreativeAmbition": { "type": "string", "minLength": 20 }, "compromises": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["compromise", "reason"], "properties": { "compromise": { "type": "string", "minLength": 12 }, "reason": { "type": "string", "minLength": 12 } } } } }
-    },
-    "executionBrief": {
-      "type": "object", "additionalProperties": false,
-      "required": ["approvedDecisions", "baselineDesignEquity", "selectedConcept", "preservationContracts", "selectedTreatmentRules", "checkpointRequirement", "criticRequirement", "verificationCriteria"],
-      "properties": { "approvedDecisions": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 1 } }, "baselineDesignEquity": { "type": "array", "items": { "type": "string", "minLength": 1 } }, "selectedConcept": { "type": "string", "minLength": 20 }, "preservationContracts": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }, "selectedTreatmentRules": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }, "checkpointRequirement": { "type": "string", "minLength": 12 }, "criticRequirement": { "type": "string", "minLength": 20 }, "verificationCriteria": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } } }
-    },
-    "commonPatternReview": {
-      "type": "object", "additionalProperties": false, "required": ["pattern", "decision", "rationale", "brandSpecificEvidence"],
-      "properties": { "pattern": { "type": "string", "minLength": 1 }, "decision": { "enum": ["use", "revise"] }, "rationale": { "type": "string", "minLength": 20 }, "brandSpecificEvidence": { "type": "string", "minLength": 20 } }
-    },
-    "ruleException": {
+    "target": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["ruleId", "decision", "declaredAt", "reason", "alternative", "successCriteria", "evidenceIds"],
+      "required": ["repoRoot", "previewUrl", "previewCommand", "routeScope", "baselineUrls", "packageManager", "buildCommand", "testCommand", "framework", "deploymentTarget", "devicePriorities"],
       "properties": {
-        "ruleId": { "type": "string", "minLength": 1 },
-        "decision": { "const": "substituted" },
-        "declaredAt": { "type": "string", "format": "date-time" },
-        "reason": { "type": "string", "minLength": 20 },
-        "alternative": { "type": "string", "minLength": 30 },
-        "successCriteria": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 12 } },
-        "evidenceIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+        "repoRoot": { "type": "string", "minLength": 1 },
+        "previewUrl": { "type": ["string", "null"] },
+        "previewCommand": { "type": ["string", "null"] },
+        "routeScope": { "type": "object", "required": ["mode", "routes"] },
+        "baselineUrls": { "type": "array", "items": { "type": "string" } },
+        "packageManager": { "type": "string" },
+        "buildCommand": { "type": ["string", "null"] },
+        "testCommand": { "type": ["string", "null"] },
+        "framework": { "type": "string" },
+        "deploymentTarget": { "type": ["string", "null"] },
+        "devicePriorities": { "type": "array", "items": { "type": "object", "required": ["name", "width"] } }
       }
     },
-    "creativeStrategy": {
-      "oneOf": [
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["path", "mechanisms", "drivers"],
-          "properties": {
-            "path": { "const": "diversity" },
-            "mechanisms": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
-            "drivers": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
-          }
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["path", "signatureMechanism", "states", "secondaryMechanisms", "drivers"],
-          "properties": {
-            "path": { "const": "development" },
-            "signatureMechanism": { "type": "string", "minLength": 1 },
-            "states": { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "type": "string", "minLength": 12 } },
-            "secondaryMechanisms": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
-            "drivers": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
-          }
-        }
-      ]
-    },
-    "motionComplexityBudget": {
+    "experienceArc": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["heroMoments", "calmSectionIds", "sharedLanguage", "deviceLimits", "progressiveEnhancement", "antiDefaultReview"],
+      "required": ["openingState", "firstTransformation", "sectionProgression", "peaksAndRests", "persistentSystem", "userControlledMoment", "mobileTranslation", "finalResolution"],
       "properties": {
-        "heroMoments": {
-          "type": "array",
-          "minItems": 1,
-          "maxItems": 3,
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["sectionId", "reason"],
-            "properties": {
-              "sectionId": { "type": "string", "minLength": 1 },
-              "reason": { "type": "string", "minLength": 20 }
-            }
-          }
-        },
-        "calmSectionIds": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
-        "sharedLanguage": { "type": "string", "minLength": 20 },
-        "deviceLimits": { "type": "string", "minLength": 20 },
-        "progressiveEnhancement": { "type": "string", "minLength": 20 },
-        "antiDefaultReview": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["basicMotionAssessment", "compositionHandoff", "visualStateChange", "conceptSpecificity", "memorableMoment"],
-          "properties": {
-            "basicMotionAssessment": { "type": "string", "minLength": 20 },
-            "compositionHandoff": { "type": "string", "minLength": 20 },
-            "visualStateChange": { "type": "string", "minLength": 20 },
-            "conceptSpecificity": { "type": "string", "minLength": 20 },
-            "memorableMoment": { "type": "string", "minLength": 20 }
-          }
-        }
+        "openingState": { "type": "string" },
+        "firstTransformation": { "type": "string" },
+        "sectionProgression": { "type": "string" },
+        "peaksAndRests": { "type": "string" },
+        "persistentSystem": { "type": "string" },
+        "userControlledMoment": { "type": "string" },
+        "mobileTranslation": { "type": "string" },
+        "finalResolution": { "type": "string" }
       }
     },
-    "fontDecision": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["selected", "candidates", "recentDisplayFonts"],
-      "properties": {
-        "selected": { "type": "string", "minLength": 1 },
-        "candidates": {
-          "type": "array",
-          "minItems": 3,
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["name", "reflex", "rationale"],
-            "properties": {
-              "name": { "type": "string", "minLength": 1 },
-              "reflex": { "type": "boolean" },
-              "rationale": { "type": "string", "minLength": 12 }
-            }
-          }
-        },
-        "recentDisplayFonts": { "type": "array", "maxItems": 3, "items": { "type": "string" } },
-        "reasonKinds": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": {
-            "enum": ["existing-brand", "design-system-metrics", "product-register", "supplied-reference", "language-coverage", "variable-font-capability", "performance", "physical-editorial-historical-reference"]
-          }
-        },
-        "justification": { "type": "string", "minLength": 20 },
-        "repeatJustification": { "type": "string", "minLength": 20 }
-      }
-    },
-    "experimentalPlan": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["majorSectionIds", "candidates"],
-      "properties": {
-        "majorSectionIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
-        "candidates": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["id", "sectionId", "idea", "selected"],
-            "properties": {
-              "id": { "type": "string", "minLength": 1 },
-              "sectionId": { "type": "string", "minLength": 1 },
-              "idea": { "type": "string", "minLength": 20 },
-              "selected": { "type": "boolean" }
-            }
-          }
-        }
-      }
-    },
-    "conceptExploration": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["recordedAt", "concepts"],
-      "properties": {
-        "recordedAt": { "type": "string", "format": "date-time" },
-        "concepts": {
-          "type": "array",
-          "minItems": 3,
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["name", "concept", "brandConnection"],
-            "properties": {
-              "name": { "type": "string", "minLength": 1 },
-              "concept": { "type": "string", "minLength": 20 },
-              "brandConnection": { "type": "string", "minLength": 20 }
-            }
-          }
-        }
-      }
-    },
-    "recipeAccess": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["file", "loadedAt", "purpose"],
-      "properties": {
-        "file": { "type": "string", "minLength": 1 },
-        "loadedAt": { "type": "string", "format": "date-time" },
-        "purpose": { "enum": ["feasibility", "implementation", "performance", "fallback", "concept-repair"] }
-      }
-    },
-    "asset": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["id", "path", "purpose", "importance", "preparation", "status"],
-      "properties": {
-        "id": { "type": "string", "minLength": 1 },
-        "path": { "type": "string", "minLength": 1 },
-        "purpose": { "type": "string", "minLength": 1 },
-        "importance": { "enum": ["supporting", "key"] },
-        "preparation": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["decision", "derivatives", "rationale"],
-          "properties": {
-            "decision": { "enum": ["flat", "decompose", "variants", "sequence"] },
-            "derivatives": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
-            "rationale": { "type": "string", "minLength": 12 }
-          }
-        },
-        "status": { "$ref": "#/$defs/status" },
-        "reason": { "type": "string", "minLength": 1 }
-      }
-    },
-    "section": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["id", "name", "layoutFamily", "visualBlueprint", "skills", "interactions", "mobile", "fallback", "verification", "assets", "status"],
-      "properties": {
-        "id": { "type": "string", "minLength": 1 },
-        "name": { "type": "string", "minLength": 1 },
-        "layoutFamily": { "type": "string", "minLength": 1 },
-        "visualBlueprint": { "$ref": "#/$defs/visualBlueprint" },
-        "skills": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/skill" } },
-        "interactions": { "type": "array", "items": { "type": "string" } },
-        "motionTreatment": { "$ref": "#/$defs/motionTreatment" },
-        "motionMomentIds": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
-        "mediaTransformationIds": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
-        "mobile": { "type": "string", "minLength": 1 },
-        "fallback": { "type": "string", "minLength": 1 },
-        "verification": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/verificationCriterion" } },
-        "assets": { "type": "array", "items": { "$ref": "#/$defs/asset" } },
-        "status": { "$ref": "#/$defs/status" },
-        "reason": { "type": "string", "minLength": 1 }
-      }
-    },
-    "motionTreatment": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["class", "staticComposition", "startState", "endState", "changes", "pinnedElements", "handoff", "purpose", "mechanism", "mobile", "reducedMotion"],
-      "properties": {
-        "class": { "enum": ["none", "decorative", "structural", "transformational"] },
-        "staticComposition": { "type": "string", "minLength": 12 },
-        "startState": { "type": "string", "minLength": 12 },
-        "endState": { "type": "string", "minLength": 12 },
-        "changes": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-        "pinnedElements": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-        "handoff": { "type": "string", "minLength": 12 },
-        "purpose": { "type": "string", "minLength": 12 },
-        "mechanism": { "type": "string", "minLength": 12 },
-        "mobile": { "type": "string", "minLength": 12 },
-        "reducedMotion": { "type": "string", "minLength": 12 }
-      }
-    },
-    "motionMoment": {
-      "type": "object", "additionalProperties": false,
-      "required": ["id", "pageId", "sectionId", "owner", "class", "driver", "staticComposition", "startState", "intermediateState", "endState", "handoff", "purpose", "renderingMechanism", "implementationFile", "implementationComponent", "observedProperties", "desktop", "mobile", "reducedMotion", "primaryImplementation", "runtimeFallback", "successCriteria", "requiredEvidenceIds", "hero"],
-      "properties": {
-        "id": { "type": "string", "minLength": 3 }, "pageId": { "type": "string", "minLength": 1 }, "sectionId": { "type": "string", "minLength": 1 },
-        "owner": { "type": "string", "minLength": 12 }, "class": { "enum": ["decorative", "structural", "transformational"] }, "driver": { "type": "string", "minLength": 3 },
-        "staticComposition": { "$ref": "#/$defs/concrete" }, "startState": { "$ref": "#/$defs/concrete" }, "intermediateState": { "$ref": "#/$defs/concrete" }, "endState": { "$ref": "#/$defs/concrete" },
-        "handoff": { "$ref": "#/$defs/concrete" }, "purpose": { "$ref": "#/$defs/concrete" }, "renderingMechanism": { "$ref": "#/$defs/concrete" },
-        "implementationFile": { "type": "string", "minLength": 3 }, "implementationComponent": { "type": "string", "minLength": 3 },
-        "observedProperties": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 3 } },
-        "desktop": { "$ref": "#/$defs/concrete" }, "mobile": { "$ref": "#/$defs/concrete" }, "reducedMotion": { "$ref": "#/$defs/concrete" },
-        "primaryImplementation": { "$ref": "#/$defs/concrete" }, "runtimeFallback": { "$ref": "#/$defs/concrete" },
-        "successCriteria": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 20 } },
-        "requiredEvidenceIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }, "hero": { "type": "boolean" }
-      }
-    },
-    "fallbackExecution": {
-      "type": "object", "additionalProperties": false, "required": ["sectionId", "primaryAttempted", "failureEvidenceIds", "fallbackSuccessEvidenceIds", "finalTierSatisfied", "reason"],
-      "properties": { "sectionId": { "type": "string", "minLength": 1 }, "motionMomentId": { "type": "string", "minLength": 1 }, "primaryAttempted": { "const": true }, "failureEvidenceIds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }, "fallbackSuccessEvidenceIds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }, "finalTierSatisfied": { "type": "boolean" }, "reason": { "$ref": "#/$defs/concrete" }, "userApprovalReference": { "type": "string", "minLength": 1 } }
-    },
-    "mediaTransformation": {
-      "type": "object", "additionalProperties": false,
-      "required": ["id", "pageId", "sectionId", "motionMomentId", "sourceAsset", "candidates", "selectedCandidateId", "mechanismComparison", "derivatives", "consistencyInspection", "finalEvidenceIds", "implementationFile"],
-      "properties": {
-        "id": { "type": "string", "minLength": 3 }, "pageId": { "type": "string", "minLength": 1 }, "sectionId": { "type": "string", "minLength": 1 }, "motionMomentId": { "type": "string", "minLength": 1 }, "sourceAsset": { "type": "string", "minLength": 3 }, "selectedCandidateId": { "type": "string", "minLength": 1 }, "implementationFile": { "type": "string", "minLength": 3 }, "consistencyInspection": { "$ref": "#/$defs/concrete" },
-        "candidates": { "type": "array", "minItems": 1, "maxItems": 3, "items": { "$ref": "#/$defs/transformationCandidate" } },
-        "mechanismComparison": { "type": "array", "minItems": 1, "items": { "type": "object", "additionalProperties": false, "required": ["mechanism", "feasibility", "decision", "reason"], "properties": { "mechanism": { "enum": ["DOM/CSS", "SVG", "Canvas 2D", "WebGL shader", "Three.js scene", "image sequence", "pre-rendered video", "hybrid composition"] }, "feasibility": { "$ref": "#/$defs/concrete" }, "decision": { "enum": ["selected", "rejected"] }, "reason": { "$ref": "#/$defs/concrete" } } } },
-        "derivatives": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/transformationDerivative" } },
-        "frameSequence": { "$ref": "#/$defs/frameSequence" },
-        "prototypeEvidenceIds": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }, "finalEvidenceIds": { "$ref": "#/$defs/evidenceIds" }
-      }
-    },
-    "signatureMedia": {
-      "type": "object", "additionalProperties": false,
-      "required": ["id", "type", "pageId", "sectionId", "purpose", "sourceAssets", "derivatives", "implementationFile", "runtimeReferences", "independentlyControlledElements", "mobileFallback", "reducedMotionFallback", "performanceSafeguards", "evidenceIds"],
-      "properties": {
-        "id": { "type": "string", "minLength": 3 },
-        "type": { "enum": ["layered-subject", "depth-separated", "fragment-reconstruction", "tile-atlas", "generated-states", "frame-sequence", "canvas", "webgl", "editorial-cut-up", "clean-plate"] },
-        "pageId": { "type": "string", "minLength": 1 }, "sectionId": { "type": "string", "minLength": 1 }, "purpose": { "type": "string", "minLength": 20 },
-        "sourceAssets": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-        "derivatives": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["path", "role"], "properties": { "path": { "type": "string", "minLength": 1 }, "role": { "type": "string", "minLength": 1 } } } },
-        "implementationFile": { "type": "string", "minLength": 1 },
-        "runtimeReferences": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-        "independentlyControlledElements": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 3 } },
-        "mobileFallback": { "type": "string", "minLength": 12 }, "reducedMotionFallback": { "type": "string", "minLength": 12 },
-        "performanceSafeguards": { "type": "array", "items": { "type": "string", "minLength": 3 } }, "evidenceIds": { "$ref": "#/$defs/evidenceIds" }
-      }
-    },
-    "transformationCandidate": {
-      "type": "object", "additionalProperties": false, "required": ["id", "visitorExperience", "brandRationale", "sourceAsset", "requiredDerivatives", "execution", "driver", "startState", "intermediateState", "endState", "desktopFeasibility", "mobile", "reducedMotion", "performanceRisk", "fallback", "selected"],
-      "properties": { "id": { "type": "string", "minLength": 1 }, "visitorExperience": { "$ref": "#/$defs/concrete" }, "brandRationale": { "$ref": "#/$defs/concrete" }, "sourceAsset": { "type": "string", "minLength": 3 }, "requiredDerivatives": { "type": "array", "items": { "type": "string", "minLength": 1 } }, "execution": { "enum": ["real-time", "pre-rendered", "hybrid"] }, "driver": { "$ref": "#/$defs/concrete" }, "startState": { "$ref": "#/$defs/concrete" }, "intermediateState": { "$ref": "#/$defs/concrete" }, "endState": { "$ref": "#/$defs/concrete" }, "desktopFeasibility": { "$ref": "#/$defs/concrete" }, "mobile": { "$ref": "#/$defs/concrete" }, "reducedMotion": { "$ref": "#/$defs/concrete" }, "performanceRisk": { "$ref": "#/$defs/concrete" }, "fallback": { "$ref": "#/$defs/concrete" }, "selected": { "type": "boolean" }, "rejectionReason": { "$ref": "#/$defs/concrete" } }
-    },
-    "transformationDerivative": {
-      "type": "object", "additionalProperties": false, "required": ["id", "path", "role", "sourceAsset", "productionMethod", "dimensions", "aspectRatio", "format", "expectedUse", "optimizationTarget", "implementationConsumer", "status", "evidenceIds"],
-      "properties": { "id": { "type": "string", "minLength": 1 }, "path": { "type": "string", "minLength": 1 }, "role": { "enum": ["base-image", "edited-state-image", "subject-cutout", "foreground-plate", "midground-plate", "background-plate", "depth-map", "segmentation-mask", "displacement-map", "normal-map", "matte", "texture-atlas", "generated-transitional-frame", "rendered-animation-frame", "video-loop", "poster-frame", "mobile-specific", "reduced-motion-still"] }, "sourceAsset": { "type": "string", "minLength": 1 }, "productionMethod": { "type": "string", "minLength": 3 }, "aiInstruction": { "type": "string", "minLength": 3 }, "dimensions": { "type": "string", "minLength": 3 }, "aspectRatio": { "type": "string", "minLength": 3 }, "frameCount": { "type": "integer", "minimum": 1 }, "format": { "type": "string", "minLength": 2 }, "expectedUse": { "type": "string", "minLength": 3 }, "optimizationTarget": { "type": "string", "minLength": 3 }, "implementationConsumer": { "type": "string", "minLength": 3 }, "status": { "$ref": "#/$defs/status" }, "evidenceIds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } } }
-    },
-    "frameSequence": {
-      "type": "object", "additionalProperties": false, "required": ["sourceMethod", "keyStateCount", "targetFrameCount", "productionMethod", "scrollRange", "frameProgressMapping", "preloadStrategy", "decodingStrategy", "renderingStrategy", "desktopDimensions", "mobileStrategy", "format", "transferBudget", "droppedFrameHandling", "fallback", "reducedMotion"],
-      "properties": { "sourceMethod": { "$ref": "#/$defs/concrete" }, "keyStateCount": { "type": "integer", "minimum": 3 }, "targetFrameCount": { "type": "integer", "minimum": 3 }, "productionMethod": { "$ref": "#/$defs/concrete" }, "scrollRange": { "$ref": "#/$defs/concrete" }, "frameProgressMapping": { "$ref": "#/$defs/concrete" }, "preloadStrategy": { "$ref": "#/$defs/concrete" }, "decodingStrategy": { "$ref": "#/$defs/concrete" }, "renderingStrategy": { "$ref": "#/$defs/concrete" }, "desktopDimensions": { "$ref": "#/$defs/concrete" }, "mobileStrategy": { "$ref": "#/$defs/concrete" }, "format": { "type": "string", "minLength": 2 }, "transferBudget": { "$ref": "#/$defs/concrete" }, "droppedFrameHandling": { "$ref": "#/$defs/concrete" }, "fallback": { "$ref": "#/$defs/concrete" }, "reducedMotion": { "$ref": "#/$defs/concrete" } }
-    },
-    "concrete": { "type": "string", "minLength": 12 },
-    "evidenceIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
-    "verificationCriterion": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["id", "claim", "kind", "pageId", "viewports"],
-      "properties": {
-        "id": { "type": "string", "minLength": 1 },
-        "claim": { "type": "string", "minLength": 12 },
-        "kind": { "enum": ["visual", "interaction", "motion", "media-transformation", "responsive", "preservation", "structural-depth", "design-equity", "concept-fidelity", "perceptual-comparison", "visual-regression"] },
-        "pageId": { "type": "string", "minLength": 1 },
-        "sectionId": { "type": "string", "minLength": 1 },
-        "viewports": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["desktop", "mobile", "narrow-mobile", "non-visual"] } }
-      }
-    },
-    "pageRegister": { "enum": ["marketing-storytelling", "discovery-browse", "task-transaction", "account-status", "administration", "data-dense-utility", "authentication", "system-state"] },
-    "visualBlueprint": {
-      "type": "object", "additionalProperties": false,
-      "required": ["viewportComposition", "spatialRatios", "primaryFocal", "secondaryFocal", "gridLogic", "typographyRoles", "materialRelationship", "brandMotif", "signatureLocation", "signatureRole", "interactionDriver", "motionStart", "motionEnd", "sectionHandoff", "mobileRecomposition", "reducedMotion", "commonTemplateRisk", "brandSpecificity"],
-      "properties": {
-        "viewportComposition": { "type": "string", "minLength": 12 }, "spatialRatios": { "type": "string", "minLength": 12 }, "primaryFocal": { "type": "string", "minLength": 12 }, "secondaryFocal": { "type": "string", "minLength": 12 }, "gridLogic": { "type": "string", "minLength": 12 }, "typographyRoles": { "type": "string", "minLength": 12 }, "materialRelationship": { "type": "string", "minLength": 12 }, "brandMotif": { "type": "string", "minLength": 12 }, "signatureLocation": { "type": "string", "minLength": 12 }, "signatureRole": { "type": "string", "minLength": 12 }, "interactionDriver": { "type": "string", "minLength": 12 }, "motionStart": { "type": "string", "minLength": 12 }, "motionEnd": { "type": "string", "minLength": 12 }, "sectionHandoff": { "type": "string", "minLength": 12 }, "mobileRecomposition": { "type": "string", "minLength": 12 }, "reducedMotion": { "type": "string", "minLength": 12 }, "commonTemplateRisk": { "type": "string", "minLength": 12 }, "brandSpecificity": { "type": "string", "minLength": 12 }
-      }
-    },
-    "structuralDelta": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["existingModel", "proposedModel", "existingParadigm", "proposedParadigm", "materialChanges", "survivingBoundaries", "rebuiltBoundaries", "preservedContracts", "retainedPatterns", "forbiddenCarryovers", "depthHonesty"],
-      "properties": {
-        "existingModel": { "type": "string", "minLength": 12 },
-        "proposedModel": { "type": "string", "minLength": 12 },
-        "existingParadigm": { "type": "string", "minLength": 12 },
-        "proposedParadigm": { "type": "string", "minLength": 12 },
-        "materialChanges": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 12 } },
-        "survivingBoundaries": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-        "rebuiltBoundaries": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-        "preservedContracts": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-        "retainedPatterns": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["pattern", "rationale"], "properties": { "pattern": { "type": "string", "minLength": 1 }, "rationale": { "type": "string", "minLength": 12 } } } },
-        "forbiddenCarryovers": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-        "depthHonesty": { "type": "string", "minLength": 20 }
-      }
-    },
-    "mobileBlueprint": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["primaryTask", "firstViewportPurpose", "contentOrder", "beforeFirstScroll", "primaryThumbAction", "stickyElements", "safeArea", "navigationModel", "mobileOnlyComposition", "desktopTranslation", "mediaStrategy", "motionStrategy", "keyboardAndForms", "composition390", "fallback320", "stackingRejection", "verificationChecks"],
-      "properties": {
-        "primaryTask": { "type": "string", "minLength": 1 },
-        "firstViewportPurpose": { "type": "string", "minLength": 12 },
-        "contentOrder": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 1 } },
-        "beforeFirstScroll": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-        "primaryThumbAction": { "type": "object", "additionalProperties": false, "required": ["action", "placement"], "properties": { "action": { "type": "string", "minLength": 1 }, "placement": { "type": "string", "minLength": 12 } } },
-        "stickyElements": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-        "safeArea": { "type": "string", "minLength": 12 },
-        "navigationModel": { "type": "string", "minLength": 12 },
-        "mobileOnlyComposition": { "type": "string", "minLength": 12 },
-        "desktopTranslation": { "type": "object", "additionalProperties": false, "required": ["retained", "translated", "removed", "replaced"], "properties": { "retained": { "type": "array", "items": { "type": "string" } }, "translated": { "type": "array", "items": { "type": "string" } }, "removed": { "type": "array", "items": { "type": "string" } }, "replaced": { "type": "array", "items": { "type": "string" } } } },
-        "mediaStrategy": { "type": "string", "minLength": 12 },
-        "motionStrategy": { "type": "string", "minLength": 12 },
-        "keyboardAndForms": { "type": "string", "minLength": 12 },
-        "composition390": { "type": "string", "minLength": 12 },
-        "fallback320": { "type": "string", "minLength": 12 },
-        "stackingRejection": { "type": "string", "minLength": 12 },
-        "verificationChecks": { "type": "array", "minItems": 13, "uniqueItems": true, "items": { "enum": ["no-horizontal-overflow", "no-clipped-content", "fixed-elements-clear-content", "safe-area-spacing", "primary-task-discoverable", "primary-action-reachable", "touch-targets", "software-keyboard-usable", "no-hover-only", "intentional-mobile-composition", "mobile-content-order", "motion-media-translated", "no-decorative-task-blocker"] } }
-      }
-    },
-    "expression": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["mechanism", "communicates", "projectFit", "location", "mobileTranslation", "reducedMotion", "fallback", "verification"],
-      "properties": {
-        "mechanism": { "type": "string", "minLength": 12 }, "communicates": { "type": "string", "minLength": 12 }, "projectFit": { "type": "string", "minLength": 12 }, "location": { "type": "string", "minLength": 12 }, "mobileTranslation": { "type": "string", "minLength": 12 }, "reducedMotion": { "type": "string", "minLength": 12 }, "fallback": { "type": "string", "minLength": 12 }, "verification": { "type": "string", "minLength": 12 }
-      }
-    },
-    "coherence": {
-      "type": "object", "additionalProperties": false,
-      "required": ["globalVisualLanguage", "globalInteractionLanguage", "sharedPrimitives", "pageSpecificCompositions", "crossPageContinuity", "prohibitedRepeatedShells"],
-      "properties": {
-        "globalVisualLanguage": { "type": "string", "minLength": 12 }, "globalInteractionLanguage": { "type": "string", "minLength": 12 },
-        "sharedPrimitives": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-        "pageSpecificCompositions": { "type": "array", "minItems": 1, "items": { "type": "object", "additionalProperties": false, "required": ["pageId", "register", "taskModel", "expressionLevel"], "properties": { "pageId": { "type": "string", "minLength": 1 }, "register": { "$ref": "#/$defs/pageRegister" }, "taskModel": { "type": "string", "minLength": 12 }, "expressionLevel": { "enum": ["calm", "authored"] } } } },
-        "crossPageContinuity": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-        "prohibitedRepeatedShells": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
-      }
-    },
-    "page": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["id", "name", "register", "sourceStrategy", "structuralDelta", "mobileBlueprint", "skills", "sections"],
-      "properties": {
-        "id": { "type": "string", "minLength": 1 },
-        "name": { "type": "string", "minLength": 1 },
-        "register": { "$ref": "#/$defs/pageRegister" },
-        "sourceStrategy": { "enum": ["patch", "recompose", "rebuild-from-contracts"] },
-        "structuralDelta": { "$ref": "#/$defs/structuralDelta" },
-        "mobileBlueprint": { "$ref": "#/$defs/mobileBlueprint" },
-        "expression": { "$ref": "#/$defs/expression" },
-        "intentionalCalm": { "type": "string", "minLength": 20 },
-        "skills": { "$ref": "#/$defs/skillList" },
-        "sections": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/section" } }
-      }
-    }
+    "treatment": { "enum": ["ux", "mobile", "refined", "motion", "interaction", "media", "3d", "immersive", "cinematic", "experimental"] },
+    "treatments": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/treatment" } }
   }
 }

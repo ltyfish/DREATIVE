@@ -1,4 +1,4 @@
-import type { AmbitionTier } from "./skillSystem.js";
+import type { AmbitionTier, LegacyAmbitionTier } from "./skillSystem.js";
 
 export type DesignAmbition = "standard" | "expressive" | "award" | "experimental";
 export type ExecutionMode = "fast" | "lean" | "full-audit";
@@ -14,7 +14,7 @@ export interface WorkflowConfiguration {
 }
 
 export interface LegacyWorkflowOptions {
-  tier?: AmbitionTier;
+  tier?: AmbitionTier | LegacyAmbitionTier;
   fullAudit?: boolean;
   audit?: boolean;
   dogfood?: boolean;
@@ -29,7 +29,7 @@ export interface WorkflowResolution {
 }
 
 export interface WorkflowPolicy {
-  artifacts: ("plan.json" | "critic.json" | "verify.json" | "preservation.json" | "ledger.json" | "certification.json" | "behaviour-analysis.json")[];
+  artifacts: ("plan.yaml" | "critic.json" | "verify.json" | "preservation.json" | "ledger.json" | "certification.json" | "behaviour-analysis.json")[];
   independentCritics: number;
   followUpCritic: "risk-triggered" | "required";
   representativeWidths: number[];
@@ -37,8 +37,8 @@ export interface WorkflowPolicy {
   collectBehaviourEvidence: boolean;
 }
 
-const ambitionFromTier = (tier?: AmbitionTier): DesignAmbition =>
-  tier === "expressive" ? "expressive" : tier === "award" ? "award" : "standard";
+const ambitionFromTier = (tier?: AmbitionTier | LegacyAmbitionTier): DesignAmbition =>
+  tier === "expressive" ? "expressive" : tier === "award" ? "award" : tier === "experimental" ? "experimental" : "standard";
 
 export function resolveWorkflowConfiguration(
   input: Partial<WorkflowConfiguration> = {},
@@ -86,7 +86,7 @@ export function resolveWorkflowConfiguration(
 export function resolveWorkflowPolicy(configuration: WorkflowConfiguration, narrowWidthRisk = false): WorkflowPolicy {
   const fullAudit = configuration.execution === "full-audit";
   const dogfood = configuration.purpose === "dreative-dogfood";
-  const artifacts: WorkflowPolicy["artifacts"] = ["plan.json", "verify.json"];
+  const artifacts: WorkflowPolicy["artifacts"] = ["plan.yaml", "verify.json"];
   if (configuration.execution !== "fast") artifacts.splice(1, 0, "critic.json");
   if (fullAudit) artifacts.push("preservation.json", "ledger.json", "certification.json");
   if (dogfood) artifacts.push("behaviour-analysis.json");

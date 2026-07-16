@@ -10,7 +10,8 @@ export type SpecialistSkill =
   | "cinematic"
   | "experimental";
 
-export type AmbitionTier = "solid" | "premium" | "expressive" | "award";
+export type AmbitionTier = "standard" | "expressive" | "award" | "experimental";
+export type LegacyAmbitionTier = "solid" | "premium";
 
 export interface SkillDefinition {
   name: SpecialistSkill;
@@ -30,7 +31,7 @@ export interface SkillRoutingRequest {
   selected: SpecialistSkill[];
   /** Explicit user assignments. These always win over automatic placement. */
   assignments?: Record<string, SpecialistSkill[]>;
-  /** False leaves unassigned selected treatments for manual placement. Defaults to true. */
+  /** True enables legacy suggestion placement. Canonical v7 allocation is manual and concept-led. */
   autoRouteUnassigned?: boolean;
 }
 
@@ -152,7 +153,7 @@ export function routeSkillsAcrossPages(request: SkillRoutingRequest): SkillRouti
 
   const optionalSelected = selected.filter((skill) => skill !== "ux" && skill !== "mobile");
   const unassigned = optionalSelected.filter((skill) => ![...byPageSets.values()].some((skills) => skills.has(skill)));
-  if (request.autoRouteUnassigned !== false && request.pages.length > 0) {
+  if (request.autoRouteUnassigned === true && request.pages.length > 0) {
     for (const skill of unassigned) {
       const ranked = request.pages
         .map((page, index) => ({
@@ -183,7 +184,7 @@ export function routeSkillsAcrossPages(request: SkillRoutingRequest): SkillRouti
     resolved,
     byPage,
     suggestions,
-    unassigned: request.autoRouteUnassigned === false ? unassigned : [],
+    unassigned: request.autoRouteUnassigned === true ? [] : unassigned,
   };
 }
 
@@ -194,25 +195,20 @@ export function resolveAmbitionTier(input: {
   texts?: (string | undefined)[];
 }): AmbitionTier {
   const haystack = [input.aesthetic, ...(input.texts ?? [])].filter(Boolean).join(" ");
-  if (/\b(award|awwwards|immersive|cinematic|experimental|unseen\.co)\b/i.test(haystack) || input.motion >= 9)
+  if (/\b(experimental|unconventional|provocation)\b/i.test(haystack)) return "experimental";
+  if (/\b(award|awwwards|immersive|cinematic|unseen\.co)\b/i.test(haystack) || input.motion >= 9)
     return "award";
   if (input.motion >= 7 || input.variance >= 8 || /\b(unique|creative|impressive|visually striking|authored|memorable)\b/i.test(haystack) && /\b(animat|motion|interactive|smooth|choreograph)\b/i.test(haystack)) return "expressive";
-  if (input.motion >= 4 || input.variance >= 5) return "premium";
-  return "solid";
+  return "standard";
 }
 
 export const TIER_REQUIREMENTS: Record<AmbitionTier, string[]> = {
-  solid: [
+  standard: [
     "All existing behavior is preserved and the UX audit passes.",
     "Desktop and mobile layouts are verified with keyboard and reduced-motion coverage.",
   ],
-  premium: [
-    "Solid-tier requirements pass.",
-    "The page has a clear design read, one signature detail, and a completed craft pass.",
-    "Media is intentionally cropped/graded and interaction states are designed.",
-  ],
   expressive: [
-    "Premium-tier requirements pass.",
+    "Standard ambition requirements pass.",
     "At least three distinct, purposeful motion or interaction moments ship with fallbacks.",
     "Heavy effects are measured on desktop and translated deliberately for mobile.",
   ],
@@ -220,5 +216,9 @@ export const TIER_REQUIREMENTS: Record<AmbitionTier, string[]> = {
     "Expressive-tier requirements pass.",
     "The experience has a distinctive spatial, media, typographic, material, or interactive system, not isolated decoration; 3D is optional.",
     "Runtime, asset-weight, frame-time, occlusion, and fallback evidence is recorded.",
+  ],
+  experimental: [
+    "Award requirements pass.",
+    "Two or three purposeful unconventional provocations ship at selected peaks without damaging clarity.",
   ],
 };

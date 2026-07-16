@@ -1,74 +1,74 @@
 # Dreative
 
-Frontend design **skill for coding CLIs** (Claude Code, Codex, etc.) with an optional visual round-trip editor. By default the agent plans a design, selects specialist treatments, edits the real application directly, preserves existing behavior, and verifies the result. No server or extraction is involved in that mode.
+Dreative is a fail-closed frontend design skill for coding agents. It plans and
+verifies work in the real application, preserves existing behavior, and rejects
+results that do not perceptually deliver the approved experience.
 
-Dreative itself has **no AI** — your coding agent is the intelligence. See `skill/dreative/SKILL.md` for the direct-design workflow and optional editor mode.
+## Canonical workflow
 
-## Direct design (default)
+Every substantial interactive run resolves four independent controls before
+concept planning:
 
-Install the skill, then ask your coding agent to design or redesign a page. The skill provides:
+- Ambition: `standard`, `expressive`, `award`, or `experimental`.
+- Execution: `fast`, `lean`, or `full-audit`.
+- Prototype: `skip`, `auto`, or `required`.
+- Purpose: `project-delivery`, `production-certification`, or
+  `dreative-dogfood`.
 
-- four explicit ambition tiers, from solid product UI through award-site work;
-- ten composable specialist skills with dependency resolution;
-- user-approved multi-page skill routing with explicit per-page assignments;
-- a rule registry that separates hard gates, evidence-backed defaults, and
-  creative provocations, with audited substitutions for equally ambitious alternatives;
-- reflex-font review and diversity-or-development planning instead of fixed aesthetic recipes;
-- framework adapters for React/Vite, Next.js, Vue/Nuxt, SvelteKit, and styling systems;
-- independent workflow controls and compact typed plan, critic, and verification
-  artifacts, with audit/certification additions only when relevant;
-- `dreative audit`, which checks delivery status, preservation, assets,
-  independent critic completion, evidence, and common frontend risks.
-- exact hashed skill installation, project preflight/runtime-stack resolution,
-  source/build freshness, and fail-closed `dreative finalize` certification.
+Full Audit controls evidence and certification depth. It does not imply Award
+and it never supplies a missing Ambition choice.
+
+The one editable creative contract is `.dreative/plan.yaml` (schema v7):
+
+- `contract`: user-controlled target, workflow, concept, treatments, allocation,
+  experience arc, preservation, performance and acceptance criteria.
+- `approval`: contract-only hash, revision and decision history.
+- `execution`: machine-updated phases, bindings, checkpoints and evidence.
+
+Substantial implementation must wait until the contract is approved. Execution
+updates do not invalidate approval; material contract edits do.
+
+## CLI
 
 ```sh
-dreative install-skill --codex --skills all   # or omit --codex for Claude Code
-dreative install-skill --codex --check        # exact manifest + file hashes
-dreative config --ambition award --execution lean --prototype skip
-dreative preflight --mechanisms "GSAP pinned narrative,Three.js stage"
-dreative critic-prompt           # objective-only prompt for a fresh critic context
-dreative audit                   # run after implementation
-dreative finalize --codex        # only successful completion path for ambitious work
-dreative docs-check              # validate the packaged doctrine and references
+dreative install-skill --codex --skills all
+dreative plan init --ambition award --execution lean --prototype auto \
+  --purpose project-delivery --preview-url http://localhost:4173 \
+  --routes / --treatments motion,interaction,media
+dreative plan validate
+dreative plan status
+dreative plan diff
+dreative plan approve
+dreative plan export-json
+dreative plan migrate --from .dreative/plan.json
+dreative treatments --all
+dreative doctor --codex
+dreative resume
+dreative audit
+dreative finalize --codex
 ```
 
-Selecting all specialist skills means every packaged skill is installed and
-every treatment receives a substantive owner and runtime evidence. It does not
-mean every treatment appears on every page. Runtime packages are chosen by the
-approved mechanisms: Award does not automatically install or require 3D. Full
-Audit is fail-closed; Dogfood adds behavioural evaluation and is not ordinary
-certification. Old evidence cannot certify new source because verification v4
-hashes source, package, lockfile, public assets, and the production build.
+`plan init` auto-detects repository details, package manager, framework, scripts
+and lockfile. It stops when material target or scope information is unresolved.
+A provided URL is recorded and tested rather than requested again.
 
-The browser workflow below is optional and only used when explicitly requested.
+Selecting every treatment shows a cost, tension and performance summary and
+requires one confirmation. Every selected treatment must receive a perceptible
+contribution and implementation binding; none may be silently pruned.
 
-## Run
+Award, Experimental, explicit all-treatment work, and Full Audit Dogfood require
+a real-application concept checkpoint after any mechanism prototype. Audit then
+checks structural transformation, scene handoffs, meaningful interaction,
+multi-section continuity, mobile translation, reduced motion, browser-grounded
+media integrity, runtime ownership, independent criticism and Dogfood behavior.
+
+## Development
 
 ```sh
 npm install
 npm run build
-npm link          # once — makes the `dreative` command available globally
+npm test
+npm run docs-check
 ```
 
-Then in any project folder:
-
-```sh
-dreative          # starts the local server and opens http://localhost:4820
-```
-
-State lives in `.dreative/` in that folder (`project.json`, `refs/`, `generated/`).
-
-## Workflow
-
-1. **Extract** — the CLI agent reads your app and writes `.dreative/project.json` (wireframe per page, real labels, `source` pointers to owning files), then snapshots it: `dreative baseline`.
-2. **Tweak** — in the browser: drag blocks, add/remove/duplicate, attach reference images and prompts per page/block/element. Prompt-driven actions (propose layouts, block edits, design passes) are queued for your agent, which services them via `dreative wait` → `dreative respond`.
-3. **Finish** — click ✅ Finish; the agent receives only the diff vs the baseline (changed/moved/added/removed blocks + annotations) and applies it to the real codebase using the `source` pointers — token-efficient by construction.
-
-CLI: `dreative` / `dreative start` (server+UI) · `dreative install-skill` (copy skill into ./.claude/skills) · `dreative wait` (block for next UI event) · `dreative respond <id> [result.json|--error msg]` · `dreative baseline`.
-
-## Dev
-
-```sh
-npm run dev       # server on :4820 (tsx watch) + Vite UI on :5199 with proxy
-```
+The optional visual editor remains available through `dreative start`.

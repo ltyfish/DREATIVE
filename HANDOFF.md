@@ -1,10 +1,17 @@
 # Handoff
 
-Ambitious frontend delivery is complete only after the exact installed skill is
-verified and `dreative finalize` prints `DREATIVE_FINALIZED` against the current
-source. Audit failures are completion blockers.
+The active canonical artifact is `.dreative/plan.yaml` v7. Read and validate it
+before implementation. An approved contract is current only when its
+contract-only hash matches; execution progress may change without reapproval.
 
-Plan v5 and verify v3 remain readable. Migrate a copy to v6/v4 by adding
-preflight, runtime stack, skill coverage, runtime bindings, foundation/Award
-journey where required, reconciliation, and a freshly computed build identity.
-Never carry old evidence forward; recapture it from the current production build.
+For material changes, add a change request in the same file, invalidate the old
+approval and wait for approval. Do not substitute a weaker mechanism silently.
+
+Run `dreative doctor`, resume from the last completed phase when needed, capture
+browser-grounded media/runtime evidence, complete the concept checkpoint and
+independent critic, then run `dreative finalize`. Dogfood verdict `fail`, broken
+primary media, static Award work or imperceptible selected treatments block
+`DREATIVE_FINALIZED`.
+
+Legacy v3-v6 JSON plans migrate with `dreative plan migrate`. Review and approve
+the resulting YAML contract; never carry old runtime evidence forward.

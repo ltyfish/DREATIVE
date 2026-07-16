@@ -6,6 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { installSkill } from "./installSkill.js";
 import { runFinalize } from "./finalize.js";
+import { approvePlan, createPlan, writePlan } from "../shared/planGovernance.js";
 
 const packageRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const sourceDir = path.join(packageRoot, "skill", "dreative");
@@ -37,4 +38,44 @@ test("finalize fails closed after source/plan completion evidence is removed", (
   const result = runFinalize(root, { target: "claude", sourceDir, packageVersion });
   assert.equal(result.ok, false);
   assert.ok(result.blockers.some((item) => item.includes("verification")));
+});
+
+function validV7Fixture() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-finalize-v7-"));
+  fs.mkdirSync(path.join(root, ".dreative")); fs.mkdirSync(path.join(root, "src"));
+  fs.writeFileSync(path.join(root, "package.json"), JSON.stringify({ name: "fixture", version: "1.0.0" }));
+  fs.writeFileSync(path.join(root, "package-lock.json"), "{}");
+  fs.writeFileSync(path.join(root, "src", "App.tsx"), `export const App=()=> <main><section id="hero">Ready</section></main>`);
+  const plan = createPlan(root, {
+    workflow: { ambition: "standard", execution: "fast", prototype: "skip", purpose: "project-delivery" },
+    target: { previewUrl: "http://localhost:4173", routeScope: { mode: "one-page", routes: ["/"] } },
+    projectKind: "from-scratch", transformationDepth: "restyle", treatments: ["ux", "mobile"],
+  });
+  plan.contract.scope.requiredFunctionality = ["The page renders its primary content."];
+  plan.contract.scope.dependencyInstallationAllowed = true;
+  plan.contract.scope.externalMediaAllowed = false;
+  plan.contract.scope.successCriteria = ["The user can read the ready state at desktop and mobile widths."];
+  plan.contract.selectedConcept = "A direct utility page makes the ready state immediately legible.";
+  plan.contract.blueprint = [{ pageId: "home", sectionId: "hero", intent: "Present the ready state." }];
+  plan.contract.motionAndMediaStrategy = "No motion or primary media is required.";
+  plan.contract.mobileTranslation = "The same direct hierarchy fits 390px without horizontal overflow.";
+  for (const item of plan.contract.treatmentAllocation) {
+    item.locations = ["home/hero"];
+    item.contribution = `${item.treatment} keeps the ready state usable and legible.`;
+    item.acceptance = [`${item.treatment} evidence passes.`];
+  }
+  plan.execution.evidence.treatmentEvidence = { ux: ["ready-runtime"], mobile: ["ready-mobile"] };
+  writePlan(root, plan);
+  approvePlan(root);
+  fs.writeFileSync(path.join(root, ".dreative", "verify.json"), JSON.stringify({
+    version: 1, generatedAt: new Date().toISOString(),
+    evidence: [{ id: "ready-runtime", criterion: "Ready state renders", status: "pass", evidence: "tested URL", proof: { timestamp: new Date().toISOString(), testedUrl: "http://localhost:4173" } }],
+  }));
+  installSkill({ sourceDir, projectDir: root, packageVersion, target: "claude", selected: ["ux", "mobile"], explicitAll: false });
+  return root;
+}
+
+test("a valid v7 fixture can finalize successfully", () => {
+  const result = runFinalize(validV7Fixture(), { target: "claude", sourceDir, packageVersion });
+  assert.equal(result.ok, true, result.blockers.join("\n"));
 });

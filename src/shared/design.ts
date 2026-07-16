@@ -168,7 +168,7 @@ export function lintDesignPlan(plan: Pick<DesignPlan, "depth" | "structuralDelta
   const mobileText = [plan.mobileBlueprint.mobileOnlyComposition, plan.mobileBlueprint.composition390, plan.mobileBlueprint.fallback320, plan.mobileBlueprint.stackingRejection].join(" ");
   if (/^\s*stack(?:ed)?(?:\s+vertically)?\s*$/i.test(plan.mobileBlueprint.mobileOnlyComposition) || !/\b(order|disclosure|navigation|task|action|media|thumb|viewport|recompose|context)\b/i.test(mobileText))
     lints.push("mobile blueprint must define a mobile-native composition; ‘stack vertically’ alone is blocking");
-  if ((plan.tier === "expressive" || plan.tier === "award") && !plan.expression)
+  if ((plan.tier === "expressive" || plan.tier === "award" || plan.tier === "experimental") && !plan.expression)
     lints.push(`${plan.tier} requires a project-specific expression contract or a documented intentional-calm exception in the direct plan`);
   if (plan.expression && /\b(fade|slide|scale|hover|gradient|large typography)\b/i.test(plan.expression.mechanism) && !/\b(state|selection|progress|navigation|transform|content|spatial)\b/i.test(plan.expression.communicates))
     lints.push("expression mechanism is decorative-only and does not communicate content, state, progression, selection, navigation, or transformation");
@@ -207,7 +207,7 @@ export function buildDesignPlan(page: Page, brief: DesignBrief | undefined, assi
 
   const spacing = dials.density <= 3 ? "py-24/py-32 section gaps" : dials.density <= 6 ? "py-16/py-20" : "py-8/py-12, hairline dividers, mono numerals";
   const motionBudget =
-    tier === "expressive" || tier === "award"
+    tier === "expressive" || tier === "award" || tier === "experimental"
       ? "write section motion treatments; concentrate structural/transformational choreography into a few hero moments with calm sections, mobile translations, and reduced-motion states"
       : dials.motion <= 3
       ? "hover/active states only, no scroll animation"
@@ -393,7 +393,7 @@ function mobileBlueprint(page: Page, register: PageRegister): MobileBlueprint {
 }
 
 function expressionContract(page: Page, tier: AmbitionTier, register: PageRegister): ExpressionContract | undefined {
-  if (tier !== "expressive" && tier !== "award") return undefined;
+  if (tier !== "expressive" && tier !== "award" && tier !== "experimental") return undefined;
   const task = taskFor(page);
   return {
     mechanism: register === "task-transaction" ? `The user’s current “${task}” selection becomes the persistent context for the next task state` : `${page.name} navigation changes form to reflect the user’s current content or progression state`,
