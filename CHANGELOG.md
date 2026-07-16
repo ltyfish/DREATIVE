@@ -1,5 +1,18 @@
 # Changelog
 
+## v.20.7
+
+- Replaced ambitious prose compliance with typed controlled-progress runtime
+  observations and a multi-signal static-feeling score.
+- Added fail-closed Media, 3D/spatial, Cinematic, Immersive, Experimental,
+  mobile and performance gates.
+- Added separate capability and ambition prototype evidence.
+- Added explicit video/frame-sequence/exemption planning and an actionable
+  `ffmpeg-static` processing fallback.
+- Made Full Audit/Dogfood require a genuinely fresh critic.
+- Added adversarial Northwind-style and positive ambitious runtime fixtures.
+- Expanded the experimental mechanism catalog and video production doctrine.
+
 ## 0.7.0
 
 - Bumped the canonical contract to v9 and separated stable approved intent from

@@ -581,6 +581,10 @@ export interface VerificationEvidence {
     testedUrl?: string;
     averageFps?: number;
     maxFrameTimeMs?: number;
+    worstFrameTimeMs?: number;
+    longTaskCount?: number;
+    transferredMediaBytes?: number;
+    heavyChunkBytes?: number;
     playwrightTestId?: string;
     recordingPath?: string;
     tracePath?: string;
@@ -590,6 +594,15 @@ export interface VerificationEvidence {
     controlledProgress?: number | string;
     triggerValue?: string;
     observedProperties?: { property: string; expected: string; observed: string }[];
+    pixelDifferenceFromPrevious?: number;
+    structuralDifferenceFromPrevious?: number;
+    compositionStateHash?: string;
+    frameIndex?: number;
+    mediaCurrentTime?: number;
+    cameraState?: { position: [number, number, number]; rotation: [number, number, number]; fov: number };
+    shaderUniforms?: Record<string, number>;
+    particleState?: { activeCount: number; spread: number; reassembly: number };
+    maskProgress?: number;
     expectedState?: string;
     observedState?: string;
     reversePlayResult?: string;

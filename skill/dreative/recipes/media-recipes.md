@@ -58,3 +58,20 @@ concept; do not collect one of each.
 - Cap canvas DPR, reuse buffers/materials, avoid allocations in render loops.
 - Mobile halves complexity or uses a purpose-designed poster/DOM treatment.
 - Fallback preserves the concept's hierarchy even when the mechanism simplifies.
+
+## Video and sequence production pipeline
+
+1. Record source/rights and choose generated, sourced, supplied, procedural or
+   pre-rendered input honestly.
+2. Clip and grade, then transcode web-ready MP4/WebM through system FFmpeg,
+   verified `ffmpeg-static`, or a confirmed processing provider.
+3. Produce a mobile crop, poster and reduced-motion still. Measure bytes.
+4. Preload metadata/poster early and defer full media until chapter approach.
+5. For scrubbing, smooth target `currentTime`; use
+   `requestVideoFrameCallback` when it improves frame-to-canvas synchronization.
+6. If seeking is unreliable, extract a bounded frame sequence and stage decode.
+7. Canvas/WebGL may displace, mask, refract, smear or particle-treat the actual
+   video texture; unrelated overlays do not qualify.
+8. Verify readiness, seek error, frame index/time at controlled progress,
+   dropped frames, FPS/worst frame time, mobile fallback and hidden/offscreen
+   pause. Audio is explicit opt-in with a muted equivalent.

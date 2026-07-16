@@ -1,5 +1,12 @@
 # Project map
 
+- `src/shared/runtimeEvidence.ts` — controlled-state scoring and ambitious
+  Media/3D/Cinematic/Immersive/Experimental/mobile/performance gates.
+- `src/shared/runtimeEvidence.test.ts` — prose-only, rigid-plane/ordinary-control
+  negative fixtures and a typed positive fixture.
+- `src/shared/coffeeRoasterRegression.test.ts` — Northwind adversarial
+  regression matching the failed all-treatment coffee implementation.
+
 - `src/shared/planGovernance.ts`: canonical plan v9, all-ten decisions, stable
   intent versus mutable execution, route roles, assets, mechanism governance,
   run identity, approval hashing and v3-v8

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { EXPERIMENTAL_MECHANISMS, mechanismRecipe } from "./mechanisms.js";
 
 test("experimental catalog covers every required high-ambition mechanism family", () => {
-  assert.equal(new Set(EXPERIMENTAL_MECHANISMS.map((item) => item.family)).size, 7);
+  assert.equal(new Set(EXPERIMENTAL_MECHANISMS.map((item) => item.family)).size, 12);
   for (const recipe of EXPERIMENTAL_MECHANISMS) {
     assert.ok(recipe.substantiveDelivery.length);
     assert.ok(recipe.insufficientDelivery.length);

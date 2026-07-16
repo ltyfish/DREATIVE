@@ -50,6 +50,74 @@ export interface TreatmentDecision {
 export type ExperienceSectionRole = "peak" | "transformation" | "preparation" | "echo" | "rest" | "resolution" | "functional-utility";
 export type SpatialAssetClassification = "model" | "spatial-cutout" | "layered-billboard" | "pre-rendered-angles" | "frame-sequence" | "webgl-media-plane" | "static-image";
 export type MechanismExecutionStatus = "pending" | "in-progress" | "primary-delivered" | "fallback-triggered" | "approved-change" | "not-applicable" | "failed";
+export type RuntimeMechanismFamily =
+  | "frame-sequence" | "video-scrub" | "shader-media" | "particle-reconstruction" | "tile-slice-fold"
+  | "depth-parallax" | "camera-travel" | "spatial-field" | "shared-element-handoff" | "kinetic-type"
+  | "hold-charge-release" | "layout-transition" | "ordinary-control" | "rigid-media-plane" | "decorative-motion";
+export type RuntimeInputDriver = "scroll-progress" | "velocity" | "pointer" | "drag" | "hold" | "time" | "audio" | "route" | "keyboard";
+
+export interface RuntimeStateSample {
+  progress: 0 | 25 | 50 | 75 | 100;
+  captureId: string;
+  artifactHash: string;
+  compositionStateHash: string;
+  observedProperties: { property: string; value: string | number | boolean }[];
+  channels: ("camera" | "media" | "type" | "light" | "sound" | "depth" | "layout" | "material")[];
+  pixelDifferenceFromPrevious?: number;
+  structuralDifferenceFromPrevious?: number;
+  frameIndex?: number;
+  mediaCurrentTime?: number;
+  camera?: { position: [number, number, number]; rotation: [number, number, number]; fov: number };
+  uniforms?: Record<string, number>;
+  particleState?: { activeCount: number; spread: number; reassembly: number };
+  maskProgress?: number;
+}
+
+export interface RuntimeMechanismObservation {
+  id: string;
+  sectionId: string;
+  continuityOwner: string;
+  implementationFile: string;
+  componentOrSelector: string;
+  mechanismFamily: RuntimeMechanismFamily;
+  spatialClassification: SpatialAssetClassification;
+  sourceAssets: string[];
+  inputDrivers: RuntimeInputDriver[];
+  samples: RuntimeStateSample[];
+  postHero: boolean;
+  assetTransformsInternally: boolean;
+  pinnedOrControlledComposition: boolean;
+  nonObviousBehavior: boolean;
+  neutralStylingStillSpecial: boolean;
+  handoff?: { targetMechanismId: string; persistedObjectOrState: string; ownerImplementation: string };
+  mobile: { authored: boolean; mechanismFamily: RuntimeMechanismFamily; captureIds: string[]; disabled: boolean };
+  reducedMotion: { authoredComposition: boolean; captureIds: string[] };
+  reverse: { relevant: boolean; tested: boolean; result: "pass" | "fail" | "not-applicable"; evidenceIds: string[] };
+  performance: { averageFps: number; worstFrameTimeMs: number; longTasks: number; transferredBytes: number; heavyChunkBytes: number };
+  recordingIds: string[];
+}
+
+export interface SignatureMediaProductionPackage {
+  id: string;
+  sourceAssets: string[];
+  derivatives: { path: string; role: string; bytes: number }[];
+  implementationConsumers: string[];
+  optimization: string[];
+  temporalEvidenceIds: string[];
+  mobileVariant: string;
+  reducedMotionAsset: string;
+}
+
+export interface CapabilityActionRecord {
+  capabilityId: string;
+  action: "install" | "search" | "fallback" | "exemption-request";
+  attemptedAt: string;
+  commandOrProvider: string;
+  result: "succeeded" | "failed" | "selected" | "pending-user-approval";
+  evidenceIds: string[];
+  selectedFallback: string;
+  userReapprovalRequired: boolean;
+}
 
 export interface ExperienceDistributionEntry {
   pageId: string;
@@ -185,6 +253,14 @@ export interface PlanContract {
   performanceBudget: string[];
   acceptanceCriteria: string[];
   mechanismFallbacks: MechanismFallbackContract[];
+  videoDeliveryDecision?: {
+    decision: "video" | "frame-sequence-or-prerendered-motion" | "approved-exemption";
+    reason: string;
+    processingRoute: string;
+    mobileStrategy: string;
+    reducedMotionStrategy: string;
+    approvalReference?: string;
+  };
   conceptExemptions: { gate: string; reason: string; approved: boolean }[];
   changeRequests: {
     id: string;
@@ -221,6 +297,19 @@ export interface PlanExecution {
       reducedMotion: boolean;
       realApplication: boolean;
       reviewer: "user" | "independent-critic" | "none";
+      evidenceIds: string[];
+    };
+    ambitionPrototype?: {
+      status: "not-required" | "pending" | "passed" | "failed" | "approved-with-required-revisions";
+      representativeFinalQualityMedia: boolean;
+      completePostHeroPeak: boolean;
+      trueAssetTransformation: boolean;
+      recordingDurationSeconds: number;
+      desktopAuthored: boolean;
+      mobileAuthored: boolean;
+      independentCritic: boolean;
+      provisionalLimitations: string[];
+      requiredRevisions: string[];
       evidenceIds: string[];
     };
     adaptiveSpread?: {
@@ -260,6 +349,9 @@ export interface PlanExecution {
     browserObserved: boolean; survivedFinalImplementation: boolean; removedOrSubstituted: boolean; finalRightsRecord: string;
     shipping: boolean; mobileVariant?: string; poster?: string; loadingStrategy?: string;
   }[];
+  capabilityActions: CapabilityActionRecord[];
+  runtimeObservations: RuntimeMechanismObservation[];
+  signatureMediaPackages: SignatureMediaProductionPackage[];
   evidence: {
     transformations: string[];
     sceneHandoffs: string[];
@@ -495,6 +587,9 @@ export function createPlan(projectDir: string, input: {
       mechanisms: [],
       prototypes: [],
       assets: [],
+      capabilityActions: [],
+      runtimeObservations: [],
+      signatureMediaPackages: [],
       evidence: { transformations: [], sceneHandoffs: [], meaningfulInteractions: [], persistentSystemSections: [], pacing: [], mobileNative: [], reducedMotion: [], treatmentEvidence: {}, motionVocabulary: [], postFirstViewportEvents: [], treatmentObservations: {} },
       lastUpdatedAt: createdAt,
     },
@@ -590,6 +685,19 @@ export function validateCanonicalPlan(value: unknown): string[] {
         errors.push(`experimental peak ${peak.id || "unknown"} is incomplete`);
       if (!peak.acceptance?.length) errors.push(`experimental peak ${peak.id || "unknown"} needs observable acceptance conditions`);
     }
+  }
+  const videoRelevant = Boolean(workflow && (workflow.ambition === "experimental" || contract.allTreatmentsExplicit)
+    && contract.selectedTreatments.includes("media")
+    && (contract.selectedTreatments.includes("cinematic") || contract.selectedTreatments.includes("experimental"))
+    && (contract.creativeSources?.generatedVideo === "allowed" || contract.creativeSources?.generatedVideo === "ask-per-asset"
+      || contract.creativeSources?.sourcedVideo === "allowed" || contract.creativeSources?.sourcedVideo === "ask-per-asset"));
+  if (videoRelevant) {
+    const decision = contract.videoDeliveryDecision;
+    if (!decision || !concrete(decision.reason, 20) || !concrete(decision.processingRoute, 12)
+      || !concrete(decision.mobileStrategy, 12) || !concrete(decision.reducedMotionStrategy, 12))
+      errors.push("Experimental/all-treatment Media + Cinematic work requires an explicit video, frame-sequence, or approved exemption decision");
+    if (decision?.decision === "approved-exemption" && !concrete(decision.approvalReference))
+      errors.push("video exemption requires an explicit user approval reference");
   }
   for (const mechanism of contract.mechanismFallbacks ?? []) {
     if (!concrete(mechanism.id) || !concrete(mechanism.location) || !concrete(mechanism.primaryImplementation, 12) || !mechanism.primaryAcceptance?.length || !concrete(mechanism.fallbackImplementation, 12) || !concrete(mechanism.fallbackTrigger, 12))

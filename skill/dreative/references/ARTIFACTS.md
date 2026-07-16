@@ -30,3 +30,8 @@ pass-with-concerns or fail verdict.
 Primary media failures, stale approval, static ambitious work, missing selected
 treatments, concept-checkpoint failure, critic blockers and Dogfood failure are
 finalization blockers.
+
+`execution.runtimeObservations` is the machine-grounded delivery ledger.
+Narrative evidence arrays cannot replace it. Full Audit/Dogfood also requires a
+fresh-agent critic; degraded, best-effort or same-agent review produces
+insufficient independent evidence and blocks finalization.

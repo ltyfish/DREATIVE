@@ -44,6 +44,13 @@ Purpose:
 
 Do not ask again for values already supplied.
 
+Before any contract is written, the first intake output must show the complete
+ten-treatment review, proposed section allocation, ownership overlaps and
+tensions, plus a creative capability preflight. Unresolved permissions are
+reported as unresolved rather than denied. The same intake explicitly asks for
+package-installation permission; permission and detected capability are never
+collapsed into one state.
+
 Resolve repository root, preview URL or command, routes and scope, required
 workflows, preserved content/brand, supplied and missing assets, installation
 permission, media permission, priority devices, minimum mobile width,
@@ -136,3 +143,33 @@ fallback disclosure, section-role coverage and source/run identity. Add one
 representative continuity recording only when static evidence cannot prove the
 mechanism. Reverse evidence is only for promised reversibility, pin release or
 lifecycle risk.
+
+## Runtime-grounded ambitious delivery
+
+Award, Experimental and explicit all-treatment work records typed
+`execution.runtimeObservations` for every important mechanism. Each observation
+names the implementation owner, source assets, mechanism family, input drivers,
+honest spatial classification, mobile/reduced-motion form, performance result,
+handoff architecture, recordings and controlled 0/25/50/75/100 samples.
+Samples include current-build artifact/composition hashes, observed runtime
+properties and, where applicable, frame/video time, camera, uniforms, particles
+or masks plus pixel/structural difference measurements.
+
+Free-form `transformations`, `sceneHandoffs`, `motionVocabulary`,
+`treatmentObservations` and similar notes explain evidence but cannot satisfy a
+gate. Ambitious delivery fails when it is a mostly static stack, lacks two
+substantial post-hero mechanisms, disables defining mobile behavior, or relies
+on ordinary controls and a rigid textured plane.
+
+Capability and ambition prototypes are separate. Capability proves the API or
+mechanism works. Ambition proves final-quality media, one complete post-hero
+peak, a true asset transformation, a 10–20 second recording, desktop/mobile
+authorship and fresh independent criticism. Approval containing a concern is
+`approved-with-required-revisions` until those revisions are recaptured.
+
+When video is allowed and Media plus Cinematic/Experimental is selected, the
+contract records one explicit decision: use video, use a frame sequence or
+pre-rendered motion, or obtain an approved exemption. Missing FFmpeg with
+installation permission produces an `ffmpeg-static` or equivalent install
+attempt, confirmed processing-provider route, or recorded high-fidelity
+fallback—not quiet omission.

@@ -51,6 +51,13 @@ test("focused simulated workflow covers intake, edit, approval, drift, broken me
   plan.contract.experienceArc = { openingState: "Quiet rail", firstTransformation: "Hero media fragments into the rail", sectionProgression: "Rail develops through three sections", peaksAndRests: "Transformations alternate with calm reading", persistentSystem: "Gallery rail persists", userControlledMoment: "Drag changes media state", mobileTranslation: "Swipe changes compact rail", finalResolution: "Rail resolves into final action" };
   plan.contract.motionAndMediaStrategy = "Mask and spatial states hand off between chapters.";
   plan.contract.mobileTranslation = "Swipe and tap replace pointer drag at 390px.";
+  plan.contract.videoDeliveryDecision = {
+    decision: "frame-sequence-or-prerendered-motion",
+    reason: "A bounded image sequence supplies deterministic chapter timing without depending on original video generation.",
+    processingRoute: "Install and verify ffmpeg-static or use a confirmed frame extraction provider.",
+    mobileStrategy: "Ship a reduced-resolution bounded frame set with chapter-approach preloading.",
+    reducedMotionStrategy: "Use authored opening, transformation and resolved still compositions.",
+  };
   for (const allocation of plan.contract.treatmentAllocation) {
     allocation.locations = ["home/hero", "home/work"];
     allocation.contribution = `${allocation.treatment} materially supports the gallery rail.`;

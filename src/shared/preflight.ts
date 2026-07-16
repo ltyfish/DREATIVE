@@ -11,12 +11,13 @@ export type CapabilityStatus =
   | "available-through-supplied-asset"
   | "expected-browser-api-unverified"
   | "permitted-but-tool-unverified"
+  | "permission-unresolved"
   | "permission-denied"
   | "unavailable"
   | "runtime-verification-failed";
 
 export type CapabilityCategory = "creative-authoring" | "sourcing" | "runtime-rendering" | "processing" | "verification";
-export type PermissionState = "allowed" | "denied" | "not-applicable";
+export type PermissionState = "allowed" | "denied" | "unresolved" | "not-applicable";
 export type CapabilityConfidence = "verified" | "detected" | "expected" | "unverified";
 
 export const CAPABILITY_IDS = [
@@ -34,7 +35,7 @@ export type CreativeCapabilityId = typeof CAPABILITY_IDS[number];
 export const CAPABILITY_STATES: CapabilityStatus[] = [
   "available", "available-after-package-install", "available-through-confirmed-tool", "available-through-supplied-asset",
   "expected-browser-api-unverified", "permitted-but-tool-unverified", "permission-denied", "unavailable",
-  "runtime-verification-failed",
+  "permission-unresolved", "runtime-verification-failed",
 ];
 
 export interface CapabilityInput {
@@ -60,6 +61,8 @@ export interface CapabilityAssessment {
   verificationEvidence: string[];
   limitation: string;
   permittedSubstitutes: string[];
+  requiredAction?: "none" | "install-or-select-fallback" | "search-or-record-exemption" | "verify-in-browser";
+  actionOptions?: string[];
 }
 
 export interface CreativePermissions {
@@ -122,7 +125,8 @@ const CATEGORY: Record<CreativeCapabilityId, CapabilityCategory> = {
 const commandAvailable = (command: string): boolean =>
   spawnSync(command, ["-version"], { stdio: "ignore", shell: process.platform === "win32" }).status === 0;
 
-const permissionFor = (id: CreativeCapabilityId, permissions: CreativePermissions): PermissionState => {
+const permissionFor = (id: CreativeCapabilityId, permissions: CreativePermissions, unresolved = false): PermissionState => {
+  if (unresolved && ["image-generation", "image-editing", "video-generation", "video-editing", "frame-sequence-creation", "audio-generation", "image-search", "font-search", "texture-search", "video-search", "3d-asset-search", "3d-model-generation", "3d-model-editing"].includes(id)) return "unresolved";
   if (["image-generation", "image-editing"].includes(id)) return permissions.generatedImagesAllowed ? "allowed" : "denied";
   if (["video-generation", "video-editing", "frame-sequence-creation", "audio-generation"].includes(id)) return permissions.generatedVideoAllowed ? "allowed" : "denied";
   if (id === "image-search" || id === "font-search" || id === "texture-search") return permissions.externalImagesAllowed ? "allowed" : "denied";
@@ -164,7 +168,7 @@ export function parseCapabilitiesFile(file: string): CapabilityInput[] {
 }
 
 export function resolveCreativeCapabilities(installed: string[], permissions: CreativePermissions,
-  explicit: CapabilityInput[] = [], environment: { ffmpeg?: boolean } = {}): CapabilityAssessment[] {
+  explicit: CapabilityInput[] = [], environment: { ffmpeg?: boolean; unresolvedPermissions?: boolean } = {}): CapabilityAssessment[] {
   const errors = validateCapabilityInputs(explicit);
   if (errors.length) throw new Error(errors.join("\n"));
   const overrides = new Map(explicit.map((item) => [item.id, item]));
@@ -172,7 +176,7 @@ export function resolveCreativeCapabilities(installed: string[], permissions: Cr
   const explicitRecord = (id: CreativeCapabilityId): CapabilityAssessment | undefined => {
     const input = overrides.get(id);
     if (!input) return undefined;
-    const permission = permissionFor(id, permissions);
+    const permission = permissionFor(id, permissions, environment.unresolvedPermissions);
     if (permission === "denied" && !["permission-denied", "unavailable"].includes(input.state))
       throw new Error(`${id}: capability declaration contradicts denied user permission`);
     return record(id, permission, input.state, "explicit-capability", input.verified ? "verified" : "detected",
@@ -185,12 +189,30 @@ export function resolveCreativeCapabilities(installed: string[], permissions: Cr
     explicitRecord(id) ?? record(id, "not-applicable", present ? "available" : permissions.packageInstallationAllowed ? "available-after-package-install" : "unavailable",
       present ? "environment" : "package-preflight", present ? "detected" : "unverified", limitation, { package: packageName });
   const permittedTool = (id: CreativeCapabilityId, limitation: string, substitutes: string[] = []) => {
-    const permission = permissionFor(id, permissions);
+    const permission = permissionFor(id, permissions, environment.unresolvedPermissions);
     if (permission === "denied") return record(id, permission, "permission-denied", "user-permission", "verified", "The user denied this operation.", { permittedSubstitutes: substitutes });
+    if (permission === "unresolved") return explicitRecord(id) ?? record(id, permission, "permission-unresolved", "user-permission", "unverified", "Permission has not been resolved yet; capability detection remains separate.", { permittedSubstitutes: substitutes });
     return explicitRecord(id) ?? record(id, permission, "permitted-but-tool-unverified", "user-permission", "unverified", limitation, { permittedSubstitutes: substitutes });
   };
   const browserExpected = (id: CreativeCapabilityId, limitation: string) =>
-    explicitRecord(id) ?? record(id, "not-applicable", "expected-browser-api-unverified", "environment", "expected", limitation);
+    explicitRecord(id) ?? record(id, "not-applicable", "expected-browser-api-unverified", "environment", "expected", limitation, {
+      requiredAction: "verify-in-browser", actionOptions: ["run controlled browser verification"],
+    });
+  const mediaProcessing = (id: CreativeCapabilityId, limitation: string) => {
+    const explicitValue = explicitRecord(id);
+    if (explicitValue) return explicitValue;
+    if (environment.ffmpeg) return record(id, "not-applicable", "available", "environment", "verified", limitation, {
+      provider: "system-ffmpeg", requiredAction: "none",
+    });
+    if (permissions.packageInstallationAllowed) return record(id, "not-applicable", "available-after-package-install", "package-preflight", "unverified", limitation, {
+      package: "ffmpeg-static", requiredAction: "install-or-select-fallback",
+      actionOptions: ["install ffmpeg-static and verify its binary", "use a confirmed processing provider", "select a bounded image/pre-rendered sequence fallback"],
+    });
+    return record(id, "not-applicable", "unavailable", "environment", "unverified", limitation, {
+      requiredAction: "install-or-select-fallback",
+      actionOptions: ["use a confirmed processing provider", "select a bounded procedural or pre-rendered sequence fallback"],
+    });
+  };
 
   return [
     record("dom-css-runtime", "not-applicable", "available", "environment", "detected", "DOM/CSS is provided by the target browser but still requires browser verification."),
@@ -202,11 +224,11 @@ export function resolveCreativeCapabilities(installed: string[], permissions: Cr
     runtimePackage("scrolltrigger-runtime", "gsap", has("gsap"), "ScrollTrigger coordinates scroll states; it does not author choreography."),
     browserExpected("video-playback", "Video playback depends on codec, browser and device verification."),
     browserExpected("image-sequence-playback", "Image-sequence playback requires runtime decode and performance verification."),
-    explicitRecord("ffmpeg-processing") ?? record("ffmpeg-processing", "not-applicable", environment.ffmpeg ? "available" : "unavailable", "environment", environment.ffmpeg ? "verified" : "unverified", "FFmpeg processes existing media; it does not generate original video."),
+    mediaProcessing("ffmpeg-processing", "FFmpeg processes existing media; it does not generate original video."),
     runtimePackage("sharp-processing", "sharp", has("sharp"), "Sharp creates image derivatives; it does not author original imagery."),
     runtimePackage("image-conversion", "sharp", has("sharp"), "Image conversion processes supplied or sourced pixels."),
-    explicitRecord("video-transcoding") ?? record("video-transcoding", "not-applicable", environment.ffmpeg ? "available" : "unavailable", "environment", environment.ffmpeg ? "verified" : "unverified", "Transcoding changes existing media formats."),
-    explicitRecord("frame-extraction") ?? record("frame-extraction", "not-applicable", environment.ffmpeg ? "available" : "unavailable", "environment", environment.ffmpeg ? "verified" : "unverified", "Frame extraction requires existing footage."),
+    mediaProcessing("video-transcoding", "Transcoding changes existing media formats."),
+    mediaProcessing("frame-extraction", "Frame extraction requires existing footage."),
     explicitRecord("compression") ?? record("compression", "not-applicable", has("sharp") || Boolean(environment.ffmpeg) ? "available" : "unavailable", "environment", "detected", "Compression is processing, not creative authoring."),
     permittedTool("image-generation", "Image-generation permission exists, but no generation tool was confirmed.", ["sourced image", "supplied image", "procedural graphic"]),
     permittedTool("image-editing", "Image-editing permission exists, but no authoring tool was confirmed.", ["CSS/SVG treatment", "production derivative"]),
@@ -262,7 +284,7 @@ export function resolveRuntimeRequirements(mechanisms: string[], preflight: Proj
 
 export function renderCreativeCapabilityPreflight(preflight: ProjectPreflight): string {
   const render = (item: CapabilityAssessment) =>
-    `  - ${item.id}: ${item.status}; permission=${item.permission}; confidence=${item.confidence}; source=${item.detectionSource}${item.provider ? `; provider=${item.provider}` : ""}. ${item.limitation}`;
+    `  - ${item.id}: ${item.status}; permission=${item.permission}; confidence=${item.confidence}; source=${item.detectionSource}${item.provider ? `; provider=${item.provider}` : ""}. ${item.limitation}${item.requiredAction && item.requiredAction !== "none" ? ` Required action: ${item.requiredAction}; options: ${(item.actionOptions ?? []).join(" | ")}.` : ""}`;
   const section = (category: CapabilityCategory, label: string) => [label, ...preflight.creativeCapabilities.filter((item) => item.category === category).map(render)];
   return [
     "Creative capability preflight:",
@@ -277,7 +299,7 @@ export function renderCreativeCapabilityPreflight(preflight: ProjectPreflight): 
   ].join("\n");
 }
 
-export function detectProjectPreflight(projectDir: string, options: { permissions?: Partial<CreativePermissions>; explicitCapabilities?: CapabilityInput[] } = {}): ProjectPreflight {
+export function detectProjectPreflight(projectDir: string, options: { permissions?: Partial<CreativePermissions>; explicitCapabilities?: CapabilityInput[]; permissionsUnresolved?: boolean } = {}): ProjectPreflight {
   const packageFile = path.join(projectDir, "package.json");
   const pkg = fs.existsSync(packageFile) ? JSON.parse(fs.readFileSync(packageFile, "utf8")) : {};
   const deps = { ...(pkg.dependencies ?? {}), ...(pkg.devDependencies ?? {}) } as Record<string, string>;
@@ -301,7 +323,7 @@ export function detectProjectPreflight(projectDir: string, options: { permission
     scrollOwner: /ReactLenis|Lenis/.test(source) ? "lenis" : /ScrollTrigger/.test(source) ? "gsap-scrolltrigger" : null,
     animationTicker: /gsap\.ticker/.test(source) ? "gsap" : /requestAnimationFrame/.test(source) ? "requestAnimationFrame" : null,
     assetCapabilities: [deps.sharp && "sharp", ffmpeg && "ffmpeg"].filter(Boolean) as string[],
-    creativeCapabilities: resolveCreativeCapabilities(installedCapabilities, permissions, options.explicitCapabilities, { ffmpeg }),
+    creativeCapabilities: resolveCreativeCapabilities(installedCapabilities, permissions, options.explicitCapabilities, { ffmpeg, unresolvedPermissions: options.permissionsUnresolved }),
   };
   return { ...base, identity: capabilityPreflightIdentity(base) };
 }

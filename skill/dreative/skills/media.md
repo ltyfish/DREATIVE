@@ -163,3 +163,17 @@ Canonical v9 asset priority is supplied, rights-safe sourced, advantageously
 generated, then procedural. Record sourcing attempts, rights, generation
 rationale, derivatives, mobile variants, loading/poster states, route use and
 whether the asset survived. Reconcile manifest, disk and shipped references.
+
+Experimental + Media requires a Signature Media Production Package unless the
+user approves a concept exemption. It includes real source assets, derivatives
+(masks, depth, atlases, frames or edited states), consumers, byte sizes,
+optimization, mobile/reduced-motion variants and current-run temporal evidence.
+At least two asset-transforming media moments must be distributed across the
+route, with one after the hero. Grading, cropping, scaling, a gradient overlay,
+a moving line or one illuminated region do not qualify.
+
+For video, record sourcing/generation, clipping, grade, MP4/WebM transcode,
+mobile crop, poster, preload timing, decode readiness, seek accuracy,
+`requestVideoFrameCallback` use when useful, scroll-to-`currentTime` smoothing,
+frame-extraction fallback, canvas/WebGL treatment, audio opt-in, transferred
+bytes and frame pacing. A hero autoplay clip alone is not Cinematic delivery.

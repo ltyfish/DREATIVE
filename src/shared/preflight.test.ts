@@ -53,6 +53,19 @@ test("permission alone remains permitted but tool unverified", () => {
   assert.equal(capabilities.find((item) => item.id === "image-generation")?.status, "permitted-but-tool-unverified");
 });
 
+test("missing system FFmpeg exposes an actionable package-backed processing route", () => {
+  const capabilities = resolveCreativeCapabilities([], {
+    generatedImagesAllowed: false, externalImagesAllowed: false, generatedVideoAllowed: true, externalVideoAllowed: true,
+    threeDPolicy: "not-allowed", packageInstallationAllowed: true,
+  }, [], { ffmpeg: false });
+  for (const id of ["ffmpeg-processing", "video-transcoding", "frame-extraction"]) {
+    const capability = capabilities.find((item) => item.id === id);
+    assert.equal(capability?.status, "available-after-package-install");
+    assert.equal(capability?.package, "ffmpeg-static");
+    assert.equal(capability?.requiredAction, "install-or-select-fallback");
+  }
+});
+
 test("Canvas and WebGL begin expected and browser evidence upgrades or fails them", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-browser-upgrade-"));
   fs.writeFileSync(path.join(root, "package.json"), "{}");

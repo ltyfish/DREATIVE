@@ -47,6 +47,7 @@ export interface CriticInput {
   motionMomentIds?: string[];
   verificationRunId?: string;
   buildIdentityHash?: string;
+  independentCriticRequired?: boolean;
   evidence: CriticEvidenceInput[];
   contextPolicy: {
     firstPass: "objective-only";
@@ -229,6 +230,8 @@ export function validateVisualCriticReport(value: unknown, input?: CriticInput):
   if (!isolation || !["fresh-subagent", "fresh-context", "isolated-prompt", "best-effort"].includes(String(isolation.mode)) || !validDate(isolation.independentReadingRecordedAt) || !nonEmpty(isolation.limitation)) errors.push("visual critic report requires documented context isolation");
   if (validDate(report.reviewedAt) && validDate(isolation?.independentReadingRecordedAt) && Date.parse(isolation.independentReadingRecordedAt) > Date.parse(report.reviewedAt)) errors.push("independent reading must be recorded before the critic review completes");
   if (isolation?.builderContextOpenedAt && (!validDate(isolation.builderContextOpenedAt) || Date.parse(isolation.builderContextOpenedAt) <= Date.parse(isolation.independentReadingRecordedAt))) errors.push("builder context may be opened only after the independent reading is recorded");
+  if (input?.independentCriticRequired && isolation?.mode !== "fresh-subagent")
+    errors.push("Full Audit/Dogfood independent critic evidence requires a fresh subagent; best-effort, isolated-prompt, or same-agent context cannot pass");
   if (!report.reviewContext || !Array.isArray(report.reviewContext.availableInputs) || !Array.isArray(report.reviewContext.missingInputs) || !nonEmptyList(report.reviewContext.viewportsInspected, 2) || !nonEmptyList(report.reviewContext.pagesOrFlowsInspected) || !Array.isArray(report.reviewContext.limitations)) errors.push("visual critic review context is incomplete");
   if (!report.independentReading || Object.values(report.independentReading).some((item) => !nonEmpty(item, 12))) errors.push("visual critic independent reading must record concept, signature, brand, and motion role");
   const verdicts: CriticVerdict[] = ["PASS", "PASS AFTER REVISION", "MAJOR REVISION REQUIRED", "INSUFFICIENT EVIDENCE"];

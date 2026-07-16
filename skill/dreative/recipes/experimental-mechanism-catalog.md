@@ -14,6 +14,11 @@ The machine-readable catalog is `src/shared/mechanisms.ts`. It covers:
 - cinematic camera, reveal, media-plane and match-cut handoffs;
 - shader/material transformations;
 - reassembled, spatial and variable experimental typography.
+- torn, sliced, folded and peeled media handoffs;
+- velocity-responsive smear/refraction;
+- depth-dive shared-element transitions;
+- click-and-hold charge/release interaction;
+- video-to-canvas/WebGL treatment with frame-sequence fallback.
 
 Every recipe records assets, runtime packages, actual authoring tools,
 specialized-tool dependence, performance risk, mobile and reduced-motion

@@ -1,5 +1,16 @@
 # Handoff
 
+## v.20.7 repair
+
+Ambitious canonical v9 runs must populate `execution.runtimeObservations`,
+`execution.signatureMediaPackages` when Experimental + Media is selected, and
+the separate `ambitionPrototype` checkpoint. Legacy free-form execution arrays
+remain readable but cannot satisfy ambitious treatment gates.
+
+The primary negative regression is the Northwind-style coffee fixture in
+`src/shared/coffeeRoasterRegression.test.ts`; the reusable scoring and
+treatment logic lives in `src/shared/runtimeEvidence.ts`.
+
 The active canonical artifact is `.dreative/plan.yaml` v9. Read and validate it
 before implementation. An approved contract is current only when its
 contract-only hash matches; execution progress may change without reapproval.

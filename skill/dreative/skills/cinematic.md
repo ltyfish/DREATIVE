@@ -65,3 +65,10 @@ Recipe reference: `../recipes/cinematic-recipes.md`, after exploration only.
 Canonical v9 requires observable pacing and at least one meaningful scene
 handoff. Large headings, dark color and static photography do not count.
 Coordinate with Immersive so two whole-route timeline owners do not compete.
+
+Cinematic acceptance requires an observable setup, anticipation,
+transformation, rest, handoff and resolution; at least one composition-level
+scene transition; coordinated change across three or more of camera, media,
+type, light, sound, depth, layout or material; a real shared state/render owner;
+and a mobile-authored arc. A sticky split, large image, rotating seal or review
+carousel cannot satisfy it.

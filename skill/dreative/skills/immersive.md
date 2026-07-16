@@ -68,3 +68,8 @@ Recipe reference: `../recipes/immersive-recipes.md`, after exploration only.
 Canonical v9 requires one continuity owner and multi-section persistence. A
 hero-only canvas followed by unrelated static sections fails. Calm rests must
 inherit, echo or prepare environmental state.
+
+The continuity owner is implementation architecture, not a prose label. Record
+the shared state/render owner and typed handoff target for every chapter,
+including the persisted object/state and receiving implementation. Repeating a
+decorative line or color without shared runtime state is not continuity.

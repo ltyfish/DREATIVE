@@ -12,6 +12,31 @@ const peaks = [
   { id: "product-constellation", chapter: "products", mechanismFamily: "spatial-product-exploration", plannedBehaviour: "Products orbit and the active bag enters a dossier.", startState: "Constellation", activeState: "Dragged orbit", resolution: "Selected dossier", inputRelationship: "Drag, swipe and keyboard", mobileStrategy: "Bounded swipe constellation", reducedMotionStrategy: "Discrete spatial positions", fallbackState: "Depth-based accessible list", prototypeRiskFamily: "spatial-selector", acceptance: ["Input changes viewpoint and active product position"] },
 ];
 
+function runtimeObservation(id: string, sectionId: string, family: "particle-reconstruction" | "frame-sequence" | "spatial-field", postHero: boolean, target: string) {
+  return {
+    id, sectionId, continuityOwner: "RoastContinuitySystem", implementationFile: `src/experience/${id}.tsx`, componentOrSelector: `[data-mechanism=${id}]`,
+    mechanismFamily: family, spatialClassification: family === "spatial-field" ? "model" as const : family === "frame-sequence" ? "frame-sequence" as const : "layered-billboard" as const,
+    sourceAssets: [`assets/${id}.webp`], inputDrivers: family === "spatial-field" ? ["drag" as const, "keyboard" as const] : ["scroll-progress" as const, "velocity" as const],
+    samples: ([0, 25, 50, 75, 100] as const).map((progress, index) => ({
+      progress, captureId: `${id}-${progress}`, artifactHash: `${id}-artifact-${progress}`, compositionStateHash: `${id}-composition-${progress}`,
+      observedProperties: [{ property: "progress", value: progress }, { property: "depth", value: index * 0.6 }],
+      channels: ["media" as const, "depth" as const, "type" as const, "light" as const],
+      pixelDifferenceFromPrevious: index ? 0.18 : undefined, structuralDifferenceFromPrevious: index ? 0.09 : undefined,
+      frameIndex: family === "frame-sequence" ? index * 18 : undefined,
+      camera: family === "spatial-field" ? { position: [index * 0.35, index * 0.1, 5 - index * 0.3] as [number, number, number], rotation: [0, index * 0.18, 0] as [number, number, number], fov: 45 + index } : undefined,
+      particleState: family === "particle-reconstruction" ? { activeCount: 1200, spread: index <= 2 ? index * 0.5 : (4 - index) * 0.5, reassembly: index / 4 } : undefined,
+    })),
+    postHero, assetTransformsInternally: family !== "spatial-field" || true, pinnedOrControlledComposition: true,
+    nonObviousBehavior: true, neutralStylingStillSpecial: true,
+    handoff: { targetMechanismId: target, persistedObjectOrState: "shared roast subject and normalized chapter progress", ownerImplementation: "src/experience/RoastContinuitySystem.tsx" },
+    mobile: { authored: true, mechanismFamily: family, captureIds: [`${id}-mobile-start`, `${id}-mobile-active`, `${id}-mobile-resolved`], disabled: false },
+    reducedMotion: { authoredComposition: true, captureIds: [`${id}-reduced`] },
+    reverse: { relevant: family !== "spatial-field", tested: true, result: "pass" as const, evidenceIds: [`${id}-reverse`] },
+    performance: { averageFps: 55, worstFrameTimeMs: 28, longTasks: 1, transferredBytes: 420000, heavyChunkBytes: family === "spatial-field" ? 780000 : 180000 },
+    recordingIds: [`${id}-recording`],
+  };
+}
+
 function fixture(corrected: boolean): CanonicalPlan {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-coffee-"));
   fs.writeFileSync(path.join(root, "package.json"), "{}");
@@ -71,15 +96,41 @@ function fixture(corrected: boolean): CanonicalPlan {
     : { manifestEntries: ["stale-stock.jpg", "hero.png"], filesOnDisk: ["hero.png"], applicationReferences: ["hero.png", "missing-generated.png"], weights: { "hero.png": 5000000 } };
   plan.execution.checkpoints.mechanismPrototype = { status: "passed", scope: "Hero WebGL only", evidenceIds: ["hero-prototype"] };
   plan.execution.checkpoints.conceptCheckpoint = { status: "passed", actualHero: true, downstreamSection: true, realVisualSystem: true, mainTemporalOrMediaIdea: true, mobile390: true, reducedMotion: true, realApplication: true, reviewer: "independent-critic", evidenceIds: ["slice"] };
+  plan.execution.checkpoints.ambitionPrototype = corrected ? { status: "passed", representativeFinalQualityMedia: true, completePostHeroPeak: true, trueAssetTransformation: true, recordingDurationSeconds: 16, desktopAuthored: true, mobileAuthored: true, independentCritic: true, provisionalLimitations: ["Audio remains optional and is not required for acceptance."], requiredRevisions: [], evidenceIds: ["ambition-desktop-recording", "ambition-mobile-recording"] } : { status: "passed", representativeFinalQualityMedia: false, completePostHeroPeak: false, trueAssetTransformation: false, recordingDurationSeconds: 6, desktopAuthored: true, mobileAuthored: false, independentCritic: false, provisionalLimitations: [], requiredRevisions: [], evidenceIds: ["hero-only-proof"] };
   plan.execution.checkpoints.adaptiveSpread = { status: corrected ? "passed" : "failed", approval: "explicit", desktopEvidenceIds: ["desktop"], mobileEvidenceIds: ["mobile"], peakEvidence: corrected ? peaks.map((peak) => ({ peakId: peak.id, start: [`${peak.id}-start`], active: [`${peak.id}-active`], resolved: [`${peak.id}-resolved`] })) : [{ peakId: "hero-fragments", start: ["hero-start"], active: ["hero-active"], resolved: ["hero-end"] }], mechanismTableComplete: corrected, fallbackDisclosureComplete: corrected, sectionRoleCoverageComplete: corrected, continuousRecordingRequired: true, continuousRecordingEvidenceIds: corrected ? ["route-recording"] : [], mobileRecordingRequired: false, mobileRecordingEvidenceIds: [], reverseScrollRequired: false, reverseScrollEvidenceIds: [], montageRequired: false, montageEvidenceIds: [] };
   plan.approval.contractHash = "contract";
+  plan.execution.runtimeObservations = corrected ? [
+    runtimeObservation("hero-fragments", "hero", "particle-reconstruction", false, "roast-sequence"),
+    runtimeObservation("roast-sequence", "roast", "frame-sequence", true, "product-constellation"),
+    runtimeObservation("product-constellation", "products", "spatial-field", true, "hero-fragments"),
+  ] : [{
+    id: "hero-fragments", sectionId: "hero", continuityOwner: "HeroCanvas", implementationFile: "src/Hero.tsx", componentOrSelector: "canvas",
+    mechanismFamily: "rigid-media-plane", spatialClassification: "webgl-media-plane", sourceAssets: ["bag.webp"], inputDrivers: ["pointer", "time"],
+    samples: ([0, 25, 50, 75, 100] as const).map((progress, index) => ({
+      progress, captureId: `hero-${progress}`, artifactHash: `hero-${progress}`, compositionStateHash: index < 3 ? "same-plane-a" : "same-plane-b",
+      observedProperties: [{ property: "rotationY", value: index * 0.05 }, { property: "positionY", value: index % 2 ? 0.03 : 0 }],
+      channels: ["media"], pixelDifferenceFromPrevious: index ? 0.012 : undefined, structuralDifferenceFromPrevious: index ? 0.002 : undefined,
+      camera: { position: [0, 0, 5], rotation: [0, 0, 0], fov: 45 },
+    })),
+    postHero: false, assetTransformsInternally: false, pinnedOrControlledComposition: false, nonObviousBehavior: false, neutralStylingStillSpecial: false,
+    mobile: { authored: false, mechanismFamily: "decorative-motion", captureIds: [], disabled: true },
+    reducedMotion: { authoredComposition: true, captureIds: ["hero-still"] }, reverse: { relevant: false, tested: false, result: "not-applicable", evidenceIds: [] },
+    performance: { averageFps: 58, worstFrameTimeMs: 24, longTasks: 0, transferredBytes: 900000, heavyChunkBytes: 980000 }, recordingIds: ["hero-recording"],
+  }];
+  plan.execution.signatureMediaPackages = corrected ? [{
+    id: "roast-signature-media", sourceAssets: ["roaster-source.webp", "bag-source.webp"],
+    derivatives: [{ path: "roast-frames.avif", role: "bounded frame sequence atlas", bytes: 320000 }, { path: "bean-particles.webp", role: "fragment source", bytes: 100000 }],
+    implementationConsumers: ["src/experience/RoastSequence.tsx", "src/experience/HeroFragments.tsx"],
+    optimization: ["AVIF atlas", "mobile half-resolution sequence", "chapter-approach preload"],
+    temporalEvidenceIds: ["hero-fragments-recording", "roast-sequence-recording"], mobileVariant: "roast-frames-mobile.avif", reducedMotionAsset: "roast-resolved.webp",
+  }] : [];
   plan.execution.run = { runId: "coffee-run", contractHash: "contract", sourceHash: "source", gitIdentity: null, createdAt: new Date().toISOString(), workflow: plan.contract.workflow, planVersion: 9, capabilityPreflightIdentity: "preflight", contractTitle: plan.contract.selectedConcept, evidenceFiles: [".dreative/runs/coffee-run/verify.json"], assetManifest: plan.execution.assetObservation.manifestEntries, approvedChangeRequests: [], finalizationStatus: corrected ? "passed" : "failed" };
   return plan;
 }
 
 test("coffee-roaster regression rejects hero-only static lower route and silent fallbacks", () => {
   const checks = validateExperienceDelivery(fixture(false)).map((item) => item.check);
-  for (const required of ["experience-distribution", "hero-only", "interaction", "media", "immersive", "cinematic", "experimental", "fallback-governance", "asset-integrity", "adaptive-spread"]) assert.ok(checks.includes(required), `missing ${required}`);
+  for (const required of ["static-feeling", "insufficient-media-transformation", "insufficient-cinematic-development", "insufficient-experimental-peaks", "insufficient-3d-spatial-value", "mobile-motion-downgrade", "experience-distribution", "hero-only", "fallback-governance", "asset-integrity", "adaptive-spread", "ambition-prototype"]) assert.ok(checks.includes(required), `missing ${required}`);
 });
 
 test("corrected coffee-roaster fixture proves multiple non-hero peaks and passes", () => {

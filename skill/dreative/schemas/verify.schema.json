@@ -58,6 +58,10 @@
               "testedUrl": { "type": "string", "minLength": 1 },
               "averageFps": { "type": "number", "exclusiveMinimum": 0 },
               "maxFrameTimeMs": { "type": "number", "minimum": 0 },
+              "worstFrameTimeMs": { "type": "number", "minimum": 0 },
+              "longTaskCount": { "type": "integer", "minimum": 0 },
+              "transferredMediaBytes": { "type": "integer", "minimum": 0 },
+              "heavyChunkBytes": { "type": "integer", "minimum": 0 },
               "playwrightTestId": { "type": "string", "minLength": 1 }
               ,"recordingPath": { "type": "string", "minLength": 1 }
               ,"tracePath": { "type": "string", "minLength": 1 }
@@ -67,6 +71,15 @@
               ,"controlledProgress": { "type": ["number", "string"] }
               ,"triggerValue": { "type": "string", "minLength": 1 }
               ,"observedProperties": { "type": "array", "minItems": 1, "items": { "type": "object", "additionalProperties": false, "required": ["property", "expected", "observed"], "properties": { "property": { "type": "string", "minLength": 1 }, "expected": { "type": "string", "minLength": 1 }, "observed": { "type": "string", "minLength": 1 } } } }
+              ,"pixelDifferenceFromPrevious": { "type": "number", "minimum": 0, "maximum": 1 }
+              ,"structuralDifferenceFromPrevious": { "type": "number", "minimum": 0, "maximum": 1 }
+              ,"compositionStateHash": { "type": "string", "minLength": 16 }
+              ,"frameIndex": { "type": "integer", "minimum": 0 }
+              ,"mediaCurrentTime": { "type": "number", "minimum": 0 }
+              ,"cameraState": { "type": "object", "additionalProperties": false, "required": ["position", "rotation", "fov"], "properties": { "position": { "$ref": "#/$defs/vector3" }, "rotation": { "$ref": "#/$defs/vector3" }, "fov": { "type": "number", "exclusiveMinimum": 0 } } }
+              ,"shaderUniforms": { "type": "object", "additionalProperties": { "type": "number" } }
+              ,"particleState": { "type": "object", "additionalProperties": false, "required": ["activeCount", "spread", "reassembly"], "properties": { "activeCount": { "type": "integer", "minimum": 0 }, "spread": { "type": "number" }, "reassembly": { "type": "number", "minimum": 0, "maximum": 1 } } }
+              ,"maskProgress": { "type": "number", "minimum": 0, "maximum": 1 }
               ,"expectedState": { "type": "string", "minLength": 12 }
               ,"observedState": { "type": "string", "minLength": 12 }
               ,"reversePlayResult": { "type": "string", "minLength": 12 }
@@ -129,6 +142,7 @@
     }
   },
   "$defs": {
+    "vector3": { "type": "array", "prefixItems": [{ "type": "number" }, { "type": "number" }, { "type": "number" }], "minItems": 3, "maxItems": 3 },
     "staticAnswer": { "type": "object", "additionalProperties": false, "required": ["answer", "evidenceIds", "observation"], "properties": { "answer": { "type": "boolean" }, "evidenceIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }, "observation": { "type": "string", "minLength": 20 } } },
     "passingStaticAnswer": { "allOf": [{ "$ref": "#/$defs/staticAnswer" }, { "properties": { "answer": { "const": true } } }] },
     "failingStaticAnswer": { "allOf": [{ "$ref": "#/$defs/staticAnswer" }, { "properties": { "answer": { "const": false } } }] }

@@ -5,7 +5,12 @@ export type MechanismFamily =
   | "spatial-product-exploration"
   | "cinematic-scene-transition"
   | "shader-material-transformation"
-  | "experimental-typography";
+  | "experimental-typography"
+  | "torn-folded-media"
+  | "velocity-smear-refraction"
+  | "depth-dive-shared-element"
+  | "hold-charge-release"
+  | "video-canvas-treatment";
 
 export interface ExperimentalMechanismRecipe {
   id: string;
@@ -144,6 +149,91 @@ export const EXPERIMENTAL_MECHANISMS: ExperimentalMechanismRecipe[] = [
     substantiveDelivery: ["Typography changes hierarchy or participates in the scene.", "Semantic text remains accessible."],
     insufficientDelivery: ["Random letter jitter.", "A display font with entrance animation only."],
     verificationStates: ["readable-start", "active-reassembly", "resolved-hierarchy", "mobile", "reduced-motion"],
+  },
+  {
+    id: "torn-folded-media-handoff",
+    family: "torn-folded-media",
+    creativeUseCase: "Tear, fold, peel or slice one media surface so its pieces become the reveal architecture for the next chapter.",
+    requiredAssets: ["source media", "authored tear/fold masks or slice map", "resolved destination media"],
+    requiredPackages: [],
+    requiredAuthoringTools: ["image editing for convincing masks, fibers, shadows or fold normals"],
+    worksWithoutSpecializedTool: true,
+    performanceRisk: "Too many layers or filters can produce expensive compositing and weak mobile frame pacing.",
+    mobileStrategy: "Reduce slices and preserve the peel/fold cause-and-effect with touch-controlled bounded progress.",
+    reducedMotionStrategy: "Use a designed torn/folded intermediate still followed by the resolved chapter composition.",
+    fallback: "SVG/CSS mask slices with authored shadows and one controlled handoff.",
+    prototypeRequirement: "Prototype mask alignment, layer count and the exact handoff silhouette.",
+    substantiveDelivery: ["The media surface changes topology.", "Pieces reveal or become the next composition."],
+    insufficientDelivery: ["A clip-path wipe with no material behavior.", "Independent images cross-fading."],
+    verificationStates: ["whole", "torn-or-folded-midpoint", "handoff", "resolved", "mobile", "reduced-motion"],
+  },
+  {
+    id: "velocity-smear-refraction",
+    family: "velocity-smear-refraction",
+    creativeUseCase: "Use clamped scroll or drag velocity to smear, refract or displace the actual media, then settle crisply at rest.",
+    requiredAssets: ["source image or video texture", "optional displacement map"],
+    requiredPackages: [],
+    requiredAuthoringTools: [],
+    worksWithoutSpecializedTool: true,
+    performanceRisk: "Unbounded velocity and multi-pass feedback can create nausea, blur and GPU cost.",
+    mobileStrategy: "Use lower displacement amplitude and touch velocity while preserving a clearly visible settle state.",
+    reducedMotionStrategy: "Disable continuous velocity response and retain one authored refracted transition state.",
+    fallback: "Canvas strip smear or pre-rendered transitional states.",
+    prototypeRequirement: "Prototype perceivability, settling behavior and worst-frame-time under fast input.",
+    substantiveDelivery: ["Source pixels visibly distort with input velocity.", "The image returns to a crisp stable state."],
+    insufficientDelivery: ["Moving a blur overlay above static media.", "Permanent chromatic aberration decoration."],
+    verificationStates: ["rest", "fast-input", "peak-distortion", "settled", "mobile", "performance"],
+  },
+  {
+    id: "depth-dive-shared-element",
+    family: "depth-dive-shared-element",
+    creativeUseCase: "Drive through or into a media subject so the same subject, crop or material becomes the next chapter rather than cutting to it.",
+    requiredAssets: ["shared source subject", "depth layers/map or related destination media"],
+    requiredPackages: [],
+    requiredAuthoringTools: ["image separation or depth preparation when real occlusion is required"],
+    worksWithoutSpecializedTool: true,
+    performanceRisk: "Large scale changes and layered media can cause texture memory, clipping and readability problems.",
+    mobileStrategy: "Use a shorter authored depth path with fewer layers and the same shared-element identity.",
+    reducedMotionStrategy: "Use matched start and destination compositions with a short dissolve.",
+    fallback: "Pre-rendered depth sequence or multi-plane DOM transition preserving subject identity.",
+    prototypeRequirement: "Prototype source/destination alignment, occlusion and reverse progress.",
+    substantiveDelivery: ["The same subject persists through the transition.", "Viewpoint, occlusion or depth changes materially."],
+    insufficientDelivery: ["Zooming one flat rectangle until it fills the screen.", "A cut between unrelated crops."],
+    verificationStates: ["source", "depth-entry", "inside-handoff", "destination", "reverse", "mobile"],
+  },
+  {
+    id: "hold-charge-release",
+    family: "hold-charge-release",
+    creativeUseCase: "Let press-and-hold accumulate a visible physical or material state and release it into a meaningful transition.",
+    requiredAssets: ["charge and release visual states", "keyboard and tap alternative"],
+    requiredPackages: [],
+    requiredAuthoringTools: [],
+    worksWithoutSpecializedTool: true,
+    performanceRisk: "Unbounded hold loops or unclear affordances can harm accessibility and input lifecycle.",
+    mobileStrategy: "Use touch hold with visible progress, cancellation and a tap-accessible equivalent.",
+    reducedMotionStrategy: "Replace accumulation travel with discrete charged and released states.",
+    fallback: "Accessible button with explicit charge progress and resolved state.",
+    prototypeRequirement: "Prototype pointer cancellation, keyboard equivalence, thresholds and release timing.",
+    substantiveDelivery: ["Hold duration changes a meaningful visual state.", "Release resolves into a new composition or application state."],
+    insufficientDelivery: ["A long-press that only changes button color.", "Hidden gesture with no equivalent."],
+    verificationStates: ["idle", "charging", "charged", "release", "cancel", "keyboard", "touch"],
+  },
+  {
+    id: "video-canvas-treatment",
+    family: "video-canvas-treatment",
+    creativeUseCase: "Integrate sourced/generated footage into canvas or WebGL so time, mask, displacement, refraction or particles participate in the scene.",
+    requiredAssets: ["web-ready MP4/WebM", "poster", "mobile crop", "reduced-motion still"],
+    requiredPackages: [],
+    requiredAuthoringTools: ["video sourcing or generation", "FFmpeg/static or confirmed transcoding route"],
+    worksWithoutSpecializedTool: false,
+    performanceRisk: "Decode, seek accuracy, texture upload and transferred bytes can exceed mobile budgets.",
+    mobileStrategy: "Use a mobile crop, bounded resolution, chapter-approach loading and a frame-sequence fallback when seeking is unreliable.",
+    reducedMotionStrategy: "Use the authored poster or a short non-scrubbed dissolve with equivalent hierarchy.",
+    fallback: "Bounded extracted frame sequence or pre-rendered motion states after measured seek/decode failure.",
+    prototypeRequirement: "Prototype readiness, seek smoothing, requestVideoFrameCallback behavior, decode cost and fallback trigger.",
+    substantiveDelivery: ["Footage time and treatment are controlled by the composition.", "Decode/readiness and visible pixel change are measured."],
+    insufficientDelivery: ["A large autoplay hero clip.", "Video hidden behind an unrelated overlay."],
+    verificationStates: ["poster", "ready", "25-percent", "50-percent", "75-percent", "resolved", "mobile", "fallback"],
   },
 ];
 

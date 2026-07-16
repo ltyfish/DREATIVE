@@ -155,16 +155,23 @@ function init(projectDir: string, args: string[]): number {
     routeScope: { mode: routes.length > 1 ? "selected-routes" : "one-page", routes },
     baselineUrls: values(value(args, "--baseline-urls")),
   };
+  const substantial = !args.includes("--tiny");
+  const treatmentSelection = parseTreatments(args, substantial);
+  console.log(renderCompleteTreatmentReview(treatmentSelection.treatments, routes));
   const creativeQuestions = unresolvedCreativeSourceQuestions(args);
   if (creativeQuestions.length) {
+    const packagePermission = value(args, "--package-install");
+    const intakePreflight = detectProjectPreflight(projectDir, {
+      permissions: { packageInstallationAllowed: packagePermission === "allow" },
+      permissionsUnresolved: true,
+      explicitCapabilities: capabilityInputs(projectDir, args),
+    });
+    console.log(renderCreativeCapabilityPreflight(intakePreflight));
     console.error("Unresolved creative-source intake blocks contract creation:");
     creativeQuestions.forEach((question) => console.log(`- ${question}`));
     console.error("No .dreative/plan.yaml was written. Resolve permission separately from runtime and authoring capability, then re-run planning.");
     return 2;
   }
-  const substantial = !args.includes("--tiny");
-  const treatmentSelection = parseTreatments(args, substantial);
-  console.log(renderCompleteTreatmentReview(treatmentSelection.treatments, routes));
   if (!treatmentSelection.explicitDecision) {
     console.error("\nMissing explicit treatment selection. Recommendations are not approval, and UX/Mobile cannot silently substitute for an optional-treatment decision.");
     console.error("No .dreative/plan.yaml was written. Re-run with --treatments <comma-list> or --treatments all --confirm-all.");

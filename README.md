@@ -103,3 +103,23 @@ Experimental work assigns every major section a route role, places substantive
 events after the first viewport, and runs the hero-removed test. Continuous,
 mobile and reverse-scroll recordings are requested only when the mechanism
 requires them.
+
+## Runtime-grounded ambitious gates
+
+Award, Experimental and explicit all-treatment finalization now consumes typed
+runtime observations rather than self-authored quality prose. Important
+mechanisms provide controlled 0/25/50/75/100 captures, current source/artifact
+hashes, pixel and structural change, runtime properties, media/frame/camera/
+shader telemetry, handoff ownership, mobile and reduced-motion compositions,
+recordings and measured performance.
+
+The ambitious static-feeling gate rejects hero-only pages, ordinary
+buttons/carousels relabeled as peaks, rigid textured planes with micro-motion,
+mobile-disabled signatures and full-page screenshots that only show different
+scroll positions. Experimental + Media requires two asset-transforming moments
+including one post-hero and a Signature Media Production Package.
+
+Full Audit and Dogfood require a genuinely fresh critic agent. Best-effort,
+same-agent or degraded isolation blocks finalization. Missing system FFmpeg with
+package installation allowed exposes an actionable `ffmpeg-static`, confirmed
+provider or bounded sequence fallback route.

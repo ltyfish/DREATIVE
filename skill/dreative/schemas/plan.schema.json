@@ -91,12 +91,29 @@
         "performanceBudget": { "$ref": "#/$defs/strings" },
         "acceptanceCriteria": { "$ref": "#/$defs/strings" },
         "mechanismFallbacks": { "type": "array", "items": { "$ref": "#/$defs/mechanism" } },
+        "videoDeliveryDecision": {
+          "type": "object", "additionalProperties": false,
+          "required": ["decision", "reason", "processingRoute", "mobileStrategy", "reducedMotionStrategy"],
+          "properties": {
+            "decision": { "enum": ["video", "frame-sequence-or-prerendered-motion", "approved-exemption"] },
+            "reason": { "type": "string", "minLength": 20 }, "processingRoute": { "type": "string", "minLength": 12 },
+            "mobileStrategy": { "type": "string", "minLength": 12 }, "reducedMotionStrategy": { "type": "string", "minLength": 12 },
+            "approvalReference": { "type": "string", "minLength": 1 }
+          }
+        },
         "conceptExemptions": { "type": "array", "items": { "type": "object" } },
         "changeRequests": { "type": "array", "items": { "type": "object" } }
       }
     },
     "approval": { "type": "object", "properties": { "contractHash": { "type": ["string", "null"] } } },
-    "execution": { "type": "object" }
+    "execution": {
+      "type": "object",
+      "properties": {
+        "runtimeObservations": { "type": "array", "items": { "$ref": "#/$defs/runtimeObservation" } },
+        "signatureMediaPackages": { "type": "array", "items": { "$ref": "#/$defs/signatureMediaPackage" } },
+        "capabilityActions": { "type": "array", "items": { "$ref": "#/$defs/capabilityAction" } }
+      }
+    }
   },
   "$defs": {
     "strings": { "type": "array", "items": { "type": "string" } },
@@ -127,8 +144,8 @@
             "properties": {
               "id": { "type": "string" },
               "category": { "enum": ["creative-authoring", "sourcing", "runtime-rendering", "processing", "verification"] },
-              "permission": { "enum": ["allowed", "denied", "not-applicable"] },
-              "status": { "enum": ["available", "available-after-package-install", "available-through-confirmed-tool", "available-through-supplied-asset", "expected-browser-api-unverified", "permitted-but-tool-unverified", "permission-denied", "unavailable", "runtime-verification-failed"] },
+              "permission": { "enum": ["allowed", "denied", "unresolved", "not-applicable"] },
+              "status": { "enum": ["available", "available-after-package-install", "available-through-confirmed-tool", "available-through-supplied-asset", "expected-browser-api-unverified", "permitted-but-tool-unverified", "permission-unresolved", "permission-denied", "unavailable", "runtime-verification-failed"] },
               "detectionSource": { "type": "string" }, "confidence": { "enum": ["verified", "detected", "expected", "unverified"] },
               "verificationEvidence": { "$ref": "#/$defs/strings" }, "limitation": { "type": "string" }, "permittedSubstitutes": { "$ref": "#/$defs/strings" }
             }
@@ -176,10 +193,87 @@
       "additionalProperties": false,
       "required": ["id", "location", "primaryImplementation", "primaryAcceptance", "fallbackImplementation", "fallbackTrigger", "triggerEvidenceRequired", "userReapprovalRequired", "allowedSubstitutions", "riskFamily", "prototypePolicy"],
       "properties": {
-        "id": { "type": "string" }, "location": { "type": "string" }, "primaryImplementation": { "type": "string" },
-        "primaryAcceptance": { "$ref": "#/$defs/strings" }, "fallbackImplementation": { "type": "string" }, "fallbackTrigger": { "type": "string" },
-        "triggerEvidenceRequired": { "$ref": "#/$defs/strings" }, "userReapprovalRequired": { "type": "boolean" },
-        "allowedSubstitutions": { "$ref": "#/$defs/strings" }, "riskFamily": { "type": "string" }, "prototypePolicy": { "type": "string" }
+        "id": { "type": "string" },
+        "location": { "type": "string" },
+        "primaryImplementation": { "type": "string" },
+        "primaryAcceptance": { "$ref": "#/$defs/strings" },
+        "fallbackImplementation": { "type": "string" },
+        "fallbackTrigger": { "type": "string" },
+        "triggerEvidenceRequired": { "$ref": "#/$defs/strings" },
+        "userReapprovalRequired": { "type": "boolean" },
+        "allowedSubstitutions": { "$ref": "#/$defs/strings" },
+        "riskFamily": { "type": "string" },
+        "prototypePolicy": { "type": "string" }
+      }
+    },
+    "runtimeObservation": {
+      "type": "object",
+      "required": ["id", "sectionId", "continuityOwner", "implementationFile", "componentOrSelector", "mechanismFamily", "spatialClassification", "sourceAssets", "inputDrivers", "samples", "postHero", "assetTransformsInternally", "pinnedOrControlledComposition", "nonObviousBehavior", "neutralStylingStillSpecial", "mobile", "reducedMotion", "reverse", "performance", "recordingIds"],
+      "properties": {
+        "id": { "type": "string" },
+        "sectionId": { "type": "string" },
+        "continuityOwner": { "type": "string" },
+        "implementationFile": { "type": "string" },
+        "componentOrSelector": { "type": "string" },
+        "mechanismFamily": { "enum": ["frame-sequence", "video-scrub", "shader-media", "particle-reconstruction", "tile-slice-fold", "depth-parallax", "camera-travel", "spatial-field", "shared-element-handoff", "kinetic-type", "hold-charge-release", "layout-transition", "ordinary-control", "rigid-media-plane", "decorative-motion"] },
+        "spatialClassification": { "enum": ["model", "spatial-cutout", "layered-billboard", "pre-rendered-angles", "frame-sequence", "webgl-media-plane", "static-image"] },
+        "sourceAssets": { "$ref": "#/$defs/strings" },
+        "inputDrivers": { "type": "array", "items": { "enum": ["scroll-progress", "velocity", "pointer", "drag", "hold", "time", "audio", "route", "keyboard"] } },
+        "samples": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "required": ["progress", "captureId", "artifactHash", "compositionStateHash", "observedProperties", "channels"],
+            "properties": {
+              "progress": { "enum": [0, 25, 50, 75, 100] },
+              "captureId": { "type": "string" },
+              "artifactHash": { "type": "string" },
+              "compositionStateHash": { "type": "string" },
+              "observedProperties": { "type": "array" },
+              "channels": { "type": "array" }
+            }
+          }
+        },
+        "postHero": { "type": "boolean" },
+        "assetTransformsInternally": { "type": "boolean" },
+        "pinnedOrControlledComposition": { "type": "boolean" },
+        "nonObviousBehavior": { "type": "boolean" },
+        "neutralStylingStillSpecial": { "type": "boolean" },
+        "mobile": { "type": "object" },
+        "reducedMotion": { "type": "object" },
+        "reverse": { "type": "object" },
+        "performance": { "type": "object" },
+        "recordingIds": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "signatureMediaPackage": {
+      "type": "object",
+      "required": ["id", "sourceAssets", "derivatives", "implementationConsumers", "optimization", "temporalEvidenceIds", "mobileVariant", "reducedMotionAsset"],
+      "properties": {
+        "id": { "type": "string" },
+        "sourceAssets": { "$ref": "#/$defs/strings" },
+        "derivatives": { "type": "array", "minItems": 1 },
+        "implementationConsumers": { "$ref": "#/$defs/strings" },
+        "optimization": { "$ref": "#/$defs/strings" },
+        "temporalEvidenceIds": { "$ref": "#/$defs/strings" },
+        "mobileVariant": { "type": "string" },
+        "reducedMotionAsset": { "type": "string" }
+      }
+    },
+    "capabilityAction": {
+      "type": "object",
+      "required": ["capabilityId", "action", "attemptedAt", "commandOrProvider", "result", "evidenceIds", "selectedFallback", "userReapprovalRequired"],
+      "properties": {
+        "capabilityId": { "type": "string" },
+        "action": { "enum": ["install", "search", "fallback", "exemption-request"] },
+        "attemptedAt": { "type": "string" },
+        "commandOrProvider": { "type": "string" },
+        "result": { "enum": ["succeeded", "failed", "selected", "pending-user-approval"] },
+        "evidenceIds": { "$ref": "#/$defs/strings" },
+        "selectedFallback": { "type": "string" },
+        "userReapprovalRequired": { "type": "boolean" }
       }
     }
   }

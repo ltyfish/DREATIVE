@@ -1,5 +1,6 @@
 import type { CanonicalPlan } from "./planGovernance.js";
 import type { SpecialistSkill } from "./skillSystem.js";
+import { validateAmbitiousRuntimeEvidence } from "./runtimeEvidence.js";
 
 export interface ExperienceFinding { check: string; message: string; }
 const finding = (check: string, message: string): ExperienceFinding => ({ check, message });
@@ -7,7 +8,7 @@ const selected = (plan: CanonicalPlan, skill: SpecialistSkill) => plan.contract.
 const exempt = (plan: CanonicalPlan, gate: string) => plan.contract.conceptExemptions.some((item) => item.gate === gate && item.approved);
 
 export function validateExperienceDelivery(plan: CanonicalPlan): ExperienceFinding[] {
-  const findings: ExperienceFinding[] = [];
+  const findings: ExperienceFinding[] = validateAmbitiousRuntimeEvidence(plan);
   const ambition = plan.contract.workflow.ambition;
   const ambitious = ambition === "award" || ambition === "experimental" || plan.contract.allTreatmentsExplicit;
   const evidence = plan.execution.evidence;
@@ -82,6 +83,19 @@ export function validateExperienceDelivery(plan: CanonicalPlan): ExperienceFindi
       findings.push(finding("fallback-governance", `${mechanism.id}: unapproved substitution ${outcome.substitutionUsed}`));
   }
   const capability = new Map(plan.contract.capabilityPreflight?.creativeCapabilities.map((item) => [item.id, item]) ?? []);
+  const capabilityActions = new Map((plan.execution.capabilityActions ?? []).map((item) => [item.capabilityId, item]));
+  const videoRelevant = selected(plan, "media") && (selected(plan, "cinematic") || selected(plan, "experimental"))
+    && plan.contract.videoDeliveryDecision?.decision !== "approved-exemption";
+  if (videoRelevant) {
+    for (const id of ["ffmpeg-processing", "video-transcoding", "frame-extraction"]) {
+      const item = capability.get(id as any);
+      if (item?.requiredAction === "install-or-select-fallback") {
+        const action = capabilityActions.get(id);
+        if (!action || !["succeeded", "selected"].includes(action.result))
+          findings.push(finding("capability-action", `${id}: missing capability must produce a recorded installation attempt or selected high-fidelity fallback`));
+      }
+    }
+  }
   const assetOutcomes = new Map(plan.execution.assets.map((item) => [item.id, item]));
   for (const asset of plan.contract.assetStrategy) {
     const outcome = assetOutcomes.get(asset.id);
@@ -140,6 +154,16 @@ export function validateExperienceDelivery(plan: CanonicalPlan): ExperienceFindi
       findings.push(finding("concept-checkpoint", "a real-app vertical slice with hero, downstream section, visual system, defining temporal/media idea, 390px mobile and reduced motion must pass"));
   }
   if (plan.contract.workflow.prototype === "required" && plan.execution.checkpoints.mechanismPrototype?.status !== "passed") findings.push(finding("mechanism-prototype", "Required prototype has not proved technical feasibility"));
+  if (conceptRequired) {
+    const ambitionPrototype = plan.execution.checkpoints.ambitionPrototype;
+    if (!ambitionPrototype || ambitionPrototype.status !== "passed"
+      || !ambitionPrototype.representativeFinalQualityMedia || !ambitionPrototype.completePostHeroPeak
+      || !ambitionPrototype.trueAssetTransformation || ambitionPrototype.recordingDurationSeconds < 10
+      || ambitionPrototype.recordingDurationSeconds > 20 || !ambitionPrototype.desktopAuthored
+      || !ambitionPrototype.mobileAuthored || !ambitionPrototype.independentCritic
+      || ambitionPrototype.requiredRevisions.length > 0)
+      findings.push(finding("ambition-prototype", "ambitious work requires a passed 10–20 second final-quality ambition prototype with a post-hero peak, true asset transformation, desktop/mobile authorship and independent criticism"));
+  }
   const prototypeOutcomes = new Map(plan.execution.prototypes.map((item) => [item.id, item]));
   for (const prototype of plan.contract.prototypeContracts ?? []) {
     const outcome = prototypeOutcomes.get(prototype.id);

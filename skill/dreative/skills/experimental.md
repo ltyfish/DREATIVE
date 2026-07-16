@@ -119,3 +119,9 @@ When the user has opted into `experimental`:
   ideas, not exemption from the runtime verification gate.
 - A selected provocation maps to typed motion/media-transformation contracts and
   must survive the static-feeling rejection test with controlled temporal proof.
+
+Each selected peak must pass both tests: its behavior is non-obvious, and it
+would remain special under neutral styling. Record a start/active/resolved
+sequence, runtime properties and a representative recording. Ordinary
+selectors, carousels, sticky image/text splits, rotating badges, micro-parallax
+and static canvas planes are never Experimental peaks.

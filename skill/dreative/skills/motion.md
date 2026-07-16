@@ -133,3 +133,10 @@ Canonical v9 requires structural start, active and resolved states. Prototype
 selection is by materially different unresolved risk family, capped at three;
 a successful hero probe does not prove downstream frame sequences or spatial
 selectors.
+
+Ambitious runtime proof uses stable-viewport controlled captures at
+0/25/50/75/100, with artifact and composition hashes, pixel/structural
+difference and mechanism telemetry. Different scroll positions in full-page
+screenshots do not prove that one composition evolved. Reverse scroll,
+drag/hold trajectories, mobile and performance samples are required when the
+mechanism declares them.

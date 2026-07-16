@@ -63,6 +63,17 @@ test("builder context may open only after the independent reading is recorded", 
   assert.ok(validateVisualCriticReport(value, input()).some((error) => error.includes("only after the independent reading")));
 });
 
+test("Full Audit and Dogfood cannot pass with best-effort or same-agent critic isolation", () => {
+  const objective = input();
+  objective.independentCriticRequired = true;
+  const value = report();
+  value.contextIsolation.mode = "best-effort";
+  value.contextIsolation.limitation = "No fresh subagent was available, so the builder reviewed its own evidence.";
+  assert.ok(validateVisualCriticReport(value, objective).some((error) => error.includes("fresh subagent")));
+  value.contextIsolation.mode = "fresh-subagent";
+  assert.equal(validateVisualCriticReport(value, objective).some((error) => error.includes("fresh subagent")), false);
+});
+
 test("motion claims are limited without live or recorded evidence", () => {
   const value = report(); value.reviewContext.motionInspected = true;
   assert.ok(validateVisualCriticReport(value, input()).some((error) => error.includes("motionInspected")));

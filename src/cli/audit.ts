@@ -26,6 +26,7 @@ import { resolveWorkflowConfiguration, resolveWorkflowPolicy, shouldCreateProtot
 import { checkBuildFreshness, checkExecutionContracts, checkLegacyAmbitiousRuntime, checkPolicyRecords, checkTemporalEvidence } from "./executionAudit.js";
 import { PLAN_FILE, approvalStatus, readPlan, validateCanonicalPlan, type CanonicalPlan } from "../shared/planGovernance.js";
 import { validateExperienceDelivery } from "../shared/experienceGates.js";
+import { validateRuntimeObservationGrounding } from "../shared/runtimeEvidence.js";
 import { hashFiles, sourceFiles } from "../shared/projectIdentity.js";
 
 export interface AuditFinding {
@@ -85,6 +86,9 @@ function runCanonicalPlanAudit(projectDir: string): AuditReport {
     if (!critic) findings.push(finding("error", "critic", "substantial Lean, Full Audit and Dogfood work requires an independent perceptual critic"));
     else {
       const currentContractHash = approvalStatus(plan).currentHash;
+      if ((plan.contract.workflow.execution === "full-audit" || plan.contract.workflow.purpose === "dreative-dogfood")
+        && critic.independence !== "fresh-agent")
+        findings.push(finding("error", "critic-independence", "Full Audit and Dogfood require a genuinely fresh critic agent; fresh-context or degraded self-review cannot finalize"));
       if (critic.approvedContractHash !== currentContractHash) findings.push(finding("error", "critic", "critic reviewed a different contract revision"));
       const requiredInputs = ["approved-contract", "original-baseline", "desktop-captures", "mobile-captures", "runtime-traces", "interaction-instructions", "treatment-allocation", "acceptance-criteria"];
       for (const input of requiredInputs) if (!critic.firstPassInputs.includes(input)) findings.push(finding("error", "critic", `critic first pass is missing ${input}`));
@@ -125,6 +129,13 @@ function runCanonicalPlanAudit(projectDir: string): AuditReport {
   else {
     findings.push(...checkArtifact(verificationFile, "verification", validateVerificationReport));
     findings.push(...checkVerificationProof(projectDir, verificationFile));
+    try {
+      const verification = readJson(verificationFile) as VerificationReport;
+      for (const item of validateRuntimeObservationGrounding(plan, verification))
+        findings.push(finding("error", item.check, item.message));
+    } catch {
+      // Parsing errors are already reported by checkArtifact.
+    }
   }
   return { ok: !findings.some((item) => item.level === "error"), findings };
 }

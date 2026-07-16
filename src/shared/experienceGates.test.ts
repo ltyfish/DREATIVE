@@ -7,6 +7,27 @@ import { createPlan, type CanonicalPlan } from "./planGovernance.js";
 import { validateExperienceDelivery } from "./experienceGates.js";
 import { detectProjectPreflight } from "./preflight.js";
 
+function observation(id: string, sectionId: string, postHero: boolean, target: string) {
+  return {
+    id, sectionId, continuityOwner: "JourneyClock", implementationFile: `src/${id}.tsx`, componentOrSelector: `[data-mechanism=${id}]`,
+    mechanismFamily: "layout-transition" as const, spatialClassification: "static-image" as const, sourceAssets: [],
+    inputDrivers: ["scroll-progress" as const],
+    samples: ([0, 25, 50, 75, 100] as const).map((progress, index) => ({
+      progress, captureId: `${id}-${progress}`, artifactHash: `${id}-artifact-${progress}`, compositionStateHash: `${id}-state-${Math.min(index, 3)}`,
+      observedProperties: [{ property: "layoutProgress", value: progress }], channels: ["layout" as const, "type" as const, "light" as const],
+      pixelDifferenceFromPrevious: index ? 0.12 : undefined, structuralDifferenceFromPrevious: index ? 0.06 : undefined,
+    })),
+    postHero, assetTransformsInternally: id !== "finale-resolution", pinnedOrControlledComposition: true,
+    nonObviousBehavior: true, neutralStylingStillSpecial: true,
+    handoff: { targetMechanismId: target, persistedObjectOrState: "journey rail progress", ownerImplementation: "src/JourneyClock.ts" },
+    mobile: { authored: true, mechanismFamily: "layout-transition" as const, captureIds: [`${id}-mobile`], disabled: false },
+    reducedMotion: { authoredComposition: true, captureIds: [`${id}-reduced`] },
+    reverse: { relevant: true, tested: true, result: "pass" as const, evidenceIds: [`${id}-reverse`] },
+    performance: { averageFps: 58, worstFrameTimeMs: 24, longTasks: 0, transferredBytes: 0, heavyChunkBytes: 0 },
+    recordingIds: [`${id}-recording`],
+  };
+}
+
 function plan(): CanonicalPlan {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-gates-"));
   fs.writeFileSync(path.join(root, "package.json"), "{}");
@@ -68,9 +89,15 @@ test("a real temporal Award fixture can satisfy the anti-static gates", () => {
   };
   value.execution.checkpoints.mechanismPrototype = { status: "passed", scope: "drag feasibility only", evidenceIds: ["prototype"] };
   value.execution.checkpoints.conceptCheckpoint = { status: "passed", actualHero: true, downstreamSection: true, realVisualSystem: true, mainTemporalOrMediaIdea: true, mobile390: true, reducedMotion: true, realApplication: true, reviewer: "independent-critic", evidenceIds: ["slice"] };
+  value.execution.checkpoints.ambitionPrototype = { status: "passed", representativeFinalQualityMedia: true, completePostHeroPeak: true, trueAssetTransformation: true, recordingDurationSeconds: 15, desktopAuthored: true, mobileAuthored: true, independentCritic: true, provisionalLimitations: [], requiredRevisions: [], evidenceIds: ["ambition-recording"] };
   value.execution.checkpoints.adaptiveSpread = { status: "passed", approval: "explicit", desktopEvidenceIds: ["desktop"], mobileEvidenceIds: ["mobile"], peakEvidence: [], mechanismTableComplete: true, fallbackDisclosureComplete: true, sectionRoleCoverageComplete: true, continuousRecordingRequired: false, continuousRecordingEvidenceIds: [], mobileRecordingRequired: false, mobileRecordingEvidenceIds: [], reverseScrollRequired: false, reverseScrollEvidenceIds: [], montageRequired: false, montageEvidenceIds: [] };
   value.execution.browserValidation = { checkedAt: new Date().toISOString(), visibleImages: [], failedRequests: [], unexpectedHttpErrors: [], emptyCanvases: [], webglDraws: [], consoleErrors: [], runtimeErrors: [], productionMediaMissing: [] };
   value.execution.assetObservation = { manifestEntries: [], filesOnDisk: [], applicationReferences: [], weights: {} };
+  value.execution.runtimeObservations = [
+    observation("hero-transform", "hero", false, "work-transform"),
+    observation("work-transform", "work", true, "finale-resolution"),
+    observation("finale-resolution", "finale", true, "hero-transform"),
+  ];
   value.approval.contractHash = "";
   value.execution.run = { runId: "run-pass", contractHash: "", sourceHash: "source", gitIdentity: null, createdAt: new Date().toISOString(), workflow: value.contract.workflow, planVersion: 9, capabilityPreflightIdentity: "preflight", contractTitle: value.contract.selectedConcept, evidenceFiles: [".dreative/runs/run-pass/verify.json"], assetManifest: [], approvedChangeRequests: [], finalizationStatus: "passed" };
   assert.deepEqual(validateExperienceDelivery(value), []);
