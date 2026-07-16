@@ -146,3 +146,6 @@ evidence. Hover screenshots alone do not prove interaction response.
 - Effects use palette tokens (accent/neutral), never introduce new hues.
 - If an effect can't be justified in one sentence of communication value
   (affordance, state, hierarchy, brand voice), it's noise — cut it (DESIGN.md §6).
+Canonical v8 requires input to affect media, layout, viewpoint, navigation model
+or meaningful state. Ordinary tabs, buttons or a basic carousel cannot replace
+a planned sequence or spatial selector without an approved material change.

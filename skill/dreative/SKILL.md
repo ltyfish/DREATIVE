@@ -53,6 +53,34 @@ Specialists:
 - `cinematic`: pacing, framing and scene handoffs.
 - `experimental`: two or three purposeful unconventional peaks.
 
+## Canonical v8 corrective rules
+
+Before concept approval, show every selected treatment's summary, substantive
+threshold, insufficiency examples, dependencies, tensions, cost, mobile/
+performance/accessibility risk, proposed sections, role and acceptance
+condition. Selecting all requires one confirmation, one continuity owner and
+concrete allocation; no selected treatment may be silently pruned.
+
+Run creative capability preflight before promising media, video or 3D.
+Permission, package installation, runtime rendering, sourcing and authoring are
+separate. Three.js is not model generation; GSAP is not cinematic authorship;
+FFmpeg is not original video generation; browser tools verify.
+
+Assign every major section Peak, Transformation, Preparation, Echo, Rest,
+Resolution or Functional Utility. The hero cannot be the only meaningful event
+for Expressive, Award or Experimental work. Apply the hero-removed test.
+
+Record every primary mechanism, acceptance conditions, fallback, trigger,
+trigger evidence, reapproval policy and final status. Convenience is not a
+trigger. Prefer supplied, rights-safe sourced, advantageously generated, then
+procedural assets, and reconcile manifest, disk and shipped use.
+
+Classify spatial contributions honestly as model, spatial cutout, layered
+billboard, pre-rendered angles, frame sequence, WebGL media plane or static
+image. Store evidence under `.dreative/runs/<run-id>/` and reject stale source
+hashes or cross-run artifacts. Run Adaptive Spread Validation; recordings,
+reverse scroll and montage are conditional.
+
 Read the selected `skills/<name>.md` summaries first. Read a
 `recipes/<name>-recipes.md` file only after its mechanism is approved.
 

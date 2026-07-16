@@ -26,6 +26,20 @@ real verification—and cannot be waived. **Evidence-backed defaults** are prove
 remedies for repeated dogfood failures; follow them or declare a planning-time
 alternative with measurable criteria and runtime evidence. **Creative
 provocations** force divergent exploration but do not become shipment checklists.
+
+For Award and Experimental routes, distribute authorship. Every chapter receives
+a role: Peak, Transformation, Preparation, Echo, Rest, Resolution or Functional
+Utility. Rest remains calm, but Immersive/Cinematic rests inherit or prepare
+environmental state. The hero may be one peak and may not be the only one.
+
+Asset priority is supplied, rights-safe sourced, advantageously generated, then
+procedural. Record sourcing attempts, rights, generation rationale, derivatives,
+shipping use and production survival. One hero image reused through unrelated
+chapters is a defect unless the repetition is conceptually authored.
+
+When 3D authoring is unavailable, use a supplied model, sourced model, spatial
+cutout/billboard, pre-rendered angles, WebGL media plane/depth scene, then static
+fallback. Never rename a spatial cutout as a generated model.
 When attention is scarce, hard gates outrank defaults, and defaults outrank
 stylistic preference—but a page that only clears gates and shows no point of
 view is still a failure of this file.

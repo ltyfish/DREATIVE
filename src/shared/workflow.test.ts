@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { configurationFromArgs, resolveWorkflowConfiguration, resolveWorkflowPolicy, shouldCreatePrototype, verificationStatesFor, type WorkflowConfiguration } from "./workflow.js";
+import { configurationFromArgs, resolveAdaptiveSpreadValidation, resolveWorkflowConfiguration, resolveWorkflowPolicy, selectPrototypeRisks, shouldCreatePrototype, verificationStatesFor, type WorkflowConfiguration } from "./workflow.js";
 
 const configurations: WorkflowConfiguration[] = [
   { ambition: "award", execution: "lean", prototype: "skip", purpose: "project-delivery" },
@@ -47,4 +47,26 @@ test("CLI flags resolve non-interactively and legacy aliases stay explicit", () 
   assert.deepEqual(configurationFromArgs(["--ambition", "award", "--execution", "lean", "--prototype", "skip", "--purpose", "project-delivery"]).configuration, configurations[0]);
   assert.equal(configurationFromArgs(["--full-audit"]).configuration.execution, "full-audit");
   assert.throws(() => configurationFromArgs(["--execution", "maximum"]), /invalid --execution/);
+});
+
+test("adaptive spread asks for recordings and reverse evidence only when relevant", () => {
+  const configuration = { ambition: "experimental", execution: "full-audit", prototype: "auto", purpose: "dreative-dogfood" } as const;
+  const staticProof = resolveAdaptiveSpreadValidation(configuration);
+  assert.equal(staticProof.continuousRecording, false);
+  assert.equal(staticProof.reverseScroll, false);
+  assert.equal(staticProof.approval, "explicit");
+  const persistent = resolveAdaptiveSpreadValidation(configuration, { persistentAcrossChapters: true, mobileChoreographyDiffers: true, reversible: true });
+  assert.equal(persistent.continuousRecording, true);
+  assert.equal(persistent.mobileRecording, true);
+  assert.equal(persistent.reverseScroll, true);
+});
+
+test("lean delivery validates spread internally and prototypes one unresolved family", () => {
+  const configuration = { ambition: "experimental", execution: "lean", prototype: "auto", purpose: "project-delivery" } as const;
+  assert.equal(resolveAdaptiveSpreadValidation(configuration).approval, "internal");
+  const selected = selectPrototypeRisks(configuration, [
+    { id: "webgl", family: "webgl-shader", risk: "canvas-webgl", unresolved: true },
+    { id: "sequence", family: "frame-sequence", risk: "frame-sequence", unresolved: true },
+  ]);
+  assert.deepEqual(selected.map((item) => item.id), ["webgl"]);
 });

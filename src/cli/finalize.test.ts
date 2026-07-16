@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { installSkill } from "./installSkill.js";
 import { runFinalize } from "./finalize.js";
 import { approvePlan, createPlan, writePlan } from "../shared/planGovernance.js";
+import { detectProjectPreflight } from "../shared/preflight.js";
 
 const packageRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const sourceDir = path.join(packageRoot, "skill", "dreative");
@@ -40,7 +41,7 @@ test("finalize fails closed after source/plan completion evidence is removed", (
   assert.ok(result.blockers.some((item) => item.includes("verification")));
 });
 
-function validV7Fixture() {
+function validV8Fixture() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-finalize-v7-"));
   fs.mkdirSync(path.join(root, ".dreative")); fs.mkdirSync(path.join(root, "src"));
   fs.writeFileSync(path.join(root, "package.json"), JSON.stringify({ name: "fixture", version: "1.0.0" }));
@@ -59,6 +60,7 @@ function validV7Fixture() {
     threeDAssets: "not-allowed", suppliedImageAssets: [], suppliedVideoAssets: [], suppliedThreeDAssets: [], missingOrNeededAssets: [],
   };
   plan.contract.scope.successCriteria = ["The user can read the ready state at desktop and mobile widths."];
+  plan.contract.capabilityPreflight = detectProjectPreflight(root);
   plan.contract.selectedConcept = "A direct utility page makes the ready state immediately legible.";
   plan.contract.blueprint = [{ pageId: "home", sectionId: "hero", intent: "Present the ready state." }];
   plan.contract.motionAndMediaStrategy = "No motion or primary media is required.";
@@ -79,7 +81,7 @@ function validV7Fixture() {
   return root;
 }
 
-test("a valid v7 fixture can finalize successfully", () => {
-  const result = runFinalize(validV7Fixture(), { target: "claude", sourceDir, packageVersion });
+test("a valid v8 fixture can finalize successfully", () => {
+  const result = runFinalize(validV8Fixture(), { target: "claude", sourceDir, packageVersion });
   assert.equal(result.ok, true, result.blockers.join("\n"));
 });

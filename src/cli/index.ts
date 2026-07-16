@@ -38,6 +38,7 @@ const USAGE = `usage: dreative [command]
                    --generated-video allow|deny|ask --sourced-video allow|deny|ask
                    --3d-assets not-allowed|supplied-only|external-sourcing-allowed|
                      generation-and-sourcing-allowed|ask-per-asset
+                   --package-install allow|deny
   treatments       explain selected treatments [--all | --treatments a,b]
   doctor           verify skill, schema, packages, browser, source and current plan
   resume           continue safely from the last valid phase checkpoint

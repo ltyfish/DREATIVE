@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { approvePlan, approvalStatus, contractHash, createPlan, migrateLegacyPlan, readPlan, validateCanonicalPlan, writePlan, type CanonicalPlan } from "./planGovernance.js";
 import { runPlanCommand, unresolvedCreativeSourceQuestions } from "../cli/plan.js";
+import { detectProjectPreflight } from "./preflight.js";
 
 function root(): string {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-plan-v7-"));
@@ -28,8 +29,14 @@ function completePlan(dir: string): CanonicalPlan {
     threeDAssets: "ask-per-asset", suppliedImageAssets: [], suppliedVideoAssets: [], suppliedThreeDAssets: [], missingOrNeededAssets: [],
   };
   plan.contract.scope.successCriteria = ["The experience feels authored and develops beyond the hero."];
+  plan.contract.capabilityPreflight = detectProjectPreflight(dir);
   plan.contract.selectedConcept = "A living editorial instrument develops across the full route.";
   plan.contract.blueprint = [{ pageId: "home", sectionId: "hero", intent: "Opening instrument" }];
+  plan.contract.experienceDistribution = [
+    { pageId: "home", sectionId: "hero", order: 0, role: "peak", continuityContribution: "The editorial rail establishes the route state." },
+    { pageId: "home", sectionId: "work", order: 1, role: "transformation", continuityContribution: "The rail changes role after the first viewport." },
+    { pageId: "home", sectionId: "finale", order: 2, role: "peak", continuityContribution: "The rail resolves as a second authored peak." },
+  ];
   plan.contract.experienceArc = {
     openingState: "The instrument begins quiet and grounded.", firstTransformation: "Media unfolds into a second composition.",
     sectionProgression: "The instrument persists through three chapters.", peaksAndRests: "Transformations alternate with calm reading space.",
@@ -53,7 +60,7 @@ test("substantial plan init stops when Ambition is missing", () => {
   assert.equal(fs.existsSync(path.join(dir, ".dreative", "plan.yaml")), false);
 });
 
-test("creative-source intake asks only unresolved reference, image, video and 3D questions", () => {
+test("creative-source intake asks unresolved reference, media, 3D and package-permission questions", () => {
   const questions = unresolvedCreativeSourceQuestions(["--references", "https://example.com", "--generated-images", "allow", "--3d-assets", "supplied-only"]);
   assert.ok(!questions.some((item) => item.startsWith("References:")));
   assert.ok(!questions.some((item) => item.startsWith("Generated images:")));
@@ -61,6 +68,7 @@ test("creative-source intake asks only unresolved reference, image, video and 3D
   assert.ok(questions.some((item) => item.startsWith("Sourced images:")));
   assert.ok(questions.some((item) => item.startsWith("Generated video:")));
   assert.ok(questions.some((item) => item.startsWith("Sourced video:")));
+  assert.ok(questions.some((item) => item.startsWith("Package installation:")));
 });
 
 test("values supplied by the user are recorded without being replaced", () => {
@@ -109,10 +117,30 @@ test("contract edits invalidate approval while execution updates do not", () => 
 test("v3-v6 plans migrate or produce precise diagnostics", () => {
   for (const version of [3, 4, 5, 6]) {
     const result = migrateLegacyPlan(root(), { version, tier: version === 3 ? "solid" : "premium", depth: "restructure", scope: "substantial", projectKind: "redesign", skills: ["ux", "mobile"], pages: [{ id: "home", sections: [{ id: "hero", layoutFamily: "split" }] }], designRead: { concept: "A migrated editorial route." } });
-    assert.equal(result.plan.version, 7);
-    assert.ok(result.diagnostics.some((item) => item.includes("unapproved v7")));
+    assert.equal(result.plan.version, 8);
+    assert.ok(result.diagnostics.some((item) => item.includes("unapproved v8")));
   }
-  assert.throws(() => migrateLegacyPlan(root(), { version: 2 }), /expected v3-v6/);
+  assert.throws(() => migrateLegacyPlan(root(), { version: 2 }), /expected v3-v7/);
+});
+
+test("canonical v7 migration produces clear v8 review guidance", () => {
+  const dir = root();
+  const current = completePlan(dir);
+  const legacy = {
+    version: 7,
+    contract: {
+      ...current.contract,
+      treatmentAllocation: current.contract.treatmentAllocation.map(({ routeRole, ...item }) => item),
+      mechanismFallbacks: [{ mechanism: "scroll roast sequence", fallback: "three semantic states", approved: true }],
+    },
+    approval: current.approval,
+    execution: current.execution,
+  };
+  const result = migrateLegacyPlan(dir, legacy);
+  assert.equal(result.plan.version, 8);
+  assert.equal(result.plan.approval.status, "pending");
+  assert.ok(result.diagnostics.some((item) => item.includes("capability preflight")));
+  assert.equal(result.plan.contract.mechanismFallbacks[0].userReapprovalRequired, true);
 });
 
 test("validation rejects unresolved target and material intake", () => {

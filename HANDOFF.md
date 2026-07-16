@@ -1,6 +1,6 @@
 # Handoff
 
-The active canonical artifact is `.dreative/plan.yaml` v7. Read and validate it
+The active canonical artifact is `.dreative/plan.yaml` v8. Read and validate it
 before implementation. An approved contract is current only when its
 contract-only hash matches; execution progress may change without reapproval.
 
@@ -13,5 +13,8 @@ independent critic, then run `dreative finalize`. Dogfood verdict `fail`, broken
 primary media, static Award work or imperceptible selected treatments block
 `DREATIVE_FINALIZED`.
 
-Legacy v3-v6 JSON plans migrate with `dreative plan migrate`. Review and approve
-the resulting YAML contract; never carry old runtime evidence forward.
+Legacy v3-v7 plans migrate with `dreative plan migrate`. A v7 migration remains
+unapproved until capability preflight, route distribution, asset strategy,
+primary/fallback contracts and run-scoped evidence are completed. Evidence
+belongs under `.dreative/runs/<run-id>/`; old runs never satisfy current
+finalization automatically.

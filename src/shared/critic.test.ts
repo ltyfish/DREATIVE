@@ -118,3 +118,23 @@ test("reduced ambition is not judged against award-level technique expectations"
   value.nonBlockingExperiments = ["A future dogfood run could test frame-based image motion, but it is not required here."];
   assert.deepEqual(validateVisualCriticReport(value, input()), []);
 });
+
+test("Experimental critic rejects a polished hero-only route and missing primary mechanism", () => {
+  const objective = input(false);
+  objective.ambition = "experimental";
+  objective.selectedTreatments = ["ux", "mobile", "motion", "interaction", "media", "experimental"];
+  objective.plannedPeaks = [
+    { id: "hero-fragments", location: "hero", plannedBehaviour: "Image reconstructs", startState: "intact", activeState: "fragmented", resolution: "rebuilt", inputRelationship: "scroll", mobileStrategy: "reduced fragments", fallbackState: "slices" },
+    { id: "roast-sequence", location: "roast", plannedBehaviour: "Frames scrub", startState: "green", activeState: "roasting", resolution: "dark", inputRelationship: "scroll", mobileStrategy: "reduced frames", fallbackState: "semantic states" },
+  ];
+  objective.plannedMechanisms = objective.plannedPeaks.map((peak) => ({ id: peak.id, location: peak.location, primaryImplementation: peak.plannedBehaviour, primaryAcceptance: ["start active resolved"], fallbackImplementation: peak.fallbackState, fallbackTrigger: "measured runtime failure" }));
+  const value = report();
+  value.routeAssessment = {
+    heroRemovedStillSatisfies: false, fullRouteAuthored: false, mediaDiverse: false, ordinaryControlsSubstituteForExperience: true,
+    selectedTreatmentVerdicts: objective.selectedTreatments.map((treatment) => ({ treatment, verdict: "fail", evidenceIds: ["final-desktop"], observation: "Only selector-level or hero evidence exists." })),
+    peakVerdicts: objective.plannedPeaks.map((peak) => ({ peakId: peak.id, plannedBehaviour: peak.plannedBehaviour, observedBehaviour: peak.id === "roast-sequence" ? "Three ordinary tabs" : "Hero fragments", startState: peak.startState, activeState: peak.activeState, resolution: peak.resolution, inputRelationship: peak.inputRelationship, mobileStrategy: peak.mobileStrategy, fallbackState: peak.fallbackState, verdict: peak.id === "roast-sequence" ? "fail" : "pass", evidenceIds: ["final-desktop"] })),
+    mechanismVerdicts: objective.plannedMechanisms.map((mechanism) => ({ mechanismId: mechanism.id, observedImplementation: mechanism.id === "roast-sequence" ? "tabs" : "fragments", fallbackUsed: mechanism.id === "roast-sequence", fallbackTriggerValid: false, finalStatus: mechanism.id === "roast-sequence" ? "failed" : "primary-delivered", verdict: mechanism.id === "roast-sequence" ? "fail" : "pass", evidenceIds: ["final-desktop"] })),
+    assetIntegrity: "fail", performanceRisk: "One large image is repeatedly reused.", reducedMotionTranslation: "No authored translation.",
+  };
+  assert.ok(validateVisualCriticReport(value, objective).some((error) => /hero-only|hero-removed|cannot pass/i.test(error)));
+});

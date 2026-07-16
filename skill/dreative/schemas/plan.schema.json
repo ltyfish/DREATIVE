@@ -1,76 +1,94 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://dreative.local/schemas/plan.schema.json",
-  "title": "Dreative Canonical Plan v7",
+  "title": "Dreative Canonical Plan v8",
   "type": "object",
   "additionalProperties": false,
   "required": ["version", "contract", "approval", "execution"],
   "properties": {
-    "version": { "const": 7 },
+    "version": { "const": 8 },
     "contract": {
       "type": "object",
       "additionalProperties": false,
       "required": [
         "target", "scope", "creativeSources", "workflow", "transformationDepth", "selectedTreatments",
-        "allTreatmentsExplicit", "allTreatmentsConfirmed", "treatmentAllocation",
-        "preservationRequirements", "selectedConcept", "blueprint", "motionAndMediaStrategy",
-        "mobileTranslation", "functionalTruthRequirements", "performanceBudget",
-        "acceptanceCriteria", "mechanismFallbacks", "conceptExemptions", "changeRequests"
+        "allTreatmentsExplicit", "allTreatmentsConfirmed", "treatmentAllocation", "continuityOwner",
+        "preservationRequirements", "selectedConcept", "blueprint", "experienceDistribution",
+        "experimentalPeaks", "prototypeContracts", "assetStrategy", "motionAndMediaStrategy",
+        "mobileTranslation", "functionalTruthRequirements", "performanceBudget", "acceptanceCriteria",
+        "mechanismFallbacks", "conceptExemptions", "changeRequests"
       ],
       "properties": {
-        "target": { "$ref": "#/$defs/target" },
+        "target": { "type": "object" },
         "scope": { "type": "object" },
-        "creativeSources": { "$ref": "#/$defs/creativeSources" },
+        "creativeSources": {
+          "type": "object",
+          "properties": {
+            "generatedImages": {}, "sourcedImages": {}, "generatedVideo": {}, "sourcedVideo": {}, "threeDAssets": {}
+          }
+        },
+        "capabilityPreflight": { "$ref": "#/$defs/capabilityPreflight" },
         "workflow": { "$ref": "#/$defs/workflow" },
         "transformationDepth": { "enum": ["restyle", "relayout", "restructure", "reimagine"] },
         "selectedTreatments": { "$ref": "#/$defs/treatments" },
         "allTreatmentsExplicit": { "type": "boolean" },
         "allTreatmentsConfirmed": { "type": "boolean" },
+        "continuityOwner": { "enum": ["immersive", "cinematic", "motion", "none"] },
         "treatmentAllocation": {
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["treatment", "priority", "locations", "contribution", "dependencies", "acceptance"],
+            "additionalProperties": false,
+            "required": ["treatment", "priority", "locations", "contribution", "dependencies", "acceptance", "routeRole"],
             "properties": {
               "treatment": { "$ref": "#/$defs/treatment" },
               "priority": { "enum": ["primary", "supporting", "foundation"] },
-              "locations": { "type": "array", "items": { "type": "string" } },
+              "locations": { "$ref": "#/$defs/strings" },
               "contribution": { "type": "string" },
               "dependencies": { "$ref": "#/$defs/treatments" },
-              "acceptance": { "type": "array", "items": { "type": "string" } }
+              "acceptance": { "$ref": "#/$defs/strings" },
+              "routeRole": { "enum": ["peak", "connective-tissue", "foundation"] }
             }
           }
         },
-        "preservationRequirements": { "type": "array", "items": { "type": "string" } },
+        "preservationRequirements": { "$ref": "#/$defs/strings" },
         "selectedConcept": { "type": "string" },
         "blueprint": { "type": "array", "items": { "type": "object" } },
-        "experienceArc": { "$ref": "#/$defs/experienceArc" },
+        "experienceArc": { "type": "object" },
+        "experienceDistribution": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["pageId", "sectionId", "order", "role", "continuityContribution"],
+            "properties": {
+              "pageId": { "type": "string" },
+              "sectionId": { "type": "string" },
+              "order": { "type": "integer", "minimum": 0 },
+              "role": { "enum": ["peak", "transformation", "preparation", "echo", "rest", "resolution", "functional-utility"] },
+              "continuityContribution": { "type": "string" },
+              "peakId": { "type": "string" }
+            }
+          }
+        },
+        "experimentalPeaks": { "type": "array", "minItems": 0, "maxItems": 3, "items": { "$ref": "#/$defs/experimentalPeak" } },
+        "prototypeContracts": { "type": "array", "items": { "$ref": "#/$defs/prototype" } },
+        "assetStrategy": { "type": "array", "items": { "$ref": "#/$defs/asset" } },
         "motionAndMediaStrategy": { "type": "string" },
         "mobileTranslation": { "type": "string" },
-        "functionalTruthRequirements": { "type": "array", "items": { "type": "string" } },
-        "performanceBudget": { "type": "array", "items": { "type": "string" } },
-        "acceptanceCriteria": { "type": "array", "items": { "type": "string" } },
-        "mechanismFallbacks": { "type": "array", "items": { "type": "object" } },
+        "functionalTruthRequirements": { "$ref": "#/$defs/strings" },
+        "performanceBudget": { "$ref": "#/$defs/strings" },
+        "acceptanceCriteria": { "$ref": "#/$defs/strings" },
+        "mechanismFallbacks": { "type": "array", "items": { "$ref": "#/$defs/mechanism" } },
         "conceptExemptions": { "type": "array", "items": { "type": "object" } },
         "changeRequests": { "type": "array", "items": { "type": "object" } }
       }
     },
-    "approval": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["status", "revision", "contractHash", "approvedAt", "approvedBy", "decisionHistory"],
-      "properties": {
-        "status": { "enum": ["pending", "approved", "invalidated"] },
-        "revision": { "type": "integer", "minimum": 0 },
-        "contractHash": { "type": ["string", "null"] },
-        "approvedAt": { "type": ["string", "null"] },
-        "approvedBy": { "type": ["string", "null"] },
-        "decisionHistory": { "type": "array", "items": { "type": "object" } }
-      }
-    },
+    "approval": { "type": "object", "properties": { "contractHash": { "type": ["string", "null"] } } },
     "execution": { "type": "object" }
   },
   "$defs": {
+    "strings": { "type": "array", "items": { "type": "string" } },
     "workflow": {
       "type": "object",
       "additionalProperties": false,
@@ -82,68 +100,76 @@
         "purpose": { "enum": ["project-delivery", "production-certification", "dreative-dogfood"] }
       }
     },
-    "target": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["repoRoot", "previewUrl", "previewCommand", "routeScope", "baselineUrls", "packageManager", "buildCommand", "testCommand", "framework", "deploymentTarget", "devicePriorities"],
-      "properties": {
-        "repoRoot": { "type": "string", "minLength": 1 },
-        "previewUrl": { "type": ["string", "null"] },
-        "previewCommand": { "type": ["string", "null"] },
-        "routeScope": { "type": "object", "required": ["mode", "routes"] },
-        "baselineUrls": { "type": "array", "items": { "type": "string" } },
-        "packageManager": { "type": "string" },
-        "buildCommand": { "type": ["string", "null"] },
-        "testCommand": { "type": ["string", "null"] },
-        "framework": { "type": "string" },
-        "deploymentTarget": { "type": ["string", "null"] },
-        "devicePriorities": { "type": "array", "items": { "type": "object", "required": ["name", "width"] } }
-      }
-    },
-    "experienceArc": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["openingState", "firstTransformation", "sectionProgression", "peaksAndRests", "persistentSystem", "userControlledMoment", "mobileTranslation", "finalResolution"],
-      "properties": {
-        "openingState": { "type": "string" },
-        "firstTransformation": { "type": "string" },
-        "sectionProgression": { "type": "string" },
-        "peaksAndRests": { "type": "string" },
-        "persistentSystem": { "type": "string" },
-        "userControlledMoment": { "type": "string" },
-        "mobileTranslation": { "type": "string" },
-        "finalResolution": { "type": "string" }
-      }
-    },
-    "creativeSources": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["references", "generatedImages", "sourcedImages", "generatedVideo", "sourcedVideo", "threeDAssets", "suppliedImageAssets", "suppliedVideoAssets", "suppliedThreeDAssets", "missingOrNeededAssets"],
-      "properties": {
-        "references": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["preference", "urls", "notes", "antiReferences"],
-          "properties": {
-            "preference": { "enum": ["provided", "none", "open-to-suggestions", null] },
-            "urls": { "type": "array", "items": { "type": "string" } },
-            "notes": { "type": "array", "items": { "type": "string" } },
-            "antiReferences": { "type": "array", "items": { "type": "string" } }
-          }
-        },
-        "generatedImages": { "$ref": "#/$defs/mediaPermission" },
-        "sourcedImages": { "$ref": "#/$defs/mediaPermission" },
-        "generatedVideo": { "$ref": "#/$defs/mediaPermission" },
-        "sourcedVideo": { "$ref": "#/$defs/mediaPermission" },
-        "threeDAssets": { "enum": ["not-allowed", "supplied-only", "external-sourcing-allowed", "generation-and-sourcing-allowed", "ask-per-asset", null] },
-        "suppliedImageAssets": { "type": "array", "items": { "type": "string" } },
-        "suppliedVideoAssets": { "type": "array", "items": { "type": "string" } },
-        "suppliedThreeDAssets": { "type": "array", "items": { "type": "string" } },
-        "missingOrNeededAssets": { "type": "array", "items": { "type": "string" } }
-      }
-    },
-    "mediaPermission": { "enum": ["allowed", "not-allowed", "ask-per-asset", null] },
     "treatment": { "enum": ["ux", "mobile", "refined", "motion", "interaction", "media", "3d", "immersive", "cinematic", "experimental"] },
-    "treatments": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/treatment" } }
+    "treatments": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/treatment" } },
+    "capabilityPreflight": {
+      "type": "object",
+      "required": ["capturedAt", "installedCapabilities", "creativeCapabilities"],
+      "properties": {
+        "capturedAt": { "type": "string" },
+        "installedCapabilities": { "$ref": "#/$defs/strings" },
+        "creativeCapabilities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "category", "status", "source", "notes"],
+            "properties": {
+              "id": { "type": "string" },
+              "category": { "enum": ["runtime", "authoring", "sourcing", "verification"] },
+              "status": { "enum": ["available", "available-after-package-installation", "available-through-sourcing", "available-only-with-supplied-assets", "unavailable", "permission-denied"] },
+              "source": { "type": "string" },
+              "notes": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "experimentalPeak": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "chapter", "mechanismFamily", "plannedBehaviour", "startState", "activeState", "resolution", "inputRelationship", "mobileStrategy", "reducedMotionStrategy", "fallbackState", "prototypeRiskFamily", "acceptance"],
+      "properties": {
+        "id": { "type": "string" }, "chapter": { "type": "string" }, "mechanismFamily": { "type": "string" },
+        "plannedBehaviour": { "type": "string" }, "startState": { "type": "string" }, "activeState": { "type": "string" },
+        "resolution": { "type": "string" }, "inputRelationship": { "type": "string" }, "mobileStrategy": { "type": "string" },
+        "reducedMotionStrategy": { "type": "string" }, "fallbackState": { "type": "string" }, "prototypeRiskFamily": { "type": "string" },
+        "acceptance": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "prototype": {
+      "type": "object",
+      "required": ["id", "riskFamily", "mechanismId", "required", "status", "validates", "limitations", "evidenceIds"],
+      "properties": {
+        "id": { "type": "string" }, "riskFamily": { "type": "string" }, "mechanismId": { "type": "string" },
+        "required": { "type": "boolean" }, "status": { "enum": ["pending", "passed", "failed", "skipped"] },
+        "validates": { "type": "string" }, "limitations": { "type": "string" }, "evidenceIds": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "required": ["id", "intendedRole", "requiredSubjectAndComposition", "priority", "sourcingAttempted", "candidateSources", "generationChosen", "generationRationale", "classification", "sourcePath", "productionDerivatives", "usedAt", "survivedFinalImplementation", "shipping"],
+      "properties": {
+        "id": { "type": "string" }, "intendedRole": { "type": "string" }, "requiredSubjectAndComposition": { "type": "string" },
+        "priority": { "enum": ["user-supplied", "external-sourced", "generated", "procedural"] },
+        "sourcingAttempted": { "type": "boolean" }, "candidateSources": { "type": "array", "items": { "type": "object", "required": ["url", "rights"] } },
+        "generationChosen": { "type": "boolean" }, "generationRationale": { "type": "string" },
+        "classification": { "enum": ["model", "spatial-cutout", "layered-billboard", "pre-rendered-angles", "frame-sequence", "webgl-media-plane", "static-image"] },
+        "sourcePath": { "type": ["string", "null"] }, "productionDerivatives": { "$ref": "#/$defs/strings" }, "usedAt": { "$ref": "#/$defs/strings" },
+        "survivedFinalImplementation": { "type": "boolean" }, "shipping": { "type": "boolean" },
+        "sizeBudgetBytes": { "type": "integer", "minimum": 0 }, "mobileVariant": { "type": "string" }, "poster": { "type": "string" }, "loadingStrategy": { "type": "string" }
+      }
+    },
+    "mechanism": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "location", "primaryImplementation", "primaryAcceptance", "fallbackImplementation", "fallbackTrigger", "triggerEvidenceRequired", "userReapprovalRequired", "finalStatus", "finalReason", "observedEvidenceIds"],
+      "properties": {
+        "id": { "type": "string" }, "location": { "type": "string" }, "primaryImplementation": { "type": "string" },
+        "primaryAcceptance": { "$ref": "#/$defs/strings" }, "fallbackImplementation": { "type": "string" }, "fallbackTrigger": { "type": "string" },
+        "triggerEvidenceRequired": { "$ref": "#/$defs/strings" }, "userReapprovalRequired": { "type": "boolean" },
+        "finalStatus": { "enum": ["primary-delivered", "fallback-triggered", "approved-change", "not-applicable", "failed"] },
+        "finalReason": { "type": "string" }, "observedEvidenceIds": { "$ref": "#/$defs/strings" }
+      }
+    }
   }
 }

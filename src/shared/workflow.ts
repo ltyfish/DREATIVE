@@ -35,6 +35,30 @@ export interface WorkflowPolicy {
   representativeWidths: number[];
   collectPerformanceEvidence: boolean;
   collectBehaviourEvidence: boolean;
+  spreadValidation: "not-required" | "internal" | "explicit-approval";
+}
+
+export interface PrototypeRisk {
+  id: string;
+  family: "webgl-shader" | "frame-sequence" | "fragmented-media" | "spatial-selector" | "persistent-handoff" | "other";
+  risk: InteractionRisk;
+  unresolved: boolean;
+}
+
+export interface AdaptiveSpreadRequirements {
+  required: boolean;
+  approval: "none" | "internal" | "explicit";
+  desktopCapture: boolean;
+  mobileCapture: boolean;
+  peakStateEvidence: boolean;
+  mechanismTable: boolean;
+  fallbackDisclosure: boolean;
+  sectionRoleTable: boolean;
+  sourceIdentity: boolean;
+  continuousRecording: boolean;
+  mobileRecording: boolean;
+  reverseScroll: boolean;
+  montage: boolean;
 }
 
 const ambitionFromTier = (tier?: AmbitionTier | LegacyAmbitionTier): DesignAmbition =>
@@ -97,6 +121,11 @@ export function resolveWorkflowPolicy(configuration: WorkflowConfiguration, narr
     representativeWidths: narrowWidthRisk || fullAudit || dogfood ? [1440, 390, 320] : [1440, 390],
     collectPerformanceEvidence: fullAudit || dogfood,
     collectBehaviourEvidence: dogfood,
+    spreadValidation: dogfood && configuration.ambition === "experimental"
+      ? "explicit-approval"
+      : configuration.ambition === "experimental" || configuration.ambition === "award"
+        ? "internal"
+        : "not-required",
   };
 }
 
@@ -104,6 +133,58 @@ export function shouldCreatePrototype(configuration: WorkflowConfiguration, risk
   if (configuration.prototype === "skip") return false;
   if (configuration.prototype === "required") return true;
   return risks.some((risk) => ["layered-media", "pinned-scroll", "canvas-webgl", "frame-sequence"].includes(risk));
+}
+
+export function selectPrototypeRisks(configuration: WorkflowConfiguration, risks: PrototypeRisk[]): PrototypeRisk[] {
+  if (configuration.prototype === "skip" || configuration.execution === "fast") return [];
+  const unresolved = risks.filter((item) => item.unresolved);
+  if (configuration.prototype === "required") return unresolved.slice(0, 3);
+  if (configuration.execution === "full-audit" && configuration.ambition === "experimental")
+    return [...new Map(unresolved.map((item) => [item.family, item])).values()].slice(0, 3);
+  return unresolved.slice(0, 1);
+}
+
+export function resolveAdaptiveSpreadValidation(configuration: WorkflowConfiguration, input: {
+  highRiskMechanismCount?: number;
+  riskTriggered?: boolean;
+  immersiveContinuityPrimary?: boolean;
+  cinematicContinuityPrimary?: boolean;
+  persistentAcrossChapters?: boolean;
+  staticCapturesInsufficient?: boolean;
+  mobileChoreographyDiffers?: boolean;
+  reversible?: boolean;
+  pinnedLifecycleRisk?: boolean;
+  montageUseful?: boolean;
+  materialConceptChange?: boolean;
+} = {}): AdaptiveSpreadRequirements {
+  const dogfoodExperimental = configuration.purpose === "dreative-dogfood" && configuration.ambition === "experimental";
+  const required = configuration.ambition === "experimental"
+    || configuration.purpose === "dreative-dogfood"
+    || (configuration.ambition === "award" && (input.highRiskMechanismCount ?? 0) > 1)
+    || Boolean(input.riskTriggered);
+  const continuousRecording = required && Boolean(
+    input.immersiveContinuityPrimary
+    || input.cinematicContinuityPrimary
+    || input.persistentAcrossChapters
+    || input.staticCapturesInsufficient,
+  );
+  return {
+    required,
+    approval: dogfoodExperimental || (configuration.purpose === "production-certification" && input.materialConceptChange)
+      ? "explicit"
+      : required ? "internal" : "none",
+    desktopCapture: required,
+    mobileCapture: required,
+    peakStateEvidence: required,
+    mechanismTable: required,
+    fallbackDisclosure: required,
+    sectionRoleTable: required,
+    sourceIdentity: required,
+    continuousRecording,
+    mobileRecording: continuousRecording && Boolean(input.mobileChoreographyDiffers),
+    reverseScroll: required && Boolean(input.reversible || input.pinnedLifecycleRisk),
+    montage: required && Boolean(input.montageUseful),
+  };
 }
 
 export function verificationStatesFor(risk: InteractionRisk, expensive = false): string[] {

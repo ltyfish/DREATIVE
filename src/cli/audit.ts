@@ -26,6 +26,7 @@ import { resolveWorkflowConfiguration, resolveWorkflowPolicy, shouldCreateProtot
 import { checkBuildFreshness, checkExecutionContracts, checkLegacyAmbitiousRuntime, checkPolicyRecords, checkTemporalEvidence } from "./executionAudit.js";
 import { PLAN_FILE, approvalStatus, readPlan, validateCanonicalPlan, type CanonicalPlan } from "../shared/planGovernance.js";
 import { validateExperienceDelivery } from "../shared/experienceGates.js";
+import { hashFiles, sourceFiles } from "../shared/projectIdentity.js";
 
 export interface AuditFinding {
   level: "error" | "warning";
@@ -65,6 +66,17 @@ function runCanonicalPlanAudit(projectDir: string): AuditReport {
     if (!plan.execution.bindings.some((item) => item.treatment === treatment) && !["ux", "mobile", "refined"].includes(treatment))
       findings.push(finding("error", "treatment-allocation", `${treatment} has no real implementation binding`));
   }
+  const capabilities = new Map(plan.contract.capabilityPreflight?.creativeCapabilities.map((item) => [item.id, item]) ?? []);
+  if (plan.contract.assetStrategy.some((item) => item.priority === "generated" && item.classification !== "model") && capabilities.get("image-generation")?.status !== "available")
+    findings.push(finding("error", "capability-preflight", "the plan promises generated imagery but image-generation authoring is not available"));
+  if (plan.contract.assetStrategy.some((item) => item.priority === "generated" && /video|footage/i.test(item.intendedRole)) && capabilities.get("video-generation")?.status !== "available")
+    findings.push(finding("error", "capability-preflight", "the plan promises generated video but original video-generation authoring is not available"));
+  if (plan.contract.assetStrategy.some((item) => item.priority === "generated" && item.classification === "model") && capabilities.get("3d-model-generation")?.status !== "available")
+    findings.push(finding("error", "capability-preflight", "the plan promises a generated 3D model but no model-generation authoring tool is available; use the disclosed fallback ladder"));
+  if (capabilities.get("threejs-runtime")?.status === "available" && capabilities.get("3d-model-generation")?.status === "available" && capabilities.get("3d-model-generation")?.source === "package-preflight")
+    findings.push(finding("error", "capability-preflight", "Three.js runtime availability cannot be used as 3D model-generation evidence"));
+  if (capabilities.get("ffmpeg-editing")?.status === "available" && capabilities.get("video-generation")?.source === "environment")
+    findings.push(finding("error", "capability-preflight", "FFmpeg editing cannot be used as original video-generation evidence"));
   if (plan.execution.runtime?.competingOwners.length) findings.push(finding("error", "runtime-owner", `competing ticker/scroll/render owners: ${plan.execution.runtime.competingOwners.join(", ")}`));
   if (plan.execution.runtime?.packageTransactions.some((item) => item.status === "failed")) findings.push(finding("error", "runtime-install", "a runtime package transaction failed without a completed rollback/recovery"));
   const criticRequired = plan.contract.scope.substantial && plan.contract.workflow.execution !== "fast";
@@ -79,9 +91,10 @@ function runCanonicalPlanAudit(projectDir: string): AuditReport {
       if (!critic.builderContextExcluded) findings.push(finding("error", "critic", "critic first pass must exclude builder rationale, excuses and self-authored quality claims"));
       const scoreKeys = ["ambitionFidelity", "conceptFidelity", "authorship", "staticFeeling", "temporalDevelopment", "treatmentPerceptibility", "mediaIntegrity", "typographyHierarchy", "mobileComposition", "interactionPurpose", "brandAppropriateness", "functionalHonesty", "visibleRegressions"];
       for (const key of scoreKeys) if (typeof critic.scores[key] !== "number") findings.push(finding("error", "critic", `critic score missing: ${key}`));
-      const temporal = ["motion", "immersive", "cinematic", "experimental"].some((item) => plan.contract.selectedTreatments.includes(item as SpecialistSkill)) || plan.contract.workflow.ambition === "award";
-      if (temporal && critic.recordings.desktop.length === 0) findings.push(finding("error", "critic", "motion-led or Award work requires at least one continuous desktop recording"));
-      if (plan.contract.workflow.purpose === "dreative-dogfood" && temporal && plan.execution.evidence.mobileNative.length && critic.recordings.mobile.length === 0) findings.push(finding("error", "critic", "Dogfood requires a mobile recording when the defining experience exists on mobile"));
+      const spread = plan.execution.checkpoints.adaptiveSpread;
+      if (spread?.continuousRecordingRequired && spread.continuousRecordingEvidenceIds.length === 0) findings.push(finding("error", "critic", "Adaptive Spread requires one representative continuity recording for this mechanism"));
+      if (spread?.mobileRecordingRequired && spread.mobileRecordingEvidenceIds.length === 0) findings.push(finding("error", "critic", "Adaptive Spread requires mobile recording because mobile choreography materially differs"));
+      if (spread?.reverseScrollRequired && spread.reverseScrollEvidenceIds.length === 0) findings.push(finding("error", "critic", "Adaptive Spread requires reverse-scroll evidence for the declared reversible or lifecycle-sensitive mechanism"));
       if (critic.verdict === "fail" || critic.blockers.length) findings.push(finding("error", "critic", "critic blockers remain unresolved"));
       if ((plan.contract.workflow.execution === "full-audit" || plan.contract.workflow.purpose === "dreative-dogfood") && critic.majorIssues.length) findings.push(finding("error", "critic", "Full Audit and Dogfood require correction of all major critic issues"));
     }
@@ -96,7 +109,18 @@ function runCanonicalPlanAudit(projectDir: string): AuditReport {
       if (/yes|true|would have/i.test(dogfood.falsePositiveRisk)) findings.push(finding("error", "dogfood", "Dogfood detected false-positive finalization risk"));
     }
   }
-  const verificationFile = path.join(projectDir, ".dreative", "verify.json");
+  if (plan.execution.run) {
+    const currentSourceHash = hashFiles(projectDir, sourceFiles(projectDir));
+    if (plan.execution.run.sourceHash !== currentSourceHash) findings.push(finding("error", "run-identity", `evidence source hash ${plan.execution.run.sourceHash} does not match current source ${currentSourceHash}`));
+    const runRoot = path.resolve(projectDir, ".dreative", "runs", plan.execution.run.runId);
+    for (const file of plan.execution.run.evidenceFiles) {
+      const absolute = path.resolve(projectDir, file);
+      if (!absolute.startsWith(runRoot + path.sep) || !fs.existsSync(absolute)) findings.push(finding("error", "run-identity", `missing or cross-run evidence file: ${file}`));
+    }
+  }
+  const verificationFile = plan.execution.run
+    ? path.join(projectDir, ".dreative", "runs", plan.execution.run.runId, "verify.json")
+    : path.join(projectDir, ".dreative", "verify.json");
   if (!fs.existsSync(verificationFile)) findings.push(finding("error", "verification", "missing verify.json for the current implementation"));
   else {
     findings.push(...checkArtifact(verificationFile, "verification", validateVerificationReport));
@@ -552,8 +576,8 @@ export function runDirectDesignAudit(projectDir: string): AuditReport {
   findings.push(...checkVerificationProof(projectDir, verificationFile));
   const verification = fs.existsSync(verificationFile) ? (readJson(verificationFile) as VerificationReport) : undefined;
   if (plan.version !== 6 || plan.doctrineVersion !== 6) {
-    findings.push(finding("warning", "migration", "legacy plan.json is accepted for compatibility only; migrate v3-v6 plans to canonical plan.yaml v7 and recapture current verification evidence"));
-    if ((configuration.ambition === "award" || configuration.ambition === "experimental") && configuration.execution === "full-audit") findings.push(finding("error", "migration", "legacy plans cannot certify ambitious Full Audit completion; migrate to plan.yaml v7"));
+    findings.push(finding("warning", "migration", "legacy plan.json is accepted for compatibility only; migrate v3-v7 plans to canonical plan.yaml v8 and recapture current verification evidence"));
+    if ((configuration.ambition === "award" || configuration.ambition === "experimental") && configuration.execution === "full-audit") findings.push(finding("error", "migration", "legacy plans cannot certify ambitious Full Audit completion; migrate to plan.yaml v8"));
   } else {
     try {
       const { registry, reflexFonts } = loadRuleFiles();

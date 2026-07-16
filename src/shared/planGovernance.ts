@@ -2,11 +2,12 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { parse, stringify } from "yaml";
-import { detectProjectPreflight } from "./preflight.js";
+import { detectProjectPreflight, type ProjectPreflight } from "./preflight.js";
 import type { SpecialistSkill } from "./skillSystem.js";
+import { treatment } from "./treatments.js";
 import type { DesignAmbition, EvaluationPurpose, ExecutionMode, PrototypePolicy, WorkflowConfiguration } from "./workflow.js";
 
-export const PLAN_VERSION = 7;
+export const PLAN_VERSION = 8;
 export const PLAN_FILE = ".dreative/plan.yaml";
 export const AMBITIONS: DesignAmbition[] = ["standard", "expressive", "award", "experimental"];
 export const EXECUTIONS: ExecutionMode[] = ["fast", "lean", "full-audit"];
@@ -35,6 +36,82 @@ export interface TreatmentAllocation {
   contribution: string;
   dependencies: SpecialistSkill[];
   acceptance: string[];
+  routeRole: "peak" | "connective-tissue" | "foundation";
+}
+
+export type ExperienceSectionRole = "peak" | "transformation" | "preparation" | "echo" | "rest" | "resolution" | "functional-utility";
+export type SpatialAssetClassification = "model" | "spatial-cutout" | "layered-billboard" | "pre-rendered-angles" | "frame-sequence" | "webgl-media-plane" | "static-image";
+export type MechanismFinalStatus = "primary-delivered" | "fallback-triggered" | "approved-change" | "not-applicable" | "failed";
+
+export interface ExperienceDistributionEntry {
+  pageId: string;
+  sectionId: string;
+  order: number;
+  role: ExperienceSectionRole;
+  continuityContribution: string;
+  peakId?: string;
+}
+
+export interface MechanismFallbackContract {
+  id: string;
+  location: string;
+  primaryImplementation: string;
+  primaryAcceptance: string[];
+  fallbackImplementation: string;
+  fallbackTrigger: string;
+  triggerEvidenceRequired: string[];
+  userReapprovalRequired: boolean;
+  finalStatus: MechanismFinalStatus;
+  finalReason: string;
+  observedEvidenceIds: string[];
+}
+
+export interface AssetStrategyEntry {
+  id: string;
+  intendedRole: string;
+  requiredSubjectAndComposition: string;
+  priority: "user-supplied" | "external-sourced" | "generated" | "procedural";
+  sourcingAttempted: boolean;
+  candidateSources: { url: string; rights: string }[];
+  generationChosen: boolean;
+  generationRationale: string;
+  classification: SpatialAssetClassification;
+  sourcePath: string | null;
+  productionDerivatives: string[];
+  usedAt: string[];
+  survivedFinalImplementation: boolean;
+  shipping: boolean;
+  sizeBudgetBytes?: number;
+  mobileVariant?: string;
+  poster?: string;
+  loadingStrategy?: string;
+}
+
+export interface ExperimentalPeakContract {
+  id: string;
+  chapter: string;
+  mechanismFamily: string;
+  plannedBehaviour: string;
+  startState: string;
+  activeState: string;
+  resolution: string;
+  inputRelationship: string;
+  mobileStrategy: string;
+  reducedMotionStrategy: string;
+  fallbackState: string;
+  prototypeRiskFamily: string;
+  acceptance: string[];
+}
+
+export interface PrototypeContract {
+  id: string;
+  riskFamily: string;
+  mechanismId: string;
+  required: boolean;
+  status: "pending" | "passed" | "failed" | "skipped";
+  validates: string;
+  limitations: string;
+  evidenceIds: string[];
 }
 
 export interface ExperienceArc {
@@ -81,22 +158,28 @@ export interface PlanContract {
     successCriteria: string[];
   };
   creativeSources: CreativeSourcePolicy;
+  capabilityPreflight?: ProjectPreflight;
   workflow: WorkflowConfiguration;
   transformationDepth: "restyle" | "relayout" | "restructure" | "reimagine";
   selectedTreatments: SpecialistSkill[];
   allTreatmentsExplicit: boolean;
   allTreatmentsConfirmed: boolean;
   treatmentAllocation: TreatmentAllocation[];
+  continuityOwner: "immersive" | "cinematic" | "motion" | "none";
   preservationRequirements: string[];
   selectedConcept: string;
   blueprint: { pageId: string; sectionId: string; intent: string; signatureMoment?: string }[];
+  experienceDistribution: ExperienceDistributionEntry[];
+  experimentalPeaks: ExperimentalPeakContract[];
+  prototypeContracts: PrototypeContract[];
+  assetStrategy: AssetStrategyEntry[];
   experienceArc?: ExperienceArc;
   motionAndMediaStrategy: string;
   mobileTranslation: string;
   functionalTruthRequirements: string[];
   performanceBudget: string[];
   acceptanceCriteria: string[];
-  mechanismFallbacks: { mechanism: string; fallback: string; approved: boolean }[];
+  mechanismFallbacks: MechanismFallbackContract[];
   conceptExemptions: { gate: string; reason: string; approved: boolean }[];
   changeRequests: {
     id: string;
@@ -135,6 +218,25 @@ export interface PlanExecution {
       reviewer: "user" | "independent-critic" | "none";
       evidenceIds: string[];
     };
+    adaptiveSpread?: {
+      status: "not-required" | "pending" | "passed" | "failed";
+      approval: "none" | "internal" | "explicit";
+      desktopEvidenceIds: string[];
+      mobileEvidenceIds: string[];
+      peakEvidence: { peakId: string; start: string[]; active: string[]; resolved: string[] }[];
+      mechanismTableComplete: boolean;
+      fallbackDisclosureComplete: boolean;
+      sectionRoleCoverageComplete: boolean;
+      continuousRecordingRequired: boolean;
+      continuousRecordingEvidenceIds: string[];
+      mobileRecordingRequired: boolean;
+      mobileRecordingEvidenceIds: string[];
+      reverseScrollRequired: boolean;
+      reverseScrollEvidenceIds: string[];
+      montageRequired: boolean;
+      montageEvidenceIds: string[];
+      approvedAt?: string;
+    };
   };
   bindings: { id: string; treatment: SpecialistSkill; files: string[]; selectors: string[]; mechanism: string; evidenceIds: string[] }[];
   evidence: {
@@ -147,6 +249,34 @@ export interface PlanExecution {
     reducedMotion: string[];
     treatmentEvidence: Partial<Record<SpecialistSkill, string[]>>;
     motionVocabulary: string[];
+    postFirstViewportEvents: string[];
+    treatmentObservations: Partial<Record<SpecialistSkill, {
+      start: string[];
+      active: string[];
+      resolved: string[];
+      inputEffect: string[];
+      mobile: string[];
+      fallback: string[];
+      assetClassifications?: SpatialAssetClassification[];
+    }>>;
+  };
+  run?: {
+    runId: string;
+    contractHash: string;
+    sourceHash: string;
+    gitIdentity: string | null;
+    createdAt: string;
+    workflow: WorkflowConfiguration;
+    evidenceFiles: string[];
+    assetManifest: string[];
+    approvedChangeRequests: string[];
+    finalizationStatus: "pending" | "passed" | "failed";
+  };
+  assetObservation?: {
+    manifestEntries: string[];
+    filesOnDisk: string[];
+    applicationReferences: string[];
+    weights: Record<string, number>;
   };
   browserValidation?: {
     checkedAt: string;
@@ -199,7 +329,7 @@ export interface PlanExecution {
 }
 
 export interface CanonicalPlan {
-  version: 7;
+  version: 8;
   contract: PlanContract;
   approval: PlanApproval;
   execution: PlanExecution;
@@ -237,8 +367,10 @@ export function readPlan(projectDir: string): CanonicalPlan {
   try { value = parse(fs.readFileSync(file, "utf8")); }
   catch (error) { throw new Error(`cannot parse ${PLAN_FILE}: ${String(error)}`); }
   const plan = value as Partial<CanonicalPlan> | null;
-  if (!plan || plan.version !== 7 || !plan.contract || !plan.approval || !plan.execution)
-    throw new Error(`${PLAN_FILE} must contain version, contract, approval and execution`);
+  if ((plan as { version?: number } | null)?.version === 7)
+    throw new Error(`${PLAN_FILE} is canonical v7; migrate it to v8 before implementation so capability, route-distribution, asset and run-identity contracts can be reviewed`);
+  if (!plan || plan.version !== 8 || !plan.contract || !plan.approval || !plan.execution)
+    throw new Error(`${PLAN_FILE} must contain canonical v8 version, contract, approval and execution`);
   return value as CanonicalPlan;
 }
 
@@ -306,10 +438,12 @@ export function createPlan(projectDir: string, input: {
       allTreatmentsExplicit: input.allTreatmentsExplicit ?? false,
       allTreatmentsConfirmed: input.allTreatmentsConfirmed ?? false,
       treatmentAllocation: selected.map((treatment) => ({
-        treatment, priority: treatment === "ux" || treatment === "mobile" ? "foundation" : "supporting",
-        locations: [], contribution: "", dependencies: [], acceptance: [],
+        treatment, priority: treatment === "ux" || treatment === "mobile" ? "foundation" : treatment === "motion" || treatment === "interaction" || treatment === "media" || treatment === "immersive" || treatment === "experimental" ? "primary" : "supporting",
+        locations: [], contribution: "", dependencies: treatment === "ux" ? [] : treatment === "mobile" ? ["ux"] : treatment === "refined" ? ["ux", "mobile"] : treatment === "motion" || treatment === "interaction" || treatment === "media" || treatment === "3d" ? ["ux", "mobile"] : ["motion", "interaction", "media", "ux", "mobile"],
+        acceptance: [], routeRole: treatment === "ux" || treatment === "mobile" || treatment === "refined" ? "foundation" : treatment === "immersive" || treatment === "cinematic" ? "connective-tissue" : "peak",
       })),
-      preservationRequirements: [], selectedConcept: "", blueprint: [], motionAndMediaStrategy: "", mobileTranslation: "",
+      continuityOwner: "none",
+      preservationRequirements: [], selectedConcept: "", blueprint: [], experienceDistribution: [], experimentalPeaks: [], prototypeContracts: [], assetStrategy: [], motionAndMediaStrategy: "", mobileTranslation: "",
       functionalTruthRequirements: [], performanceBudget: [], acceptanceCriteria: [], mechanismFallbacks: [], conceptExemptions: [], changeRequests: [],
     },
     approval: { status: "pending", revision: 0, contractHash: null, approvedAt: null, approvedBy: null, decisionHistory: [{ at: createdAt, decision: "plan-created", contractHash: null }] },
@@ -318,7 +452,7 @@ export function createPlan(projectDir: string, input: {
       phases: ["intake", "planning", "approval", "prototype", "concept-checkpoint", "implementation", "critic", "audit", "finalization"].map((id) => ({ id, status: id === "intake" ? "in-progress" : "pending" })),
       checkpoints: {},
       bindings: [],
-      evidence: { transformations: [], sceneHandoffs: [], meaningfulInteractions: [], persistentSystemSections: [], pacing: [], mobileNative: [], reducedMotion: [], treatmentEvidence: {}, motionVocabulary: [] },
+      evidence: { transformations: [], sceneHandoffs: [], meaningfulInteractions: [], persistentSystemSections: [], pacing: [], mobileNative: [], reducedMotion: [], treatmentEvidence: {}, motionVocabulary: [], postFirstViewportEvents: [], treatmentObservations: {} },
       lastUpdatedAt: createdAt,
     },
   };
@@ -328,7 +462,7 @@ export function validateCanonicalPlan(value: unknown): string[] {
   const plan = value as Partial<CanonicalPlan> | null;
   if (!plan || typeof plan !== "object") return ["plan must be an object"];
   const errors: string[] = [];
-  if (plan.version !== 7) errors.push("plan.version must be 7");
+  if (plan.version !== 8) errors.push("plan.version must be 8; canonical v7 plans require migration and renewed approval");
   if (!plan.contract || typeof plan.contract !== "object") return [...errors, "plan.contract is required"];
   if (!plan.approval || typeof plan.approval !== "object") errors.push("plan.approval is required");
   if (!plan.execution || typeof plan.execution !== "object") errors.push("plan.execution is required");
@@ -346,6 +480,16 @@ export function validateCanonicalPlan(value: unknown): string[] {
   if (contract.allTreatmentsExplicit && TREATMENTS.some((item) => !contract.selectedTreatments.includes(item))) errors.push("explicit all-treatment selection cannot silently prune a treatment");
   const allocated = new Set((contract.treatmentAllocation ?? []).map((item) => item.treatment));
   for (const treatment of contract.selectedTreatments ?? []) if (!allocated.has(treatment)) errors.push(`selected treatment ${treatment} has no allocation`);
+  for (const allocation of contract.treatmentAllocation ?? []) {
+    const definition = treatment(allocation.treatment);
+    if (!Array.isArray(allocation.dependencies) || definition.dependencies.some((dependency) => !allocation.dependencies.includes(dependency)))
+      errors.push(`${allocation.treatment} allocation does not disclose required dependencies`);
+    if (!["peak", "connective-tissue", "foundation"].includes(allocation.routeRole)) errors.push(`${allocation.treatment} allocation needs a route role`);
+  }
+  if ((contract.selectedTreatments.includes("immersive") || contract.selectedTreatments.includes("cinematic")) && contract.continuityOwner === "none")
+    errors.push("Immersive or Cinematic selection requires one primary continuity owner");
+  if (contract.continuityOwner !== "none" && !contract.selectedTreatments.includes(contract.continuityOwner))
+    errors.push(`continuity owner ${contract.continuityOwner} is not selected`);
   if (contract.scope?.substantial) {
     if (!concrete(contract.selectedConcept, 12)) errors.push("substantial plan requires contract.selectedConcept");
     if (!Array.isArray(contract.blueprint) || contract.blueprint.length === 0) errors.push("substantial plan requires a page/section blueprint");
@@ -360,10 +504,48 @@ export function validateCanonicalPlan(value: unknown): string[] {
     if (contract.creativeSources?.references.preference === "provided" && contract.creativeSources.references.urls.length === 0 && contract.creativeSources.references.notes.length === 0)
       errors.push("reference preference is provided but no reference URLs or notes are recorded");
     if (!strings(contract.scope.successCriteria) || contract.scope.successCriteria.length === 0) errors.push("success criteria must be recorded in the user's language");
+    if (!contract.capabilityPreflight) errors.push("substantial planning requires creative capability preflight separate from permissions");
   }
   if (workflow && workflow.ambition !== "standard") {
     const arc = contract.experienceArc;
     if (!arc || Object.values(arc).some((item) => !concrete(item, 8))) errors.push(`${workflow.ambition} requires a complete experienceArc contract`);
+  }
+  if (workflow && ["expressive", "award", "experimental"].includes(workflow.ambition) && (contract.experienceDistribution ?? []).length === 0)
+    errors.push(`${workflow.ambition} requires route-level experience distribution`);
+  const distribution = contract.experienceDistribution ?? [];
+  if (distribution.length > 0) {
+    const orders = distribution.map((item) => item.order);
+    if (new Set(distribution.map((item) => `${item.pageId}/${item.sectionId}`)).size !== distribution.length) errors.push("experience distribution contains duplicate sections");
+    if (orders.some((order) => !Number.isInteger(order) || order < 0)) errors.push("experience distribution order must be non-negative integers");
+    if (distribution.some((item) => !concrete(item.continuityContribution, item.role === "functional-utility" ? 1 : 12)))
+      errors.push("every non-utility section needs a concrete continuity contribution");
+  }
+  if (workflow && (workflow.ambition === "award" || workflow.ambition === "experimental")) {
+    if (!distribution.some((item) => item.order > 0 && ["peak", "transformation"].includes(item.role)))
+      errors.push(`${workflow.ambition} requires a substantive experience event after the first viewport`);
+  }
+  if (workflow?.ambition === "experimental") {
+    const peaks = contract.experimentalPeaks ?? [];
+    if (peaks.length < 2 || peaks.length > 3) errors.push("Experimental requires two or three selected peaks");
+    if (new Set(peaks.map((item) => item.chapter)).size < 2) errors.push("Experimental peaks must be distributed across more than the hero chapter");
+    for (const peak of peaks) {
+      if ([peak.plannedBehaviour, peak.startState, peak.activeState, peak.resolution, peak.inputRelationship, peak.mobileStrategy, peak.reducedMotionStrategy, peak.fallbackState].some((item) => !concrete(item, 12)))
+        errors.push(`experimental peak ${peak.id || "unknown"} is incomplete`);
+      if (!peak.acceptance?.length) errors.push(`experimental peak ${peak.id || "unknown"} needs observable acceptance conditions`);
+    }
+  }
+  for (const mechanism of contract.mechanismFallbacks ?? []) {
+    if (!concrete(mechanism.id) || !concrete(mechanism.location) || !concrete(mechanism.primaryImplementation, 12) || !mechanism.primaryAcceptance?.length || !concrete(mechanism.fallbackImplementation, 12) || !concrete(mechanism.fallbackTrigger, 12))
+      errors.push(`mechanism fallback ${mechanism.id || "unknown"} is incomplete`);
+    if (mechanism.finalStatus === "fallback-triggered" && mechanism.observedEvidenceIds.length === 0) errors.push(`${mechanism.id}: fallback-triggered requires observed trigger evidence`);
+    if (mechanism.finalStatus === "approved-change" && !(contract.changeRequests ?? []).some((item) => item.status === "approved" && item.fields.some((field) => field.includes(mechanism.id))))
+      errors.push(`${mechanism.id}: approved-change requires an approved material change request`);
+    if (mechanism.finalStatus === "failed") errors.push(`${mechanism.id}: failed primary/fallback contract blocks approval`);
+  }
+  for (const asset of contract.assetStrategy ?? []) {
+    if (asset.priority === "external-sourced" && !asset.sourcingAttempted) errors.push(`${asset.id}: external sourcing priority requires a recorded sourcing attempt`);
+    if (asset.generationChosen && !concrete(asset.generationRationale, 20)) errors.push(`${asset.id}: generation choice requires a creative advantage rationale`);
+    if (asset.shipping && !asset.survivedFinalImplementation) errors.push(`${asset.id}: shipping asset did not survive final implementation`);
   }
   if (plan.approval?.status === "approved") {
     if (!concrete(plan.approval.contractHash) || plan.approval.contractHash !== contractHash(contract)) errors.push("approved contract hash does not match the current contract; approval is invalid");
@@ -420,7 +602,8 @@ function legacyAmbition(value: any): DesignAmbition {
 }
 
 export function migrateLegacyPlan(projectDir: string, legacy: any): { plan: CanonicalPlan; diagnostics: string[] } {
-  if (![3, 4, 5, 6].includes(Number(legacy?.version))) throw new Error(`cannot migrate plan version ${String(legacy?.version)}; expected v3-v6`);
+  if (![3, 4, 5, 6, 7].includes(Number(legacy?.version))) throw new Error(`cannot migrate plan version ${String(legacy?.version)}; expected v3-v7`);
+  if (Number(legacy?.version) === 7) return migrateCanonicalV7(projectDir, legacy);
   const diagnostics: string[] = [];
   const ambition = legacyAmbition(legacy);
   if (legacy.tier === "solid") diagnostics.push("tier solid migrated to contract.workflow.ambition=standard");
@@ -478,8 +661,51 @@ export function migrateLegacyPlan(projectDir: string, legacy: any): { plan: Cano
     mobileTranslation: plan.contract.mobileTranslation || "Legacy mobile composition requires user review.",
     finalResolution: legacy.awardJourney?.finalResolutionMomentId ?? "Legacy final resolution requires user review.",
   };
-  diagnostics.push("migration created an unapproved v7 contract; review .dreative/plan.yaml and approve it before implementation");
+  diagnostics.push("migration created an unapproved v8 contract; review .dreative/plan.yaml and approve it before implementation");
   return { plan, diagnostics };
+}
+
+export function migrateCanonicalV7(projectDir: string, legacy: any): { plan: CanonicalPlan; diagnostics: string[] } {
+  if (legacy?.version !== 7 || !legacy.contract) throw new Error("canonical v7 migration requires a v7 plan with contract");
+  const plan = createPlan(projectDir, {
+    workflow: legacy.contract.workflow,
+    target: legacy.contract.target,
+    substantial: legacy.contract.scope?.substantial,
+    projectKind: legacy.contract.scope?.projectKind,
+    transformationDepth: legacy.contract.transformationDepth,
+    treatments: legacy.contract.selectedTreatments,
+    allTreatmentsExplicit: legacy.contract.allTreatmentsExplicit,
+    allTreatmentsConfirmed: legacy.contract.allTreatmentsConfirmed,
+  });
+  plan.contract = {
+    ...plan.contract,
+    ...legacy.contract,
+    capabilityPreflight: undefined,
+    continuityOwner: legacy.contract.selectedTreatments?.includes("immersive") ? "immersive" : legacy.contract.selectedTreatments?.includes("cinematic") ? "cinematic" : "none",
+    treatmentAllocation: (legacy.contract.treatmentAllocation ?? []).map((item: any) => ({
+      ...item,
+      routeRole: item.treatment === "ux" || item.treatment === "mobile" || item.treatment === "refined" ? "foundation" : item.treatment === "immersive" || item.treatment === "cinematic" ? "connective-tissue" : "peak",
+    })),
+    experienceDistribution: [],
+    experimentalPeaks: [],
+    prototypeContracts: [],
+    assetStrategy: [],
+    mechanismFallbacks: (legacy.contract.mechanismFallbacks ?? []).map((item: any, index: number) => ({
+      id: item.id ?? `migrated-mechanism-${index + 1}`,
+      location: item.location ?? "migration-review-required",
+      primaryImplementation: item.mechanism ?? "Review the migrated primary implementation.",
+      primaryAcceptance: [],
+      fallbackImplementation: item.fallback ?? "Review the migrated fallback implementation.",
+      fallbackTrigger: "Migration requires a newly evidenced trigger.",
+      triggerEvidenceRequired: [],
+      userReapprovalRequired: true,
+      finalStatus: "not-applicable",
+      finalReason: "Migrated from v7 and requires review.",
+      observedEvidenceIds: [],
+    })),
+  };
+  plan.approval = { ...plan.approval, status: "pending", decisionHistory: [...plan.approval.decisionHistory, { at: now(), decision: "migrated-v7-to-v8", contractHash: null, note: "Capability preflight, route distribution, assets, mechanisms and run evidence require review." }] };
+  return { plan, diagnostics: ["canonical v7 migrated to unapproved v8; complete capability preflight, route distribution, asset strategy, mechanism governance and current-run evidence before approval"] };
 }
 
 export function exportPlanJson(plan: CanonicalPlan): string {

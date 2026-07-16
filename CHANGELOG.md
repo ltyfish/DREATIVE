@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.6.2 — full-route experimental governance
+
+- Added canonical plan v8 with informed treatment allocation, route roles,
+  distributed peaks, prototype risk families, deliberate assets and structured
+  primary/fallback status.
+- Separated permission, package runtime, sourcing, authoring, editing and
+  verification in creative capability preflight.
+- Added honest spatial classifications and a supplied/source/cutout/frames/
+  media-plane/static 3D fallback ladder.
+- Added a structured mechanism catalog, Adaptive Spread Validation, run-scoped
+  evidence identity, source-hash checks and three-way asset reconciliation.
+- Strengthened critic and canonical audit with per-peak, per-treatment and
+  per-mechanism evaluation plus the blocking hero-removed test.
+- Added adversarial coffee-roaster regression and corrected fixtures.
+
 ## 0.6.1 — plan governance and perceptual quality
 
 - Added canonical plan v7 at `.dreative/plan.yaml`, contract-only approval

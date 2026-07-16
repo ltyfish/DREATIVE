@@ -129,3 +129,7 @@ and usability. Refine when inspection finds a meaningful weakness; a clean pass
 does not require an arbitrary change. A static screenshot cannot prove choreography.
 
 Recipe reference: `../recipes/motion-recipes.md`, after concept exploration only.
+Canonical v8 requires structural start, active and resolved states. Prototype
+selection is by materially different unresolved risk family, capped at three;
+a successful hero probe does not prove downstream frame sequences or spatial
+selectors.

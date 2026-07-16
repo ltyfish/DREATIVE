@@ -15,6 +15,11 @@ function plan(): CanonicalPlan {
     treatments: ["ux", "mobile", "motion", "interaction", "media", "3d", "immersive", "cinematic", "experimental"],
   });
   value.contract.experienceArc = { openingState: "Grounded opening", firstTransformation: "Media reconstructs", sectionProgression: "Three chapters develop", peaksAndRests: "Peaks alternate with rests", persistentSystem: "Rail persists across sections", userControlledMoment: "Drag changes viewpoint", mobileTranslation: "Swipe changes compact scene", finalResolution: "Scene resolves into action" };
+  value.contract.experienceDistribution = [
+    { pageId: "home", sectionId: "hero", order: 0, role: "peak", continuityContribution: "The rail establishes the first route state." },
+    { pageId: "home", sectionId: "work", order: 1, role: "transformation", continuityContribution: "The rail becomes a product instrument." },
+    { pageId: "home", sectionId: "finale", order: 2, role: "peak", continuityContribution: "The rail resolves as a second authored peak." },
+  ];
   return value;
 }
 
@@ -56,9 +61,15 @@ test("a real temporal Award fixture can satisfy the anti-static gates", () => {
     pacing: ["hero peak", "reading rest"], mobileNative: ["swipe instrument"], reducedMotion: ["three intentional static states"],
     treatmentEvidence: { ux: ["workflow"], mobile: ["390 capture"], motion: ["recording"], interaction: ["drag trace"] },
     motionVocabulary: ["mask-reconstruction", "scene-handoff"],
+    postFirstViewportEvents: ["work section rail transformation"],
+    treatmentObservations: { motion: { start: ["intact"], active: ["fragmented"], resolved: ["rail"], inputEffect: [], mobile: ["compact"], fallback: [] }, interaction: { start: ["rest"], active: ["drag"], resolved: ["selected"], inputEffect: ["drag changes viewpoint"], mobile: ["swipe"], fallback: [] } },
   };
   value.execution.checkpoints.mechanismPrototype = { status: "passed", scope: "drag feasibility only", evidenceIds: ["prototype"] };
   value.execution.checkpoints.conceptCheckpoint = { status: "passed", actualHero: true, downstreamSection: true, realVisualSystem: true, mainTemporalOrMediaIdea: true, mobile390: true, reducedMotion: true, realApplication: true, reviewer: "independent-critic", evidenceIds: ["slice"] };
+  value.execution.checkpoints.adaptiveSpread = { status: "passed", approval: "explicit", desktopEvidenceIds: ["desktop"], mobileEvidenceIds: ["mobile"], peakEvidence: [], mechanismTableComplete: true, fallbackDisclosureComplete: true, sectionRoleCoverageComplete: true, continuousRecordingRequired: false, continuousRecordingEvidenceIds: [], mobileRecordingRequired: false, mobileRecordingEvidenceIds: [], reverseScrollRequired: false, reverseScrollEvidenceIds: [], montageRequired: false, montageEvidenceIds: [] };
   value.execution.browserValidation = { checkedAt: new Date().toISOString(), visibleImages: [], failedRequests: [], unexpectedHttpErrors: [], emptyCanvases: [], webglDraws: [], consoleErrors: [], runtimeErrors: [], productionMediaMissing: [] };
+  value.execution.assetObservation = { manifestEntries: [], filesOnDisk: [], applicationReferences: [], weights: {} };
+  value.approval.contractHash = "";
+  value.execution.run = { runId: "run-pass", contractHash: "", sourceHash: "source", gitIdentity: null, createdAt: new Date().toISOString(), workflow: value.contract.workflow, evidenceFiles: [".dreative/runs/run-pass/verify.json"], assetManifest: [], approvedChangeRequests: [], finalizationStatus: "passed" };
   assert.deepEqual(validateExperienceDelivery(value), []);
 });

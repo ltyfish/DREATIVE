@@ -31,8 +31,14 @@ test("focused simulated workflow covers intake, edit, approval, drift, broken me
     threeDAssets: "generation-and-sourcing-allowed", suppliedImageAssets: [], suppliedVideoAssets: [], suppliedThreeDAssets: [], missingOrNeededAssets: [],
   };
   plan.contract.scope.successCriteria = ["The experience visibly develops beyond the hero and all primary media loads."];
+  plan.contract.continuityOwner = "immersive";
   plan.contract.selectedConcept = "A living gallery rail transforms media and carries state through every chapter.";
   plan.contract.blueprint = [{ pageId: "home", sectionId: "hero", intent: "Open the gallery rail." }, { pageId: "home", sectionId: "work", intent: "Transform the rail downstream." }];
+  plan.contract.experienceDistribution = [
+    { pageId: "home", sectionId: "hero", order: 0, role: "peak", continuityContribution: "The gallery rail establishes the opening state." },
+    { pageId: "home", sectionId: "work", order: 1, role: "transformation", continuityContribution: "The gallery rail transforms after the first viewport." },
+    { pageId: "home", sectionId: "finale", order: 2, role: "peak", continuityContribution: "The gallery rail resolves as a second peak." },
+  ];
   plan.contract.experienceArc = { openingState: "Quiet rail", firstTransformation: "Hero media fragments into the rail", sectionProgression: "Rail develops through three sections", peaksAndRests: "Transformations alternate with calm reading", persistentSystem: "Gallery rail persists", userControlledMoment: "Drag changes media state", mobileTranslation: "Swipe changes compact rail", finalResolution: "Rail resolves into final action" };
   plan.contract.motionAndMediaStrategy = "Mask and spatial states hand off between chapters.";
   plan.contract.mobileTranslation = "Swipe and tap replace pointer drag at 390px.";

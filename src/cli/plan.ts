@@ -21,8 +21,9 @@ import {
   type PlanTarget,
 } from "../shared/planGovernance.js";
 import type { SpecialistSkill } from "../shared/skillSystem.js";
-import { renderTreatmentSummary } from "../shared/treatments.js";
+import { renderProposedTreatmentAllocation, renderTreatmentSummary } from "../shared/treatments.js";
 import type { WorkflowConfiguration } from "../shared/workflow.js";
+import { detectProjectPreflight } from "../shared/preflight.js";
 
 const value = (args: string[], flag: string) => {
   const index = args.indexOf(flag);
@@ -71,6 +72,7 @@ export function unresolvedCreativeSourceQuestions(args: string[]): string[] {
   if (!value(args, "--generated-video")) questions.push("Generated video: allowed, not allowed, or ask before each asset? Use --generated-video allow|deny|ask.");
   if (!value(args, "--sourced-video")) questions.push("Sourced video: may Dreative use externally sourced/licensed video, or ask first? Use --sourced-video allow|deny|ask.");
   if (!value(args, "--3d-assets")) questions.push("3D assets/props: choose not-allowed, supplied-only, external-sourcing-allowed, generation-and-sourcing-allowed, or ask-per-asset with --3d-assets.");
+  if (!value(args, "--package-install")) questions.push("Package installation: may Dreative install runtime packages? Use --package-install allow|deny. This does not grant media or authoring permission.");
   return questions;
 }
 
@@ -139,6 +141,7 @@ function init(projectDir: string, args: string[]): number {
   }
   const treatmentSelection = parseTreatments(args);
   console.log(renderTreatmentSummary(treatmentSelection.treatments, treatmentSelection.explicitAll));
+  console.log(renderProposedTreatmentAllocation(treatmentSelection.treatments, routes));
   if (treatmentSelection.explicitAll && !args.includes("--confirm-all")) {
     console.error("\nExplicit all-treatment selection requires one confirmation. Re-run with --confirm-all after reviewing the tension and cost summary.");
     return 2;
@@ -176,10 +179,26 @@ function init(projectDir: string, args: string[]): number {
   plan.contract.creativeSources.suppliedVideoAssets = values(value(args, "--supplied-video"));
   plan.contract.creativeSources.suppliedThreeDAssets = values(value(args, "--supplied-3d"));
   plan.contract.creativeSources.missingOrNeededAssets = values(value(args, "--missing-assets"));
+  const packagePermission = value(args, "--package-install");
+  if (packagePermission && !["allow", "deny"].includes(packagePermission)) throw new Error("invalid --package-install: use allow or deny");
+  plan.contract.scope.dependencyInstallationAllowed = packagePermission ? packagePermission === "allow" : null;
+  plan.contract.capabilityPreflight = detectProjectPreflight(projectDir, {
+    permissions: {
+      generatedImagesAllowed: plan.contract.creativeSources.generatedImages === "allowed",
+      externalImagesAllowed: plan.contract.creativeSources.sourcedImages === "allowed",
+      generatedVideoAllowed: plan.contract.creativeSources.generatedVideo === "allowed",
+      externalVideoAllowed: plan.contract.creativeSources.sourcedVideo === "allowed",
+      threeDPolicy: plan.contract.creativeSources.threeDAssets === "ask-per-asset" || plan.contract.creativeSources.threeDAssets === null
+        ? "not-allowed"
+        : plan.contract.creativeSources.threeDAssets,
+      packageInstallationAllowed: plan.contract.scope.dependencyInstallationAllowed === true,
+    },
+  });
   writePlan(projectDir, plan);
   console.log(`Created editable plan at ${PLAN_FILE}.`);
   console.log(`Workflow: ${workflow.ambition} ambition, ${workflow.execution} execution, ${workflow.prototype} prototype, ${workflow.purpose}.`);
   console.log(`Treatments: ${treatmentSelection.treatments.join(", ")}.`);
+  console.log("Capability preflight separates permissions, runtime packages, sourcing and authoring tools. Installing Three.js or GSAP does not add model, video or motion-authoring capability.");
   const errors = validateCanonicalPlan(plan);
   if (errors.length) {
     console.log("Planning intake remains incomplete:");
