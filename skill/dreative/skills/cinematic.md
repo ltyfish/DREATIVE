@@ -62,6 +62,6 @@ recordings/traces and state captures so it can judge pacing, rests, continuity,
 brand relationship, and whether media itself transforms.
 
 Recipe reference: `../recipes/cinematic-recipes.md`, after exploration only.
-Canonical v8 requires observable pacing and at least one meaningful scene
+Canonical v9 requires observable pacing and at least one meaningful scene
 handoff. Large headings, dark color and static photography do not count.
 Coordinate with Immersive so two whole-route timeline owners do not compete.

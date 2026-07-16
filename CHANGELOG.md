@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.7.0
+
+- Bumped the canonical contract to v9 and separated stable approved intent from
+  mutable mechanism, prototype, asset and evidence outcomes.
+- Added explicit all-ten treatment decisions, blocking substantial plan creation
+  when `--treatments` is omitted and requiring confirmation for `all`.
+- Rebuilt capability preflight around permission, category, detection source,
+  confidence, provider/package and verification evidence. Canvas/WebGL now start
+  expected but unverified.
+- Added capabilities-file and repeatable capability CLI input, external-first
+  sourcing enforcement, runtime capability upgrades and v8-to-v9 migration with
+  explicit source/lineage safeguards.
+- Strengthened docs and installed-skill checks around canonical version and
+  permission/capability truthfulness.
+
 ## 0.6.2 — full-route experimental governance
 
 - Added canonical plan v8 with informed treatment allocation, route roles,

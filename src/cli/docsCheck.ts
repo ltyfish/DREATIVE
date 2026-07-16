@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { SKILL_DEFINITIONS, resolveSkillDependencies } from "../shared/skillSystem.js";
 import type { ReflexFontRegistry, RuleRegistry } from "../shared/ruleSystem.js";
+import { PLAN_VERSION } from "../shared/planGovernance.js";
 
 export interface DocsCheckFinding {
   check: string;
@@ -64,9 +65,30 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
     }
   }
 
+  for (const [file, content] of contents) {
+    if (!file.endsWith(".md")) continue;
+    const sections = content.split(/(?=^#{1,6}\s)/m);
+    for (const section of sections) {
+      const heading = section.split(/\r?\n/, 1)[0];
+      const legacy = /\b(migration|legacy|historical)\b/i.test(heading);
+      if (!legacy && /\b(?:write|create|current schema|contract|plan(?:\.yaml)?)\b[^\n]{0,80}\bv7\b|\bv7\b[^\n]{0,80}\b(?:write|create|current schema|contract|plan(?:\.yaml)?)/i.test(section))
+        add(findings, "canonical-version", file, "active workflow instructs creation or use of v7 outside a migration/legacy section");
+    }
+    if (/(?:permission|allowed).{0,40}(?:makes?|means?|provides?).{0,40}(?:available|capability)|available-through-sourcing\s*\(user-permission\)/i.test(content))
+      add(findings, "capability-truth", file, "equates permission with detected capability");
+    if (/three\.?js.{0,40}(?:generate|create).{0,20}(?:model|3d asset)|ffmpeg.{0,40}(?:generate|create).{0,20}(?:original )?video/i.test(content))
+      add(findings, "capability-truth", file, "describes a runtime/processing package as creative authoring");
+    if (/write (?:the )?plan directly.{0,80}(?:skip|bypass|omit)|only (?:show|disclose).{0,30}recommended treatments/i.test(content))
+      add(findings, "treatment-selection", file, "allows direct-plan bypass or partial treatment disclosure");
+    if (/(?:always|universally|every project).{0,60}(?:full recording|dual recording|montage)/i.test(content))
+      add(findings, "adaptive-spread", file, "requires heavy recording universally instead of conditionally");
+  }
+
   const schemaFile = "schemas/plan.schema.json";
   try {
     const schema = JSON.parse(contents.get(schemaFile) ?? "{}") as any;
+    if (schema.properties?.version?.const !== PLAN_VERSION || !String(schema.title ?? "").includes(`v${PLAN_VERSION}`))
+      add(findings, "canonical-version", schemaFile, `schema must declare canonical v${PLAN_VERSION}`);
     const ambitions = schema.properties?.contract?.properties?.workflow?.$ref
       ? schema.$defs?.workflow?.properties?.ambition?.enum ?? []
       : [];

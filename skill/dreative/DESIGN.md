@@ -234,7 +234,7 @@ a headline, an image, a live demo, an interactive moment. Whatever form fits.
 - `dark-tech` — off-black surfaces, restrained neon, terminal cues used sparingly.
 - `trust` — public-sector/regulated: symmetric, motion ≤2, maximum legibility.
 
-### Optional design inputs (1-10, resolved before writing the v7 contract)
+### Optional design inputs (1-10, resolved before writing the v9 contract)
 
 - `variance` — 1 symmetry → 10 masonry/offsets/20vw empty zones. >4 forbids the
   centered-hero default. Any asymmetry collapses to clean single-column < 768px.

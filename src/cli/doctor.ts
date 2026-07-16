@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { detectProjectPreflight } from "../shared/preflight.js";
-import { PLAN_FILE, approvalStatus, readPlan, validateCanonicalPlan, writePlan } from "../shared/planGovernance.js";
+import { PLAN_FILE, PLAN_VERSION, approvalStatus, readPlan, validateCanonicalPlan, writePlan } from "../shared/planGovernance.js";
 import { detectCompetingOwners } from "../shared/runtimeReliability.js";
 import { checkSkillInstallation } from "./installSkill.js";
 
@@ -14,7 +14,7 @@ export function runDoctor(projectDir: string, options: { sourceDir: string; pack
   try {
     const plan = readPlan(projectDir);
     const errors = validateCanonicalPlan(plan);
-    checks.push({ name: "schema-and-plan", ok: errors.length === 0, detail: errors.join("; ") || "v7 plan valid" });
+    checks.push({ name: "schema-and-plan", ok: errors.length === 0, detail: errors.join("; ") || `canonical v${PLAN_VERSION} plan valid` });
     const approval = approvalStatus(plan);
     checks.push({ name: "contract-approval", ok: approval.approved, detail: approval.drifted ? "approved contract drifted" : approval.approved ? "contract hash current" : "plan is not approved" });
   } catch (error) { checks.push({ name: "schema-and-plan", ok: false, detail: String(error) }); }
@@ -58,4 +58,3 @@ export function printDoctor(report: DoctorReport): void {
   report.checks.forEach((item) => console.log(`${item.ok ? "PASS" : "FAIL"} ${item.name}: ${item.detail}`));
   console.log(report.ok ? "Dreative doctor passed." : "Dreative doctor found blockers.");
 }
-

@@ -1,18 +1,18 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://dreative.local/schemas/plan.schema.json",
-  "title": "Dreative Canonical Plan v8",
+  "title": "Dreative Canonical Plan v9",
   "type": "object",
   "additionalProperties": false,
   "required": ["version", "contract", "approval", "execution"],
   "properties": {
-    "version": { "const": 8 },
+    "version": { "const": 9 },
     "contract": {
       "type": "object",
       "additionalProperties": false,
       "required": [
         "target", "scope", "creativeSources", "workflow", "transformationDepth", "selectedTreatments",
-        "allTreatmentsExplicit", "allTreatmentsConfirmed", "treatmentAllocation", "continuityOwner",
+        "treatmentDecisions", "allTreatmentsExplicit", "allTreatmentsConfirmed", "treatmentAllocation", "continuityOwner",
         "preservationRequirements", "selectedConcept", "blueprint", "experienceDistribution",
         "experimentalPeaks", "prototypeContracts", "assetStrategy", "motionAndMediaStrategy",
         "mobileTranslation", "functionalTruthRequirements", "performanceBudget", "acceptanceCriteria",
@@ -31,6 +31,17 @@
         "workflow": { "$ref": "#/$defs/workflow" },
         "transformationDepth": { "enum": ["restyle", "relayout", "restructure", "reimagine"] },
         "selectedTreatments": { "$ref": "#/$defs/treatments" },
+        "treatmentDecisions": {
+          "type": "array", "minItems": 10, "maxItems": 10,
+          "items": {
+            "type": "object", "required": ["treatment", "state", "explicitlyDecided", "reason"],
+            "properties": {
+              "treatment": { "$ref": "#/$defs/treatment" },
+              "state": { "enum": ["foundational", "recommended", "selected", "declined", "not-applicable"] },
+              "explicitlyDecided": { "type": "boolean" }, "reason": { "type": "string" }
+            }
+          }
+        },
         "allTreatmentsExplicit": { "type": "boolean" },
         "allTreatmentsConfirmed": { "type": "boolean" },
         "continuityOwner": { "enum": ["immersive", "cinematic", "motion", "none"] },
@@ -112,13 +123,14 @@
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["id", "category", "status", "source", "notes"],
+              "required": ["id", "category", "permission", "status", "detectionSource", "confidence", "verificationEvidence", "limitation", "permittedSubstitutes"],
             "properties": {
               "id": { "type": "string" },
-              "category": { "enum": ["runtime", "authoring", "sourcing", "verification"] },
-              "status": { "enum": ["available", "available-after-package-installation", "available-through-sourcing", "available-only-with-supplied-assets", "unavailable", "permission-denied"] },
-              "source": { "type": "string" },
-              "notes": { "type": "string" }
+              "category": { "enum": ["creative-authoring", "sourcing", "runtime-rendering", "processing", "verification"] },
+              "permission": { "enum": ["allowed", "denied", "not-applicable"] },
+              "status": { "enum": ["available", "available-after-package-install", "available-through-confirmed-tool", "available-through-supplied-asset", "expected-browser-api-unverified", "permitted-but-tool-unverified", "permission-denied", "unavailable", "runtime-verification-failed"] },
+              "detectionSource": { "type": "string" }, "confidence": { "enum": ["verified", "detected", "expected", "unverified"] },
+              "verificationEvidence": { "$ref": "#/$defs/strings" }, "limitation": { "type": "string" }, "permittedSubstitutes": { "$ref": "#/$defs/strings" }
             }
           }
         }
@@ -138,37 +150,36 @@
     },
     "prototype": {
       "type": "object",
-      "required": ["id", "riskFamily", "mechanismId", "required", "status", "validates", "limitations", "evidenceIds"],
+      "required": ["id", "riskFamily", "mechanismId", "required", "uncertainty", "acceptanceConditions", "maximumScope", "failureImplications"],
       "properties": {
         "id": { "type": "string" }, "riskFamily": { "type": "string" }, "mechanismId": { "type": "string" },
-        "required": { "type": "boolean" }, "status": { "enum": ["pending", "passed", "failed", "skipped"] },
-        "validates": { "type": "string" }, "limitations": { "type": "string" }, "evidenceIds": { "$ref": "#/$defs/strings" }
+        "required": { "type": "boolean" }, "uncertainty": { "type": "string" }, "acceptanceConditions": { "$ref": "#/$defs/strings" },
+        "maximumScope": { "type": "string" }, "failureImplications": { "type": "string" }
       }
     },
     "asset": {
       "type": "object",
-      "required": ["id", "intendedRole", "requiredSubjectAndComposition", "priority", "sourcingAttempted", "candidateSources", "generationChosen", "generationRationale", "classification", "sourcePath", "productionDerivatives", "usedAt", "survivedFinalImplementation", "shipping"],
+      "required": ["id", "intendedRole", "requiredSubjectAndComposition", "priority", "sourcingPolicy", "generationPolicy", "generationRationale", "classification", "rightsRequirements", "expectedFormatsAndVariants", "requiredLocations", "reusePolicy", "suitableExternalMediaCouldExist"],
       "properties": {
         "id": { "type": "string" }, "intendedRole": { "type": "string" }, "requiredSubjectAndComposition": { "type": "string" },
         "priority": { "enum": ["user-supplied", "external-sourced", "generated", "procedural"] },
-        "sourcingAttempted": { "type": "boolean" }, "candidateSources": { "type": "array", "items": { "type": "object", "required": ["url", "rights"] } },
-        "generationChosen": { "type": "boolean" }, "generationRationale": { "type": "string" },
+        "sourcingPolicy": { "enum": ["external-first", "generation-first-exemption", "supplied-only", "procedural"] },
+        "generationPolicy": { "enum": ["allowed-with-advantage", "not-allowed", "required-bespoke"] }, "generationRationale": { "type": "string" },
         "classification": { "enum": ["model", "spatial-cutout", "layered-billboard", "pre-rendered-angles", "frame-sequence", "webgl-media-plane", "static-image"] },
-        "sourcePath": { "type": ["string", "null"] }, "productionDerivatives": { "$ref": "#/$defs/strings" }, "usedAt": { "$ref": "#/$defs/strings" },
-        "survivedFinalImplementation": { "type": "boolean" }, "shipping": { "type": "boolean" },
-        "sizeBudgetBytes": { "type": "integer", "minimum": 0 }, "mobileVariant": { "type": "string" }, "poster": { "type": "string" }, "loadingStrategy": { "type": "string" }
+        "rightsRequirements": { "$ref": "#/$defs/strings" }, "expectedFormatsAndVariants": { "$ref": "#/$defs/strings" },
+        "requiredLocations": { "$ref": "#/$defs/strings" }, "reusePolicy": { "type": "string" },
+        "suitableExternalMediaCouldExist": { "type": "boolean" }, "sizeBudgetBytes": { "type": "integer", "minimum": 0 }
       }
     },
     "mechanism": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "location", "primaryImplementation", "primaryAcceptance", "fallbackImplementation", "fallbackTrigger", "triggerEvidenceRequired", "userReapprovalRequired", "finalStatus", "finalReason", "observedEvidenceIds"],
+      "required": ["id", "location", "primaryImplementation", "primaryAcceptance", "fallbackImplementation", "fallbackTrigger", "triggerEvidenceRequired", "userReapprovalRequired", "allowedSubstitutions", "riskFamily", "prototypePolicy"],
       "properties": {
         "id": { "type": "string" }, "location": { "type": "string" }, "primaryImplementation": { "type": "string" },
         "primaryAcceptance": { "$ref": "#/$defs/strings" }, "fallbackImplementation": { "type": "string" }, "fallbackTrigger": { "type": "string" },
         "triggerEvidenceRequired": { "$ref": "#/$defs/strings" }, "userReapprovalRequired": { "type": "boolean" },
-        "finalStatus": { "enum": ["primary-delivered", "fallback-triggered", "approved-change", "not-applicable", "failed"] },
-        "finalReason": { "type": "string" }, "observedEvidenceIds": { "$ref": "#/$defs/strings" }
+        "allowedSubstitutions": { "$ref": "#/$defs/strings" }, "riskFamily": { "type": "string" }, "prototypePolicy": { "type": "string" }
       }
     }
   }

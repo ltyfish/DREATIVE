@@ -20,7 +20,7 @@ at selected peaks.
 
 Load specialist summaries first. Load recipes only for approved mechanisms.
 Fallbacks need prior approval and may not materially weaken the contract.
-# Canonical v8 corrective contract
+# Canonical v9 lifecycle-safe contract
 
 Selected treatments are approved delivery obligations, not labels. Canonical
 audit reconciles route roles, experimental peaks, primary/fallback outcomes,

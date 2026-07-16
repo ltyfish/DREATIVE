@@ -39,6 +39,10 @@ const USAGE = `usage: dreative [command]
                    --3d-assets not-allowed|supplied-only|external-sourcing-allowed|
                      generation-and-sourcing-allowed|ask-per-asset
                    --package-install allow|deny
+                   --treatments a,b | all --confirm-all
+                   --capabilities-file .dreative/capabilities.json
+                   --capability id=state (repeatable)
+                   migrate --source-plan <path> | --run-id <id> (v8 -> v9 supported)
   treatments       explain selected treatments [--all | --treatments a,b]
   doctor           verify skill, schema, packages, browser, source and current plan
   resume           continue safely from the last valid phase checkpoint

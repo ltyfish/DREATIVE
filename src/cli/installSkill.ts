@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { PLAN_VERSION } from "../shared/planGovernance.js";
 
 export const INSTALLER_SCHEMA_VERSION = 1;
 export const INSTALL_MANIFEST = ".dreative-install.json";
@@ -10,6 +11,7 @@ export const DREATIVE_AGENT_END = "<!-- dreative-skill:end -->";
 export interface InstallManifest {
   schemaVersion: 1;
   packageVersion: string;
+  canonicalPlanVersion: number;
   target: "claude" | "codex";
   installedAt: string;
   selectedSkills: string[];
@@ -65,7 +67,7 @@ export function installSkill(options: { sourceDir: string; projectDir: string; p
     fs.copyFileSync(source, target);
     hashes[relative] = hash(fs.readFileSync(target));
   }
-  const base = { schemaVersion: INSTALLER_SCHEMA_VERSION as 1, packageVersion: options.packageVersion, target: options.target, installedAt: options.installedAt ?? new Date().toISOString(), selectedSkills: [...options.selected].sort(), explicitAll: options.explicitAll, files: hashes };
+  const base = { schemaVersion: INSTALLER_SCHEMA_VERSION as 1, packageVersion: options.packageVersion, canonicalPlanVersion: PLAN_VERSION, target: options.target, installedAt: options.installedAt ?? new Date().toISOString(), selectedSkills: [...options.selected].sort(), explicitAll: options.explicitAll, files: hashes };
   const manifest: InstallManifest = { ...base, manifestHash: manifestDigest(base) };
   fs.writeFileSync(path.join(destination, INSTALL_MANIFEST), `${JSON.stringify(manifest, null, 2)}\n`);
   if (options.target === "codex") updateAgentsPointer(options.projectDir);
@@ -82,6 +84,7 @@ export function checkSkillInstallation(options: { sourceDir: string; projectDir:
   const { manifestHash, ...base } = manifest;
   if (manifest.schemaVersion !== INSTALLER_SCHEMA_VERSION) errors.push(`installer schema must be ${INSTALLER_SCHEMA_VERSION}`);
   if (manifest.packageVersion !== options.packageVersion) errors.push(`installed package ${manifest.packageVersion} does not match ${options.packageVersion}`);
+  if (manifest.canonicalPlanVersion !== PLAN_VERSION) errors.push(`installed canonical plan v${String(manifest.canonicalPlanVersion)} does not match v${PLAN_VERSION}`);
   if (manifest.target !== options.target) errors.push(`manifest target ${manifest.target} does not match ${options.target}`);
   if (manifestHash !== manifestDigest(base)) errors.push("install manifest has been modified");
   const available = availableSkills(options.sourceDir);

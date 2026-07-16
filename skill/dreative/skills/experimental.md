@@ -2,7 +2,7 @@
 
 Selected experimental treatment owns one purposeful non-generic provocation with an implementation binding and evidence; an unusual label is not coverage.
 
-Canonical v8 requires two or three selected provocations distributed across
+Canonical v9 requires two or three selected provocations distributed across
 multiple chapters. Consider one non-obvious mechanism for each major chapter,
 then choose only the strongest peaks. Use the structured experimental mechanism
 catalog and bind each peak to states, assets, prototype risk, fallback and

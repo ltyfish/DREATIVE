@@ -65,6 +65,6 @@ record scene/camera/application state at controlled progress, not screenshots or
 console status alone.
 
 Recipe reference: `../recipes/immersive-recipes.md`, after exploration only.
-Canonical v8 requires one continuity owner and multi-section persistence. A
+Canonical v9 requires one continuity owner and multi-section persistence. A
 hero-only canvas followed by unrelated static sections fails. Calm rests must
 inherit, echo or prepare environmental state.

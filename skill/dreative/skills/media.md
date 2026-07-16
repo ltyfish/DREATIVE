@@ -159,7 +159,7 @@ Verification records:
 - frame time/FPS and transferred asset weight only for heavy or risky treatments.
 
 Recipe reference: `../recipes/media-recipes.md`, after concept exploration only.
-Canonical v8 asset priority is supplied, rights-safe sourced, advantageously
+Canonical v9 asset priority is supplied, rights-safe sourced, advantageously
 generated, then procedural. Record sourcing attempts, rights, generation
 rationale, derivatives, mobile variants, loading/poster states, route use and
 whether the asset survived. Reconcile manifest, disk and shipped references.

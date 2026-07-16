@@ -23,7 +23,8 @@ import {
 import type { SpecialistSkill } from "../shared/skillSystem.js";
 import { renderCompleteTreatmentReview } from "../shared/treatments.js";
 import type { WorkflowConfiguration } from "../shared/workflow.js";
-import { detectProjectPreflight, renderCreativeCapabilityPreflight } from "../shared/preflight.js";
+import { CAPABILITY_IDS, CAPABILITY_STATES, detectProjectPreflight, parseCapabilitiesFile, renderCreativeCapabilityPreflight, type CapabilityInput, type CreativeCapabilityId, type CapabilityStatus } from "../shared/preflight.js";
+import { parse } from "yaml";
 
 const value = (args: string[], flag: string) => {
   const index = args.indexOf(flag);
@@ -94,14 +95,34 @@ function missingWorkflow(workflow: Partial<WorkflowConfiguration>): string[] {
   return missing;
 }
 
-function parseTreatments(args: string[]): { treatments: SpecialistSkill[]; explicitAll: boolean } {
+function parseTreatments(args: string[], substantial: boolean): { treatments: SpecialistSkill[]; explicitAll: boolean; explicitDecision: boolean } {
   const raw = value(args, "--treatments");
-  if (!raw) return { treatments: ["ux", "mobile"], explicitAll: false };
-  if (raw.toLowerCase() === "all") return { treatments: [...TREATMENTS], explicitAll: true };
+  if (!raw) return { treatments: substantial ? [] : ["ux", "mobile"], explicitAll: false, explicitDecision: !substantial };
+  if (raw.toLowerCase() === "all") return { treatments: [...TREATMENTS], explicitAll: true, explicitDecision: true };
   const treatments = values(raw) as SpecialistSkill[];
   const unknown = treatments.filter((item) => !TREATMENTS.includes(item));
   if (unknown.length) throw new Error(`unknown treatment(s): ${unknown.join(", ")}`);
-  return { treatments: [...new Set<SpecialistSkill>(["ux", "mobile", ...treatments])], explicitAll: false };
+  return { treatments: [...new Set<SpecialistSkill>(treatments)], explicitAll: false, explicitDecision: true };
+}
+
+function capabilityInputs(projectDir: string, args: string[]): CapabilityInput[] {
+  const result: CapabilityInput[] = [];
+  const file = value(args, "--capabilities-file");
+  if (file) result.push(...parseCapabilitiesFile(path.resolve(projectDir, file)));
+  for (let index = 0; index < args.length; index++) {
+    if (args[index] !== "--capability") continue;
+    const declaration = args[index + 1] ?? "";
+    const [id, state] = declaration.split("=");
+    if (!CAPABILITY_IDS.includes(id as CreativeCapabilityId)) throw new Error(`unknown capability id: ${id}`);
+    if (!CAPABILITY_STATES.includes(state as CapabilityStatus)) throw new Error(`invalid capability state: ${state}`);
+    result.push({
+      id: id as CreativeCapabilityId, state: state as CapabilityStatus,
+      provider: state === "available-through-confirmed-tool" ? value(args, `--capability-provider-${id}`) ?? "cli-declared-tool" : undefined,
+      package: state === "available-after-package-install" ? value(args, `--capability-package-${id}`) ?? id : undefined,
+      verified: ["available", "available-through-confirmed-tool", "unavailable", "permission-denied", "runtime-verification-failed"].includes(state),
+    });
+  }
+  return result;
 }
 
 function permission(raw: string | undefined): "allowed" | "not-allowed" | "ask-per-asset" | null {
@@ -141,7 +162,14 @@ function init(projectDir: string, args: string[]): number {
     console.error("No .dreative/plan.yaml was written. Resolve permission separately from runtime and authoring capability, then re-run planning.");
     return 2;
   }
-  const treatmentSelection = parseTreatments(args);
+  const substantial = !args.includes("--tiny");
+  const treatmentSelection = parseTreatments(args, substantial);
+  console.log(renderCompleteTreatmentReview(treatmentSelection.treatments, routes));
+  if (!treatmentSelection.explicitDecision) {
+    console.error("\nMissing explicit treatment selection. Recommendations are not approval, and UX/Mobile cannot silently substitute for an optional-treatment decision.");
+    console.error("No .dreative/plan.yaml was written. Re-run with --treatments <comma-list> or --treatments all --confirm-all.");
+    return 2;
+  }
   const generatedImages = permission(value(args, "--generated-images"));
   const sourcedImages = permission(value(args, "--sourced-images"));
   const generatedVideo = permission(value(args, "--generated-video"));
@@ -160,8 +188,8 @@ function init(projectDir: string, args: string[]): number {
       threeDPolicy: threeD === "ask-per-asset" ? "not-allowed" : threeD as "not-allowed" | "supplied-only" | "external-sourcing-allowed" | "generation-and-sourcing-allowed",
       packageInstallationAllowed: packagePermission === "allow",
     },
+    explicitCapabilities: capabilityInputs(projectDir, args),
   });
-  console.log(renderCompleteTreatmentReview(treatmentSelection.treatments, routes));
   console.log(renderCreativeCapabilityPreflight(capabilityPreflight));
   if (treatmentSelection.explicitAll && !args.includes("--confirm-all")) {
     console.error("\nExplicit all-treatment selection requires confirmation after the complete allocation and capability preflight. No .dreative/plan.yaml was written. Re-run with --confirm-all.");
@@ -170,10 +198,11 @@ function init(projectDir: string, args: string[]): number {
   const plan = createPlan(projectDir, {
     workflow: workflow as WorkflowConfiguration,
     target,
-    substantial: !args.includes("--tiny"),
+    substantial,
     projectKind: args.includes("--from-scratch") ? "from-scratch" : "redesign",
     transformationDepth: (value(args, "--depth") as CanonicalPlan["contract"]["transformationDepth"]) ?? "restructure",
     treatments: treatmentSelection.treatments,
+    treatmentDecisionExplicit: treatmentSelection.explicitDecision,
     allTreatmentsExplicit: treatmentSelection.explicitAll,
     allTreatmentsConfirmed: treatmentSelection.explicitAll && args.includes("--confirm-all"),
   });
@@ -252,16 +281,45 @@ function diff(projectDir: string): number {
 }
 
 function migrate(projectDir: string, args: string[]): number {
-  const source = path.resolve(projectDir, value(args, "--from") ?? ".dreative/plan.json");
+  const explicit = value(args, "--source-plan") ?? value(args, "--from");
+  const candidates = [
+    path.join(projectDir, ".dreative", "plan.yaml"),
+    path.join(projectDir, ".dreative", "plan.json"),
+    ...findRunPlans(path.join(projectDir, ".dreative", "runs")),
+  ].filter((file) => fs.existsSync(file));
+  if (!explicit && candidates.length !== 1) throw new Error(`migration source is ambiguous; candidates:\n${candidates.map((item) => `- ${item}`).join("\n")}\nUse --source-plan <path> or --run-id <id>.`);
+  const runId = value(args, "--run-id");
+  const selected = runId ? candidates.filter((item) => item.includes(`${path.sep}runs${path.sep}${runId}${path.sep}`)) : explicit ? [path.resolve(projectDir, explicit)] : candidates;
+  if (selected.length !== 1) throw new Error(`migration source selection resolved ${selected.length} plans; use an exact --source-plan`);
+  const source = selected[0];
   if (!source.startsWith(path.resolve(projectDir) + path.sep) || !fs.existsSync(source)) throw new Error(`missing legacy plan: ${source}`);
   let legacy: unknown;
-  try { legacy = JSON.parse(fs.readFileSync(source, "utf8")); }
-  catch (error) { throw new Error(`legacy plan is not valid JSON: ${String(error)}`); }
+  try { legacy = source.endsWith(".yaml") ? parse(fs.readFileSync(source, "utf8")) : JSON.parse(fs.readFileSync(source, "utf8")); }
+  catch (error) { throw new Error(`source plan cannot be parsed: ${String(error)}`); }
+  const sourcePlan = legacy as any;
+  const sourceHash = sourcePlan?.approval?.contractHash ?? (sourcePlan?.contract ? "unapproved" : "legacy");
+  const runTitle = sourcePlan?.execution?.run?.contractTitle;
+  const direction = sourcePlan?.contract?.selectedConcept;
+  if (runTitle && direction && runTitle !== direction) throw new Error(`migration lineage mismatch: run identity "${runTitle}" differs from contract direction "${direction}". Select the corresponding source plan explicitly; approval will not be fabricated.`);
   const result = migrateLegacyPlan(projectDir, legacy);
   writePlan(projectDir, result.plan);
+  console.log(`MIGRATION source path: ${source}`);
+  console.log(`MIGRATION source version: ${String(sourcePlan?.version)}`);
+  console.log(`MIGRATION source direction: ${direction || "unknown"}`);
+  console.log(`MIGRATION source contract hash: ${sourceHash}`);
+  console.log(`MIGRATION target version: ${result.plan.version}`);
   result.diagnostics.forEach((item) => console.log(`MIGRATION ${item}`));
   console.log(`Wrote ${planPath(projectDir)}.`);
   return 0;
+}
+
+function findRunPlans(root: string): string[] {
+  if (!fs.existsSync(root)) return [];
+  return fs.readdirSync(root, { withFileTypes: true }).flatMap((entry) => {
+    const absolute = path.join(root, entry.name);
+    if (entry.isDirectory()) return findRunPlans(absolute);
+    return /^plan\.(?:yaml|json)$/.test(entry.name) ? [absolute] : [];
+  });
 }
 
 export function runPlanCommand(projectDir: string, args: string[]): number {

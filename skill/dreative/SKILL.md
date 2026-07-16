@@ -19,7 +19,7 @@ Use this workflow for substantial interactive design and redesign.
    missing assets, and 3D props/assets.
 4. Explain candidate treatments using `references/SKILL_CONTRACT.md`. User
    selection is authoritative. Regex routing is suggestion-only.
-5. Write the single editable contract to `.dreative/plan.yaml` v7. Summarize it,
+5. Write the single editable contract to `.dreative/plan.yaml` v9. Summarize it,
    tell the user where it is, and wait for approval before substantial source
    implementation.
 6. Hash only `contract`. Machine updates belong in `execution`. Any material
@@ -53,7 +53,14 @@ Specialists:
 - `cinematic`: pacing, framing and scene handoffs.
 - `experimental`: two or three purposeful unconventional peaks.
 
-## Canonical v8 corrective rules
+## Canonical v9 lifecycle rules
+
+- Disclose all ten treatments before writing a substantial contract. Recommendations remain recommendations. The user must explicitly select or decline the optional treatments; only then add UX and Mobile as mandatory foundations. `all` requires an explicit confirmation.
+- Keep stable intent in `contract`: treatment decisions and allocation, mechanism primary/fallback policy, prototype uncertainty and acceptance, and asset requirements/policies.
+- Keep observations in `execution`: pending/progress/final mechanism status, trigger evidence, prototype attempts/results, sourcing attempts, generated files, asset survival, browser results, critic findings and spread evidence. Never pre-claim a final outcome in the approved contract.
+- Permission is not capability. A connected authoring or sourcing tool must be explicitly detected or declared. Canvas, WebGL, video playback and other browser APIs begin as expected but unverified and become available only through current browser evidence.
+- Asset order is supplied, rights-safe external sourcing, advantageously generated, then procedural. When a confirmed sourcing tool exists and suitable media could exist, record a search attempt or a concrete asset-specific generation-first exemption.
+- Direct YAML authoring follows the same rules: all ten treatment decision records are mandatory and mutable outcomes in `contract` are invalid.
 
 Before concept approval, show every selected treatment's summary, substantive
 threshold, insufficiency examples, dependencies, tensions, cost, mobile/

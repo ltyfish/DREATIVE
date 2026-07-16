@@ -30,6 +30,7 @@ function completePlan(dir: string): CanonicalPlan {
     workflow: { ambition: "award", execution: "full-audit", prototype: "required", purpose: "dreative-dogfood" },
     target: { previewUrl: "http://localhost:4173", routeScope: { mode: "one-page", routes: ["/"] } },
     treatments: ["ux", "mobile", "motion", "interaction"],
+    treatmentDecisionExplicit: true,
   });
   plan.contract.scope.requiredFunctionality = ["Navigation and primary workflow remain operational."];
   plan.contract.scope.dependencyInstallationAllowed = true;
@@ -83,7 +84,7 @@ test("creative-source intake asks unresolved reference, media, 3D and package-pe
 
 test("values supplied by the user are recorded without being replaced", () => {
   const dir = root();
-  assert.equal(runPlanCommand(dir, ["init", "--ambition", "experimental", "--execution", "fast", "--prototype", "skip", "--purpose", "project-delivery", "--preview-url", "http://localhost:4173", "--routes", "/work", "--references", "https://example.com/ref", "--generated-images", "ask", "--sourced-images", "allow", "--generated-video", "deny", "--sourced-video", "ask", "--3d-assets", "supplied-only", "--supplied-3d", "assets/product.glb", "--package-install", "allow"]), 0);
+  assert.equal(runPlanCommand(dir, ["init", "--ambition", "experimental", "--execution", "fast", "--prototype", "skip", "--purpose", "project-delivery", "--preview-url", "http://localhost:4173", "--routes", "/work", "--treatments", "motion,interaction", "--references", "https://example.com/ref", "--generated-images", "ask", "--sourced-images", "allow", "--generated-video", "deny", "--sourced-video", "ask", "--3d-assets", "supplied-only", "--supplied-3d", "assets/product.glb", "--package-install", "allow"]), 0);
   const plan = readPlan(dir);
   assert.deepEqual(plan.contract.workflow, { ambition: "experimental", execution: "fast", prototype: "skip", purpose: "project-delivery" });
   assert.deepEqual(plan.contract.target.routeScope.routes, ["/work"]);
@@ -96,6 +97,19 @@ test("values supplied by the user are recorded without being replaced", () => {
   assert.deepEqual(plan.contract.creativeSources.suppliedThreeDAssets, ["assets/product.glb"]);
 });
 
+test("capabilities file records confirmed tools without converting permission into availability", () => {
+  const dir = root();
+  fs.writeFileSync(path.join(dir, "capabilities.json"), JSON.stringify({ capabilities: [
+    { id: "image-search", state: "available-through-confirmed-tool", provider: "rights-safe-search", verified: true },
+    { id: "video-generation", state: "unavailable", verified: true },
+  ] }));
+  assert.equal(runPlanCommand(dir, ["init", "--ambition", "standard", "--execution", "lean", "--prototype", "auto", "--purpose", "project-delivery", "--preview-url", "http://localhost:4173", "--routes", "/", "--treatments", "refined", "--capabilities-file", "capabilities.json", "--no-references", "--generated-images", "allow", "--sourced-images", "allow", "--generated-video", "allow", "--sourced-video", "allow", "--3d-assets", "not-allowed", "--package-install", "deny"]), 0);
+  const capabilities = new Map(readPlan(dir).contract.capabilityPreflight?.creativeCapabilities.map((item) => [item.id, item]));
+  assert.equal(capabilities.get("image-search")?.status, "available-through-confirmed-tool");
+  assert.equal(capabilities.get("video-generation")?.status, "unavailable");
+  assert.equal(capabilities.get("image-generation")?.status, "permitted-but-tool-unverified");
+});
+
 test("all treatments require confirmation and remain selected", () => {
   const dir = root();
   const args = ["init", "--ambition", "award", "--execution", "lean", "--prototype", "auto", "--purpose", "project-delivery", "--preview-url", "http://localhost:4173", "--routes", "/", "--treatments", "all", ...resolvedCreativeArgs];
@@ -105,6 +119,13 @@ test("all treatments require confirmation and remain selected", () => {
   const plan = readPlan(dir);
   assert.equal(plan.contract.allTreatmentsExplicit, true);
   assert.equal(plan.contract.selectedTreatments.length, 10);
+});
+
+test("substantial plan without explicit treatments writes no contract", () => {
+  const dir = root();
+  const result = runPlanCommand(dir, ["init", "--ambition", "standard", "--execution", "lean", "--prototype", "auto", "--purpose", "project-delivery", "--preview-url", "http://localhost:4173", "--routes", "/", ...resolvedCreativeArgs]);
+  assert.equal(result, 2);
+  assert.equal(fs.existsSync(path.join(dir, ".dreative", "plan.yaml")), false);
 });
 
 test("unresolved creative capability intake never writes a contract", () => {
@@ -120,11 +141,20 @@ test("validation rejects placeholder treatment allocations", () => {
     workflow: { ambition: "standard", execution: "lean", prototype: "auto", purpose: "project-delivery" },
     target: { previewUrl: "http://localhost:4173", routeScope: { mode: "one-page", routes: ["/"] } },
     treatments: ["ux", "mobile"],
+    treatmentDecisionExplicit: true,
   });
   const errors = validateCanonicalPlan(plan);
   assert.ok(errors.some((item) => item.includes("concrete page or section locations")));
   assert.ok(errors.some((item) => item.includes("substantive delivery contribution")));
   assert.ok(errors.some((item) => item.includes("observable acceptance condition")));
+});
+
+test("direct canonical YAML cannot bypass all-ten treatment decisions", () => {
+  const dir = root();
+  const plan: any = completePlan(dir);
+  plan.contract.treatmentDecisions = plan.contract.treatmentDecisions.slice(0, 5);
+  const errors = validateCanonicalPlan(plan);
+  assert.ok(errors.some((item) => item.includes("all ten treatments")));
 });
 
 test("contract edits invalidate approval while execution updates do not", () => {
@@ -145,16 +175,60 @@ test("contract edits invalidate approval while execution updates do not", () => 
   assert.equal(approvedHash, contractHash(approved.contract));
 });
 
+test("mechanism, prototype, evidence and asset execution updates keep the approved hash stable", () => {
+  const dir = root();
+  const plan = completePlan(dir);
+  plan.contract.mechanismFallbacks = [{
+    id: "rail", location: "home/work", primaryImplementation: "A scroll-controlled editorial rail transforms media.",
+    primaryAcceptance: ["Distinct start, active and resolved states."], fallbackImplementation: "Three governed semantic states.",
+    fallbackTrigger: "Verified runtime failure prevents the primary rail.", triggerEvidenceRequired: ["browser failure trace"],
+    userReapprovalRequired: false, allowedSubstitutions: ["semantic-states"], riskFamily: "pinned-scroll", prototypePolicy: "required",
+  }];
+  plan.contract.prototypeContracts = [{
+    id: "rail-prototype", riskFamily: "pinned-scroll", mechanismId: "rail", required: true,
+    uncertainty: "Pin release and mobile lifecycle behavior.", acceptanceConditions: ["Pin releases without trapping scroll."],
+    maximumScope: "One representative section.", failureImplications: "Use only the approved semantic-states fallback.",
+  }];
+  plan.contract.assetStrategy = [{
+    id: "hero", intendedRole: "Editorial hero photograph", requiredSubjectAndComposition: "Coffee roasting with right-side negative space.",
+    priority: "external-sourced", sourcingPolicy: "external-first", generationPolicy: "allowed-with-advantage", generationRationale: "",
+    classification: "static-image", rightsRequirements: ["Commercial web use"], expectedFormatsAndVariants: ["AVIF desktop", "WebP mobile"],
+    requiredLocations: ["home/hero"], reusePolicy: "Hero only.", suitableExternalMediaCouldExist: true,
+  }];
+  writePlan(dir, plan);
+  approvePlan(dir);
+  const approved = readPlan(dir);
+  const hash = approved.approval.contractHash;
+  approved.execution.mechanisms.push({ id: "rail", status: "pending", finalReason: "", triggerObserved: false, triggerEvidenceIds: [], observedImplementation: "", observedEvidenceIds: [], substitutionUsed: null, approvalReference: null, criticVerdict: "pending" });
+  approved.execution.prototypes.push({ id: "rail-prototype", status: "passed", attemptCount: 1, evidenceIds: ["prototype"], observedResults: ["Pin releases."], correctiveIterations: [], implementationDecision: "Deliver primary." });
+  approved.execution.assets.push({ id: "hero", sourcingAttempts: [{ provider: "confirmed-search", query: "coffee roast editorial", at: new Date().toISOString(), result: "candidates" }], preSearchExemption: "", candidatesFound: [{ url: "https://example.com", rights: "licensed" }], selectedSource: "https://example.com", generatedDetails: "", actualFiles: ["hero.webp"], actualSizes: { "hero.webp": 1000 }, productionDerivatives: ["hero.webp"], usageLocations: ["home/hero"], browserObserved: true, survivedFinalImplementation: true, removedOrSubstituted: false, finalRightsRecord: "licensed", shipping: true });
+  approved.execution.evidence.transformations.push("rail transformation");
+  writePlan(dir, approved);
+  assert.equal(approvalStatus(readPlan(dir)).approved, true);
+  assert.equal(contractHash(readPlan(dir).contract), hash);
+});
+
+test("changing a primary mechanism or treatment allocation changes the contract hash", () => {
+  const plan = completePlan(root());
+  plan.contract.mechanismFallbacks = [{ id: "rail", location: "home", primaryImplementation: "Primary scroll rail transforms the route.", primaryAcceptance: ["Observable states"], fallbackImplementation: "Governed semantic states.", fallbackTrigger: "Verified runtime failure.", triggerEvidenceRequired: ["trace"], userReapprovalRequired: false, allowedSubstitutions: [], riskFamily: "scroll", prototypePolicy: "auto" }];
+  const original = contractHash(plan.contract);
+  plan.contract.mechanismFallbacks[0].primaryImplementation = "A different primary carousel replaces the rail.";
+  assert.notEqual(contractHash(plan.contract), original);
+  const second = contractHash(plan.contract);
+  plan.contract.treatmentAllocation[0].locations.push("home/footer");
+  assert.notEqual(contractHash(plan.contract), second);
+});
+
 test("v3-v6 plans migrate or produce precise diagnostics", () => {
   for (const version of [3, 4, 5, 6]) {
     const result = migrateLegacyPlan(root(), { version, tier: version === 3 ? "solid" : "premium", depth: "restructure", scope: "substantial", projectKind: "redesign", skills: ["ux", "mobile"], pages: [{ id: "home", sections: [{ id: "hero", layoutFamily: "split" }] }], designRead: { concept: "A migrated editorial route." } });
-    assert.equal(result.plan.version, 8);
-    assert.ok(result.diagnostics.some((item) => item.includes("unapproved v8")));
+    assert.equal(result.plan.version, 9);
+    assert.ok(result.diagnostics.some((item) => item.includes("unapproved v9")));
   }
-  assert.throws(() => migrateLegacyPlan(root(), { version: 2 }), /expected v3-v7/);
+  assert.throws(() => migrateLegacyPlan(root(), { version: 2 }), /expected v3-v8/);
 });
 
-test("canonical v7 migration produces clear v8 review guidance", () => {
+test("canonical v7 migration produces clear v9 review guidance", () => {
   const dir = root();
   const current = completePlan(dir);
   const legacy = {
@@ -168,10 +242,47 @@ test("canonical v7 migration produces clear v8 review guidance", () => {
     execution: current.execution,
   };
   const result = migrateLegacyPlan(dir, legacy);
-  assert.equal(result.plan.version, 8);
+  assert.equal(result.plan.version, 9);
   assert.equal(result.plan.approval.status, "pending");
   assert.ok(result.diagnostics.some((item) => item.includes("capability preflight")));
   assert.equal(result.plan.contract.mechanismFallbacks[0].userReapprovalRequired, true);
+});
+
+test("v8 migration moves mutable outcomes into execution and preserves exact approval lineage", () => {
+  const dir = root();
+  const current = completePlan(dir);
+  const legacy: any = JSON.parse(JSON.stringify(current));
+  legacy.version = 8;
+  delete legacy.contract.treatmentDecisions;
+  legacy.contract.mechanismFallbacks = [{
+    id: "rail", location: "home/work", primaryImplementation: "Scroll-controlled roast sequence.", primaryAcceptance: ["Distinct sequence states"],
+    fallbackImplementation: "Three semantic still states.", fallbackTrigger: "Verified decode failure.", triggerEvidenceRequired: ["trace"],
+    userReapprovalRequired: false, finalStatus: "primary-delivered", finalReason: "Observed.", observedEvidenceIds: ["rail-final"],
+  }];
+  legacy.contract.prototypeContracts = [{ id: "rail-prototype", riskFamily: "frame-sequence", mechanismId: "rail", required: true, status: "passed", validates: "Decode and scrub work.", limitations: "One browser only.", evidenceIds: ["prototype"] }];
+  legacy.contract.assetStrategy = [{ id: "hero", intendedRole: "Hero image", requiredSubjectAndComposition: "Coffee bag cutout with exact lighting.", priority: "generated", sourcingAttempted: false, candidateSources: [], generationChosen: true, generationRationale: "Exact brand-specific packaging requires a transparent cutout with controlled lighting.", classification: "spatial-cutout", sourcePath: "hero.webp", productionDerivatives: ["hero.webp"], usedAt: ["home/hero"], survivedFinalImplementation: true, shipping: true }];
+  legacy.approval = { ...legacy.approval, status: "approved", contractHash: contractHash(legacy.contract), approvedAt: new Date().toISOString(), approvedBy: "user" };
+  const migrated = migrateLegacyPlan(dir, legacy);
+  assert.equal(migrated.plan.version, 9);
+  assert.equal(migrated.plan.approval.status, "approved");
+  assert.equal(migrated.plan.contract.mechanismFallbacks[0] && "finalStatus" in migrated.plan.contract.mechanismFallbacks[0], false);
+  assert.equal(migrated.plan.execution.mechanisms[0].status, "primary-delivered");
+  assert.equal(migrated.plan.execution.prototypes[0].status, "passed");
+  assert.equal(migrated.plan.execution.assets[0].survivedFinalImplementation, true);
+  assert.equal(migrated.plan.approval.contractHash, contractHash(migrated.plan.contract));
+});
+
+test("ambiguous migration sources and mismatched visual direction are rejected", () => {
+  const dir = root();
+  fs.mkdirSync(path.join(dir, ".dreative", "runs", "night"), { recursive: true });
+  const legacy: any = completePlan(dir);
+  legacy.version = 8;
+  delete legacy.contract.treatmentDecisions;
+  legacy.execution.run = { contractTitle: "Night Shift", runId: "night" };
+  fs.writeFileSync(path.join(dir, ".dreative", "plan.json"), JSON.stringify(legacy));
+  fs.writeFileSync(path.join(dir, ".dreative", "runs", "night", "plan.json"), JSON.stringify(legacy));
+  assert.throws(() => runPlanCommand(dir, ["migrate"]), /ambiguous/);
+  assert.throws(() => runPlanCommand(dir, ["migrate", "--source-plan", ".dreative/plan.json"]), /lineage mismatch/);
 });
 
 test("validation rejects unresolved target and material intake", () => {

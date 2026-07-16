@@ -67,15 +67,15 @@ function runCanonicalPlanAudit(projectDir: string): AuditReport {
       findings.push(finding("error", "treatment-allocation", `${treatment} has no real implementation binding`));
   }
   const capabilities = new Map(plan.contract.capabilityPreflight?.creativeCapabilities.map((item) => [item.id, item]) ?? []);
-  if (plan.contract.assetStrategy.some((item) => item.priority === "generated" && item.classification !== "model") && capabilities.get("image-generation")?.status !== "available")
+  if (plan.contract.assetStrategy.some((item) => item.priority === "generated" && item.classification !== "model") && !["available", "available-through-confirmed-tool"].includes(capabilities.get("image-generation")?.status ?? ""))
     findings.push(finding("error", "capability-preflight", "the plan promises generated imagery but image-generation authoring is not available"));
-  if (plan.contract.assetStrategy.some((item) => item.priority === "generated" && /video|footage/i.test(item.intendedRole)) && capabilities.get("video-generation")?.status !== "available")
+  if (plan.contract.assetStrategy.some((item) => item.priority === "generated" && /video|footage/i.test(item.intendedRole)) && !["available", "available-through-confirmed-tool"].includes(capabilities.get("video-generation")?.status ?? ""))
     findings.push(finding("error", "capability-preflight", "the plan promises generated video but original video-generation authoring is not available"));
-  if (plan.contract.assetStrategy.some((item) => item.priority === "generated" && item.classification === "model") && capabilities.get("3d-model-generation")?.status !== "available")
+  if (plan.contract.assetStrategy.some((item) => item.priority === "generated" && item.classification === "model") && !["available", "available-through-confirmed-tool"].includes(capabilities.get("3d-model-generation")?.status ?? ""))
     findings.push(finding("error", "capability-preflight", "the plan promises a generated 3D model but no model-generation authoring tool is available; use the disclosed fallback ladder"));
-  if (capabilities.get("threejs-runtime")?.status === "available" && capabilities.get("3d-model-generation")?.status === "available" && capabilities.get("3d-model-generation")?.source === "package-preflight")
+  if (capabilities.get("threejs-runtime")?.status === "available" && capabilities.get("3d-model-generation")?.status === "available" && capabilities.get("3d-model-generation")?.detectionSource === "package-preflight")
     findings.push(finding("error", "capability-preflight", "Three.js runtime availability cannot be used as 3D model-generation evidence"));
-  if (capabilities.get("ffmpeg-editing")?.status === "available" && capabilities.get("video-generation")?.source === "environment")
+  if (capabilities.get("ffmpeg-processing")?.status === "available" && capabilities.get("video-generation")?.detectionSource === "environment")
     findings.push(finding("error", "capability-preflight", "FFmpeg editing cannot be used as original video-generation evidence"));
   if (plan.execution.runtime?.competingOwners.length) findings.push(finding("error", "runtime-owner", `competing ticker/scroll/render owners: ${plan.execution.runtime.competingOwners.join(", ")}`));
   if (plan.execution.runtime?.packageTransactions.some((item) => item.status === "failed")) findings.push(finding("error", "runtime-install", "a runtime package transaction failed without a completed rollback/recovery"));
@@ -576,8 +576,8 @@ export function runDirectDesignAudit(projectDir: string): AuditReport {
   findings.push(...checkVerificationProof(projectDir, verificationFile));
   const verification = fs.existsSync(verificationFile) ? (readJson(verificationFile) as VerificationReport) : undefined;
   if (plan.version !== 6 || plan.doctrineVersion !== 6) {
-    findings.push(finding("warning", "migration", "legacy plan.json is accepted for compatibility only; migrate v3-v7 plans to canonical plan.yaml v8 and recapture current verification evidence"));
-    if ((configuration.ambition === "award" || configuration.ambition === "experimental") && configuration.execution === "full-audit") findings.push(finding("error", "migration", "legacy plans cannot certify ambitious Full Audit completion; migrate to plan.yaml v8"));
+    findings.push(finding("warning", "migration", "legacy plan.json is accepted for compatibility only; migrate v3-v8 plans explicitly to canonical plan.yaml v9 and recapture current verification evidence"));
+    if ((configuration.ambition === "award" || configuration.ambition === "experimental") && configuration.execution === "full-audit") findings.push(finding("error", "migration", "legacy plans cannot certify ambitious Full Audit completion; migrate to plan.yaml v9"));
   } else {
     try {
       const { registry, reflexFonts } = loadRuleFiles();

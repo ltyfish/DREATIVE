@@ -19,6 +19,7 @@ function fixture(corrected: boolean): CanonicalPlan {
     workflow: { ambition: "experimental", execution: "full-audit", prototype: "auto", purpose: "dreative-dogfood" },
     target: { previewUrl: "http://localhost:4173", routeScope: { mode: "one-page", routes: ["/"] } },
     treatments: ["ux", "mobile", "motion", "interaction", "media", "3d", "immersive", "cinematic", "experimental"],
+    treatmentDecisionExplicit: true,
   });
   plan.contract.experimentalPeaks = peaks;
   plan.contract.experienceArc = { openingState: "Beans reconstruct in depth.", firstTransformation: "Fragments hand into roast states.", sectionProgression: "A roast trace travels through sourcing, selector and dispatch.", peaksAndRests: "Three peaks alternate with editorial rests.", persistentSystem: "The roast trace owns continuity.", userControlledMoment: "Scroll and drag alter media and viewpoint.", mobileTranslation: "Reduced frames and swipe preserve chapter roles.", finalResolution: "The trace closes around dispatch." };
@@ -33,9 +34,14 @@ function fixture(corrected: boolean): CanonicalPlan {
     id: peak.id, location: peak.chapter, primaryImplementation: peak.plannedBehaviour, primaryAcceptance: peak.acceptance,
     fallbackImplementation: peak.fallbackState, fallbackTrigger: "Measured runtime, decode or accessibility failure",
     triggerEvidenceRequired: ["failure trace"], userReapprovalRequired: true,
-    finalStatus: corrected ? "primary-delivered" : peak.id === "hero-fragments" ? "primary-delivered" : "fallback-triggered",
+    allowedSubstitutions: [], riskFamily: peak.prototypeRiskFamily, prototypePolicy: "auto",
+  }));
+  plan.execution.mechanisms = peaks.map((peak) => ({
+    id: peak.id, status: corrected ? "primary-delivered" : peak.id === "hero-fragments" ? "primary-delivered" : "fallback-triggered",
     finalReason: corrected ? "Primary acceptance conditions observed." : "Reduced to ordinary controls for convenience.",
+    triggerObserved: false, triggerEvidenceIds: [], observedImplementation: corrected ? peak.plannedBehaviour : "ordinary controls",
     observedEvidenceIds: corrected ? [`${peak.id}-start`, `${peak.id}-active`, `${peak.id}-resolved`] : [],
+    substitutionUsed: corrected ? null : "ordinary controls", approvalReference: null, criticVerdict: corrected ? "pass" : "fail",
   }));
   plan.execution.evidence = {
     transformations: corrected ? ["fragment reconstruction", "roast sequence"] : ["hero reconstruction"],
@@ -67,7 +73,7 @@ function fixture(corrected: boolean): CanonicalPlan {
   plan.execution.checkpoints.conceptCheckpoint = { status: "passed", actualHero: true, downstreamSection: true, realVisualSystem: true, mainTemporalOrMediaIdea: true, mobile390: true, reducedMotion: true, realApplication: true, reviewer: "independent-critic", evidenceIds: ["slice"] };
   plan.execution.checkpoints.adaptiveSpread = { status: corrected ? "passed" : "failed", approval: "explicit", desktopEvidenceIds: ["desktop"], mobileEvidenceIds: ["mobile"], peakEvidence: corrected ? peaks.map((peak) => ({ peakId: peak.id, start: [`${peak.id}-start`], active: [`${peak.id}-active`], resolved: [`${peak.id}-resolved`] })) : [{ peakId: "hero-fragments", start: ["hero-start"], active: ["hero-active"], resolved: ["hero-end"] }], mechanismTableComplete: corrected, fallbackDisclosureComplete: corrected, sectionRoleCoverageComplete: corrected, continuousRecordingRequired: true, continuousRecordingEvidenceIds: corrected ? ["route-recording"] : [], mobileRecordingRequired: false, mobileRecordingEvidenceIds: [], reverseScrollRequired: false, reverseScrollEvidenceIds: [], montageRequired: false, montageEvidenceIds: [] };
   plan.approval.contractHash = "contract";
-  plan.execution.run = { runId: "coffee-run", contractHash: "contract", sourceHash: "source", gitIdentity: null, createdAt: new Date().toISOString(), workflow: plan.contract.workflow, evidenceFiles: [".dreative/runs/coffee-run/verify.json"], assetManifest: plan.execution.assetObservation.manifestEntries, approvedChangeRequests: [], finalizationStatus: corrected ? "passed" : "failed" };
+  plan.execution.run = { runId: "coffee-run", contractHash: "contract", sourceHash: "source", gitIdentity: null, createdAt: new Date().toISOString(), workflow: plan.contract.workflow, planVersion: 9, capabilityPreflightIdentity: "preflight", contractTitle: plan.contract.selectedConcept, evidenceFiles: [".dreative/runs/coffee-run/verify.json"], assetManifest: plan.execution.assetObservation.manifestEntries, approvedChangeRequests: [], finalizationStatus: corrected ? "passed" : "failed" };
   return plan;
 }
 

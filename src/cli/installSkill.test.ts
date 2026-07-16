@@ -41,6 +41,17 @@ test("modified installed specialist fails installation check", () => {
   assert.ok(checkSkillInstallation({ sourceDir, projectDir: root, packageVersion: version, target: "claude" }).some((item) => item.includes("modified installed")));
 });
 
+test("older installed canonical skill is detected", () => {
+  const root = temporary(); const selected = availableSkills(sourceDir);
+  installSkill({ sourceDir, projectDir: root, packageVersion: version, target: "codex", selected, explicitAll: true });
+  const manifestFile = path.join(installationDirectory(root, "codex"), ".dreative-install.json");
+  const manifest = JSON.parse(fs.readFileSync(manifestFile, "utf8"));
+  manifest.canonicalPlanVersion = 8;
+  fs.writeFileSync(manifestFile, JSON.stringify(manifest, null, 2));
+  const errors = checkSkillInstallation({ sourceDir, projectDir: root, packageVersion: version, target: "codex" });
+  assert.ok(errors.some((item) => item.includes("canonical plan v8")));
+});
+
 test("reinstall removes obsolete unselected specialist files", () => {
   const root = temporary(); const selected = availableSkills(sourceDir);
   installSkill({ sourceDir, projectDir: root, packageVersion: version, target: "claude", selected, explicitAll: true });

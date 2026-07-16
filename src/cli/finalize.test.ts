@@ -41,7 +41,7 @@ test("finalize fails closed after source/plan completion evidence is removed", (
   assert.ok(result.blockers.some((item) => item.includes("verification")));
 });
 
-function validV8Fixture() {
+function validV9Fixture() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-finalize-v7-"));
   fs.mkdirSync(path.join(root, ".dreative")); fs.mkdirSync(path.join(root, "src"));
   fs.writeFileSync(path.join(root, "package.json"), JSON.stringify({ name: "fixture", version: "1.0.0" }));
@@ -51,6 +51,7 @@ function validV8Fixture() {
     workflow: { ambition: "standard", execution: "fast", prototype: "skip", purpose: "project-delivery" },
     target: { previewUrl: "http://localhost:4173", routeScope: { mode: "one-page", routes: ["/"] } },
     projectKind: "from-scratch", transformationDepth: "restyle", treatments: ["ux", "mobile"],
+    treatmentDecisionExplicit: true,
   });
   plan.contract.scope.requiredFunctionality = ["The page renders its primary content."];
   plan.contract.scope.dependencyInstallationAllowed = true;
@@ -81,7 +82,7 @@ function validV8Fixture() {
   return root;
 }
 
-test("a valid v8 fixture can finalize successfully", () => {
-  const result = runFinalize(validV8Fixture(), { target: "claude", sourceDir, packageVersion });
+test("a valid v9 fixture can finalize successfully", () => {
+  const result = runFinalize(validV9Fixture(), { target: "claude", sourceDir, packageVersion });
   assert.equal(result.ok, true, result.blockers.join("\n"));
 });

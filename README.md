@@ -18,7 +18,7 @@ concept planning:
 Full Audit controls evidence and certification depth. It does not imply Award
 and it never supplies a missing Ambition choice.
 
-The one editable creative contract is `.dreative/plan.yaml` (schema v8):
+The one editable creative contract is `.dreative/plan.yaml` (schema v9):
 
 - `contract`: user-controlled target, workflow, concept, treatments, allocation,
   experience arc, preservation, performance and acceptance criteria.
@@ -82,12 +82,13 @@ npm run docs-check
 
 The optional visual editor remains available through `dreative start`.
 
-## Canonical v8 corrective release
+## Canonical v9 lifecycle-safe release
 
-Canonical v8 adds informed treatment allocation, creative capability preflight,
-route-level roles, two-or-three distributed Experimental peaks, structured
-primary/fallback governance, deliberate asset strategy, Adaptive Spread
-Validation and run-scoped evidence under `.dreative/runs/<run-id>/`.
+Canonical v9 adds explicit all-ten treatment decisions, truthful creative capability preflight,
+stable approved intent separated from mutable execution outcomes, external-first
+asset enforcement, runtime browser verification upgrades and lineage-safe v8
+migration. It preserves the route-distribution, primary/fallback and adaptive
+spread controls introduced in v8.
 
 Permission is not capability. Three.js and GSAP are runtime libraries, FFmpeg
 edits or compiles existing footage, and browser tools verify output. Preflight

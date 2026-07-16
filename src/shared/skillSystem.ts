@@ -31,7 +31,7 @@ export interface SkillRoutingRequest {
   selected: SpecialistSkill[];
   /** Explicit user assignments. These always win over automatic placement. */
   assignments?: Record<string, SpecialistSkill[]>;
-  /** True enables legacy suggestion placement. Canonical v7 allocation is manual and concept-led. */
+  /** True enables legacy suggestion placement. Canonical v9 allocation is explicit and concept-led. */
   autoRouteUnassigned?: boolean;
 }
 

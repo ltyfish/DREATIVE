@@ -1,7 +1,7 @@
 # Experimental mechanism catalog
 
 Use this catalog during Award and Experimental planning after original chapter
-candidates have been considered. Bind selected recipes to canonical v8
+candidates have been considered. Bind selected recipes to canonical v9
 `experimentalPeaks`, `prototypeContracts`, `mechanismFallbacks`, route roles,
 assets and current-run evidence.
 

@@ -1,7 +1,8 @@
 # Project map
 
-- `src/shared/planGovernance.ts`: canonical plan v8, allocation, route roles,
-  assets, mechanism governance, run identity, approval hashing and v3-v7
+- `src/shared/planGovernance.ts`: canonical plan v9, all-ten decisions, stable
+  intent versus mutable execution, route roles, assets, mechanism governance,
+  run identity, approval hashing and v3-v8
   migrations.
 - `src/cli/plan.ts`: plan lifecycle commands and exact user-facing intake.
 - `src/shared/treatments.ts`: explanations, dependencies, cost, risk and tension
@@ -14,8 +15,8 @@
 - `src/shared/runtimeReliability.ts`: transactional package installation and
   competing owner detection.
 - `src/cli/doctor.ts`: diagnosis and checkpoint-safe resume.
-- `src/cli/audit.ts`: v7 fail-closed orchestration plus legacy compatibility.
+- `src/cli/audit.ts`: v9 fail-closed orchestration plus legacy compatibility.
 - `src/cli/finalize.ts`: build/test/audit completion gate.
-- `skill/dreative/schemas/plan.schema.json`: canonical v8 schema.
+- `skill/dreative/schemas/plan.schema.json`: canonical v9 schema.
 - `src/shared/*test.ts` and `src/cli/*test.ts`: governance, adversarial and
   regression tests.

@@ -1,4 +1,4 @@
-import type { MechanismFinalStatus } from "./planGovernance.js";
+import type { MechanismExecutionStatus } from "./planGovernance.js";
 import type { SpecialistSkill } from "./skillSystem.js";
 import type { DesignAmbition } from "./workflow.js";
 
@@ -128,7 +128,7 @@ export interface VisualCriticReport {
     }[];
     mechanismVerdicts: {
       mechanismId: string; observedImplementation: string; fallbackUsed: boolean; fallbackTriggerValid: boolean;
-      finalStatus: MechanismFinalStatus; verdict: "pass" | "fail" | "insufficient-evidence"; evidenceIds: string[];
+      finalStatus: MechanismExecutionStatus; verdict: "pass" | "fail" | "insufficient-evidence"; evidenceIds: string[];
     }[];
     assetIntegrity: "pass" | "fail" | "insufficient-evidence";
     performanceRisk: string;

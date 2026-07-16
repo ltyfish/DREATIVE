@@ -13,6 +13,7 @@ export function validateExperienceDelivery(plan: CanonicalPlan): ExperienceFindi
   const evidence = plan.execution.evidence;
   const distribution = plan.contract.experienceDistribution ?? [];
   const mechanisms = plan.contract.mechanismFallbacks ?? [];
+  const mechanismOutcomes = new Map(plan.execution.mechanisms.map((item) => [item.id, item]));
   if (ambition !== "standard" && !plan.contract.experienceArc) findings.push(finding("experience-arc", `${ambition} requires a complete experience arc`));
   if (ambitious) {
     if (evidence.transformations.length === 0 && !exempt(plan, "transformation")) findings.push(finding("anti-static", "Award, Experimental or all-treatment work needs a materially different transformed state"));
@@ -69,9 +70,31 @@ export function validateExperienceDelivery(plan: CanonicalPlan): ExperienceFindi
     }
   }
   for (const mechanism of mechanisms) {
-    if (mechanism.finalStatus === "fallback-triggered" && mechanism.observedEvidenceIds.length === 0) findings.push(finding("fallback-governance", `${mechanism.id}: fallback was claimed without trigger evidence`));
-    if (mechanism.finalStatus === "failed") findings.push(finding("mechanism-reconciliation", `${mechanism.id}: approved primary mechanism failed`));
-    if (mechanism.finalStatus === "not-applicable" && plan.contract.experimentalPeaks.some((peak) => peak.id === mechanism.id)) findings.push(finding("mechanism-reconciliation", `${mechanism.id}: selected peak cannot become not-applicable without an approved change`));
+    const outcome = mechanismOutcomes.get(mechanism.id);
+    if (!outcome || ["pending", "in-progress"].includes(outcome.status)) findings.push(finding("mechanism-reconciliation", `${mechanism.id}: execution status remains ${outcome?.status ?? "missing"}`));
+    else if (outcome.status === "fallback-triggered") {
+      if (!outcome.triggerObserved || outcome.triggerEvidenceIds.length === 0) findings.push(finding("fallback-governance", `${mechanism.id}: fallback was claimed without observed trigger evidence`));
+      if (mechanism.userReapprovalRequired && !outcome.approvalReference) findings.push(finding("fallback-governance", `${mechanism.id}: approved fallback requires an approval reference`));
+    } else if (outcome.status === "approved-change" && !outcome.approvalReference) findings.push(finding("fallback-governance", `${mechanism.id}: approved change lacks an approval reference`));
+    else if (outcome.status === "failed") findings.push(finding("mechanism-reconciliation", `${mechanism.id}: approved primary mechanism failed`));
+    else if (outcome.status === "not-applicable" && plan.contract.experimentalPeaks.some((peak) => peak.id === mechanism.id)) findings.push(finding("mechanism-reconciliation", `${mechanism.id}: selected peak cannot become not-applicable without an approved change`));
+    if (outcome?.substitutionUsed && !mechanism.allowedSubstitutions.includes(outcome.substitutionUsed) && !outcome.approvalReference)
+      findings.push(finding("fallback-governance", `${mechanism.id}: unapproved substitution ${outcome.substitutionUsed}`));
+  }
+  const capability = new Map(plan.contract.capabilityPreflight?.creativeCapabilities.map((item) => [item.id, item]) ?? []);
+  const assetOutcomes = new Map(plan.execution.assets.map((item) => [item.id, item]));
+  for (const asset of plan.contract.assetStrategy) {
+    const outcome = assetOutcomes.get(asset.id);
+    const sourcingId = /video/i.test(asset.intendedRole) ? "video-search" : asset.classification === "model" ? "3d-asset-search" : "image-search";
+    const sourcingConfirmed = ["available", "available-through-confirmed-tool"].includes(capability.get(sourcingId as any)?.status ?? "");
+    if (asset.priority === "generated" && asset.sourcingPolicy !== "generation-first-exemption" && sourcingConfirmed && asset.suitableExternalMediaCouldExist
+      && !outcome?.sourcingAttempts.length && !outcome?.preSearchExemption)
+      findings.push(finding("external-first-sourcing", `${asset.id}: generated media bypassed a confirmed sourcing capability without an asset-specific exemption`));
+    if (asset.sourcingPolicy === "generation-first-exemption" && !outcome?.preSearchExemption && !asset.generationRationale)
+      findings.push(finding("external-first-sourcing", `${asset.id}: generation-first execution lacks the approved concrete exemption`));
+    if (outcome?.shipping && !outcome.survivedFinalImplementation) findings.push(finding("asset-integrity", `${asset.id}: shipping asset did not survive final implementation`));
+    if (outcome?.usageLocations.length && outcome.usageLocations.length > 2 && !/persistent|travelling|continuity|narrative/i.test(asset.reusePolicy))
+      findings.push(finding("asset-diversity", `${asset.id}: repeated media reuse lacks an approved persistent narrative role`));
   }
   const assets = plan.execution.assetObservation;
   if (assets) {
@@ -80,18 +103,19 @@ export function validateExperienceDelivery(plan: CanonicalPlan): ExperienceFindi
     const app = new Set(assets.applicationReferences);
     for (const entry of manifest) {
       if (!disk.has(entry)) findings.push(finding("asset-integrity", `manifest asset is missing on disk: ${entry}`));
-      if (!app.has(entry) && plan.contract.assetStrategy.find((item) => item.sourcePath === entry)?.shipping !== false) findings.push(finding("asset-integrity", `manifest asset is unused by the shipped application: ${entry}`));
+      if (!app.has(entry) && !plan.execution.assets.some((item) => item.actualFiles.includes(entry) && item.shipping === false)) findings.push(finding("asset-integrity", `manifest asset is unused by the shipped application: ${entry}`));
     }
     for (const entry of app) if (!manifest.has(entry)) findings.push(finding("asset-integrity", `application references an asset absent from the manifest: ${entry}`));
-    for (const asset of plan.contract.assetStrategy) {
-      if (!asset.shipping || !asset.sourcePath) continue;
-      const actual = assets.weights[asset.sourcePath];
+    for (const intent of plan.contract.assetStrategy) {
+      const asset = assetOutcomes.get(intent.id);
+      if (!asset?.shipping || asset.actualFiles.length === 0) continue;
+      const sourcePath = asset.actualFiles[0];
+      const actual = assets.weights[sourcePath];
       if (actual === undefined) findings.push(finding("asset-performance", `${asset.id}: manifest weight is missing`));
-      if (asset.sizeBudgetBytes !== undefined && actual !== undefined && actual > asset.sizeBudgetBytes) findings.push(finding("asset-performance", `${asset.id}: actual weight ${actual} exceeds declared budget ${asset.sizeBudgetBytes}`));
-      if (["frame-sequence", "model", "webgl-media-plane"].includes(asset.classification) && !asset.mobileVariant) findings.push(finding("asset-performance", `${asset.id}: high-cost media needs a mobile variant or reduced strategy`));
-      if (/video/i.test(asset.intendedRole) && !asset.poster) findings.push(finding("asset-performance", `${asset.id}: video needs a poster state`));
-      if (asset.usedAt.length > 2 && asset.priority !== "procedural") findings.push(finding("asset-diversity", `${asset.id}: one asset is reused across conceptually different sections without recorded justification`));
-      if (asset.usedAt.some((location) => !/hero|first|opening/i.test(location)) && !/lazy|defer|on-entry/i.test(asset.loadingStrategy ?? "")) findings.push(finding("asset-performance", `${asset.id}: below-fold media needs a lazy or staged loading strategy`));
+      if (intent.sizeBudgetBytes !== undefined && actual !== undefined && actual > intent.sizeBudgetBytes) findings.push(finding("asset-performance", `${asset.id}: actual weight ${actual} exceeds declared budget ${intent.sizeBudgetBytes}`));
+      if (["frame-sequence", "model", "webgl-media-plane"].includes(intent.classification) && !asset.mobileVariant) findings.push(finding("asset-performance", `${asset.id}: high-cost media needs a mobile variant or reduced strategy`));
+      if (/video/i.test(intent.intendedRole) && !asset.poster) findings.push(finding("asset-performance", `${asset.id}: video needs a poster state`));
+      if (asset.usageLocations.some((location) => !/hero|first|opening/i.test(location)) && !/lazy|defer|on-entry/i.test(asset.loadingStrategy ?? "")) findings.push(finding("asset-performance", `${asset.id}: below-fold media needs a lazy or staged loading strategy`));
     }
   } else if (plan.contract.workflow.execution === "full-audit" || plan.contract.workflow.purpose === "dreative-dogfood") findings.push(finding("asset-integrity", "Full Audit and Dogfood require manifest, disk and shipped-application asset reconciliation"));
   const run = plan.execution.run;
@@ -116,9 +140,11 @@ export function validateExperienceDelivery(plan: CanonicalPlan): ExperienceFindi
       findings.push(finding("concept-checkpoint", "a real-app vertical slice with hero, downstream section, visual system, defining temporal/media idea, 390px mobile and reduced motion must pass"));
   }
   if (plan.contract.workflow.prototype === "required" && plan.execution.checkpoints.mechanismPrototype?.status !== "passed") findings.push(finding("mechanism-prototype", "Required prototype has not proved technical feasibility"));
+  const prototypeOutcomes = new Map(plan.execution.prototypes.map((item) => [item.id, item]));
   for (const prototype of plan.contract.prototypeContracts ?? []) {
-    if (prototype.required && prototype.status !== "passed") findings.push(finding("mechanism-prototype", `${prototype.id}: required unresolved risk family is not proven`));
-    if (prototype.status === "passed" && (!prototype.validates.trim() || !prototype.limitations.trim())) findings.push(finding("mechanism-prototype", `${prototype.id}: prototype must state exactly what it proves and does not prove`));
+    const outcome = prototypeOutcomes.get(prototype.id);
+    if (prototype.required && outcome?.status !== "passed") findings.push(finding("mechanism-prototype", `${prototype.id}: required unresolved risk family is not proven`));
+    if (outcome?.status === "passed" && (!outcome.observedResults.length || !outcome.implementationDecision.trim())) findings.push(finding("mechanism-prototype", `${prototype.id}: prototype must state observed results and implementation decision`));
   }
   if (plan.contract.workflow.prototype === "required" && conceptRequired && !plan.execution.checkpoints.conceptCheckpoint) findings.push(finding("prototype-scope", "mechanism prototype evidence cannot substitute for concept validation"));
   return findings;

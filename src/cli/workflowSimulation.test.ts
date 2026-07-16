@@ -74,7 +74,7 @@ test("focused simulated workflow covers intake, edit, approval, drift, broken me
   fs.writeFileSync(path.join(validRoot, "package.json"), JSON.stringify({ name: "valid", version: "1.0.0" }));
   fs.writeFileSync(path.join(validRoot, "package-lock.json"), "{}");
   fs.writeFileSync(path.join(validRoot, "src", "App.tsx"), `export const App=()=> <main>Ready</main>`);
-  assert.equal(runPlanCommand(validRoot, ["init", "--ambition", "standard", "--execution", "fast", "--prototype", "skip", "--purpose", "project-delivery", "--preview-url", "http://localhost:4173", "--routes", "/", ...resolvedCreativeArgs]), 0);
+  assert.equal(runPlanCommand(validRoot, ["init", "--ambition", "standard", "--execution", "fast", "--prototype", "skip", "--purpose", "project-delivery", "--preview-url", "http://localhost:4173", "--routes", "/", "--treatments", "ux", ...resolvedCreativeArgs]), 0);
   const valid = readPlan(validRoot);
   valid.contract.scope.requiredFunctionality = ["Render the ready state."];
   valid.contract.scope.dependencyInstallationAllowed = false;
@@ -96,4 +96,34 @@ test("focused simulated workflow covers intake, edit, approval, drift, broken me
   fs.writeFileSync(path.join(validRoot, ".dreative", "verify.json"), JSON.stringify({ version: 1, generatedAt: new Date().toISOString(), evidence: [{ id: "ready", criterion: "Ready visible", status: "pass", evidence: "tested URL", proof: { timestamp: new Date().toISOString(), testedUrl: "http://localhost:4173" } }] }));
   installSkill({ sourceDir, projectDir: validRoot, packageVersion, target: "claude", selected: ["ux", "mobile"], explicitAll: false });
   assert.equal(runFinalize(validRoot, { target: "claude", sourceDir, packageVersion }).ok, true);
+});
+
+test("Experimental Dogfood intake discloses all ten and records truthful pending capability state", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-experimental-intake-"));
+  fs.mkdirSync(path.join(root, "src"));
+  fs.writeFileSync(path.join(root, "package.json"), JSON.stringify({ name: "experimental-intake", scripts: { dev: "vite" }, dependencies: { vite: "^5" } }));
+  fs.writeFileSync(path.join(root, "package-lock.json"), "{}");
+  fs.writeFileSync(path.join(root, "capabilities.json"), JSON.stringify({ capabilities: [
+    { id: "image-search", state: "available-through-confirmed-tool", provider: "rights-safe-image-search", verified: true },
+    { id: "image-generation", state: "available-through-confirmed-tool", provider: "image-generation-tool", verified: true },
+    { id: "video-generation", state: "unavailable", verified: true },
+    { id: "3d-model-generation", state: "unavailable", verified: true },
+  ] }));
+  const args = ["init", "--ambition", "experimental", "--execution", "full-audit", "--prototype", "required", "--purpose", "dreative-dogfood",
+    "--preview-url", "http://localhost:4173", "--routes", "/", "--treatments", "all", "--confirm-all",
+    "--suggest-references", "--generated-images", "allow", "--sourced-images", "allow", "--generated-video", "allow",
+    "--sourced-video", "allow", "--3d-assets", "generation-and-sourcing-allowed", "--package-install", "allow",
+    "--capabilities-file", "capabilities.json"];
+  assert.equal(runPlanCommand(root, args), 0);
+  const plan = readPlan(root);
+  assert.equal(plan.version, 9);
+  assert.equal(plan.contract.treatmentDecisions.length, 10);
+  assert.equal(plan.contract.treatmentDecisions.every((item) => item.explicitlyDecided), true);
+  assert.equal(plan.contract.selectedTreatments.length, 10);
+  assert.deepEqual(plan.execution.mechanisms, []);
+  const capabilities = new Map(plan.contract.capabilityPreflight?.creativeCapabilities.map((item) => [item.id, item]));
+  assert.equal(capabilities.get("image-search")?.status, "available-through-confirmed-tool");
+  assert.equal(capabilities.get("video-generation")?.status, "unavailable");
+  assert.equal(capabilities.get("3d-model-generation")?.status, "unavailable");
+  assert.equal(capabilities.get("webgl-runtime")?.status, "expected-browser-api-unverified");
 });

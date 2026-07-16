@@ -1,50 +1,65 @@
 import { spawnSync } from "node:child_process";
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { activeLockfile } from "./projectIdentity.js";
 
 export type CapabilityStatus =
   | "available"
-  | "available-after-package-installation"
-  | "available-through-sourcing"
-  | "available-only-with-supplied-assets"
+  | "available-after-package-install"
+  | "available-through-confirmed-tool"
+  | "available-through-supplied-asset"
+  | "expected-browser-api-unverified"
+  | "permitted-but-tool-unverified"
+  | "permission-denied"
   | "unavailable"
-  | "permission-denied";
+  | "runtime-verification-failed";
 
-export type CreativeCapabilityId =
-  | "gsap-runtime"
-  | "threejs-runtime"
-  | "canvas-runtime"
-  | "webgl-runtime"
-  | "scrolltrigger-runtime"
-  | "ffmpeg-editing"
-  | "sharp-editing"
-  | "browser-verification"
-  | "image-search"
-  | "image-generation"
-  | "video-search"
-  | "video-generation"
-  | "image-editing"
-  | "video-editing"
-  | "3d-asset-search"
-  | "3d-model-generation"
-  | "3d-authoring"
-  | "screenshot-capture"
-  | "browser-automation";
+export type CapabilityCategory = "creative-authoring" | "sourcing" | "runtime-rendering" | "processing" | "verification";
+export type PermissionState = "allowed" | "denied" | "not-applicable";
+export type CapabilityConfidence = "verified" | "detected" | "expected" | "unverified";
+
+export const CAPABILITY_IDS = [
+  "dom-css-runtime", "canvas-runtime", "webgl-runtime", "webgpu-runtime", "threejs-runtime", "gsap-runtime",
+  "scrolltrigger-runtime", "video-playback", "image-sequence-playback",
+  "ffmpeg-processing", "sharp-processing", "image-conversion", "video-transcoding", "frame-extraction", "compression",
+  "image-generation", "image-editing", "video-generation", "video-editing", "frame-sequence-creation",
+  "3d-model-generation", "3d-model-editing", "audio-generation",
+  "image-search", "video-search", "3d-asset-search", "font-search", "texture-search",
+  "browser-automation", "screenshot-capture", "video-recording", "console-inspection", "performance-collection",
+  "mobile-viewport-verification", "reduced-motion-verification",
+] as const;
+export type CreativeCapabilityId = typeof CAPABILITY_IDS[number];
+
+export const CAPABILITY_STATES: CapabilityStatus[] = [
+  "available", "available-after-package-install", "available-through-confirmed-tool", "available-through-supplied-asset",
+  "expected-browser-api-unverified", "permitted-but-tool-unverified", "permission-denied", "unavailable",
+  "runtime-verification-failed",
+];
 
 export interface CapabilityInput {
   id: CreativeCapabilityId;
-  available: boolean;
-  source: string;
-  notes?: string;
+  state: CapabilityStatus;
+  provider?: string;
+  package?: string;
+  verified: boolean;
+  evidence?: string[];
+  limitation?: string;
+  substitutes?: string[];
 }
 
 export interface CapabilityAssessment {
   id: CreativeCapabilityId;
-  category: "runtime" | "authoring" | "sourcing" | "verification";
+  category: CapabilityCategory;
+  permission: PermissionState;
   status: CapabilityStatus;
-  source: string;
-  notes: string;
+  detectionSource: "environment" | "package-preflight" | "explicit-capability" | "browser-verification" | "user-permission" | "supplied-asset";
+  confidence: CapabilityConfidence;
+  provider?: string;
+  package?: string;
+  verificationEvidence: string[];
+  limitation: string;
+  permittedSubstitutes: string[];
 }
 
 export interface CreativePermissions {
@@ -58,6 +73,7 @@ export interface CreativePermissions {
 
 export interface ProjectPreflight {
   capturedAt: string;
+  identity: string;
   framework: string;
   frameworkVersion: string;
   packageManager: string;
@@ -88,70 +104,152 @@ const RUNTIME_RULES: { pattern: RegExp; packages: { name: string; compatibleVers
   { pattern: /three(?:\.js)?|webgl scene/i, packages: [{ name: "three", compatibleVersion: "^0" }] },
 ];
 
-const category = (id: CreativeCapabilityId): CapabilityAssessment["category"] =>
-  id.includes("search") ? "sourcing"
-    : id.includes("verification") || id.includes("capture") || id.includes("automation") ? "verification"
-      : id.includes("runtime") ? "runtime"
-        : "authoring";
-
-const commandAvailable = (command: string): boolean => {
-  const result = spawnSync(command, ["-version"], { stdio: "ignore", shell: process.platform === "win32" });
-  return result.status === 0;
+const CATEGORY: Record<CreativeCapabilityId, CapabilityCategory> = {
+  "dom-css-runtime": "runtime-rendering", "canvas-runtime": "runtime-rendering", "webgl-runtime": "runtime-rendering",
+  "webgpu-runtime": "runtime-rendering", "threejs-runtime": "runtime-rendering", "gsap-runtime": "runtime-rendering",
+  "scrolltrigger-runtime": "runtime-rendering", "video-playback": "runtime-rendering", "image-sequence-playback": "runtime-rendering",
+  "ffmpeg-processing": "processing", "sharp-processing": "processing", "image-conversion": "processing",
+  "video-transcoding": "processing", "frame-extraction": "processing", "compression": "processing",
+  "image-generation": "creative-authoring", "image-editing": "creative-authoring", "video-generation": "creative-authoring",
+  "video-editing": "creative-authoring", "frame-sequence-creation": "creative-authoring", "3d-model-generation": "creative-authoring",
+  "3d-model-editing": "creative-authoring", "audio-generation": "creative-authoring",
+  "image-search": "sourcing", "video-search": "sourcing", "3d-asset-search": "sourcing", "font-search": "sourcing", "texture-search": "sourcing",
+  "browser-automation": "verification", "screenshot-capture": "verification", "video-recording": "verification",
+  "console-inspection": "verification", "performance-collection": "verification", "mobile-viewport-verification": "verification",
+  "reduced-motion-verification": "verification",
 };
 
-function assessment(id: CreativeCapabilityId, status: CapabilityStatus, source: string, notes: string): CapabilityAssessment {
-  return { id, category: category(id), status, source, notes };
+const commandAvailable = (command: string): boolean =>
+  spawnSync(command, ["-version"], { stdio: "ignore", shell: process.platform === "win32" }).status === 0;
+
+const permissionFor = (id: CreativeCapabilityId, permissions: CreativePermissions): PermissionState => {
+  if (["image-generation", "image-editing"].includes(id)) return permissions.generatedImagesAllowed ? "allowed" : "denied";
+  if (["video-generation", "video-editing", "frame-sequence-creation", "audio-generation"].includes(id)) return permissions.generatedVideoAllowed ? "allowed" : "denied";
+  if (id === "image-search" || id === "font-search" || id === "texture-search") return permissions.externalImagesAllowed ? "allowed" : "denied";
+  if (id === "video-search") return permissions.externalVideoAllowed ? "allowed" : "denied";
+  if (id === "3d-asset-search") return ["external-sourcing-allowed", "generation-and-sourcing-allowed"].includes(permissions.threeDPolicy) ? "allowed" : "denied";
+  if (id === "3d-model-generation" || id === "3d-model-editing") return permissions.threeDPolicy === "generation-and-sourcing-allowed" ? "allowed" : "denied";
+  return "not-applicable";
+};
+
+function record(id: CreativeCapabilityId, permission: PermissionState, status: CapabilityStatus,
+  detectionSource: CapabilityAssessment["detectionSource"], confidence: CapabilityConfidence, limitation: string,
+  extra: Partial<CapabilityAssessment> = {}): CapabilityAssessment {
+  return { id, category: CATEGORY[id], permission, status, detectionSource, confidence, verificationEvidence: [], limitation, permittedSubstitutes: [], ...extra };
 }
 
-export function resolveCreativeCapabilities(
-  installed: string[],
-  permissions: CreativePermissions,
-  explicit: CapabilityInput[] = [],
-  environment: { ffmpeg?: boolean; canvas?: boolean; webgl?: boolean } = {},
-): CapabilityAssessment[] {
+export function validateCapabilityInputs(inputs: CapabilityInput[]): string[] {
+  const errors: string[] = [];
+  const seen = new Map<CreativeCapabilityId, CapabilityInput>();
+  for (const input of inputs) {
+    if (!CAPABILITY_IDS.includes(input.id)) errors.push(`unknown capability id: ${String(input.id)}`);
+    if (!CAPABILITY_STATES.includes(input.state)) errors.push(`${input.id}: invalid capability state ${String(input.state)}`);
+    const previous = seen.get(input.id);
+    if (previous && JSON.stringify(previous) !== JSON.stringify(input)) errors.push(`${input.id}: contradictory capability declarations`);
+    seen.set(input.id, input);
+    if (input.state === "available-through-confirmed-tool" && !input.provider) errors.push(`${input.id}: confirmed tool state requires provider`);
+    if (input.state === "available-after-package-install" && !input.package) errors.push(`${input.id}: package-install state requires package`);
+    if (input.verified && ["expected-browser-api-unverified", "permitted-but-tool-unverified"].includes(input.state))
+      errors.push(`${input.id}: an unverified state cannot be marked verified`);
+  }
+  return errors;
+}
+
+export function parseCapabilitiesFile(file: string): CapabilityInput[] {
+  const parsed = JSON.parse(fs.readFileSync(file, "utf8")) as { capabilities?: CapabilityInput[] };
+  if (!Array.isArray(parsed.capabilities)) throw new Error("capabilities file must contain a capabilities array");
+  const errors = validateCapabilityInputs(parsed.capabilities);
+  if (errors.length) throw new Error(errors.join("\n"));
+  return parsed.capabilities;
+}
+
+export function resolveCreativeCapabilities(installed: string[], permissions: CreativePermissions,
+  explicit: CapabilityInput[] = [], environment: { ffmpeg?: boolean } = {}): CapabilityAssessment[] {
+  const errors = validateCapabilityInputs(explicit);
+  if (errors.length) throw new Error(errors.join("\n"));
   const overrides = new Map(explicit.map((item) => [item.id, item]));
   const has = (name: string) => installed.includes(name);
-  const explicitStatus = (id: CreativeCapabilityId): CapabilityAssessment | undefined => {
-    const item = overrides.get(id);
-    return item ? assessment(id, item.available ? "available" : "unavailable", item.source, item.notes ?? "Explicit tool capability input.") : undefined;
+  const explicitRecord = (id: CreativeCapabilityId): CapabilityAssessment | undefined => {
+    const input = overrides.get(id);
+    if (!input) return undefined;
+    const permission = permissionFor(id, permissions);
+    if (permission === "denied" && !["permission-denied", "unavailable"].includes(input.state))
+      throw new Error(`${id}: capability declaration contradicts denied user permission`);
+    return record(id, permission, input.state, "explicit-capability", input.verified ? "verified" : "detected",
+      input.limitation ?? "Declared by the executing environment.", {
+        provider: input.provider, package: input.package, verificationEvidence: input.evidence ?? [],
+        permittedSubstitutes: input.substitutes ?? [],
+      });
   };
-  const runtime = (
-    id: CreativeCapabilityId,
-    present: boolean,
-    installable: boolean,
-    notes: string,
-  ) => explicitStatus(id) ?? assessment(id, present ? "available" : installable && permissions.packageInstallationAllowed ? "available-after-package-installation" : "unavailable", present ? "environment" : "package-preflight", notes);
-  const authored = (
-    id: CreativeCapabilityId,
-    permitted: boolean,
-    unavailableNotes: string,
-  ) => {
-    if (!permitted) return assessment(id, "permission-denied", "user-permission", "The user did not allow this creative operation.");
-    return explicitStatus(id) ?? assessment(id, "unavailable", "tool-preflight", unavailableNotes);
+  const runtimePackage = (id: CreativeCapabilityId, packageName: string, present: boolean, limitation: string) =>
+    explicitRecord(id) ?? record(id, "not-applicable", present ? "available" : permissions.packageInstallationAllowed ? "available-after-package-install" : "unavailable",
+      present ? "environment" : "package-preflight", present ? "detected" : "unverified", limitation, { package: packageName });
+  const permittedTool = (id: CreativeCapabilityId, limitation: string, substitutes: string[] = []) => {
+    const permission = permissionFor(id, permissions);
+    if (permission === "denied") return record(id, permission, "permission-denied", "user-permission", "verified", "The user denied this operation.", { permittedSubstitutes: substitutes });
+    return explicitRecord(id) ?? record(id, permission, "permitted-but-tool-unverified", "user-permission", "unverified", limitation, { permittedSubstitutes: substitutes });
   };
+  const browserExpected = (id: CreativeCapabilityId, limitation: string) =>
+    explicitRecord(id) ?? record(id, "not-applicable", "expected-browser-api-unverified", "environment", "expected", limitation);
 
-  const capabilities: CapabilityAssessment[] = [
-    runtime("gsap-runtime", has("gsap"), true, "GSAP is a runtime animation library; availability does not prove cinematic authorship."),
-    runtime("threejs-runtime", has("three") || has("@react-three/fiber"), true, "Three.js renders spatial scenes; it does not generate or author a 3D model."),
-    runtime("canvas-runtime", environment.canvas ?? true, false, "Canvas can render authored frames or procedural graphics."),
-    runtime("webgl-runtime", environment.webgl ?? true, false, "WebGL runtime support is separate from 3D asset authoring."),
-    runtime("scrolltrigger-runtime", has("gsap"), true, "ScrollTrigger coordinates runtime scroll states; it is not authored choreography by itself."),
-    runtime("sharp-editing", has("sharp"), true, "Sharp creates production image derivatives; it does not generate original imagery."),
-    runtime("browser-verification", has("playwright") || has("@playwright/test"), true, "Browser tools verify output and do not author media."),
-    explicitStatus("ffmpeg-editing") ?? assessment("ffmpeg-editing", environment.ffmpeg ? "available" : "unavailable", "environment", "FFmpeg edits or compiles existing footage and frames; it does not generate original footage."),
-    authored("image-generation", permissions.generatedImagesAllowed, "Image generation permission exists, but no image-generation tool was detected."),
-    authored("video-generation", permissions.generatedVideoAllowed, "Video generation permission exists, but no video-generation tool was detected."),
-    authored("image-editing", permissions.generatedImagesAllowed || permissions.externalImagesAllowed, "No image-editing authoring tool was detected beyond production derivative tooling."),
-    authored("video-editing", permissions.generatedVideoAllowed || permissions.externalVideoAllowed, "No video authoring tool was detected; FFmpeg availability is reported separately as encoding/editing."),
-    authored("3d-model-generation", permissions.threeDPolicy === "generation-and-sourcing-allowed", "No 3D model-generation tool was detected."),
-    authored("3d-authoring", permissions.threeDPolicy === "generation-and-sourcing-allowed", "No Blender, Spline, or equivalent authoring capability was detected."),
-    explicitStatus("image-search") ?? assessment("image-search", permissions.externalImagesAllowed ? "available-through-sourcing" : "permission-denied", "user-permission", permissions.externalImagesAllowed ? "Use a configured image-search or sourcing tool and record rights." : "External image sourcing is denied."),
-    explicitStatus("video-search") ?? assessment("video-search", permissions.externalVideoAllowed ? "available-through-sourcing" : "permission-denied", "user-permission", permissions.externalVideoAllowed ? "Use a configured video sourcing tool and record rights." : "External video sourcing is denied."),
-    explicitStatus("3d-asset-search") ?? assessment("3d-asset-search", permissions.threeDPolicy === "external-sourcing-allowed" || permissions.threeDPolicy === "generation-and-sourcing-allowed" ? "available-through-sourcing" : permissions.threeDPolicy === "supplied-only" ? "available-only-with-supplied-assets" : "permission-denied", "user-permission", "Model sourcing and model generation are separate capabilities."),
-    explicitStatus("screenshot-capture") ?? assessment("screenshot-capture", has("playwright") || has("@playwright/test") ? "available" : "unavailable", "environment", "Screenshot capture verifies the current implementation."),
-    explicitStatus("browser-automation") ?? assessment("browser-automation", has("playwright") || has("@playwright/test") ? "available" : "unavailable", "environment", "Browser automation verifies interactions; it does not produce creative assets."),
+  return [
+    record("dom-css-runtime", "not-applicable", "available", "environment", "detected", "DOM/CSS is provided by the target browser but still requires browser verification."),
+    browserExpected("canvas-runtime", "Canvas is expected in typical browsers but is not runtime verified yet."),
+    browserExpected("webgl-runtime", "WebGL is expected in typical browsers but is not runtime verified yet."),
+    browserExpected("webgpu-runtime", "WebGPU support is browser/device dependent and unverified."),
+    runtimePackage("threejs-runtime", "three", has("three") || has("@react-three/fiber"), "Three.js renders spatial scenes; it does not generate or author models."),
+    runtimePackage("gsap-runtime", "gsap", has("gsap"), "GSAP orchestrates animation; it does not create cinematic design."),
+    runtimePackage("scrolltrigger-runtime", "gsap", has("gsap"), "ScrollTrigger coordinates scroll states; it does not author choreography."),
+    browserExpected("video-playback", "Video playback depends on codec, browser and device verification."),
+    browserExpected("image-sequence-playback", "Image-sequence playback requires runtime decode and performance verification."),
+    explicitRecord("ffmpeg-processing") ?? record("ffmpeg-processing", "not-applicable", environment.ffmpeg ? "available" : "unavailable", "environment", environment.ffmpeg ? "verified" : "unverified", "FFmpeg processes existing media; it does not generate original video."),
+    runtimePackage("sharp-processing", "sharp", has("sharp"), "Sharp creates image derivatives; it does not author original imagery."),
+    runtimePackage("image-conversion", "sharp", has("sharp"), "Image conversion processes supplied or sourced pixels."),
+    explicitRecord("video-transcoding") ?? record("video-transcoding", "not-applicable", environment.ffmpeg ? "available" : "unavailable", "environment", environment.ffmpeg ? "verified" : "unverified", "Transcoding changes existing media formats."),
+    explicitRecord("frame-extraction") ?? record("frame-extraction", "not-applicable", environment.ffmpeg ? "available" : "unavailable", "environment", environment.ffmpeg ? "verified" : "unverified", "Frame extraction requires existing footage."),
+    explicitRecord("compression") ?? record("compression", "not-applicable", has("sharp") || Boolean(environment.ffmpeg) ? "available" : "unavailable", "environment", "detected", "Compression is processing, not creative authoring."),
+    permittedTool("image-generation", "Image-generation permission exists, but no generation tool was confirmed.", ["sourced image", "supplied image", "procedural graphic"]),
+    permittedTool("image-editing", "Image-editing permission exists, but no authoring tool was confirmed.", ["CSS/SVG treatment", "production derivative"]),
+    permittedTool("video-generation", "Video-generation permission exists, but no generation tool was confirmed.", ["sourced video", "frame sequence", "still-state treatment"]),
+    permittedTool("video-editing", "Video-editing permission exists, but no authoring tool was confirmed.", ["FFmpeg processing when existing footage is supplied"]),
+    permittedTool("frame-sequence-creation", "No tool for creating original sequence states was confirmed.", ["sourced footage extraction", "semantic still states"]),
+    permittedTool("3d-model-generation", "No model-generation tool was confirmed.", ["sourced model", "spatial cutout", "layered billboard"]),
+    permittedTool("3d-model-editing", "No Blender, Spline or equivalent model-editing tool was confirmed.", ["pre-rendered angles", "spatial cutout"]),
+    permittedTool("audio-generation", "No audio-generation tool was confirmed."),
+    permittedTool("image-search", "External-image permission does not prove that a sourcing connector exists."),
+    permittedTool("video-search", "External-video permission does not prove that a sourcing connector exists."),
+    permittedTool("3d-asset-search", "3D sourcing permission does not prove that a model marketplace or search tool exists."),
+    permittedTool("font-search", "Font sourcing permission does not prove a rights-safe font search tool exists."),
+    permittedTool("texture-search", "Texture sourcing permission does not prove a rights-safe texture tool exists."),
+    runtimePackage("browser-automation", "playwright", has("playwright") || has("@playwright/test"), "Browser automation verifies output; it is not a rendering or authoring package."),
+    runtimePackage("screenshot-capture", "playwright", has("playwright") || has("@playwright/test"), "Screenshots prove observed rendering state only."),
+    runtimePackage("video-recording", "playwright", has("playwright") || has("@playwright/test"), "Recording proves temporal runtime state only."),
+    runtimePackage("console-inspection", "playwright", has("playwright") || has("@playwright/test"), "Console inspection verifies runtime health."),
+    runtimePackage("performance-collection", "playwright", has("playwright") || has("@playwright/test"), "Performance collection verifies runtime cost."),
+    runtimePackage("mobile-viewport-verification", "playwright", has("playwright") || has("@playwright/test"), "Mobile viewport support must be observed."),
+    runtimePackage("reduced-motion-verification", "playwright", has("playwright") || has("@playwright/test"), "Reduced-motion behavior must be observed."),
   ];
-  return capabilities;
+}
+
+export function upgradeBrowserCapabilities(preflight: ProjectPreflight, evidence: {
+  verified: CreativeCapabilityId[]; failed?: CreativeCapabilityId[]; evidenceIds: string[];
+}): ProjectPreflight {
+  const verified = new Set(evidence.verified);
+  const failed = new Set(evidence.failed ?? []);
+  const creativeCapabilities = preflight.creativeCapabilities.map((item) => {
+    if (failed.has(item.id)) return { ...item, status: "runtime-verification-failed" as const, confidence: "verified" as const, detectionSource: "browser-verification" as const, verificationEvidence: evidence.evidenceIds };
+    if (verified.has(item.id)) return { ...item, status: "available" as const, confidence: "verified" as const, detectionSource: "browser-verification" as const, verificationEvidence: evidence.evidenceIds };
+    return item;
+  });
+  return { ...preflight, creativeCapabilities, identity: capabilityPreflightIdentity({ ...preflight, creativeCapabilities }) };
+}
+
+export function capabilityPreflightIdentity(preflight: Omit<ProjectPreflight, "identity"> | ProjectPreflight): string {
+  const stable = {
+    framework: preflight.framework, frameworkVersion: preflight.frameworkVersion, packageManager: preflight.packageManager,
+    installedCapabilities: preflight.installedCapabilities, creativeCapabilities: preflight.creativeCapabilities,
+  };
+  return crypto.createHash("sha256").update(JSON.stringify(stable)).digest("hex");
 }
 
 export function resolveRuntimeRequirements(mechanisms: string[], preflight: ProjectPreflight): RuntimeRequirement[] {
@@ -163,32 +261,23 @@ export function resolveRuntimeRequirements(mechanisms: string[], preflight: Proj
 }
 
 export function renderCreativeCapabilityPreflight(preflight: ProjectPreflight): string {
-  const byCategory = (category: CapabilityAssessment["category"]) =>
-    preflight.creativeCapabilities.filter((item) => item.category === category);
   const render = (item: CapabilityAssessment) =>
-    `  - ${item.id}: ${item.status} (${item.source}). ${item.notes}`;
-
+    `  - ${item.id}: ${item.status}; permission=${item.permission}; confidence=${item.confidence}; source=${item.detectionSource}${item.provider ? `; provider=${item.provider}` : ""}. ${item.limitation}`;
+  const section = (category: CapabilityCategory, label: string) => [label, ...preflight.creativeCapabilities.filter((item) => item.category === category).map(render)];
   return [
     "Creative capability preflight:",
-    `  Project runtime: ${preflight.framework} ${preflight.frameworkVersion}; ${preflight.packageManager}; installed creative packages: ${preflight.installedCapabilities.join(", ") || "none"}.`,
-    "  User permission is recorded separately from capability. Permission never proves that an authoring or sourcing tool exists.",
-    "Runtime rendering/editing packages:",
-    ...byCategory("runtime").map(render),
-    "Creative authoring tools:",
-    ...byCategory("authoring").map(render),
-    "Creative sourcing tools:",
-    ...byCategory("sourcing").map(render),
-    "Verification tools:",
-    ...byCategory("verification").map(render),
-    "  Honesty constraints: Three.js renders spatial assets but does not create models. GSAP coordinates animation but does not author choreography. FFmpeg edits or compiles existing footage/frames but does not generate original video.",
-    "  If model generation/authoring is unavailable, a selected 3D treatment must use an honestly classified supplied/sourced model, spatial cutout, layered billboard, pre-rendered angles, frame sequence, WebGL media plane, or declared static fallback.",
+    `  Identity: ${preflight.identity}. Project runtime: ${preflight.framework} ${preflight.frameworkVersion}; ${preflight.packageManager}.`,
+    "  Permission is not capability. Package installation is not authoring. Browser APIs remain unverified until browser evidence upgrades them.",
+    ...section("creative-authoring", "Creative authoring:"),
+    ...section("sourcing", "Sourcing:"),
+    ...section("runtime-rendering", "Runtime rendering:"),
+    ...section("processing", "Processing:"),
+    ...section("verification", "Verification:"),
+    "  Three.js renders scenes but does not create models. GSAP orchestrates animation but does not create cinematic design. FFmpeg processes existing media but does not generate original video.",
   ].join("\n");
 }
 
-export function detectProjectPreflight(
-  projectDir: string,
-  options: { permissions?: Partial<CreativePermissions>; explicitCapabilities?: CapabilityInput[] } = {},
-): ProjectPreflight {
+export function detectProjectPreflight(projectDir: string, options: { permissions?: Partial<CreativePermissions>; explicitCapabilities?: CapabilityInput[] } = {}): ProjectPreflight {
   const packageFile = path.join(projectDir, "package.json");
   const pkg = fs.existsSync(packageFile) ? JSON.parse(fs.readFileSync(packageFile, "utf8")) : {};
   const deps = { ...(pkg.dependencies ?? {}), ...(pkg.devDependencies ?? {}) } as Record<string, string>;
@@ -200,26 +289,21 @@ export function detectProjectPreflight(
   const capabilityPackages = ["motion", "framer-motion", "gsap", "lenis", "three", "@react-three/fiber", "@react-three/drei", "sharp", "playwright", "@playwright/test"];
   const installedCapabilities = capabilityPackages.filter((name) => deps[name]);
   const permissions: CreativePermissions = {
-    generatedImagesAllowed: false,
-    externalImagesAllowed: false,
-    generatedVideoAllowed: false,
-    externalVideoAllowed: false,
-    threeDPolicy: "not-allowed",
-    packageInstallationAllowed: false,
-    ...options.permissions,
+    generatedImagesAllowed: false, externalImagesAllowed: false, generatedVideoAllowed: false, externalVideoAllowed: false,
+    threeDPolicy: "not-allowed", packageInstallationAllowed: false, ...options.permissions,
   };
   const ffmpeg = commandAvailable("ffmpeg");
-  return {
+  const base = {
     capturedAt: new Date().toISOString(), framework: frameworkName ?? "unknown", frameworkVersion: deps[frameworkName ?? ""] ?? "unknown",
-    packageManager: manager, lockfile: activeLockfile(projectDir), sourceLayout,
-    installedCapabilities, scripts: pkg.scripts ?? {},
+    packageManager: manager, lockfile: activeLockfile(projectDir), sourceLayout, installedCapabilities, scripts: pkg.scripts ?? {},
     browserVerification: Boolean(deps.playwright || deps["@playwright/test"] || /playwright|puppeteer/i.test(source)),
     reducedMotionInfrastructure: /prefers-reduced-motion|useReducedMotion|reducedMotion/i.test(source) ? ["source-detected"] : [],
     scrollOwner: /ReactLenis|Lenis/.test(source) ? "lenis" : /ScrollTrigger/.test(source) ? "gsap-scrolltrigger" : null,
     animationTicker: /gsap\.ticker/.test(source) ? "gsap" : /requestAnimationFrame/.test(source) ? "requestAnimationFrame" : null,
-    assetCapabilities: [deps.sharp && "sharp", deps.canvas && "canvas", ffmpeg && "ffmpeg"].filter(Boolean) as string[],
-    creativeCapabilities: resolveCreativeCapabilities(installedCapabilities, permissions, options.explicitCapabilities, { ffmpeg, canvas: true, webgl: true }),
+    assetCapabilities: [deps.sharp && "sharp", ffmpeg && "ffmpeg"].filter(Boolean) as string[],
+    creativeCapabilities: resolveCreativeCapabilities(installedCapabilities, permissions, options.explicitCapabilities, { ffmpeg }),
   };
+  return { ...base, identity: capabilityPreflightIdentity(base) };
 }
 
 function walk(root: string): string[] {

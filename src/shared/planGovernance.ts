@@ -7,7 +7,7 @@ import type { SpecialistSkill } from "./skillSystem.js";
 import { treatment } from "./treatments.js";
 import type { DesignAmbition, EvaluationPurpose, ExecutionMode, PrototypePolicy, WorkflowConfiguration } from "./workflow.js";
 
-export const PLAN_VERSION = 8;
+export const PLAN_VERSION = 9;
 export const PLAN_FILE = ".dreative/plan.yaml";
 export const AMBITIONS: DesignAmbition[] = ["standard", "expressive", "award", "experimental"];
 export const EXECUTIONS: ExecutionMode[] = ["fast", "lean", "full-audit"];
@@ -39,9 +39,17 @@ export interface TreatmentAllocation {
   routeRole: "peak" | "connective-tissue" | "foundation";
 }
 
+export type TreatmentDecisionState = "foundational" | "recommended" | "selected" | "declined" | "not-applicable";
+export interface TreatmentDecision {
+  treatment: SpecialistSkill;
+  state: TreatmentDecisionState;
+  explicitlyDecided: boolean;
+  reason: string;
+}
+
 export type ExperienceSectionRole = "peak" | "transformation" | "preparation" | "echo" | "rest" | "resolution" | "functional-utility";
 export type SpatialAssetClassification = "model" | "spatial-cutout" | "layered-billboard" | "pre-rendered-angles" | "frame-sequence" | "webgl-media-plane" | "static-image";
-export type MechanismFinalStatus = "primary-delivered" | "fallback-triggered" | "approved-change" | "not-applicable" | "failed";
+export type MechanismExecutionStatus = "pending" | "in-progress" | "primary-delivered" | "fallback-triggered" | "approved-change" | "not-applicable" | "failed";
 
 export interface ExperienceDistributionEntry {
   pageId: string;
@@ -61,9 +69,9 @@ export interface MechanismFallbackContract {
   fallbackTrigger: string;
   triggerEvidenceRequired: string[];
   userReapprovalRequired: boolean;
-  finalStatus: MechanismFinalStatus;
-  finalReason: string;
-  observedEvidenceIds: string[];
+  allowedSubstitutions: string[];
+  riskFamily: string;
+  prototypePolicy: string;
 }
 
 export interface AssetStrategyEntry {
@@ -71,20 +79,16 @@ export interface AssetStrategyEntry {
   intendedRole: string;
   requiredSubjectAndComposition: string;
   priority: "user-supplied" | "external-sourced" | "generated" | "procedural";
-  sourcingAttempted: boolean;
-  candidateSources: { url: string; rights: string }[];
-  generationChosen: boolean;
+  sourcingPolicy: "external-first" | "generation-first-exemption" | "supplied-only" | "procedural";
+  generationPolicy: "allowed-with-advantage" | "not-allowed" | "required-bespoke";
   generationRationale: string;
   classification: SpatialAssetClassification;
-  sourcePath: string | null;
-  productionDerivatives: string[];
-  usedAt: string[];
-  survivedFinalImplementation: boolean;
-  shipping: boolean;
+  rightsRequirements: string[];
+  expectedFormatsAndVariants: string[];
+  requiredLocations: string[];
+  reusePolicy: string;
+  suitableExternalMediaCouldExist: boolean;
   sizeBudgetBytes?: number;
-  mobileVariant?: string;
-  poster?: string;
-  loadingStrategy?: string;
 }
 
 export interface ExperimentalPeakContract {
@@ -108,10 +112,10 @@ export interface PrototypeContract {
   riskFamily: string;
   mechanismId: string;
   required: boolean;
-  status: "pending" | "passed" | "failed" | "skipped";
-  validates: string;
-  limitations: string;
-  evidenceIds: string[];
+  uncertainty: string;
+  acceptanceConditions: string[];
+  maximumScope: string;
+  failureImplications: string;
 }
 
 export interface ExperienceArc {
@@ -162,6 +166,7 @@ export interface PlanContract {
   workflow: WorkflowConfiguration;
   transformationDepth: "restyle" | "relayout" | "restructure" | "reimagine";
   selectedTreatments: SpecialistSkill[];
+  treatmentDecisions: TreatmentDecision[];
   allTreatmentsExplicit: boolean;
   allTreatmentsConfirmed: boolean;
   treatmentAllocation: TreatmentAllocation[];
@@ -239,6 +244,22 @@ export interface PlanExecution {
     };
   };
   bindings: { id: string; treatment: SpecialistSkill; files: string[]; selectors: string[]; mechanism: string; evidenceIds: string[] }[];
+  mechanisms: {
+    id: string; status: MechanismExecutionStatus; finalReason: string; triggerObserved: boolean; triggerEvidenceIds: string[];
+    observedImplementation: string; observedEvidenceIds: string[]; substitutionUsed: string | null; approvalReference: string | null;
+    criticVerdict: "pending" | "pass" | "fail";
+  }[];
+  prototypes: {
+    id: string; status: "pending" | "in-progress" | "passed" | "failed" | "skipped"; attemptCount: number; evidenceIds: string[];
+    observedResults: string[]; correctiveIterations: string[]; implementationDecision: string;
+  }[];
+  assets: {
+    id: string; sourcingAttempts: { provider: string; query: string; at: string; result: string }[]; preSearchExemption: string;
+    candidatesFound: { url: string; rights: string }[]; selectedSource: string | null; generatedDetails: string;
+    actualFiles: string[]; actualSizes: Record<string, number>; productionDerivatives: string[]; usageLocations: string[];
+    browserObserved: boolean; survivedFinalImplementation: boolean; removedOrSubstituted: boolean; finalRightsRecord: string;
+    shipping: boolean; mobileVariant?: string; poster?: string; loadingStrategy?: string;
+  }[];
   evidence: {
     transformations: string[];
     sceneHandoffs: string[];
@@ -267,6 +288,9 @@ export interface PlanExecution {
     gitIdentity: string | null;
     createdAt: string;
     workflow: WorkflowConfiguration;
+    planVersion: number;
+    capabilityPreflightIdentity: string;
+    contractTitle: string;
     evidenceFiles: string[];
     assetManifest: string[];
     approvedChangeRequests: string[];
@@ -329,7 +353,7 @@ export interface PlanExecution {
 }
 
 export interface CanonicalPlan {
-  version: 8;
+  version: 9;
   contract: PlanContract;
   approval: PlanApproval;
   execution: PlanExecution;
@@ -343,6 +367,12 @@ export interface IntakeResolution {
 const concrete = (value: unknown, minimum = 1): value is string => typeof value === "string" && value.trim().length >= minimum;
 const strings = (value: unknown): value is string[] => Array.isArray(value) && value.every((item) => concrete(item));
 const now = () => new Date().toISOString();
+const INVALID_GENERATION_RATIONALE = /\b(generation is easier|matches the concept|agent preferred|no need to search)\b/i;
+const VALID_GENERATION_DETAIL = /\b(exact|brand|packag|transparent cutout|lighting|transformation states|frame sequence|surreal|impossible|negative space|rights|geographic|source results|consisten)/i;
+
+export function validGenerationFirstRationale(value: string): boolean {
+  return concrete(value, 30) && !INVALID_GENERATION_RATIONALE.test(value) && VALID_GENERATION_DETAIL.test(value);
+}
 
 function canonicalize(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(canonicalize);
@@ -367,10 +397,10 @@ export function readPlan(projectDir: string): CanonicalPlan {
   try { value = parse(fs.readFileSync(file, "utf8")); }
   catch (error) { throw new Error(`cannot parse ${PLAN_FILE}: ${String(error)}`); }
   const plan = value as Partial<CanonicalPlan> | null;
-  if ((plan as { version?: number } | null)?.version === 7)
-    throw new Error(`${PLAN_FILE} is canonical v7; migrate it to v8 before implementation so capability, route-distribution, asset and run-identity contracts can be reviewed`);
-  if (!plan || plan.version !== 8 || !plan.contract || !plan.approval || !plan.execution)
-    throw new Error(`${PLAN_FILE} must contain canonical v8 version, contract, approval and execution`);
+  if ([7, 8].includes(Number((plan as { version?: number } | null)?.version)))
+    throw new Error(`${PLAN_FILE} is canonical v${String((plan as { version?: number }).version)}; migrate it explicitly to v${PLAN_VERSION} before implementation`);
+  if (!plan || plan.version !== PLAN_VERSION || !plan.contract || !plan.approval || !plan.execution)
+    throw new Error(`${PLAN_FILE} must contain canonical v${PLAN_VERSION} version, contract, approval and execution`);
   return value as CanonicalPlan;
 }
 
@@ -411,12 +441,16 @@ export function createPlan(projectDir: string, input: {
   projectKind?: "from-scratch" | "redesign";
   transformationDepth?: PlanContract["transformationDepth"];
   treatments?: SpecialistSkill[];
+  treatmentDecisionExplicit?: boolean;
   allTreatmentsExplicit?: boolean;
   allTreatmentsConfirmed?: boolean;
 } = {}): CanonicalPlan {
   const resolved = resolveTarget(projectDir, input.target);
   const workflow = input.workflow as WorkflowConfiguration;
-  const selected: SpecialistSkill[] = [...new Set<SpecialistSkill>(input.treatments ?? ["ux", "mobile"])];
+  const optional = [...new Set<SpecialistSkill>(input.treatments ?? [])].filter((item) => item !== "ux" && item !== "mobile");
+  const selected: SpecialistSkill[] = input.treatmentDecisionExplicit || input.substantial === false
+    ? [...new Set<SpecialistSkill>(["ux", "mobile", ...optional])]
+    : [];
   const createdAt = now();
   return {
     version: PLAN_VERSION,
@@ -435,6 +469,12 @@ export function createPlan(projectDir: string, input: {
       workflow,
       transformationDepth: input.transformationDepth ?? "restructure",
       selectedTreatments: selected,
+      treatmentDecisions: TREATMENTS.map((item) => ({
+        treatment: item,
+        state: selected.includes(item) ? (item === "ux" || item === "mobile" ? "foundational" : "selected") : "declined",
+        explicitlyDecided: Boolean(input.treatmentDecisionExplicit || input.substantial === false),
+        reason: selected.includes(item) ? (item === "ux" || item === "mobile" ? "Mandatory foundation after the explicit optional-treatment decision." : "Explicitly selected.") : "",
+      })),
       allTreatmentsExplicit: input.allTreatmentsExplicit ?? false,
       allTreatmentsConfirmed: input.allTreatmentsConfirmed ?? false,
       treatmentAllocation: selected.map((treatment) => ({
@@ -452,6 +492,9 @@ export function createPlan(projectDir: string, input: {
       phases: ["intake", "planning", "approval", "prototype", "concept-checkpoint", "implementation", "critic", "audit", "finalization"].map((id) => ({ id, status: id === "intake" ? "in-progress" : "pending" })),
       checkpoints: {},
       bindings: [],
+      mechanisms: [],
+      prototypes: [],
+      assets: [],
       evidence: { transformations: [], sceneHandoffs: [], meaningfulInteractions: [], persistentSystemSections: [], pacing: [], mobileNative: [], reducedMotion: [], treatmentEvidence: {}, motionVocabulary: [], postFirstViewportEvents: [], treatmentObservations: {} },
       lastUpdatedAt: createdAt,
     },
@@ -462,7 +505,7 @@ export function validateCanonicalPlan(value: unknown): string[] {
   const plan = value as Partial<CanonicalPlan> | null;
   if (!plan || typeof plan !== "object") return ["plan must be an object"];
   const errors: string[] = [];
-  if (plan.version !== 8) errors.push("plan.version must be 8; canonical v7 plans require migration and renewed approval");
+  if (plan.version !== PLAN_VERSION) errors.push(`plan.version must be ${PLAN_VERSION}; older canonical plans require explicit migration`);
   if (!plan.contract || typeof plan.contract !== "object") return [...errors, "plan.contract is required"];
   if (!plan.approval || typeof plan.approval !== "object") errors.push("plan.approval is required");
   if (!plan.execution || typeof plan.execution !== "object") errors.push("plan.execution is required");
@@ -476,6 +519,17 @@ export function validateCanonicalPlan(value: unknown): string[] {
   if (!contract.target?.previewUrl && !contract.target?.previewCommand) errors.push("contract.target needs previewUrl or previewCommand before implementation");
   if (!strings(contract.target?.routeScope?.routes) || contract.target.routeScope.routes.length === 0) errors.push("contract.target.routeScope.routes must resolve the target route set");
   if (!Array.isArray(contract.selectedTreatments) || contract.selectedTreatments.some((item) => !TREATMENTS.includes(item))) errors.push("contract.selectedTreatments contains an invalid treatment");
+  const decisions = contract.treatmentDecisions ?? [];
+  if (decisions.length !== TREATMENTS.length || new Set(decisions.map((item) => item.treatment)).size !== TREATMENTS.length)
+    errors.push("contract.treatmentDecisions must disclose all ten treatments exactly once");
+  if (contract.scope?.substantial && decisions.some((item) => !item.explicitlyDecided))
+    errors.push("substantial plans require an explicit decision record for every treatment; recommendations are not selections");
+  for (const item of decisions) {
+    const isSelected = contract.selectedTreatments.includes(item.treatment);
+    if (isSelected !== ["foundational", "selected"].includes(item.state)) errors.push(`${item.treatment}: treatment decision state contradicts selectedTreatments`);
+    if ((item.treatment === "ux" || item.treatment === "mobile") && contract.scope?.substantial && item.state !== "foundational")
+      errors.push(`${item.treatment}: UX and Mobile become foundations only after an explicit optional-treatment decision`);
+  }
   if (contract.allTreatmentsExplicit && !contract.allTreatmentsConfirmed) errors.push("explicit all-treatment selection requires one recorded confirmation");
   if (contract.allTreatmentsExplicit && TREATMENTS.some((item) => !contract.selectedTreatments.includes(item))) errors.push("explicit all-treatment selection cannot silently prune a treatment");
   const allocated = new Set((contract.treatmentAllocation ?? []).map((item) => item.treatment));
@@ -540,15 +594,14 @@ export function validateCanonicalPlan(value: unknown): string[] {
   for (const mechanism of contract.mechanismFallbacks ?? []) {
     if (!concrete(mechanism.id) || !concrete(mechanism.location) || !concrete(mechanism.primaryImplementation, 12) || !mechanism.primaryAcceptance?.length || !concrete(mechanism.fallbackImplementation, 12) || !concrete(mechanism.fallbackTrigger, 12))
       errors.push(`mechanism fallback ${mechanism.id || "unknown"} is incomplete`);
-    if (mechanism.finalStatus === "fallback-triggered" && mechanism.observedEvidenceIds.length === 0) errors.push(`${mechanism.id}: fallback-triggered requires observed trigger evidence`);
-    if (mechanism.finalStatus === "approved-change" && !(contract.changeRequests ?? []).some((item) => item.status === "approved" && item.fields.some((field) => field.includes(mechanism.id))))
-      errors.push(`${mechanism.id}: approved-change requires an approved material change request`);
-    if (mechanism.finalStatus === "failed") errors.push(`${mechanism.id}: failed primary/fallback contract blocks approval`);
+    if (!Array.isArray(mechanism.allowedSubstitutions) || !concrete(mechanism.riskFamily) || !concrete(mechanism.prototypePolicy))
+      errors.push(`${mechanism.id}: mechanism intent must declare substitutions, risk family and prototype policy`);
   }
   for (const asset of contract.assetStrategy ?? []) {
-    if (asset.priority === "external-sourced" && !asset.sourcingAttempted) errors.push(`${asset.id}: external sourcing priority requires a recorded sourcing attempt`);
-    if (asset.generationChosen && !concrete(asset.generationRationale, 20)) errors.push(`${asset.id}: generation choice requires a creative advantage rationale`);
-    if (asset.shipping && !asset.survivedFinalImplementation) errors.push(`${asset.id}: shipping asset did not survive final implementation`);
+    if (asset.sourcingPolicy === "generation-first-exemption" && !validGenerationFirstRationale(asset.generationRationale))
+      errors.push(`${asset.id}: generation-first exemption must be asset-specific and explain why sourcing is unsuitable`);
+    if (!asset.requiredLocations?.length || !asset.expectedFormatsAndVariants?.length || !asset.rightsRequirements?.length)
+      errors.push(`${asset.id}: asset intent must define locations, formats/variants and rights requirements`);
   }
   if (plan.approval?.status === "approved") {
     if (!concrete(plan.approval.contractHash) || plan.approval.contractHash !== contractHash(contract)) errors.push("approved contract hash does not match the current contract; approval is invalid");
@@ -605,7 +658,8 @@ function legacyAmbition(value: any): DesignAmbition {
 }
 
 export function migrateLegacyPlan(projectDir: string, legacy: any): { plan: CanonicalPlan; diagnostics: string[] } {
-  if (![3, 4, 5, 6, 7].includes(Number(legacy?.version))) throw new Error(`cannot migrate plan version ${String(legacy?.version)}; expected v3-v7`);
+  if (![3, 4, 5, 6, 7, 8].includes(Number(legacy?.version))) throw new Error(`cannot migrate plan version ${String(legacy?.version)}; expected v3-v8`);
+  if (Number(legacy?.version) === 8) return migrateCanonicalV8(projectDir, legacy);
   if (Number(legacy?.version) === 7) return migrateCanonicalV7(projectDir, legacy);
   const diagnostics: string[] = [];
   const ambition = legacyAmbition(legacy);
@@ -624,6 +678,7 @@ export function migrateLegacyPlan(projectDir: string, legacy: any): { plan: Cano
     projectKind: legacy.projectKind ?? "redesign",
     transformationDepth: legacy.depth ?? "restructure",
     treatments: legacy.skills ?? ["ux", "mobile"],
+    treatmentDecisionExplicit: true,
     allTreatmentsExplicit: Boolean(legacy.allSkillsExplicit),
     allTreatmentsConfirmed: Boolean(legacy.allSkillsExplicit),
   });
@@ -664,7 +719,7 @@ export function migrateLegacyPlan(projectDir: string, legacy: any): { plan: Cano
     mobileTranslation: plan.contract.mobileTranslation || "Legacy mobile composition requires user review.",
     finalResolution: legacy.awardJourney?.finalResolutionMomentId ?? "Legacy final resolution requires user review.",
   };
-  diagnostics.push("migration created an unapproved v8 contract; review .dreative/plan.yaml and approve it before implementation");
+  diagnostics.push(`migration created an unapproved v${PLAN_VERSION} contract; review .dreative/plan.yaml and approve it before implementation`);
   return { plan, diagnostics };
 }
 
@@ -677,6 +732,7 @@ export function migrateCanonicalV7(projectDir: string, legacy: any): { plan: Can
     projectKind: legacy.contract.scope?.projectKind,
     transformationDepth: legacy.contract.transformationDepth,
     treatments: legacy.contract.selectedTreatments,
+    treatmentDecisionExplicit: true,
     allTreatmentsExplicit: legacy.contract.allTreatmentsExplicit,
     allTreatmentsConfirmed: legacy.contract.allTreatmentsConfirmed,
   });
@@ -702,13 +758,101 @@ export function migrateCanonicalV7(projectDir: string, legacy: any): { plan: Can
       fallbackTrigger: "Migration requires a newly evidenced trigger.",
       triggerEvidenceRequired: [],
       userReapprovalRequired: true,
-      finalStatus: "not-applicable",
-      finalReason: "Migrated from v7 and requires review.",
-      observedEvidenceIds: [],
+      allowedSubstitutions: [],
+      riskFamily: "migration-review-required",
+      prototypePolicy: "review-required",
     })),
   };
-  plan.approval = { ...plan.approval, status: "pending", decisionHistory: [...plan.approval.decisionHistory, { at: now(), decision: "migrated-v7-to-v8", contractHash: null, note: "Capability preflight, route distribution, assets, mechanisms and run evidence require review." }] };
-  return { plan, diagnostics: ["canonical v7 migrated to unapproved v8; complete capability preflight, route distribution, asset strategy, mechanism governance and current-run evidence before approval"] };
+  plan.approval = { ...plan.approval, status: "pending", decisionHistory: [...plan.approval.decisionHistory, { at: now(), decision: `migrated-v7-to-v${PLAN_VERSION}`, contractHash: null, note: "Capability preflight, route distribution, assets, mechanisms and run evidence require review." }] };
+  return { plan, diagnostics: [`canonical v7 migrated to unapproved v${PLAN_VERSION}; complete capability preflight, route distribution, asset strategy, mechanism governance and current-run evidence before approval`] };
+}
+
+export function migrateCanonicalV8(projectDir: string, legacy: any): { plan: CanonicalPlan; diagnostics: string[] } {
+  if (legacy?.version !== 8 || !legacy.contract || !legacy.execution) throw new Error("canonical v8 migration requires a v8 plan with contract and execution");
+  const oldContractHash = contractHash(legacy.contract);
+  const selected = legacy.contract.selectedTreatments ?? [];
+  const plan = createPlan(projectDir, {
+    workflow: legacy.contract.workflow, target: legacy.contract.target, substantial: legacy.contract.scope?.substantial,
+    projectKind: legacy.contract.scope?.projectKind, transformationDepth: legacy.contract.transformationDepth,
+    treatments: selected, treatmentDecisionExplicit: true, allTreatmentsExplicit: legacy.contract.allTreatmentsExplicit,
+    allTreatmentsConfirmed: legacy.contract.allTreatmentsConfirmed,
+  });
+  const { prototypeContracts = [], assetStrategy = [], mechanismFallbacks = [], ...stable } = legacy.contract;
+  plan.contract = {
+    ...plan.contract,
+    ...stable,
+    treatmentDecisions: TREATMENTS.map((item) => ({
+      treatment: item,
+      state: selected.includes(item) ? (item === "ux" || item === "mobile" ? "foundational" : "selected") : "declined",
+      explicitlyDecided: true,
+      reason: selected.includes(item) ? "Preserved from the explicitly approved v8 treatment set." : "Preserved as declined during v8-to-v9 migration.",
+    })),
+    prototypeContracts: prototypeContracts.map((item: any) => ({
+      id: item.id, riskFamily: item.riskFamily, mechanismId: item.mechanismId, required: item.required,
+      uncertainty: item.validates || "Migrated prototype uncertainty requires review.",
+      acceptanceConditions: item.validates ? [item.validates] : [], maximumScope: "Preserve the bounded v8 prototype scope.",
+      failureImplications: item.limitations || "Use only an approved fallback or request a material change.",
+    })),
+    assetStrategy: assetStrategy.map((item: any) => ({
+      id: item.id, intendedRole: item.intendedRole, requiredSubjectAndComposition: item.requiredSubjectAndComposition,
+      priority: item.priority, sourcingPolicy: item.priority === "generated" ? "generation-first-exemption" : item.priority === "external-sourced" ? "external-first" : item.priority === "user-supplied" ? "supplied-only" : "procedural",
+      generationPolicy: item.priority === "generated" ? "allowed-with-advantage" : "not-allowed",
+      generationRationale: item.generationRationale ?? "", classification: item.classification,
+      rightsRequirements: ["Preserve and verify v8 provenance and rights."],
+      expectedFormatsAndVariants: item.productionDerivatives?.length ? item.productionDerivatives : ["migration-review-required"],
+      requiredLocations: item.usedAt?.length ? item.usedAt : ["migration-review-required"],
+      reusePolicy: "Review migrated reuse against the approved narrative role.",
+      suitableExternalMediaCouldExist: item.priority === "generated", sizeBudgetBytes: item.sizeBudgetBytes,
+    })),
+    mechanismFallbacks: mechanismFallbacks.map((item: any) => ({
+      id: item.id, location: item.location, primaryImplementation: item.primaryImplementation,
+      primaryAcceptance: item.primaryAcceptance ?? [], fallbackImplementation: item.fallbackImplementation,
+      fallbackTrigger: item.fallbackTrigger, triggerEvidenceRequired: item.triggerEvidenceRequired ?? [],
+      userReapprovalRequired: item.userReapprovalRequired ?? true, allowedSubstitutions: [],
+      riskFamily: "migrated-v8", prototypePolicy: "preserve-approved-prototype-policy",
+    })),
+  };
+  plan.execution = {
+    ...plan.execution, ...legacy.execution,
+    mechanisms: mechanismFallbacks.map((item: any) => ({
+      id: item.id, status: item.finalStatus ?? "pending", finalReason: item.finalReason ?? "",
+      triggerObserved: item.finalStatus === "fallback-triggered", triggerEvidenceIds: item.finalStatus === "fallback-triggered" ? item.observedEvidenceIds ?? [] : [],
+      observedImplementation: "", observedEvidenceIds: item.observedEvidenceIds ?? [], substitutionUsed: null, approvalReference: null, criticVerdict: "pending",
+    })),
+    prototypes: prototypeContracts.map((item: any) => ({
+      id: item.id, status: item.status ?? "pending", attemptCount: item.status === "pending" ? 0 : 1,
+      evidenceIds: item.evidenceIds ?? [], observedResults: item.validates ? [item.validates] : [],
+      correctiveIterations: [], implementationDecision: item.limitations ?? "",
+    })),
+    assets: assetStrategy.map((item: any) => ({
+      id: item.id, sourcingAttempts: item.sourcingAttempted ? [{ provider: "v8-record", query: item.requiredSubjectAndComposition ?? "", at: now(), result: "Migrated recorded attempt." }] : [],
+      preSearchExemption: item.generationChosen ? item.generationRationale ?? "" : "", candidatesFound: item.candidateSources ?? [],
+      selectedSource: item.sourcePath ?? null, generatedDetails: item.generationChosen ? item.generationRationale ?? "" : "",
+      actualFiles: item.sourcePath ? [item.sourcePath] : [], actualSizes: {}, productionDerivatives: item.productionDerivatives ?? [],
+      usageLocations: item.usedAt ?? [], browserObserved: false, survivedFinalImplementation: item.survivedFinalImplementation ?? false,
+      removedOrSubstituted: false, finalRightsRecord: (item.candidateSources ?? []).map((candidate: any) => candidate.rights).filter(Boolean).join("; "),
+      shipping: item.shipping ?? false, mobileVariant: item.mobileVariant, poster: item.poster, loadingStrategy: item.loadingStrategy,
+    })),
+  };
+  const lineageExact = legacy.approval?.status === "approved" && legacy.approval?.contractHash === oldContractHash;
+  const newHash = contractHash(plan.contract);
+  plan.approval = {
+    ...legacy.approval,
+    status: lineageExact ? "approved" : "pending",
+    contractHash: lineageExact ? newHash : null,
+    approvedAt: lineageExact ? legacy.approval.approvedAt : null,
+    approvedBy: lineageExact ? legacy.approval.approvedBy : null,
+    decisionHistory: [...(legacy.approval?.decisionHistory ?? []), {
+      at: now(), decision: "migrated-v8-to-v9", contractHash: lineageExact ? newHash : null,
+      note: lineageExact ? `Approval lineage preserved from stable v8 intent hash ${oldContractHash}; mutable outcomes moved to execution.` : "Approval could not be safely reconstructed and remains pending.",
+    }],
+  };
+  return { plan, diagnostics: [
+    `source canonical v8 contract hash: ${oldContractHash}`,
+    `target canonical v9 contract hash: ${newHash}`,
+    lineageExact ? "approval lineage preserved because the source approval exactly matched stable v8 intent" : "approval invalidated because exact stable intent lineage could not be proven",
+    "mechanism, prototype and asset outcomes moved from contract to execution",
+  ] };
 }
 
 export function exportPlanJson(plan: CanonicalPlan): string {

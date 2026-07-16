@@ -1,6 +1,19 @@
 # Run artifacts
 
-The only human-editable plan is `.dreative/plan.yaml` v7:
+The only human-editable plan is `.dreative/plan.yaml` v9:
+
+- `contract` is stable approved intent.
+- `approval.contractHash` hashes only that intent.
+- `execution` contains mutable mechanism, prototype, asset, browser, critic,
+  evidence and finalization outcomes.
+- `.dreative/runs/<run-id>/` evidence must identify canonical plan version,
+  contract hash, source hash, capability-preflight identity and creation time.
+
+## Legacy and migration material
+
+Canonical v7 and v8 plans are migration sources only. Migrate them explicitly
+with `dreative plan migrate --source-plan <path>`. Ambiguous candidates or
+direction/run-identity mismatches stop migration; approval is never fabricated.
 
 - `contract`: user-controlled creative intent.
 - `approval`: approved contract revision and hash.

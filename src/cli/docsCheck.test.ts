@@ -27,3 +27,19 @@ test("packaged skill rejects silent configuration defaults in user-facing runs",
   assert.equal(report.ok, false);
   assert.ok(report.findings.some((finding) => finding.check === "workflow-choices" && finding.file === "PLAN.md"));
 });
+
+test("docs-check catches stale canonical creation instructions and permission confusion", (t) => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-docs-version-"));
+  const skillDir = path.join(tempRoot, "dreative");
+  t.after(() => fs.rmSync(tempRoot, { recursive: true, force: true }));
+  fs.cpSync(path.resolve("skill", "dreative"), skillDir, { recursive: true });
+  fs.appendFileSync(path.join(skillDir, "SKILL.md"), "\n## Current workflow\nWrite the contract as v7. External image permission means image search is available.\n");
+  const report = runDocsCheck(skillDir);
+  assert.ok(report.findings.some((item) => item.check === "canonical-version"));
+  assert.ok(report.findings.some((item) => item.check === "capability-truth"));
+});
+
+test("migration-labelled documentation may mention v7", () => {
+  const report = runDocsCheck(path.resolve("skill", "dreative"));
+  assert.equal(report.findings.some((item) => item.file === "references/ARTIFACTS.md" && item.check === "canonical-version"), false);
+});

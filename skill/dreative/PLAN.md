@@ -91,7 +91,30 @@ a real application vertical slice: actual hero, one downstream section, real
 visual system, defining temporal/media idea, 390px composition and reduced
 motion. A user or independent critic must approve it before system-wide spread.
 
-## Canonical v8 planning additions
+## Canonical v9 planning and lifecycle rules
+
+For substantial work, no contract may be written until `--treatments` is supplied.
+The review always shows UX, Mobile, Refined, Motion, Interaction, Media, 3D,
+Immersive, Cinematic and Experimental with selected/declined state. UX and
+Mobile become foundational only after the optional-treatment decision.
+
+Connected capabilities may be supplied with
+`--capabilities-file .dreative/capabilities.json` or repeatable
+`--capability id=state`. Permission alone records
+`permitted-but-tool-unverified`; it never records sourcing or authoring as
+available. Canvas and WebGL start as `expected-browser-api-unverified`.
+
+The v9 contract stores intent only. Mechanism status, prototype results,
+sourcing attempts, generated files, browser observations, asset survival,
+critic findings and verification evidence belong under `execution`. Normal
+execution updates therefore do not change the approved contract hash.
+
+Tiny maintenance exemption: `--tiny` is only for a narrow, non-creative repair
+that does not alter visual direction, treatment allocation, media strategy,
+section structure or interaction behavior. It may use UX and Mobile foundations
+without a full optional-treatment intake. Any substantial redesign, new visual
+system, new section, new mechanism or media change must use explicit treatment
+selection.
 
 Resolve package installation separately from creative asset permissions. Run
 capability preflight and report runtime libraries, FFmpeg/Sharp, browser
