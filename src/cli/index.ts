@@ -33,6 +33,11 @@ const USAGE = `usage: dreative [command]
   preflight        detect the current framework, package manager, scripts and capabilities
                    --mechanisms a,b   resolve mechanism-led package/install requirements
   plan             init | validate | status | diff | approve | export-json | migrate
+                   init source flags: --references | --no-references | --suggest-references
+                   --generated-images allow|deny|ask --sourced-images allow|deny|ask
+                   --generated-video allow|deny|ask --sourced-video allow|deny|ask
+                   --3d-assets not-allowed|supplied-only|external-sourcing-allowed|
+                     generation-and-sourcing-allowed|ask-per-asset
   treatments       explain selected treatments [--all | --treatments a,b]
   doctor           verify skill, schema, packages, browser, source and current plan
   resume           continue safely from the last valid phase checkpoint

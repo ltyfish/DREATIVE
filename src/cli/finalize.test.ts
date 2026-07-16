@@ -53,7 +53,11 @@ function validV7Fixture() {
   });
   plan.contract.scope.requiredFunctionality = ["The page renders its primary content."];
   plan.contract.scope.dependencyInstallationAllowed = true;
-  plan.contract.scope.externalMediaAllowed = false;
+  plan.contract.creativeSources = {
+    references: { preference: "none", urls: [], notes: [], antiReferences: [] },
+    generatedImages: "not-allowed", sourcedImages: "not-allowed", generatedVideo: "not-allowed", sourcedVideo: "not-allowed",
+    threeDAssets: "not-allowed", suppliedImageAssets: [], suppliedVideoAssets: [], suppliedThreeDAssets: [], missingOrNeededAssets: [],
+  };
   plan.contract.scope.successCriteria = ["The user can read the ready state at desktop and mobile widths."];
   plan.contract.selectedConcept = "A direct utility page makes the ready state immediately legible.";
   plan.contract.blueprint = [{ pageId: "home", sectionId: "hero", intent: "Present the ready state." }];

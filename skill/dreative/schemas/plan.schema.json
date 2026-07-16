@@ -11,7 +11,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "target", "scope", "workflow", "transformationDepth", "selectedTreatments",
+        "target", "scope", "creativeSources", "workflow", "transformationDepth", "selectedTreatments",
         "allTreatmentsExplicit", "allTreatmentsConfirmed", "treatmentAllocation",
         "preservationRequirements", "selectedConcept", "blueprint", "motionAndMediaStrategy",
         "mobileTranslation", "functionalTruthRequirements", "performanceBudget",
@@ -20,6 +20,7 @@
       "properties": {
         "target": { "$ref": "#/$defs/target" },
         "scope": { "type": "object" },
+        "creativeSources": { "$ref": "#/$defs/creativeSources" },
         "workflow": { "$ref": "#/$defs/workflow" },
         "transformationDepth": { "enum": ["restyle", "relayout", "restructure", "reimagine"] },
         "selectedTreatments": { "$ref": "#/$defs/treatments" },
@@ -114,6 +115,34 @@
         "finalResolution": { "type": "string" }
       }
     },
+    "creativeSources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["references", "generatedImages", "sourcedImages", "generatedVideo", "sourcedVideo", "threeDAssets", "suppliedImageAssets", "suppliedVideoAssets", "suppliedThreeDAssets", "missingOrNeededAssets"],
+      "properties": {
+        "references": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["preference", "urls", "notes", "antiReferences"],
+          "properties": {
+            "preference": { "enum": ["provided", "none", "open-to-suggestions", null] },
+            "urls": { "type": "array", "items": { "type": "string" } },
+            "notes": { "type": "array", "items": { "type": "string" } },
+            "antiReferences": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "generatedImages": { "$ref": "#/$defs/mediaPermission" },
+        "sourcedImages": { "$ref": "#/$defs/mediaPermission" },
+        "generatedVideo": { "$ref": "#/$defs/mediaPermission" },
+        "sourcedVideo": { "$ref": "#/$defs/mediaPermission" },
+        "threeDAssets": { "enum": ["not-allowed", "supplied-only", "external-sourcing-allowed", "generation-and-sourcing-allowed", "ask-per-asset", null] },
+        "suppliedImageAssets": { "type": "array", "items": { "type": "string" } },
+        "suppliedVideoAssets": { "type": "array", "items": { "type": "string" } },
+        "suppliedThreeDAssets": { "type": "array", "items": { "type": "string" } },
+        "missingOrNeededAssets": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "mediaPermission": { "enum": ["allowed", "not-allowed", "ask-per-asset", null] },
     "treatment": { "enum": ["ux", "mobile", "refined", "motion", "interaction", "media", "3d", "immersive", "cinematic", "experimental"] },
     "treatments": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/treatment" } }
   }

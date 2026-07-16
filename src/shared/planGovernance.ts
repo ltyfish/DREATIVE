@@ -48,6 +48,26 @@ export interface ExperienceArc {
   finalResolution: string;
 }
 
+export type MediaPermission = "allowed" | "not-allowed" | "ask-per-asset";
+
+export interface CreativeSourcePolicy {
+  references: {
+    preference: "provided" | "none" | "open-to-suggestions" | null;
+    urls: string[];
+    notes: string[];
+    antiReferences: string[];
+  };
+  generatedImages: MediaPermission | null;
+  sourcedImages: MediaPermission | null;
+  generatedVideo: MediaPermission | null;
+  sourcedVideo: MediaPermission | null;
+  threeDAssets: "not-allowed" | "supplied-only" | "external-sourcing-allowed" | "generation-and-sourcing-allowed" | "ask-per-asset" | null;
+  suppliedImageAssets: string[];
+  suppliedVideoAssets: string[];
+  suppliedThreeDAssets: string[];
+  missingOrNeededAssets: string[];
+}
+
 export interface PlanContract {
   target: PlanTarget;
   scope: {
@@ -56,15 +76,11 @@ export interface PlanContract {
     routes: string[];
     requiredFunctionality: string[];
     preservedContentAndBrand: string[];
-    suppliedAssets: string[];
-    missingAssets: string[];
     dependencyInstallationAllowed: boolean | null;
-    externalMediaAllowed: boolean | null;
     performanceConstraints: string[];
-    references: string[];
-    antiReferences: string[];
     successCriteria: string[];
   };
+  creativeSources: CreativeSourcePolicy;
   workflow: WorkflowConfiguration;
   transformationDepth: "restyle" | "relayout" | "restructure" | "reimagine";
   selectedTreatments: SpecialistSkill[];
@@ -276,8 +292,13 @@ export function createPlan(projectDir: string, input: {
       target: resolved.target,
       scope: {
         substantial: input.substantial ?? true, projectKind: input.projectKind ?? "redesign", routes: resolved.target.routeScope.routes,
-        requiredFunctionality: [], preservedContentAndBrand: [], suppliedAssets: [], missingAssets: [],
-        dependencyInstallationAllowed: null, externalMediaAllowed: null, performanceConstraints: [], references: [], antiReferences: [], successCriteria: [],
+        requiredFunctionality: [], preservedContentAndBrand: [],
+        dependencyInstallationAllowed: null, performanceConstraints: [], successCriteria: [],
+      },
+      creativeSources: {
+        references: { preference: null, urls: [], notes: [], antiReferences: [] },
+        generatedImages: null, sourcedImages: null, generatedVideo: null, sourcedVideo: null, threeDAssets: null,
+        suppliedImageAssets: [], suppliedVideoAssets: [], suppliedThreeDAssets: [], missingOrNeededAssets: [],
       },
       workflow,
       transformationDepth: input.transformationDepth ?? "restructure",
@@ -330,7 +351,14 @@ export function validateCanonicalPlan(value: unknown): string[] {
     if (!Array.isArray(contract.blueprint) || contract.blueprint.length === 0) errors.push("substantial plan requires a page/section blueprint");
     if (!strings(contract.scope.requiredFunctionality)) errors.push("contract.scope.requiredFunctionality must be an array");
     if (contract.scope.dependencyInstallationAllowed === null) errors.push("dependency installation permission is unresolved");
-    if (contract.scope.externalMediaAllowed === null) errors.push("generated or externally sourced media permission is unresolved");
+    if (!contract.creativeSources || contract.creativeSources.references.preference === null) errors.push("reference preference is unresolved: provided, none, or open-to-suggestions");
+    if (!contract.creativeSources || contract.creativeSources.generatedImages === null) errors.push("generated-image permission is unresolved");
+    if (!contract.creativeSources || contract.creativeSources.sourcedImages === null) errors.push("externally sourced-image permission is unresolved");
+    if (!contract.creativeSources || contract.creativeSources.generatedVideo === null) errors.push("generated-video permission is unresolved");
+    if (!contract.creativeSources || contract.creativeSources.sourcedVideo === null) errors.push("externally sourced-video permission is unresolved");
+    if (!contract.creativeSources || contract.creativeSources.threeDAssets === null) errors.push("3D asset/prop policy is unresolved");
+    if (contract.creativeSources?.references.preference === "provided" && contract.creativeSources.references.urls.length === 0 && contract.creativeSources.references.notes.length === 0)
+      errors.push("reference preference is provided but no reference URLs or notes are recorded");
     if (!strings(contract.scope.successCriteria) || contract.scope.successCriteria.length === 0) errors.push("success criteria must be recorded in the user's language");
   }
   if (workflow && workflow.ambition !== "standard") {
@@ -422,7 +450,23 @@ export function migrateLegacyPlan(projectDir: string, legacy: any): { plan: Cano
   plan.contract.scope.requiredFunctionality = legacy.executionBrief?.preservationContracts ?? [];
   plan.contract.scope.successCriteria = legacy.executionBrief?.verificationCriteria ?? ["Preserve required behavior and visibly deliver the approved concept."];
   plan.contract.scope.dependencyInstallationAllowed = true;
-  plan.contract.scope.externalMediaAllowed = true;
+  plan.contract.creativeSources = {
+    references: {
+      preference: Array.isArray(legacy.references) && legacy.references.length ? "provided" : "open-to-suggestions",
+      urls: Array.isArray(legacy.references) ? legacy.references : [],
+      notes: [],
+      antiReferences: Array.isArray(legacy.antiReferences) ? legacy.antiReferences : [],
+    },
+    generatedImages: "ask-per-asset",
+    sourcedImages: "ask-per-asset",
+    generatedVideo: "ask-per-asset",
+    sourcedVideo: "ask-per-asset",
+    threeDAssets: "ask-per-asset",
+    suppliedImageAssets: [],
+    suppliedVideoAssets: [],
+    suppliedThreeDAssets: [],
+    missingOrNeededAssets: [],
+  };
   plan.contract.acceptanceCriteria = legacy.executionBrief?.verificationCriteria ?? [];
   plan.contract.motionAndMediaStrategy = legacy.motionComplexityBudget?.sharedLanguage ?? "Preserve the legacy motion and media intent during migration.";
   plan.contract.mobileTranslation = (legacy.pages ?? []).map((page: any) => page.mobileBlueprint?.composition390).filter(Boolean).join(" ");

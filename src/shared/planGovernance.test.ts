@@ -4,7 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { approvePlan, approvalStatus, contractHash, createPlan, migrateLegacyPlan, readPlan, validateCanonicalPlan, writePlan, type CanonicalPlan } from "./planGovernance.js";
-import { runPlanCommand } from "../cli/plan.js";
+import { runPlanCommand, unresolvedCreativeSourceQuestions } from "../cli/plan.js";
 
 function root(): string {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-plan-v7-"));
@@ -22,7 +22,11 @@ function completePlan(dir: string): CanonicalPlan {
   });
   plan.contract.scope.requiredFunctionality = ["Navigation and primary workflow remain operational."];
   plan.contract.scope.dependencyInstallationAllowed = true;
-  plan.contract.scope.externalMediaAllowed = true;
+  plan.contract.creativeSources = {
+    references: { preference: "open-to-suggestions", urls: [], notes: [], antiReferences: [] },
+    generatedImages: "ask-per-asset", sourcedImages: "ask-per-asset", generatedVideo: "ask-per-asset", sourcedVideo: "ask-per-asset",
+    threeDAssets: "ask-per-asset", suppliedImageAssets: [], suppliedVideoAssets: [], suppliedThreeDAssets: [], missingOrNeededAssets: [],
+  };
   plan.contract.scope.successCriteria = ["The experience feels authored and develops beyond the hero."];
   plan.contract.selectedConcept = "A living editorial instrument develops across the full route.";
   plan.contract.blueprint = [{ pageId: "home", sectionId: "hero", intent: "Opening instrument" }];
@@ -49,12 +53,29 @@ test("substantial plan init stops when Ambition is missing", () => {
   assert.equal(fs.existsSync(path.join(dir, ".dreative", "plan.yaml")), false);
 });
 
+test("creative-source intake asks only unresolved reference, image, video and 3D questions", () => {
+  const questions = unresolvedCreativeSourceQuestions(["--references", "https://example.com", "--generated-images", "allow", "--3d-assets", "supplied-only"]);
+  assert.ok(!questions.some((item) => item.startsWith("References:")));
+  assert.ok(!questions.some((item) => item.startsWith("Generated images:")));
+  assert.ok(!questions.some((item) => item.startsWith("3D assets/props:")));
+  assert.ok(questions.some((item) => item.startsWith("Sourced images:")));
+  assert.ok(questions.some((item) => item.startsWith("Generated video:")));
+  assert.ok(questions.some((item) => item.startsWith("Sourced video:")));
+});
+
 test("values supplied by the user are recorded without being replaced", () => {
   const dir = root();
-  assert.equal(runPlanCommand(dir, ["init", "--ambition", "experimental", "--execution", "fast", "--prototype", "skip", "--purpose", "project-delivery", "--preview-url", "http://localhost:4173", "--routes", "/work"]), 0);
+  assert.equal(runPlanCommand(dir, ["init", "--ambition", "experimental", "--execution", "fast", "--prototype", "skip", "--purpose", "project-delivery", "--preview-url", "http://localhost:4173", "--routes", "/work", "--references", "https://example.com/ref", "--generated-images", "ask", "--sourced-images", "allow", "--generated-video", "deny", "--sourced-video", "ask", "--3d-assets", "supplied-only", "--supplied-3d", "assets/product.glb"]), 0);
   const plan = readPlan(dir);
   assert.deepEqual(plan.contract.workflow, { ambition: "experimental", execution: "fast", prototype: "skip", purpose: "project-delivery" });
   assert.deepEqual(plan.contract.target.routeScope.routes, ["/work"]);
+  assert.equal(plan.contract.creativeSources.references.preference, "provided");
+  assert.deepEqual(plan.contract.creativeSources.references.urls, ["https://example.com/ref"]);
+  assert.equal(plan.contract.creativeSources.generatedImages, "ask-per-asset");
+  assert.equal(plan.contract.creativeSources.sourcedImages, "allowed");
+  assert.equal(plan.contract.creativeSources.generatedVideo, "not-allowed");
+  assert.equal(plan.contract.creativeSources.threeDAssets, "supplied-only");
+  assert.deepEqual(plan.contract.creativeSources.suppliedThreeDAssets, ["assets/product.glb"]);
 });
 
 test("all treatments require confirmation and remain selected", () => {

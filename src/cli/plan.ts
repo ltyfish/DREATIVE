@@ -51,7 +51,28 @@ Prototype
 Purpose
 - Project Delivery
 - Production Certification
-- Dreative Dogfood`;
+- Dreative Dogfood
+
+Creative sources
+- References — do you have reference URLs/files, no references, or want Dreative to suggest directions?
+- Generated images — allowed, not allowed, or ask before each asset?
+- Sourced images — may Dreative use externally sourced/licensed images, or ask first?
+- Generated video — allowed, not allowed, or ask before each asset?
+- Sourced video — may Dreative use externally sourced/licensed video, or ask first?
+- 3D assets and props — not allowed, supplied only, external sourcing allowed, generation and sourcing allowed, or ask before each asset?
+- Supplied assets — record image, video and 3D files separately, plus known missing or needed assets.`;
+
+export function unresolvedCreativeSourceQuestions(args: string[]): string[] {
+  const questions: string[] = [];
+  if (!value(args, "--references") && !args.includes("--no-references") && !args.includes("--suggest-references"))
+    questions.push("References: Do you have reference URLs/files, no references, or should Dreative suggest directions? Use --references, --no-references, or --suggest-references.");
+  if (!value(args, "--generated-images")) questions.push("Generated images: allowed, not allowed, or ask before each asset? Use --generated-images allow|deny|ask.");
+  if (!value(args, "--sourced-images")) questions.push("Sourced images: may Dreative use externally sourced/licensed images, or ask first? Use --sourced-images allow|deny|ask.");
+  if (!value(args, "--generated-video")) questions.push("Generated video: allowed, not allowed, or ask before each asset? Use --generated-video allow|deny|ask.");
+  if (!value(args, "--sourced-video")) questions.push("Sourced video: may Dreative use externally sourced/licensed video, or ask first? Use --sourced-video allow|deny|ask.");
+  if (!value(args, "--3d-assets")) questions.push("3D assets/props: choose not-allowed, supplied-only, external-sourcing-allowed, generation-and-sourcing-allowed, or ask-per-asset with --3d-assets.");
+  return questions;
+}
 
 function parseWorkflow(args: string[]): Partial<WorkflowConfiguration> {
   return {
@@ -81,6 +102,17 @@ function parseTreatments(args: string[]): { treatments: SpecialistSkill[]; expli
   return { treatments: [...new Set<SpecialistSkill>(["ux", "mobile", ...treatments])], explicitAll: false };
 }
 
+function permission(raw: string | undefined): "allowed" | "not-allowed" | "ask-per-asset" | null {
+  if (!raw) return null;
+  const aliases: Record<string, "allowed" | "not-allowed" | "ask-per-asset"> = {
+    allow: "allowed", allowed: "allowed", yes: "allowed",
+    deny: "not-allowed", denied: "not-allowed", no: "not-allowed", "not-allowed": "not-allowed",
+    ask: "ask-per-asset", "ask-per-asset": "ask-per-asset",
+  };
+  if (!aliases[raw]) throw new Error(`invalid media permission: ${raw}; use allow, deny, or ask`);
+  return aliases[raw];
+}
+
 function init(projectDir: string, args: string[]): number {
   const workflow = parseWorkflow(args);
   const missing = missingWorkflow(workflow);
@@ -100,6 +132,11 @@ function init(projectDir: string, args: string[]): number {
     routeScope: { mode: routes.length > 1 ? "selected-routes" : "one-page", routes },
     baselineUrls: values(value(args, "--baseline-urls")),
   };
+  const creativeQuestions = unresolvedCreativeSourceQuestions(args);
+  if (creativeQuestions.length) {
+    console.log("Unresolved creative-source intake:");
+    creativeQuestions.forEach((question) => console.log(`- ${question}`));
+  }
   const treatmentSelection = parseTreatments(args);
   console.log(renderTreatmentSummary(treatmentSelection.treatments, treatmentSelection.explicitAll));
   if (treatmentSelection.explicitAll && !args.includes("--confirm-all")) {
@@ -116,6 +153,29 @@ function init(projectDir: string, args: string[]): number {
     allTreatmentsExplicit: treatmentSelection.explicitAll,
     allTreatmentsConfirmed: treatmentSelection.explicitAll && args.includes("--confirm-all"),
   });
+  const references = values(value(args, "--references"));
+  plan.contract.creativeSources.references.preference = args.includes("--no-references")
+    ? "none"
+    : references.length
+      ? "provided"
+      : args.includes("--suggest-references")
+        ? "open-to-suggestions"
+        : null;
+  plan.contract.creativeSources.references.urls = references;
+  plan.contract.creativeSources.references.notes = values(value(args, "--reference-notes"));
+  plan.contract.creativeSources.references.antiReferences = values(value(args, "--anti-references"));
+  plan.contract.creativeSources.generatedImages = permission(value(args, "--generated-images"));
+  plan.contract.creativeSources.sourcedImages = permission(value(args, "--sourced-images"));
+  plan.contract.creativeSources.generatedVideo = permission(value(args, "--generated-video"));
+  plan.contract.creativeSources.sourcedVideo = permission(value(args, "--sourced-video"));
+  const threeD = value(args, "--3d-assets");
+  const allowed3d = ["not-allowed", "supplied-only", "external-sourcing-allowed", "generation-and-sourcing-allowed", "ask-per-asset"];
+  if (threeD && !allowed3d.includes(threeD)) throw new Error(`invalid --3d-assets: ${threeD}`);
+  plan.contract.creativeSources.threeDAssets = threeD as typeof plan.contract.creativeSources.threeDAssets ?? null;
+  plan.contract.creativeSources.suppliedImageAssets = values(value(args, "--supplied-images"));
+  plan.contract.creativeSources.suppliedVideoAssets = values(value(args, "--supplied-video"));
+  plan.contract.creativeSources.suppliedThreeDAssets = values(value(args, "--supplied-3d"));
+  plan.contract.creativeSources.missingOrNeededAssets = values(value(args, "--missing-assets"));
   writePlan(projectDir, plan);
   console.log(`Created editable plan at ${PLAN_FILE}.`);
   console.log(`Workflow: ${workflow.ambition} ambition, ${workflow.execution} execution, ${workflow.prototype} prototype, ${workflow.purpose}.`);

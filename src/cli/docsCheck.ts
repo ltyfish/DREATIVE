@@ -94,7 +94,7 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   }
 
   const planSchema = contents.get("schemas/plan.schema.json") ?? "";
-  for (const field of ["contract", "target", "workflow", "ambition", "execution", "prototype", "purpose", "transformationDepth", "selectedTreatments", "treatmentAllocation", "experienceArc", "approval", "contractHash", "changeRequests"]) {
+  for (const field of ["contract", "target", "creativeSources", "generatedImages", "sourcedImages", "generatedVideo", "sourcedVideo", "threeDAssets", "workflow", "ambition", "execution", "prototype", "purpose", "transformationDepth", "selectedTreatments", "treatmentAllocation", "experienceArc", "approval", "contractHash", "changeRequests"]) {
     if (!planSchema.includes(`\"${field}\"`)) add(findings, "schema", "schemas/plan.schema.json", `missing creative-control field ${field}`);
   }
   for (const file of ["schemas/plan.schema.json", "schemas/verify.schema.json", "schemas/critic.schema.json", "schemas/critic-input.schema.json", "schemas/visual-critic.schema.json", "schemas/design-equity.schema.json", "schemas/checkpoint.schema.json"]) {

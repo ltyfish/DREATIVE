@@ -25,7 +25,11 @@ test("focused simulated workflow covers intake, edit, approval, drift, broken me
   const plan = readPlan(root);
   plan.contract.scope.requiredFunctionality = ["The primary route and controls remain operational."];
   plan.contract.scope.dependencyInstallationAllowed = true;
-  plan.contract.scope.externalMediaAllowed = true;
+  plan.contract.creativeSources = {
+    references: { preference: "open-to-suggestions", urls: [], notes: [], antiReferences: [] },
+    generatedImages: "allowed", sourcedImages: "allowed", generatedVideo: "ask-per-asset", sourcedVideo: "ask-per-asset",
+    threeDAssets: "generation-and-sourcing-allowed", suppliedImageAssets: [], suppliedVideoAssets: [], suppliedThreeDAssets: [], missingOrNeededAssets: [],
+  };
   plan.contract.scope.successCriteria = ["The experience visibly develops beyond the hero and all primary media loads."];
   plan.contract.selectedConcept = "A living gallery rail transforms media and carries state through every chapter.";
   plan.contract.blueprint = [{ pageId: "home", sectionId: "hero", intent: "Open the gallery rail." }, { pageId: "home", sectionId: "work", intent: "Transform the rail downstream." }];
@@ -59,7 +63,11 @@ test("focused simulated workflow covers intake, edit, approval, drift, broken me
   const valid = readPlan(validRoot);
   valid.contract.scope.requiredFunctionality = ["Render the ready state."];
   valid.contract.scope.dependencyInstallationAllowed = false;
-  valid.contract.scope.externalMediaAllowed = false;
+  valid.contract.creativeSources = {
+    references: { preference: "none", urls: [], notes: [], antiReferences: [] },
+    generatedImages: "not-allowed", sourcedImages: "not-allowed", generatedVideo: "not-allowed", sourcedVideo: "not-allowed",
+    threeDAssets: "not-allowed", suppliedImageAssets: [], suppliedVideoAssets: [], suppliedThreeDAssets: [], missingOrNeededAssets: [],
+  };
   valid.contract.scope.successCriteria = ["Ready is visible at desktop and mobile sizes."];
   valid.contract.selectedConcept = "A direct ready state uses a clear, responsive hierarchy.";
   valid.contract.blueprint = [{ pageId: "home", sectionId: "hero", intent: "Show Ready." }];
@@ -74,4 +82,3 @@ test("focused simulated workflow covers intake, edit, approval, drift, broken me
   installSkill({ sourceDir, projectDir: validRoot, packageVersion, target: "claude", selected: ["ux", "mobile"], explicitAll: false });
   assert.equal(runFinalize(validRoot, { target: "claude", sourceDir, packageVersion }).ok, true);
 });
-

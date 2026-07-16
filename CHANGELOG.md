@@ -7,7 +7,8 @@
 - Unified Ambition as Standard, Expressive, Award or Experimental and separated
   it from Execution, Prototype and Purpose.
 - Added mandatory target/scope intake, treatment explanations, all-treatment
-  confirmation and concept-led allocation.
+  confirmation and concept-led allocation, including explicit reference,
+  generated/sourced image and video, supplied asset, and 3D prop policies.
 - Separated mechanism prototypes from real-application concept checkpoints.
 - Added fail-closed anti-static, treatment-perceptibility, browser media,
   WebGL, runtime-owner, independent critic and Dogfood gates.

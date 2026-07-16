@@ -34,7 +34,11 @@ updates do not invalidate approval; material contract edits do.
 dreative install-skill --codex --skills all
 dreative plan init --ambition award --execution lean --prototype auto \
   --purpose project-delivery --preview-url http://localhost:4173 \
-  --routes / --treatments motion,interaction,media
+  --routes / --treatments motion,interaction,media \
+  --references https://example.com/reference \
+  --generated-images ask --sourced-images allow \
+  --generated-video deny --sourced-video ask \
+  --3d-assets supplied-only --supplied-3d assets/product.glb
 dreative plan validate
 dreative plan status
 dreative plan diff
@@ -51,6 +55,11 @@ dreative finalize --codex
 `plan init` auto-detects repository details, package manager, framework, scripts
 and lockfile. It stops when material target or scope information is unresolved.
 A provided URL is recorded and tested rather than requested again.
+
+The intake separately records reference preferences, reference and
+anti-reference URLs, generated-image/video permission, externally sourced
+image/video permission, supplied image/video/3D assets, missing assets, and the
+allowed sourcing or generation policy for 3D props.
 
 Selecting every treatment shows a cost, tension and performance summary and
 requires one confirmation. Every selected treatment must receive a perceptible

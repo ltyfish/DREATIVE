@@ -14,7 +14,9 @@ Use this workflow for substantial interactive design and redesign.
 2. Resolve Ambition, Execution, Prototype and Purpose explicitly. A user-facing task is interactive; ask in plain text if needed and never silently default a
    missing control. Full Audit controls evidence, not visual ambition.
 3. Complete the missing-information intake in `PLAN.md`. Do not ask again for
-   facts already provided or reliably detected.
+   facts already provided or reliably detected. Explicitly resolve references,
+   generated images/video, externally sourced images/video, supplied assets,
+   missing assets, and 3D props/assets.
 4. Explain candidate treatments using `references/SKILL_CONTRACT.md`. User
    selection is authoritative. Regex routing is suggestion-only.
 5. Write the single editable contract to `.dreative/plan.yaml` v7. Summarize it,

@@ -50,6 +50,22 @@ permission, media permission, priority devices, minimum mobile width,
 performance constraints, references/anti-references and user-language success
 criteria. Do not implement while target or scope is materially ambiguous.
 
+Ask the creative-source questions separately rather than collapsing them into
+one media switch:
+
+- Does the user have reference URLs/files, have no references, or want suggested
+  directions? Record provided references and anti-references.
+- May generated images be used: allowed, not allowed, or ask per asset?
+- May externally sourced/licensed images be used: allowed, not allowed, or ask
+  per asset?
+- May generated video be used: allowed, not allowed, or ask per asset?
+- May externally sourced/licensed video be used: allowed, not allowed, or ask
+  per asset?
+- What is the 3D asset/prop policy: not allowed, supplied only, external
+  sourcing allowed, generation and sourcing allowed, or ask per asset?
+- Record supplied image, video and 3D assets separately and name known missing
+  or needed assets.
+
 ## Contract and approval
 
 `contract` is user-editable and contains target/scope, workflow, transformation
