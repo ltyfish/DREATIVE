@@ -36,6 +36,16 @@ test("packages do not imply creative authoring capabilities", () => {
   assert.equal(status("ffmpeg-processing"), "available");
 });
 
+test("model servers and Remotion remain unverified until real capability evidence exists", () => {
+  const capabilities = resolveCreativeCapabilities(["remotion"], {
+    generatedImagesAllowed: true, externalImagesAllowed: true, generatedVideoAllowed: true, externalVideoAllowed: true,
+    threeDPolicy: "generation-and-sourcing-allowed", packageInstallationAllowed: true,
+  });
+  const status = (id: string) => capabilities.find((item) => item.id === id)?.status;
+  assert.equal(status("remotion-renderer"), "permitted-but-tool-unverified");
+  assert.equal(status("external-model-server"), "unavailable");
+});
+
 test("explicit future tool input is supported without MCP-name coupling", () => {
   const capabilities = resolveCreativeCapabilities([], {
     generatedImagesAllowed: true, externalImagesAllowed: false, generatedVideoAllowed: false, externalVideoAllowed: false,

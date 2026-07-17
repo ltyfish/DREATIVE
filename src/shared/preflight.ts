@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { activeLockfile } from "./projectIdentity.js";
+import { CREATIVE_MECHANISMS, PACKAGE_PROFILES } from "./creativeCatalog.js";
 
 export type CapabilityStatus =
   | "available"
@@ -24,6 +25,7 @@ export const CAPABILITY_IDS = [
   "dom-css-runtime", "canvas-runtime", "webgl-runtime", "webgpu-runtime", "threejs-runtime", "gsap-runtime",
   "scrolltrigger-runtime", "video-playback", "image-sequence-playback",
   "ffmpeg-processing", "sharp-processing", "image-conversion", "video-transcoding", "frame-extraction", "compression",
+  "remotion-renderer", "external-model-server",
   "image-generation", "image-editing", "video-generation", "video-editing", "frame-sequence-creation",
   "3d-model-generation", "3d-model-editing", "audio-generation",
   "image-search", "video-search", "3d-asset-search", "font-search", "texture-search",
@@ -113,6 +115,7 @@ const CATEGORY: Record<CreativeCapabilityId, CapabilityCategory> = {
   "scrolltrigger-runtime": "runtime-rendering", "video-playback": "runtime-rendering", "image-sequence-playback": "runtime-rendering",
   "ffmpeg-processing": "processing", "sharp-processing": "processing", "image-conversion": "processing",
   "video-transcoding": "processing", "frame-extraction": "processing", "compression": "processing",
+  "remotion-renderer": "processing", "external-model-server": "creative-authoring",
   "image-generation": "creative-authoring", "image-editing": "creative-authoring", "video-generation": "creative-authoring",
   "video-editing": "creative-authoring", "frame-sequence-creation": "creative-authoring", "3d-model-generation": "creative-authoring",
   "3d-model-editing": "creative-authoring", "audio-generation": "creative-authoring",
@@ -229,6 +232,8 @@ export function resolveCreativeCapabilities(installed: string[], permissions: Cr
     runtimePackage("image-conversion", "sharp", has("sharp"), "Image conversion processes supplied or sourced pixels."),
     mediaProcessing("video-transcoding", "Transcoding changes existing media formats."),
     mediaProcessing("frame-extraction", "Frame extraction requires existing footage."),
+    explicitRecord("remotion-renderer") ?? record("remotion-renderer", "not-applicable", has("remotion") || has("@remotion/cli") ? "permitted-but-tool-unverified" : "unavailable", "package-preflight", "unverified", "A Remotion package does not prove that a browser executable can render the required format.", { package: "@remotion/cli", requiredAction: "install-or-select-fallback", actionOptions: ["run a bounded render probe and verify output", "select supplied footage or a deterministic frame-sequence fallback"] }),
+    explicitRecord("external-model-server") ?? record("external-model-server", "not-applicable", "unavailable", "environment", "unverified", "No local or remote model server is assumed. A fetch wrapper is not endpoint, model, format, hardware or license evidence.", { requiredAction: "install-or-select-fallback", actionOptions: ["declare a verified responding endpoint and model", "use deterministic media, image editing, Canvas, SVG or WebGL"] }),
     explicitRecord("compression") ?? record("compression", "not-applicable", has("sharp") || Boolean(environment.ffmpeg) ? "available" : "unavailable", "environment", "detected", "Compression is processing, not creative authoring."),
     permittedTool("image-generation", "Image-generation permission exists, but no generation tool was confirmed.", ["sourced image", "supplied image", "procedural graphic"]),
     permittedTool("image-editing", "Image-editing permission exists, but no authoring tool was confirmed.", ["CSS/SVG treatment", "production derivative"]),
@@ -277,8 +282,16 @@ export function capabilityPreflightIdentity(preflight: Omit<ProjectPreflight, "i
 export function resolveRuntimeRequirements(mechanisms: string[], preflight: ProjectPreflight): RuntimeRequirement[] {
   const prefix = preflight.packageManager === "npm" ? "npm install" : preflight.packageManager === "yarn" ? "yarn add" : preflight.packageManager === "bun" ? "bun add" : "pnpm add";
   return mechanisms.map((mechanism) => {
-    const packages = RUNTIME_RULES.find((rule) => rule.pattern.test(mechanism))?.packages ?? [];
-    return { mechanism, packages, packageManager: preflight.packageManager, installCommand: packages.length ? `${prefix} ${packages.map((item) => `${item.name}@${item.compatibleVersion}`).join(" ")}` : "not required (native CSS/SVG/Canvas)" };
+    const catalogueEntry = CREATIVE_MECHANISMS.find((item) => item.id === mechanism);
+    const cataloguePackages = catalogueEntry?.packageProfiles.flatMap((id) => {
+      const found = PACKAGE_PROFILES.find((item) => item.id === id);
+      return found ? [{ name: found.packageName, compatibleVersion: "resolve-current-compatible" }] : [];
+    }) ?? [];
+    const packages = catalogueEntry
+      ? [...new Map(cataloguePackages.map((item) => [item.name, item])).values()]
+      : RUNTIME_RULES.find((rule) => rule.pattern.test(mechanism))?.packages ?? [];
+    const installPackages = catalogueEntry ? packages.map((item) => item.name) : packages.map((item) => `${item.name}@${item.compatibleVersion}`);
+    return { mechanism, packages, packageManager: preflight.packageManager, installCommand: packages.length ? `${prefix} ${installPackages.join(" ")}` : "not required (native CSS/SVG/Canvas)" };
   });
 }
 
@@ -308,7 +321,7 @@ export function detectProjectPreflight(projectDir: string, options: { permission
   const sourceLayout = ["src", "app", "pages", "components", "public", "assets"].filter((name) => fs.existsSync(path.join(projectDir, name)));
   const files = sourceLayout.flatMap((name) => walk(path.join(projectDir, name))).filter((file) => /\.(?:[jt]sx?|vue|svelte|css|scss)$/.test(file) && !/\.(?:test|spec)\.[jt]sx?$/.test(file));
   const source = files.map((file) => fs.readFileSync(file, "utf8")).join("\n");
-  const capabilityPackages = ["motion", "framer-motion", "gsap", "lenis", "three", "@react-three/fiber", "@react-three/drei", "sharp", "playwright", "@playwright/test"];
+  const capabilityPackages = ["motion", "framer-motion", "gsap", "@gsap/react", "lenis", "three", "@react-three/fiber", "@react-three/drei", "@react-three/postprocessing", "postprocessing", "ogl", "@use-gesture/react", "matter-js", "@react-three/rapier", "sharp", "remotion", "@remotion/cli", "@remotion/player", "playwright", "@playwright/test"];
   const installedCapabilities = capabilityPackages.filter((name) => deps[name]);
   const permissions: CreativePermissions = {
     generatedImagesAllowed: false, externalImagesAllowed: false, generatedVideoAllowed: false, externalVideoAllowed: false,

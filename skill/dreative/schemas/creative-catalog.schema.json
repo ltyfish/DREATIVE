@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dreative.local/schemas/creative-catalog.schema.json",
+  "title": "Dreative creative execution catalogue",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["mechanisms", "packageProfiles", "primitives", "exemplars"],
+  "properties": {
+    "mechanisms": { "type": "array", "minItems": 100, "items": { "$ref": "#/$defs/mechanism" } },
+    "packageProfiles": { "type": "array", "minItems": 26, "items": { "$ref": "#/$defs/packageProfile" } },
+    "primitives": { "type": "array", "minItems": 16, "items": { "$ref": "#/$defs/primitive" } },
+    "exemplars": { "type": "array", "minItems": 10, "items": { "$ref": "#/$defs/exemplar" } }
+  },
+  "$defs": {
+    "strings": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "mechanism": {
+      "type": "object",
+      "required": ["id", "name", "aliases", "family", "summary", "visualOutcome", "suitableAmbitions", "suitableTreatments", "packageProfiles", "primitive", "recipe", "prototypeRisk", "performanceRisk", "accessibilityRisk", "mobileRisk", "originalityRisk", "reducedMotionStrategy", "mobileTranslation", "semanticFallback", "requiredEvidence", "references"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" }, "name": { "type": "string" }, "aliases": { "$ref": "#/$defs/strings" },
+        "family": { "enum": ["scroll-choreography", "media-transformation", "spatial-3d", "typography", "interaction", "scene-transition", "atmosphere"] },
+        "summary": { "type": "string" }, "visualOutcome": { "type": "string" }, "suitableAmbitions": { "$ref": "#/$defs/strings" }, "suitableTreatments": { "$ref": "#/$defs/strings" },
+        "packageProfiles": { "$ref": "#/$defs/strings" }, "primitive": { "type": "string" }, "recipe": { "type": "string" },
+        "prototypeRisk": { "enum": ["low", "medium", "high"] }, "performanceRisk": { "enum": ["low", "medium", "high"] }, "accessibilityRisk": { "enum": ["low", "medium", "high"] }, "mobileRisk": { "enum": ["low", "medium", "high"] }, "originalityRisk": { "enum": ["low", "medium", "high"] },
+        "reducedMotionStrategy": { "type": "string" }, "mobileTranslation": { "type": "string" }, "semanticFallback": { "type": "string" }, "requiredEvidence": { "$ref": "#/$defs/strings" }, "references": { "type": "array", "items": { "$ref": "#/$defs/reference" } }
+      }
+    },
+    "reference": { "type": "object", "required": ["source", "sourceType", "license", "attributionRequired", "principle"], "properties": { "source": { "type": "string" }, "sourceType": { "type": "string" }, "license": { "type": "string" }, "attributionRequired": { "type": "boolean" }, "principle": { "type": "string" } } },
+    "packageProfile": { "type": "object", "required": ["id", "packageName", "versionStrategy", "frameworks", "install", "importForm", "licenseConsiderations", "runtimeCapabilities", "browserLimitations", "reducedMotion", "mobile", "buildChecks", "browserChecks", "cleanup", "optional"], "properties": { "id": { "type": "string" }, "packageName": { "type": "string" }, "versionStrategy": { "type": "string" }, "frameworks": { "$ref": "#/$defs/strings" }, "install": { "type": "string" }, "importForm": { "type": "string" }, "licenseConsiderations": { "type": "string" }, "runtimeCapabilities": { "$ref": "#/$defs/strings" }, "browserLimitations": { "$ref": "#/$defs/strings" }, "reducedMotion": { "type": "string" }, "mobile": { "type": "string" }, "buildChecks": { "$ref": "#/$defs/strings" }, "browserChecks": { "$ref": "#/$defs/strings" }, "cleanup": { "$ref": "#/$defs/strings" }, "optional": { "type": "boolean" } } },
+    "primitive": { "type": "object", "required": ["id", "semanticPurpose", "packageProfiles", "lifecycleCleanup", "resizeHandling", "loadingHandling", "assetErrorHandling", "reducedMotionMode", "mobileTranslation", "semanticFallback", "performanceControls", "browserVerification", "evidenceStates", "antiPatterns"], "properties": { "id": { "type": "string" }, "semanticPurpose": { "type": "string" }, "packageProfiles": { "$ref": "#/$defs/strings" }, "lifecycleCleanup": { "$ref": "#/$defs/strings" }, "resizeHandling": { "type": "string" }, "loadingHandling": { "type": "string" }, "assetErrorHandling": { "type": "string" }, "reducedMotionMode": { "type": "string" }, "mobileTranslation": { "type": "string" }, "semanticFallback": { "type": "string" }, "performanceControls": { "$ref": "#/$defs/strings" }, "browserVerification": { "$ref": "#/$defs/strings" }, "evidenceStates": { "$ref": "#/$defs/strings" }, "antiPatterns": { "$ref": "#/$defs/strings" } } },
+    "exemplar": { "type": "object", "required": ["id", "title", "mechanismIds", "packageProfiles", "primitiveIds", "implementationOutline", "expectedStates", "performanceControls", "reducedMotion", "mobile", "evidence", "cleanup", "failureFallback"], "properties": { "id": { "type": "string" }, "title": { "type": "string" }, "mechanismIds": { "$ref": "#/$defs/strings" }, "packageProfiles": { "$ref": "#/$defs/strings" }, "primitiveIds": { "$ref": "#/$defs/strings" }, "implementationOutline": { "$ref": "#/$defs/strings" }, "expectedStates": { "$ref": "#/$defs/strings" }, "performanceControls": { "$ref": "#/$defs/strings" }, "reducedMotion": { "type": "string" }, "mobile": { "type": "string" }, "evidence": { "$ref": "#/$defs/strings" }, "cleanup": { "$ref": "#/$defs/strings" }, "failureFallback": { "type": "string" } } }
+  }
+}

@@ -1,5 +1,7 @@
 # Dreative Specialist Skill — Cinematic Pacing & Experiential Framing
 
+Use the executable catalogue to allocate preparation, escalation, peak, rest and resolution across separated regions. Load `../recipes/scene-transition-recipes.md` and `../recipes/positive-exemplars.md`; a hero-only set piece or untreated video rectangle cannot satisfy this treatment.
+
 Selected cinematic treatment owns observable staging, pacing or scene transitions in the temporal arc, with current-build evidence beyond entrances.
 
 ## Contract

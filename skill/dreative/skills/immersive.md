@@ -1,5 +1,7 @@
 # Dreative Specialist Skill — Immersive Worlds & Spatial Transitions
 
+Search the executable catalogue for persistent-stage, shared-object, portal and handoff mechanisms. Allocate one continuity owner across chapters, bind it to project content, and use `../references/CREATIVE_EXECUTION.md` to prevent competing clocks, effect stacking and silent mobile removal.
+
 Selected immersive treatment owns continuity, presence or environmental progression across compositions and proves the handoff temporally.
 
 ## Contract

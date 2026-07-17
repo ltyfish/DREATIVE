@@ -93,5 +93,30 @@ reverse scroll and montage are conditional.
 Read the selected `skills/<name>.md` summaries first. Read a
 `recipes/<name>-recipes.md` file only after its mechanism is approved.
 
+## Executable creative catalogue
+
+During concept planning, search `llms.txt` through
+`dreative catalogue --query "<natural visual phrase>" --json`. Compare the
+typed outcome, ambitions/treatments, content and continuity roles, package
+profiles, primitive, recipe, risks, fallback and evidence contract. Use the
+smallest coherent mechanism set; do not start from a component menu.
+
+Read `references/CREATIVE_EXECUTION.md` before installing an advanced runtime.
+It defines native-scroll defaulting, GSAP/Lenis clock ownership, scoped React
+cleanup, WebGL disposal, truthful Remotion/media capability gating, external
+reference scouting, React Bits adaptation without redistribution, performance
+budgets and temporal verification. Original primitive contracts are in
+`recipes/primitives.md`; tested technical patterns are in
+`recipes/positive-exemplars.md`. Family recipes are linked by catalogue entries.
+
+Award and Experimental plans must distribute substantive behavior after the
+hero, connect transformations to real project content and adjacent chapters,
+and include peaks, rests and resolution. Reject fade/translate/scale-only
+delivery, unused advanced dependencies, generic WebGL backgrounds, isolated
+model viewers, untreated video rectangles, component soup and mobile deletion.
+For all-treatment work, allocate one or two dominant treatments per section,
+choose continuity/motion/material/spatial owners, and resolve tensions with
+section hierarchy, budgets and fallbacks rather than pruning selections.
+
 Never weaken preservation, accessibility, responsive, reduced-motion,
 source-identity, critic independence or fail-closed guarantees.

@@ -80,6 +80,29 @@ npm test
 npm run docs-check
 ```
 
+Node.js 20.9 or newer is required; Node 22 is the repository development
+baseline. Dependencies are restored deterministically with `npm ci` and
+`node_modules`/`dist` are excluded from repository artifacts.
+
+## Executable creative catalogue
+
+Dreative now ships a typed catalogue of 128 advanced mechanisms, 28
+package/runtime profiles, 16 original lifecycle primitives and 10 positive
+technical exemplars. Search it by the phrase a designer or client would use:
+
+```sh
+dreative catalogue --query "image tornado" --json
+dreative catalogue --query "persistent product across sections"
+dreative preflight --mechanisms image-tornado,section-to-section-persistent-object
+```
+
+The resolver keeps native scroll for simple work, selects GSAP for high-control
+timelines, and selects Lenis only where an approved mechanism needs interpolation
+or velocity. React Bits remains an attributed, transformed reference for user
+projects and is not redistributed. Remotion, FFmpeg and external model systems
+remain capability-gated; package presence or permission is not proof that a
+renderer, binary, endpoint or model works.
+
 The optional visual editor remains available through `dreative start`.
 
 ## Canonical v9 lifecycle-safe release

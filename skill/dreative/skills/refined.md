@@ -1,5 +1,7 @@
 # Dreative Specialist Skill — Refined Craft
 
+Refined disciplines the catalogue's material, type and motion language; it does not remove selected Experimental peaks. For all-treatment work, keep one or two dominant treatments per section and use quiet sections as intentional rests, following `../references/CREATIVE_EXECUTION.md`.
+
 Selected refined coverage owns finish, typography, material and optical craft in named production files and current visual evidence.
 
 ## Contract

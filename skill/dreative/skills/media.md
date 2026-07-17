@@ -1,5 +1,7 @@
 # Dreative Specialist Skill — Media as Motion Material
 
+Search the executable catalogue for the intended pixel/material transformation, then load its family recipe plus `../recipes/primitives.md` and `../recipes/positive-exemplars.md`. Follow `../references/CREATIVE_EXECUTION.md` for Sharp/FFmpeg/Remotion preflight, posters, derivatives, codec truth and deterministic fallbacks.
+
 Selected media owns a real source/derivative pipeline, production loading and stateful visible evidence. A flat image plus scale, clip, parallax, gradient or noise is not Signature Media.
 
 ## Contract

@@ -1,5 +1,7 @@
 # Dreative Specialist Skill — Micro-interactions & Effect Craft
 
+Search the executable catalogue and load `../recipes/interaction-recipes.md` for drag, gesture, proximity, material or physics mechanisms. Every selected interaction needs meaningful state change, cancellation, cleanup, pointer/touch/keyboard equivalence and mobile/reduced-motion translation.
+
 Selected interaction proves pointer/touch/keyboard input, observable state response, and release/settling or repeat/reverse behavior where planned; hover styling is not a drag.
 
 ## Contract

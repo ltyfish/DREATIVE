@@ -1,0 +1,20 @@
+# Dreative executable creative catalogue
+
+Search the machine-readable catalogue before selecting an advanced mechanism:
+
+    dreative catalogue --query "image tornado" --json
+
+Natural-language aliases include photo disintegration, photo reconstruction,
+scroll image sequence, frame-by-frame product animation, velocity distortion,
+smooth scroll WebGL, persistent product across sections, shared-element
+transition, image tears into pieces, type becomes image, 3D gallery,
+drag-controlled images, cinematic video chapter, depth-map zoom, liquid chrome,
+video becomes layout, media plane distortion, spatial product story and
+Unseen-style section transition.
+
+The compiled catalogue is `dist/shared/creativeCatalog.js`. Human implementation
+guidance is in `references/CREATIVE_EXECUTION.md`, primitive contracts in
+`recipes/primitives.md`, and tested patterns in `recipes/positive-exemplars.md`.
+React Bits is reference vocabulary only and is never distributed by Dreative.
+Native scroll is the default. GSAP, Lenis, WebGL and build-time media tools are
+selected only by approved mechanisms and verified capabilities.

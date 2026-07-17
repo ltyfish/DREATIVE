@@ -3,6 +3,9 @@
   "version": "0.7.0",
   "description": "Frontend design skill for coding CLIs with typed planning, specialist treatments, verification, and an optional visual editor.",
   "type": "module",
+  "engines": {
+    "node": ">=20.9"
+  },
   "bin": {
     "dreative": "dist/cli/index.js"
   },

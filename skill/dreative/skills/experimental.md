@@ -1,5 +1,7 @@
 # Dreative Specialist Skill — Experimental / Creative-Mindset Dial
 
+Search `dreative catalogue --query ...` for two or three purposeful peaks, then load only their linked recipes and primitives. Apply `../references/CREATIVE_EXECUTION.md`; recognizable demo styling, React Bits redistribution, component soup and novelty without a section/continuity role fail.
+
 Selected experimental treatment owns one purposeful non-generic provocation with an implementation binding and evidence; an unusual label is not coverage.
 
 Canonical v9 requires two or three selected provocations distributed across

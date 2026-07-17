@@ -119,7 +119,7 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   for (const field of ["contract", "target", "creativeSources", "generatedImages", "sourcedImages", "generatedVideo", "sourcedVideo", "threeDAssets", "workflow", "ambition", "execution", "prototype", "purpose", "transformationDepth", "selectedTreatments", "treatmentAllocation", "experienceArc", "approval", "contractHash", "changeRequests"]) {
     if (!planSchema.includes(`\"${field}\"`)) add(findings, "schema", "schemas/plan.schema.json", `missing creative-control field ${field}`);
   }
-  for (const file of ["schemas/plan.schema.json", "schemas/verify.schema.json", "schemas/critic.schema.json", "schemas/critic-input.schema.json", "schemas/visual-critic.schema.json", "schemas/design-equity.schema.json", "schemas/checkpoint.schema.json"]) {
+  for (const file of ["schemas/plan.schema.json", "schemas/verify.schema.json", "schemas/critic.schema.json", "schemas/critic-input.schema.json", "schemas/visual-critic.schema.json", "schemas/design-equity.schema.json", "schemas/checkpoint.schema.json", "schemas/creative-catalog.schema.json"]) {
     try { JSON.parse(contents.get(file) ?? ""); }
     catch (error) { add(findings, "schema", file, `cannot parse schema: ${String(error)}`); }
   }

@@ -16,6 +16,7 @@ import { runPlanCommand } from "./plan.js";
 import { printDoctor, resumePlan, runDoctor } from "./doctor.js";
 import { renderTreatmentSummary } from "../shared/treatments.js";
 import { TREATMENTS } from "../shared/planGovernance.js";
+import { renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
 
 const port = Number(process.env.DREATIVE_PORT || 4820);
 const base = `http://localhost:${port}`;
@@ -32,6 +33,7 @@ const USAGE = `usage: dreative [command]
   config           resolve independent workflow controls
   preflight        detect the current framework, package manager, scripts and capabilities
                    --mechanisms a,b   resolve mechanism-led package/install requirements
+  catalogue        search the executable creative catalogue [--query phrase] [--json]
   plan             init | validate | status | diff | approve | export-json | migrate
                    init source flags: --references | --no-references | --suggest-references
                    --generated-images allow|deny|ask --sourced-images allow|deny|ask
@@ -145,6 +147,13 @@ async function main(): Promise<void> {
       const index = args.indexOf("--mechanisms");
       const mechanisms = index >= 0 ? (args[index + 1] ?? "").split(",").map((item) => item.trim()).filter(Boolean) : [];
       console.log(JSON.stringify({ preflight, runtimeRequirements: resolveRuntimeRequirements(mechanisms, preflight) }, null, 2));
+      return;
+    }
+    case "catalogue": {
+      const index = args.indexOf("--query");
+      const query = index >= 0 ? args[index + 1] ?? "" : args.slice(1).filter((item) => !item.startsWith("--")).join(" ");
+      if (args.includes("--json")) console.log(JSON.stringify(searchCreativeCatalog(query), null, 2));
+      else console.log(renderAgentCatalogue(query || undefined));
       return;
     }
     case "critic-prompt": console.log(renderCriticPrompt(process.cwd(), args[1] || ".dreative/critic.json")); return;

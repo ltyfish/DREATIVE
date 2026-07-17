@@ -1,5 +1,7 @@
 # Dreative Specialist Skill — Motion & Scroll Choreography
 
+Search the executable catalogue (`dreative catalogue --query ...`) before choosing a complex timeline. Use its package/primitive/recipe links and evidence contract. `../references/CREATIVE_EXECUTION.md` governs GSAP/Lenis selection and the single-clock lifecycle; native scroll remains the default for simple behavior.
+
 Selected motion names its mounted owner, start/intermediate/end/fallback states and distinct browser-grounded observations bound to the current build.
 
 ## Contract
