@@ -25,10 +25,11 @@ function fixture(motion: boolean): string {
   fs.writeFileSync(path.join(root, "index.html"), motion
     ? `<main><section style="height:120vh"><h1>Motion Rail</h1></section><section id="motion-rail" style="height:120vh;transform:translateX(calc(var(--progress,0)*.02px))">Resolved state</section></main><script>addEventListener("scroll",()=>document.documentElement.style.setProperty("--progress",scrollY))</script>`
     : `<main><h1>Ready</h1><button>Continue</button></main>`);
-  fs.writeFileSync(path.join(root, "server.mjs"), `import http from "node:http";import fs from "node:fs";http.createServer((q,s)=>{s.setHeader("content-type","text/html");s.end(fs.readFileSync("index.html"))}).listen(4173,"127.0.0.1");`);
+  const port = 42000 + Math.floor(Math.random() * 10000);
+  fs.writeFileSync(path.join(root, "server.mjs"), `import http from "node:http";import fs from "node:fs";http.createServer((q,s)=>{s.setHeader("content-type","text/html");s.end(fs.readFileSync("index.html"))}).listen(${port},"127.0.0.1");`);
   const plan = createPlan(root, {
     workflow: { ambition: "standard", execution: "fast", prototype: "skip", purpose: "project-delivery" },
-    target: { previewUrl: "http://127.0.0.1:4173", previewCommand: "node server.mjs", routeScope: { mode: "one-page", routes: ["/"] } },
+    target: { previewUrl: `http://127.0.0.1:${port}`, previewCommand: "node server.mjs", routeScope: { mode: "one-page", routes: ["/"] } },
     substantial: false, projectKind: "from-scratch", transformationDepth: "restyle",
     treatments: motion ? ["motion"] : [], treatmentDecisionExplicit: true,
   });

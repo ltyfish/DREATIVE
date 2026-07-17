@@ -98,18 +98,19 @@ function checkSourceContracts(projectDir: string, plan: CanonicalPlan): AuditFin
 function checkCertificationTrust(projectDir: string, plan: CanonicalPlan, verificationFile: string): AuditFinding[] {
   const findings: AuditFinding[] = [];
   const strict = plan.contract.scope.substantial;
-  if (!strict) return findings;
-  if (!plan.approval.approvalMode || !plan.approval.approvalOrigin)
-    findings.push(finding("error", "approval", "FAKE_HUMAN_APPROVAL: certification requires a recorded human or pre-authorized-dogfood origin"));
-  if (!plan.execution.planSummaryShownAt || (plan.approval.approvedAt && Date.parse(plan.execution.planSummaryShownAt) > Date.parse(plan.approval.approvedAt)))
-    findings.push(finding("error", "approval", "PLAN_SUMMARY_NOT_SHOWN: the concise plan summary must be shown before approval"));
-  if (plan.approval.approvalMode === "human" && plan.approval.approvalOrigin !== "interactive-user")
-    findings.push(finding("error", "approval", "FAKE_HUMAN_APPROVAL: approvedBy text is not proof of user-originated approval"));
-  if (plan.approval.approvalMode === "pre-authorized-dogfood" && plan.contract.workflow.purpose !== "dreative-dogfood")
-    findings.push(finding("error", "approval", "pre-authorized-dogfood cannot certify a human-reviewed project"));
-  if (!plan.contract.sourceBaselineHashAtCreation || !plan.approval.approvedSourceBaselineHash)
-    findings.push(finding("error", "approval-order", "IMPLEMENTATION_STARTED_BEFORE_PLAN_APPROVAL: source baselines are missing"));
-  if (plan.contract.workflow.prototype === "required") {
+  if (strict) {
+    if (!plan.approval.approvalMode || !plan.approval.approvalOrigin)
+      findings.push(finding("error", "approval", "FAKE_HUMAN_APPROVAL: certification requires a recorded human or pre-authorized-dogfood origin"));
+    if (!plan.execution.planSummaryShownAt || (plan.approval.approvedAt && Date.parse(plan.execution.planSummaryShownAt) > Date.parse(plan.approval.approvedAt)))
+      findings.push(finding("error", "approval", "PLAN_SUMMARY_NOT_SHOWN: the concise plan summary must be shown before approval"));
+    if (plan.approval.approvalMode === "human" && plan.approval.approvalOrigin !== "interactive-user")
+      findings.push(finding("error", "approval", "FAKE_HUMAN_APPROVAL: approvedBy text is not proof of user-originated approval"));
+    if (plan.approval.approvalMode === "pre-authorized-dogfood" && plan.contract.workflow.purpose !== "dreative-dogfood")
+      findings.push(finding("error", "approval", "pre-authorized-dogfood cannot certify a human-reviewed project"));
+    if (!plan.contract.sourceBaselineHashAtCreation || !plan.approval.approvedSourceBaselineHash)
+      findings.push(finding("error", "approval-order", "IMPLEMENTATION_STARTED_BEFORE_PLAN_APPROVAL: source baselines are missing"));
+  }
+  if (strict && plan.contract.workflow.prototype === "required") {
     const gate = plan.execution.prototypeGate;
     if (!gate || !gate.verificationRunId || !gate.decidedAt || !["approved-for-integration", "fallback-approved", "mechanism-declined"].includes(gate.decision ?? ""))
       findings.push(finding("error", "prototype", "PROTOTYPE_GATE_INCOMPLETE: required prototype needs trusted verification and a decision before integration"));
