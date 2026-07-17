@@ -15,6 +15,10 @@ export function runFinalize(projectDir: string, options: { target: "claude" | "c
     .some((entry) => entry.isDirectory() && fs.existsSync(path.join(runsDir, entry.name, "trusted-verification.json")));
   if (!hasTrustedBrowserRun)
     blockers.push("evidence provenance: finalization requires a sealed `dreative verify` browser run; manually authored verify.json is not certifiable");
+  const hasTrustedCriticRun = fs.existsSync(runsDir) && fs.readdirSync(runsDir, { withFileTypes: true })
+    .some((entry) => entry.isDirectory() && fs.existsSync(path.join(runsDir, entry.name, "trusted-critic.json")));
+  if (!hasTrustedCriticRun)
+    blockers.push("critic provenance: finalization requires a sealed `dreative critic-run`; a builder-authored critic report is not certifiable");
   const installation = checkSkillInstallation({ sourceDir: options.sourceDir, projectDir, packageVersion: options.packageVersion, target: options.target });
   blockers.push(...installation.map((item) => `skill installation: ${item}`));
   const packageFile = path.join(projectDir, "package.json");
