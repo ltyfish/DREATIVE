@@ -23,7 +23,7 @@ const resolvedCreativeArgs = [
   "--package-install", "allow",
 ];
 
-test("focused simulated workflow covers intake, edit, approval, drift, broken media and valid finalization", () => {
+test("focused simulated workflow covers intake, edit, approval, drift, broken media and rejects manual finalization evidence", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-simulation-"));
   fs.mkdirSync(path.join(root, "src"));
   fs.writeFileSync(path.join(root, "package.json"), JSON.stringify({ name: "simulation", version: "1.0.0", scripts: { dev: "vite" }, dependencies: { vite: "^5" } }));
@@ -51,6 +51,43 @@ test("focused simulated workflow covers intake, edit, approval, drift, broken me
   plan.contract.experienceArc = { openingState: "Quiet rail", firstTransformation: "Hero media fragments into the rail", sectionProgression: "Rail develops through three sections", peaksAndRests: "Transformations alternate with calm reading", persistentSystem: "Gallery rail persists", userControlledMoment: "Drag changes media state", mobileTranslation: "Swipe changes compact rail", finalResolution: "Rail resolves into final action" };
   plan.contract.motionAndMediaStrategy = "Mask and spatial states hand off between chapters.";
   plan.contract.mobileTranslation = "Swipe and tap replace pointer drag at 390px.";
+  plan.contract.projectDefinition = {
+    purpose: "Present a living gallery journey.", targetAudience: "Visitors exploring the featured work.",
+    primaryUserJourney: "Open the gallery, explore the rail through each chapter, and reach the final action.", routes: ["/"],
+    requiredFunctionality: ["The primary route and controls remain operational."],
+    extractedRequirements: ["The experience develops beyond the hero and primary media loads."], nonGoals: ["No account system."],
+    preservedContentOrFunctionality: ["Existing route and controls."],
+  };
+  plan.contract.creativeDirection = {
+    selectedConcept: plan.contract.selectedConcept, fitRationale: "A persistent gallery rail makes the portfolio journey coherent.",
+    nonGenericQualities: "The same rail transforms media across multiple chapters.", visualLanguage: "Layered gallery frames and spatial media.",
+    compositionStrategy: "Peaks alternate with quiet reading frames.", typographyStrategy: "Editorial display type resolves into utility labels.",
+    mediaStrategy: "Layered images transform inside the persistent rail.", motionInteractionPhilosophy: "Scroll and drag cause structural media changes.",
+    experienceProgression: "Open, transform, rest and resolve the gallery rail.",
+  };
+  plan.contract.sectionContracts = ["hero", "work", "finale"].map((id) => ({
+    id, route: "/", narrativePurpose: `${id} advances the gallery journey.`, mainUserAction: "Explore the current gallery state.",
+    visualRole: "Frame the persistent gallery rail.", mediaRole: "Present layered gallery media.", interactionRole: "Scroll and drag alter the rail.",
+    entryState: "The previous rail state enters the chapter.", activeState: "Media and typography transform together.",
+    resolvedState: "The rail settles into the next handoff.", handoff: "The same mounted rail persists onward.",
+    mobileBehavior: "Swipe and vertical progress retain the gallery rail.", reducedMotionBehavior: "Authored still frames retain the sequence.",
+    fallbackBehavior: "Semantic gallery states preserve content and actions.", verificationRequirement: `Capture ${id} start, active and resolved states.`,
+  }));
+  plan.contract.continuityContract = { owner: "GalleryRail", medium: "DOM", sourceOwner: "GalleryRail", sectionChanges: "One rail changes media and composition.", persistenceVerification: "Continuous trace proves one mounted owner.", breakConditions: "Duplicated independent images break continuity." };
+  plan.contract.mechanismContracts = [{
+    id: "gallery-rail", catalogueSourceOrCustomRationale: "Custom gallery rail based on shared-element handoff.", routeOrSection: "/ hero through finale",
+    inputDriver: "scroll-progress", startState: "Rail opens beside the title.", activeState: "Rail media fragments and changes layout.",
+    endState: "Rail resolves beside the final action.", reverseBehavior: "Reverse progress restores prior states.",
+    rapidInputBehavior: "Progress clamps during rapid scroll.", refreshAtProgressBehavior: "Refresh restores the matching state.",
+    mobileBehavior: "Vertical progress and swipe preserve the rail.", reducedMotionBehavior: "Authored still frames replace interpolation.",
+    dependency: "Native browser scroll timeline.", performanceExpectation: "No blocking long tasks during progress.",
+    approvedFallback: "Intersection-controlled semantic rail states.", fallbackTrigger: "Trusted prototype shows scroll timeline failure.",
+    requiredCaptureStates: ["start", "active", "resolved", "reverse", "mobile", "reduced-motion"],
+    successCriteria: ["One rail transforms across chapters."], failureCriteria: ["Buttons or duplicated images replace the rail."],
+  }];
+  plan.contract.requirementTraceability = [{ id: "REQ-1", source: "user prompt", wording: "The experience develops beyond the hero and primary media loads.", plannedImplementation: "GalleryRail transforms across work and finale.", routeOrComponent: "home/GalleryRail", browserTest: "Scroll and reverse through the complete route.", evidenceId: "gallery-runtime", status: "planned" }];
+  plan.contract.packagePlan = { assets: ["Layered gallery images"], rightsAndSources: ["Commercial rights required"], placeholderRestrictions: ["No placeholder media"], derivatives: ["Mobile and desktop layers"], mobileAssetStrategy: "Compact mobile derivatives", mechanismPackages: ["native browser APIs"], installPermission: true, preflightResults: ["Dreative browser runner required"], prototypeProof: ["Prove scroll lifecycle"] };
+  plan.contract.verificationPlan = { viewports: [{ name: "desktop", width: 1440, height: 900 }, { name: "mobile", width: 390, height: 844 }], interactions: [{ id: "scroll", route: "/", action: "scroll", mechanismId: "gallery-rail" }], mechanismStates: ["start", "active", "resolved", "reverse"], mobileTests: ["Rail remains"], reducedMotionTests: ["Still states"], accessibilityChecks: ["Keyboard and focus"], performanceChecks: ["Long tasks"], mediaNetworkChecks: ["Images and requests"], criticInputs: ["Desktop, mobile, trace"], finalizationBlockers: ["Missing functionality or rail states"] };
   plan.contract.videoDeliveryDecision = {
     decision: "frame-sequence-or-prerendered-motion",
     reason: "A bounded image sequence supplies deterministic chapter timing without depending on original video generation.",
@@ -62,6 +99,10 @@ test("focused simulated workflow covers intake, edit, approval, drift, broken me
     allocation.locations = ["home/hero", "home/work"];
     allocation.contribution = `${allocation.treatment} materially supports the gallery rail.`;
     allocation.acceptance = [`${allocation.treatment} is perceptible in captured evidence.`];
+    allocation.mechanismIds = ["gallery-rail"];
+    allocation.mobileObligation = `${allocation.treatment} remains substantive in the mobile rail.`;
+    allocation.reducedMotionObligation = `${allocation.treatment} remains substantive in authored still frames.`;
+    allocation.failureCriteria = [`${allocation.treatment} fails when the rail contribution is absent.`];
   }
   writePlan(root, plan);
   assert.equal(runPlanCommand(root, ["validate"]), 0);
@@ -81,7 +122,7 @@ test("focused simulated workflow covers intake, edit, approval, drift, broken me
   fs.writeFileSync(path.join(validRoot, "package.json"), JSON.stringify({ name: "valid", version: "1.0.0" }));
   fs.writeFileSync(path.join(validRoot, "package-lock.json"), "{}");
   fs.writeFileSync(path.join(validRoot, "src", "App.tsx"), `export const App=()=> <main>Ready</main>`);
-  assert.equal(runPlanCommand(validRoot, ["init", "--ambition", "standard", "--execution", "fast", "--prototype", "skip", "--purpose", "project-delivery", "--preview-url", "http://localhost:4173", "--routes", "/", "--treatments", "ux", ...resolvedCreativeArgs]), 0);
+  assert.equal(runPlanCommand(validRoot, ["init", "--tiny", "--ambition", "standard", "--execution", "fast", "--prototype", "skip", "--purpose", "project-delivery", "--preview-url", "http://localhost:4173", "--routes", "/", "--treatments", "ux", ...resolvedCreativeArgs]), 0);
   const valid = readPlan(validRoot);
   valid.contract.scope.requiredFunctionality = ["Render the ready state."];
   valid.contract.scope.dependencyInstallationAllowed = false;
@@ -102,7 +143,7 @@ test("focused simulated workflow covers intake, edit, approval, drift, broken me
   writePlan(validRoot, valid); approvePlan(validRoot);
   fs.writeFileSync(path.join(validRoot, ".dreative", "verify.json"), JSON.stringify({ version: 1, generatedAt: new Date().toISOString(), evidence: [{ id: "ready", criterion: "Ready visible", status: "pass", evidence: "tested URL", proof: { timestamp: new Date().toISOString(), testedUrl: "http://localhost:4173" } }] }));
   installSkill({ sourceDir, projectDir: validRoot, packageVersion, target: "claude", selected: ["ux", "mobile"], explicitAll: false });
-  assert.equal(runFinalize(validRoot, { target: "claude", sourceDir, packageVersion }).ok, true);
+  assert.equal(runFinalize(validRoot, { target: "claude", sourceDir, packageVersion }).ok, false);
 });
 
 test("Experimental Dogfood intake discloses all ten and records truthful pending capability state", () => {

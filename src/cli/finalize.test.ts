@@ -28,10 +28,10 @@ function validLegacyFixture() {
   return root;
 }
 
-test("finalize prints an eligible success result only when installation and audit pass", () => {
+test("legacy plan.json remains auditable for migration but cannot finalize", () => {
   const result = runFinalize(validLegacyFixture(), { target: "claude", sourceDir, packageVersion });
-  assert.equal(result.ok, true);
-  assert.deepEqual(result.blockers, []);
+  assert.equal(result.ok, false);
+  assert.ok(result.blockers.some((item) => item.includes("canonical .dreative/plan.yaml")));
 });
 
 test("finalize fails closed after source/plan completion evidence is removed", () => {
@@ -51,7 +51,7 @@ function validV9Fixture() {
     workflow: { ambition: "standard", execution: "fast", prototype: "skip", purpose: "project-delivery" },
     target: { previewUrl: "http://localhost:4173", routeScope: { mode: "one-page", routes: ["/"] } },
     projectKind: "from-scratch", transformationDepth: "restyle", treatments: ["ux", "mobile"],
-    treatmentDecisionExplicit: true,
+    treatmentDecisionExplicit: true, substantial: false,
   });
   plan.contract.scope.requiredFunctionality = ["The page renders its primary content."];
   plan.contract.scope.dependencyInstallationAllowed = true;
@@ -82,7 +82,8 @@ function validV9Fixture() {
   return root;
 }
 
-test("a valid v9 fixture can finalize successfully", () => {
+test("a structurally valid v9 fixture still cannot finalize with manual verify.json", () => {
   const result = runFinalize(validV9Fixture(), { target: "claude", sourceDir, packageVersion });
-  assert.equal(result.ok, true, result.blockers.join("\n"));
+  assert.equal(result.ok, false);
+  assert.ok(result.blockers.some((item) => item.includes("sealed `dreative verify`")));
 });

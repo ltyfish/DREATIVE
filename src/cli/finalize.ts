@@ -8,6 +8,13 @@ export interface FinalizeResult { ok: boolean; commands: { command: string; exit
 
 export function runFinalize(projectDir: string, options: { target: "claude" | "codex"; sourceDir: string; packageVersion: string }): FinalizeResult {
   const blockers: string[] = [];
+  if (!fs.existsSync(path.join(projectDir, ".dreative", "plan.yaml")))
+    blockers.push("migration: finalization requires canonical .dreative/plan.yaml; legacy plan.json evidence is readable for migration but cannot certify completion");
+  const runsDir = path.join(projectDir, ".dreative", "runs");
+  const hasTrustedBrowserRun = fs.existsSync(runsDir) && fs.readdirSync(runsDir, { withFileTypes: true })
+    .some((entry) => entry.isDirectory() && fs.existsSync(path.join(runsDir, entry.name, "trusted-verification.json")));
+  if (!hasTrustedBrowserRun)
+    blockers.push("evidence provenance: finalization requires a sealed `dreative verify` browser run; manually authored verify.json is not certifiable");
   const installation = checkSkillInstallation({ sourceDir: options.sourceDir, projectDir, packageVersion: options.packageVersion, target: options.target });
   blockers.push(...installation.map((item) => `skill installation: ${item}`));
   const packageFile = path.join(projectDir, "package.json");

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dreative.local/schemas/trusted-critic.schema.json",
+  "title": "Dreative Trusted Critic Run v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "runId", "nonce", "runnerIdentity", "startedAt", "finishedAt", "approvedPlanHash", "sourceHash", "buildHash", "verificationRunId", "inputArtifactHashes", "reportHash", "artifact"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "runId": { "type": "string" },
+    "nonce": { "type": "string", "minLength": 32 },
+    "runnerIdentity": { "$ref": "#/$defs/hash" },
+    "processId": { "type": ["integer", "null"] },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "finishedAt": { "type": "string", "format": "date-time" },
+    "approvedPlanHash": { "$ref": "#/$defs/hash" },
+    "sourceHash": { "$ref": "#/$defs/hash" },
+    "buildHash": { "$ref": "#/$defs/hash" },
+    "verificationRunId": { "type": "string" },
+    "inputArtifactHashes": { "type": "object", "additionalProperties": { "$ref": "#/$defs/hash" } },
+    "reportHash": { "$ref": "#/$defs/hash" },
+    "artifact": { "type": "object", "required": ["id", "type", "path", "sha256", "bytes"] }
+  },
+  "$defs": { "hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" } }
+}

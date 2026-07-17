@@ -57,10 +57,75 @@ function completePlan(dir: string): CanonicalPlan {
   plan.contract.motionAndMediaStrategy = "Structural media states hand off between chapters.";
   plan.contract.mobileTranslation = "The signature becomes a swipe-controlled compact instrument.";
   plan.contract.acceptanceCriteria = ["Observe start, midpoint, handoff and resolution."];
+  plan.contract.projectDefinition = {
+    purpose: "Present an authored editorial product journey.", targetAudience: "Prospective customers comparing the product.",
+    primaryUserJourney: "Open the route, explore the editorial rail, then complete the final action.", routes: ["/"],
+    requiredFunctionality: ["Navigation and primary workflow remain operational."],
+    extractedRequirements: ["The experience must develop beyond the hero."], nonGoals: ["No account dashboard."],
+    preservedContentOrFunctionality: ["Existing navigation and primary workflow."],
+  };
+  plan.contract.creativeDirection = {
+    selectedConcept: plan.contract.selectedConcept, fitRationale: "The editorial instrument makes comparison tactile and memorable.",
+    nonGenericQualities: "One persistent rail changes roles across chapters.", visualLanguage: "Editorial frames with an evolving spatial rail.",
+    compositionStrategy: "Alternating controlled peaks and calm reading states.", typographyStrategy: "Display titles hand off to compact utility labels.",
+    mediaStrategy: "Layered product media changes state within the rail.", motionInteractionPhilosophy: "User input advances structural states rather than entrance effects.",
+    experienceProgression: "Establish, transform, rest, and resolve the same authored system.",
+  };
+  plan.contract.sectionContracts = ["hero", "work", "finale"].map((id) => ({
+    id, route: "/", narrativePurpose: `${id} advances the editorial narrative.`, mainUserAction: "Explore the active rail state.",
+    visualRole: "Frame the persistent editorial instrument.", mediaRole: "Show the current layered product state.",
+    interactionRole: "Scroll and drag advance the active composition.", entryState: "The rail enters in its prior resolved state.",
+    activeState: "The rail and typography coordinate around the current chapter.", resolvedState: "The rail settles into a legible handoff.",
+    handoff: "The same owned rail persists into the next chapter.", mobileBehavior: "Swipe and vertical progress preserve the central rail.",
+    reducedMotionBehavior: "Authored still states preserve the narrative sequence.", fallbackBehavior: "Semantic states retain every action and message.",
+    verificationRequirement: `Capture ${id} start, active and resolved states.`,
+  }));
+  plan.contract.continuityContract = {
+    owner: "EditorialRail", medium: "DOM", sourceOwner: "EditorialRail",
+    sectionChanges: "The same mounted rail changes media, framing and labels between chapters.",
+    persistenceVerification: "A continuous trace proves one owner remains mounted through all chapters.",
+    breakConditions: "Duplicated chapter images or remounting unrelated rails breaks continuity.",
+  };
+  plan.contract.mechanismContracts = [{
+    id: "rail", catalogueSourceOrCustomRationale: "Catalogue shared-element handoff adapted to the editorial rail.", routeOrSection: "home/hero-work-finale",
+    inputDriver: "scroll-progress", startState: "Rail and title occupy the opening frame.", activeState: "Rail transforms media and layout through progress.",
+    endState: "Rail resolves beside the final action.", reverseBehavior: "Reverse scroll restores prior structural states.",
+    rapidInputBehavior: "Rapid input clamps progress without orphaning pinned state.", refreshAtProgressBehavior: "Refresh restores the state matching current scroll.",
+    mobileBehavior: "Vertical progress and swipe retain the same rail concept.", reducedMotionBehavior: "Three authored still compositions replace interpolation.",
+    dependency: "Native scroll timeline owned by EditorialRail.", performanceExpectation: "No long task above fifty milliseconds during progress.",
+    approvedFallback: "Three semantic rail states controlled by section intersection.", fallbackTrigger: "Measured scroll timeline failure in the trusted prototype.",
+    requiredCaptureStates: ["start", "active", "resolved", "reverse", "mobile", "reduced-motion"],
+    successCriteria: ["One rail visibly transforms across chapters."], failureCriteria: ["Buttons or duplicated images replace scroll progress."],
+  }];
+  plan.contract.requirementTraceability = [{
+    id: "REQ-1", source: "user prompt", wording: "The experience must develop beyond the hero.",
+    plannedImplementation: "EditorialRail transforms through work and finale chapters.", routeOrComponent: "home/EditorialRail",
+    browserTest: "Scroll start to finale and reverse while capturing rail states.", evidenceId: "rail-runtime", status: "planned",
+  }];
+  plan.contract.packagePlan = {
+    assets: ["Layered editorial product media."], rightsAndSources: ["Commercial rights must be recorded."],
+    placeholderRestrictions: ["No placeholder media may ship."], derivatives: ["Desktop and mobile layers."],
+    mobileAssetStrategy: "Serve compact derivatives at 390px.", mechanismPackages: ["native browser APIs"],
+    installPermission: true, preflightResults: ["Browser verification available through Dreative runner."],
+    prototypeProof: ["Prove scroll lifecycle and reduced motion before integration."],
+  };
+  plan.contract.verificationPlan = {
+    viewports: [{ name: "desktop", width: 1440, height: 900 }, { name: "mobile", width: 390, height: 844 }],
+    interactions: [{ id: "rail-scroll", route: "/", action: "scroll", mechanismId: "rail" }],
+    mechanismStates: ["start", "active", "resolved", "reverse"], mobileTests: ["Central rail remains present"],
+    reducedMotionTests: ["Authored still states"], accessibilityChecks: ["Keyboard navigation and visible focus"],
+    performanceChecks: ["Long tasks"], mediaNetworkChecks: ["Images load and requests succeed"],
+    criticInputs: ["Desktop, mobile, reduced motion, trace"], finalizationBlockers: ["Missing rail states or required functionality"],
+  };
+  for (const decision of plan.contract.treatmentDecisions) if (decision.state === "declined") decision.reason = `${decision.treatment} is outside this bounded editorial rail scope.`;
   for (const item of plan.contract.treatmentAllocation) {
     item.locations = ["home/hero"];
     item.contribution = `${item.treatment} contributes a visible, testable part of the concept.`;
     item.acceptance = [`${item.treatment} is perceptible in browser evidence.`];
+    item.mechanismIds = ["rail"];
+    item.mobileObligation = `${item.treatment} remains substantive in the mobile rail composition.`;
+    item.reducedMotionObligation = `${item.treatment} remains substantive in authored still states.`;
+    item.failureCriteria = [`${item.treatment} fails when its rail contribution is missing.`];
   }
   return plan;
 }
@@ -206,6 +271,16 @@ test("mechanism, prototype, evidence and asset execution updates keep the approv
   writePlan(dir, approved);
   assert.equal(approvalStatus(readPlan(dir)).approved, true);
   assert.equal(contractHash(readPlan(dir).contract), hash);
+});
+
+test("Dogfood pre-authorization remains explicit and never claims human review", () => {
+  const dir = root();
+  const plan = completePlan(dir);
+  writePlan(dir, plan);
+  const approved = approvePlan(dir, { mode: "pre-authorized-dogfood", origin: "explicit-preauthorization" });
+  assert.equal(approved.approval.approvalMode, "pre-authorized-dogfood");
+  assert.equal(approved.approval.approvalOrigin, "explicit-preauthorization");
+  assert.equal(approved.approval.approvedBy, "dogfood-preauthorization");
 });
 
 test("changing a primary mechanism or treatment allocation changes the contract hash", () => {

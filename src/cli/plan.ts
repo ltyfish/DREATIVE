@@ -272,6 +272,37 @@ function status(projectDir: string): number {
   return status.approved ? 0 : 1;
 }
 
+export function renderPlanSummary(plan: CanonicalPlan): string {
+  const c = plan.contract;
+  const declined = c.treatmentDecisions.filter((item) => item.state === "declined" || item.state === "not-applicable");
+  return [
+    `Concept: ${c.creativeDirection?.selectedConcept || c.selectedConcept || "(missing)"}`,
+    `Journey: ${c.projectDefinition?.primaryUserJourney || "(missing)"}`,
+    `Sections: ${(c.sectionContracts ?? []).map((item) => `${item.route}:${item.id}`).join(" -> ") || "(missing)"}`,
+    `Continuity: ${c.continuityContract ? `${c.continuityContract.owner} (${c.continuityContract.medium}) owned by ${c.continuityContract.sourceOwner}` : "(missing)"}`,
+    `Selected treatments: ${c.selectedTreatments.join(", ") || "none"}`,
+    `Declined treatments: ${declined.map((item) => `${item.treatment} — ${item.reason}`).join("; ") || "none"}`,
+    `Mechanisms: ${(c.mechanismContracts ?? []).map((item) => `${item.id} [${item.inputDriver}] at ${item.routeOrSection}`).join("; ") || "none"}`,
+    `Creative peaks: ${(c.experimentalPeaks ?? []).map((item) => `${item.id} at ${item.chapter}`).join("; ") || "none"}`,
+    `Assets/packages: ${c.packagePlan ? `${c.packagePlan.assets.length} assets; ${c.packagePlan.mechanismPackages.join(", ") || "no packages"}` : "(missing)"}`,
+    `Mobile: ${c.mobileTranslation || c.creativeDirection?.experienceProgression || "(missing)"}`,
+    `Reduced motion: ${(c.sectionContracts ?? []).map((item) => `${item.id}: ${item.reducedMotionBehavior}`).join("; ") || "(missing)"}`,
+    `Fallbacks: ${(c.mechanismContracts ?? []).map((item) => `${item.id}: ${item.approvedFallback}`).join("; ") || "(missing)"}`,
+    `Requirements: ${(c.requirementTraceability ?? []).length}/${c.projectDefinition?.extractedRequirements.length ?? 0} traced`,
+    `Prototype risks: ${(c.prototypeContracts ?? []).map((item) => `${item.id}: ${item.uncertainty}`).join("; ") || "none"}`,
+    `Verification: ${c.verificationPlan ? `${c.verificationPlan.viewports.map((item) => `${item.width}x${item.height}`).join(", ")}; ${c.verificationPlan.interactions.length} interactions` : "(missing)"}`,
+  ].join("\n");
+}
+
+function showSummary(projectDir: string): number {
+  const plan = readPlan(projectDir);
+  console.log(renderPlanSummary(plan));
+  plan.execution.planSummaryShownAt = new Date().toISOString();
+  plan.execution.lastUpdatedAt = plan.execution.planSummaryShownAt;
+  writePlan(projectDir, plan);
+  return 0;
+}
+
 function diff(projectDir: string): number {
   const plan = readPlan(projectDir);
   const drifted = approvalStatus(plan).drifted;
@@ -285,6 +316,35 @@ function diff(projectDir: string): number {
     ? `CONTRACT DRIFT: approved ${status.approvedHash}, current ${status.currentHash}. Write a material change request and re-approve before continuing.`
     : `No contract drift. Approved contract hash ${status.approvedHash}.`);
   return drifted ? 1 : 0;
+}
+
+function decidePrototype(projectDir: string, args: string[]): number {
+  const plan = readPlan(projectDir);
+  const gate = plan.execution.prototypeGate;
+  const id = value(args, "--id");
+  const decision = value(args, "--decision") as NonNullable<typeof gate>["decision"];
+  const allowed = ["approved-for-integration", "revise-prototype", "fallback-approved", "mechanism-declined"];
+  if (!gate || !id || gate.prototypeId !== id || !gate.verificationRunId) throw new Error("prototype decision requires the matching trusted --prototype-id run");
+  if (!decision || !allowed.includes(decision)) throw new Error(`prototype --decision must be ${allowed.join(", ")}`);
+  gate.decision = decision;
+  gate.decidedAt = new Date().toISOString();
+  plan.execution.lastUpdatedAt = gate.decidedAt;
+  writePlan(projectDir, plan);
+  console.log(`Prototype ${id}: ${decision}.`);
+  return decision === "revise-prototype" ? 1 : 0;
+}
+
+function markImplementationStart(projectDir: string): number {
+  const plan = readPlan(projectDir);
+  if (!approvalStatus(plan).approved) throw new Error("implementation cannot start before approved plan");
+  if (plan.contract.workflow.prototype === "required" && !["approved-for-integration", "fallback-approved", "mechanism-declined"].includes(plan.execution.prototypeGate?.decision ?? ""))
+    throw new Error("implementation cannot start before the required trusted prototype decision");
+  plan.execution.firstMaterialSourceChangeAt = new Date().toISOString();
+  plan.execution.currentPhase = "implementation";
+  plan.execution.lastUpdatedAt = plan.execution.firstMaterialSourceChangeAt;
+  writePlan(projectDir, plan);
+  console.log(`Implementation start recorded at ${plan.execution.firstMaterialSourceChangeAt}.`);
+  return 0;
 }
 
 function migrate(projectDir: string, args: string[]): number {
@@ -336,9 +396,20 @@ export function runPlanCommand(projectDir: string, args: string[]): number {
     case "validate": return validate(projectDir);
     case "status": return status(projectDir);
     case "diff": return diff(projectDir);
+    case "summary": return showSummary(projectDir);
+    case "prototype-decision": return decidePrototype(projectDir, args.slice(1));
+    case "implementation-start": return markImplementationStart(projectDir);
     case "approve": {
-      const plan = approvePlan(projectDir, value(args, "--by") ?? "user");
-      console.log(`Approved contract revision ${plan.approval.revision}: ${plan.approval.contractHash}`);
+      const mode = (value(args, "--mode") ?? "human") as "human" | "pre-authorized-dogfood";
+      if (!readPlan(projectDir).execution.planSummaryShownAt) throw new Error("PLAN_SUMMARY_NOT_SHOWN: run `dreative plan summary` before approval");
+      if (mode === "human" && (!process.stdin.isTTY || !args.includes("--confirm-human-approval")))
+        throw new Error("FAKE_HUMAN_APPROVAL: show `dreative plan summary`, then a human must run this command interactively with --confirm-human-approval");
+      const plan = approvePlan(projectDir, {
+        mode,
+        origin: mode === "human" ? "interactive-user" : "explicit-preauthorization",
+        approvedBy: mode === "human" ? "user" : "dogfood-preauthorization",
+      });
+      console.log(`${mode === "human" ? "Human-approved" : "Dogfood pre-authorization recorded for"} contract revision ${plan.approval.revision}: ${plan.approval.contractHash}`);
       return 0;
     }
     case "export-json": {
@@ -348,6 +419,6 @@ export function runPlanCommand(projectDir: string, args: string[]): number {
       return 0;
     }
     case "migrate": return migrate(projectDir, args.slice(1));
-    default: throw new Error("usage: dreative plan init|validate|status|diff|approve|export-json|migrate");
+    default: throw new Error("usage: dreative plan init|validate|status|diff|summary|approve|prototype-decision|implementation-start|export-json|migrate");
   }
 }

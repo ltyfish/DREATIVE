@@ -52,7 +52,7 @@ package-installation permission; permission and detected capability are never
 collapsed into one state.
 
 Resolve repository root, preview URL or command, routes and scope, required
-workflows, preserved content/brand, supplied and missing assets, installation
+workflows, preserved content/brand, supplied and missinhg assets, installation
 permission, media permission, priority devices, minimum mobile width,
 performance constraints, references/anti-references and user-language success
 criteria. Do not implement while target or scope is materially ambiguous.

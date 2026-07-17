@@ -19,22 +19,36 @@ Use this workflow for substantial interactive design and redesign.
    missing assets, and 3D props/assets.
 4. Explain candidate treatments using `references/SKILL_CONTRACT.md`. User
    selection is authoritative. Regex routing is suggestion-only.
-5. Write the single editable contract to `.dreative/plan.yaml` v9. Summarize it,
-   tell the user where it is, and wait for approval before substantial source
-   implementation.
-6. Hash only `contract`. Machine updates belong in `execution`. Any material
+5. Write the single editable contract to `.dreative/plan.yaml` v9. It must
+   include project definition, creative direction, per-section state contracts,
+   a source-owned continuity contract, treatment and mechanism obligations,
+   requirement traceability, asset/package strategy and the verification plan.
+   Run `dreative plan summary`; do not make the user review raw YAML.
+6. Record approval honestly. Human approval is interactive
+   (`dreative plan approve --mode human --confirm-human-approval`).
+   Explicitly pre-authorized Dogfood uses
+   `--mode pre-authorized-dogfood` and must never be described as human review.
+   Wait for approval before material application-source implementation.
+7. Hash only `contract`. Machine updates belong in `execution`. Any material
    contract edit needs a change request and reapproval.
-7. When required, prototype the uncertain mechanism, then separately build and
-   approve the real-application concept checkpoint.
-8. Implement the approved concept in the real application. Install runtime
+8. When required, prototype the uncertain mechanism in an isolated prototype
+   route/location, verify it through the trusted runner, and record a prototype
+   decision before integration. A completed application is not its prototype.
+   Use `dreative verify --prototype-id <id> --prototype-location <path>`,
+   `dreative plan prototype-decision --id <id> --decision <decision>`, then
+   `dreative plan implementation-start` before material source edits.
+9. Implement the approved concept in the real application. Install runtime
    packages transactionally, one mechanism group at a time. Keep one explicit
    ticker/scroll owner and never silently downgrade.
-9. Verify the browser runtime: visible media loads, resources succeed, canvas or
-   WebGL draws, console/hydration are clean, and production media exists.
-10. Run a fresh-context independent critic using only the approved contract,
-    baseline, final desktop/mobile captures, temporal evidence, runtime traces,
-    interaction instructions, treatment allocation and acceptance criteria.
-11. Run `dreative audit`, correct blockers and major issues, then
+10. Run `dreative verify --browser-command "<dev command>"`. Only this
+    Dreative-owned runner may create trusted screenshots, traces, browser
+    observations, performance data and artifact hashes. Never hand-author or
+    edit trusted evidence.
+11. Run the critic in a separate process with
+    `dreative critic-run --command "<critic command>"`. Its closed input must
+    contain the approved contract, requirement matrix, desktop/mobile/reduced
+    motion captures, temporal evidence and functional/performance summaries.
+12. Run `dreative audit`, correct blockers and major issues, then
     `dreative finalize`. Dogfood failure prevents `DREATIVE_FINALIZED`.
 
 Canonical Ambition values are `standard`, `expressive`, `award` and
@@ -61,6 +75,15 @@ Specialists:
 - Permission is not capability. A connected authoring or sourcing tool must be explicitly detected or declared. Canvas, WebGL, video playback and other browser APIs begin as expected but unverified and become available only through current browser evidence.
 - Award, Experimental and explicit all-treatment delivery is machine-grounded in typed controlled-progress runtime observations. Free-form evidence strings cannot satisfy static-feeling, Media, 3D, Cinematic, Immersive or Experimental gates.
 - Full Audit and Dogfood require a genuinely fresh critic agent. Degraded, best-effort or same-agent review is insufficient independent evidence.
+- Browser verifier and critic provenance are sealed in a Dreative trust ledger
+  outside the project. JSON descriptions never count as screenshots,
+  recordings or browser traces. Audit re-hashes actual bytes and rejects edits,
+  missing files, stale plan/source/build identities and unsealed Playwright
+  claims.
+- Requirement rows are blocking contracts, not documentation. A missing
+  browser test, missing evidence id, failed status, material substitution,
+  unapproved fallback, missing exact viewport, or mobile deletion blocks
+  finalization.
 - Asset order is supplied, rights-safe external sourcing, advantageously generated, then procedural. When a confirmed sourcing tool exists and suitable media could exist, record a search attempt or a concrete asset-specific generation-first exemption.
 - Direct YAML authoring follows the same rules: all ten treatment decision records are mandatory and mutable outcomes in `contract` are invalid.
 

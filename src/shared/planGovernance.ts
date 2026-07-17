@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { parse, stringify } from "yaml";
 import { detectProjectPreflight, type ProjectPreflight } from "./preflight.js";
+import { hashFiles, sourceFiles } from "./projectIdentity.js";
 import type { SpecialistSkill } from "./skillSystem.js";
 import { treatment } from "./treatments.js";
 import type { DesignAmbition, EvaluationPurpose, ExecutionMode, PrototypePolicy, WorkflowConfiguration } from "./workflow.js";
@@ -37,6 +38,10 @@ export interface TreatmentAllocation {
   dependencies: SpecialistSkill[];
   acceptance: string[];
   routeRole: "peak" | "connective-tissue" | "foundation";
+  mechanismIds?: string[];
+  mobileObligation?: string;
+  reducedMotionObligation?: string;
+  failureCriteria?: string[];
 }
 
 export type TreatmentDecisionState = "foundational" | "recommended" | "selected" | "declined" | "not-applicable";
@@ -55,6 +60,59 @@ export type RuntimeMechanismFamily =
   | "depth-parallax" | "camera-travel" | "spatial-field" | "shared-element-handoff" | "kinetic-type"
   | "hold-charge-release" | "layout-transition" | "ordinary-control" | "rigid-media-plane" | "decorative-motion";
 export type RuntimeInputDriver = "scroll-progress" | "velocity" | "pointer" | "drag" | "hold" | "time" | "audio" | "route" | "keyboard";
+export type ApprovalMode = "human" | "pre-authorized-dogfood";
+export type MechanismStatus = "not-started" | "prototype-passed" | "implemented" | "verified" | "failed" | "fallback-triggered" | "approved-change" | "removed";
+
+export interface RequirementTrace {
+  id: string;
+  source: string;
+  wording: string;
+  plannedImplementation: string;
+  routeOrComponent: string;
+  browserTest: string;
+  evidenceId: string;
+  status: "planned" | "implemented" | "verified" | "failed" | "removed";
+}
+
+export interface SectionContract {
+  id: string;
+  route: string;
+  narrativePurpose: string;
+  mainUserAction: string;
+  visualRole: string;
+  mediaRole: string;
+  interactionRole: string;
+  entryState: string;
+  activeState: string;
+  resolvedState: string;
+  handoff: string;
+  mobileBehavior: string;
+  reducedMotionBehavior: string;
+  fallbackBehavior: string;
+  verificationRequirement: string;
+}
+
+export interface MechanismContract {
+  id: string;
+  catalogueSourceOrCustomRationale: string;
+  routeOrSection: string;
+  inputDriver: RuntimeInputDriver | "click" | "media-progress";
+  startState: string;
+  activeState: string;
+  endState: string;
+  reverseBehavior: string;
+  rapidInputBehavior: string;
+  refreshAtProgressBehavior: string;
+  mobileBehavior: string;
+  reducedMotionBehavior: string;
+  dependency: string;
+  performanceExpectation: string;
+  approvedFallback: string;
+  fallbackTrigger: string;
+  requiredCaptureStates: string[];
+  successCriteria: string[];
+  failureCriteria: string[];
+}
 
 export interface RuntimeStateSample {
   progress: 0 | 25 | 50 | 75 | 100;
@@ -218,6 +276,35 @@ export interface CreativeSourcePolicy {
 }
 
 export interface PlanContract {
+  createdAt?: string;
+  sourceBaselineHashAtCreation?: string;
+  projectDefinition?: {
+    purpose: string; targetAudience: string; primaryUserJourney: string; routes: string[];
+    requiredFunctionality: string[]; extractedRequirements: string[]; nonGoals: string[]; preservedContentOrFunctionality: string[];
+  };
+  creativeDirection?: {
+    selectedConcept: string; fitRationale: string; nonGenericQualities: string; visualLanguage: string;
+    compositionStrategy: string; typographyStrategy: string; mediaStrategy: string; motionInteractionPhilosophy: string;
+    experienceProgression: string;
+  };
+  sectionContracts?: SectionContract[];
+  continuityContract?: {
+    owner: string; medium: "DOM" | "SVG" | "Canvas" | "WebGL" | "media" | "hybrid"; sourceOwner: string;
+    sectionChanges: string; persistenceVerification: string; breakConditions: string;
+  };
+  mechanismContracts?: MechanismContract[];
+  requirementTraceability?: RequirementTrace[];
+  packagePlan?: {
+    assets: string[]; rightsAndSources: string[]; placeholderRestrictions: string[]; derivatives: string[];
+    mobileAssetStrategy: string; mechanismPackages: string[]; installPermission: boolean; preflightResults: string[];
+    prototypeProof: string[];
+  };
+  verificationPlan?: {
+    viewports: { width: number; height: number; name: string }[];
+    interactions: { id: string; route: string; action: string; selector?: string; value?: string; mechanismId?: string }[];
+    mechanismStates: string[]; mobileTests: string[]; reducedMotionTests: string[]; accessibilityChecks: string[];
+    performanceChecks: string[]; mediaNetworkChecks: string[]; criticInputs: string[]; finalizationBlockers: string[];
+  };
   target: PlanTarget;
   scope: {
     substantial: boolean;
@@ -279,10 +366,15 @@ export interface PlanApproval {
   contractHash: string | null;
   approvedAt: string | null;
   approvedBy: string | null;
+  approvalMode?: ApprovalMode;
+  approvalOrigin?: "interactive-user" | "explicit-preauthorization";
+  approvedSourceBaselineHash?: string | null;
   decisionHistory: { at: string; decision: string; contractHash: string | null; note?: string }[];
 }
 
 export interface PlanExecution {
+  firstMaterialSourceChangeAt?: string | null;
+  planSummaryShownAt?: string | null;
   currentPhase: string;
   phases: { id: string; status: "pending" | "in-progress" | "completed" | "failed"; completedAt?: string; error?: string }[];
   checkpoints: {
@@ -342,6 +434,16 @@ export interface PlanExecution {
     id: string; status: "pending" | "in-progress" | "passed" | "failed" | "skipped"; attemptCount: number; evidenceIds: string[];
     observedResults: string[]; correctiveIterations: string[]; implementationDecision: string;
   }[];
+  prototypeGate?: {
+    prototypeId: string;
+    location: string;
+    startedAt: string;
+    verifiedAt: string | null;
+    decidedAt: string | null;
+    decision: "approved-for-integration" | "revise-prototype" | "fallback-approved" | "mechanism-declined" | null;
+    sourceHash: string;
+    verificationRunId: string | null;
+  };
   assets: {
     id: string; sourcingAttempts: { provider: string; query: string; at: string; result: string }[]; preSearchExemption: string;
     candidatesFound: { url: string; rights: string }[]; selectedSource: string | null; generatedDetails: string;
@@ -458,6 +560,8 @@ export interface IntakeResolution {
 
 const concrete = (value: unknown, minimum = 1): value is string => typeof value === "string" && value.trim().length >= minimum;
 const strings = (value: unknown): value is string[] => Array.isArray(value) && value.every((item) => concrete(item));
+const PLACEHOLDER = /\b(?:tbd|todo|placeholder|lorem ipsum|fill (?:this|later)|unknown)\b/i;
+const plannedText = (value: unknown, minimum = 8): value is string => concrete(value, minimum) && !PLACEHOLDER.test(value);
 const now = () => new Date().toISOString();
 const INVALID_GENERATION_RATIONALE = /\b(generation is easier|matches the concept|agent preferred|no need to search)\b/i;
 const VALID_GENERATION_DETAIL = /\b(exact|brand|packag|transparent cutout|lighting|transformation states|frame sequence|surreal|impossible|negative space|rights|geographic|source results|consisten)/i;
@@ -547,6 +651,8 @@ export function createPlan(projectDir: string, input: {
   return {
     version: PLAN_VERSION,
     contract: {
+      createdAt,
+      sourceBaselineHashAtCreation: hashFiles(projectDir, sourceFiles(projectDir)),
       target: resolved.target,
       scope: {
         substantial: input.substantial ?? true, projectKind: input.projectKind ?? "redesign", routes: resolved.target.routeScope.routes,
@@ -578,7 +684,7 @@ export function createPlan(projectDir: string, input: {
       preservationRequirements: [], selectedConcept: "", blueprint: [], experienceDistribution: [], experimentalPeaks: [], prototypeContracts: [], assetStrategy: [], motionAndMediaStrategy: "", mobileTranslation: "",
       functionalTruthRequirements: [], performanceBudget: [], acceptanceCriteria: [], mechanismFallbacks: [], conceptExemptions: [], changeRequests: [],
     },
-    approval: { status: "pending", revision: 0, contractHash: null, approvedAt: null, approvedBy: null, decisionHistory: [{ at: createdAt, decision: "plan-created", contractHash: null }] },
+    approval: { status: "pending", revision: 0, contractHash: null, approvedAt: null, approvedBy: null, approvedSourceBaselineHash: null, decisionHistory: [{ at: createdAt, decision: "plan-created", contractHash: null }] },
     execution: {
       currentPhase: "intake",
       phases: ["intake", "planning", "approval", "prototype", "concept-checkpoint", "implementation", "critic", "audit", "finalization"].map((id) => ({ id, status: id === "intake" ? "in-progress" : "pending" })),
@@ -596,6 +702,77 @@ export function createPlan(projectDir: string, input: {
   };
 }
 
+function validateCertificationPlan(contract: PlanContract): string[] {
+  const errors: string[] = [];
+  if (!concrete(contract.createdAt) || !concrete(contract.sourceBaselineHashAtCreation, 64))
+    errors.push("IMPLEMENTATION_STARTED_BEFORE_PLAN_APPROVAL: plan creation timestamp and source baseline hash are required");
+  const definition = contract.projectDefinition;
+  if (!definition || !plannedText(definition.purpose) || !plannedText(definition.targetAudience) || !plannedText(definition.primaryUserJourney)
+    || !definition.routes?.length || !definition.requiredFunctionality?.length || !definition.extractedRequirements?.length
+    || !Array.isArray(definition.nonGoals) || !Array.isArray(definition.preservedContentOrFunctionality))
+    errors.push("PLAN_MISSING_PRIMARY_JOURNEY: projectDefinition must cover purpose, audience, journey, routes, functionality, extracted requirements, non-goals and preservation");
+  const direction = contract.creativeDirection;
+  if (!direction || Object.values(direction).some((item) => !plannedText(item, 12)))
+    errors.push("PLAN_MISSING_CREATIVE_DIRECTION: creativeDirection must define concept, fit, authorship, visual/composition/type/media/motion language and progression");
+  if (!contract.sectionContracts?.length) errors.push("PLAN_MISSING_SECTION_STATE_CONTRACT: every major route or section needs a complete state contract");
+  for (const section of contract.sectionContracts ?? []) {
+    const required = [section.narrativePurpose, section.mainUserAction, section.visualRole, section.mediaRole, section.interactionRole,
+      section.entryState, section.activeState, section.resolvedState, section.handoff, section.mobileBehavior,
+      section.reducedMotionBehavior, section.fallbackBehavior, section.verificationRequirement];
+    if (!concrete(section.id) || !plannedText(section.route, 1) || required.some((item) => !plannedText(item)))
+      errors.push(`PLAN_MISSING_SECTION_STATE_CONTRACT: ${section.id || "unknown"} is incomplete`);
+    if (!plannedText(section.mobileBehavior)) errors.push(`PLAN_MISSING_MOBILE_TRANSLATION: ${section.id || "unknown"}`);
+    if (!plannedText(section.reducedMotionBehavior)) errors.push(`PLAN_MISSING_REDUCED_MOTION_TRANSLATION: ${section.id || "unknown"}`);
+    if (!plannedText(section.fallbackBehavior)) errors.push(`PLAN_MISSING_FALLBACK: ${section.id || "unknown"}`);
+    if (!plannedText(section.verificationRequirement)) errors.push(`PLAN_MISSING_VERIFICATION_BINDING: ${section.id || "unknown"}`);
+    if (new Set(required.map((item) => item.trim().toLowerCase())).size < 8)
+      errors.push(`PLAN_GENERIC_BOILERPLATE: ${section.id || "unknown"} repeats text instead of defining distinct section states`);
+  }
+  const contractedSections = new Set((contract.sectionContracts ?? []).map((item) => item.id));
+  const plannedSections = new Set([...(contract.blueprint ?? []).map((item) => item.sectionId), ...(contract.experienceDistribution ?? []).map((item) => item.sectionId)].filter((item): item is string => concrete(item)));
+  for (const id of plannedSections) if (!contractedSections.has(id)) errors.push(`PLAN_MISSING_SECTION_STATE_CONTRACT: ${id} has no section contract`);
+  const continuity = contract.continuityContract;
+  if (!continuity || [continuity.owner, continuity.sourceOwner, continuity.sectionChanges, continuity.persistenceVerification, continuity.breakConditions].some((item) => !plannedText(item)))
+    errors.push("PLAN_MISSING_CONTINUITY_OWNER: define one source-owned persistent system and how continuity passes or breaks");
+  const allocations = contract.treatmentAllocation ?? [];
+  if (contract.selectedTreatments.some((item) => !allocations.some((allocation) => allocation.treatment === item && allocation.locations.length && allocation.acceptance.length)))
+    errors.push("PLAN_MISSING_TREATMENT_ALLOCATION: every selected treatment needs locations, mechanisms and failure obligations");
+  for (const allocation of allocations) {
+    if (!allocation.mechanismIds?.length || !plannedText(allocation.mobileObligation) || !plannedText(allocation.reducedMotionObligation) || !allocation.failureCriteria?.length)
+      errors.push(`PLAN_MISSING_TREATMENT_ALLOCATION: ${allocation.treatment} needs mechanism ids, mobile/reduced-motion obligations and failure criteria`);
+  }
+  for (const decision of contract.treatmentDecisions.filter((item) => item.state === "declined" || item.state === "not-applicable"))
+    if (!plannedText(decision.reason)) errors.push(`PLAN_MISSING_TREATMENT_ALLOCATION: declined ${decision.treatment} needs a reason`);
+  if (!contract.mechanismContracts?.length && contract.selectedTreatments.some((item) => ["motion", "interaction", "immersive", "cinematic", "experimental"].includes(item)))
+    errors.push("PLAN_MISSING_MECHANISM_CONTRACT: selected creative treatments require mechanism contracts");
+  for (const mechanism of contract.mechanismContracts ?? []) {
+    const required = [mechanism.catalogueSourceOrCustomRationale, mechanism.routeOrSection, mechanism.startState, mechanism.activeState,
+      mechanism.endState, mechanism.reverseBehavior, mechanism.rapidInputBehavior, mechanism.refreshAtProgressBehavior,
+      mechanism.mobileBehavior, mechanism.reducedMotionBehavior, mechanism.dependency, mechanism.performanceExpectation,
+      mechanism.approvedFallback, mechanism.fallbackTrigger];
+    if (!concrete(mechanism.id) || required.some((item) => !plannedText(item)) || !mechanism.requiredCaptureStates?.length
+      || !mechanism.successCriteria?.length || !mechanism.failureCriteria?.length)
+      errors.push(`PLAN_MISSING_MECHANISM_CONTRACT: ${mechanism.id || "unknown"} is incomplete`);
+  }
+  const trace = contract.requirementTraceability;
+  if (!trace?.length || (definition?.extractedRequirements.length ?? 0) > trace.length)
+    errors.push("PLAN_MISSING_REQUIREMENT_TRACEABILITY: every meaningful prompt requirement needs implementation, browser test and evidence bindings");
+  for (const requirement of trace ?? []) if (!concrete(requirement.id) || !concrete(requirement.evidenceId)
+    || [requirement.source, requirement.wording, requirement.plannedImplementation,
+      requirement.routeOrComponent, requirement.browserTest].some((item) => !plannedText(item)))
+    errors.push(`PLAN_MISSING_REQUIREMENT_TRACEABILITY: ${requirement.id || "unknown"} is incomplete`);
+  const verification = contract.verificationPlan;
+  if (!verification || !verification.viewports?.length || !verification.interactions?.length || !verification.accessibilityChecks?.length
+    || !verification.mediaNetworkChecks?.length || !verification.criticInputs?.length || !verification.finalizationBlockers?.length)
+    errors.push("PLAN_MISSING_VERIFICATION_BINDING: verificationPlan must bind exact viewports, interactions, accessibility, media/network, critic and blockers");
+  if (!contract.packagePlan || !contract.packagePlan.preflightResults.length || !contract.packagePlan.placeholderRestrictions.length)
+    errors.push("PLAN_MISSING_ASSET_PACKAGE_PLAN: asset/package plan must record preflight and placeholder restrictions");
+  if ((contract.workflow.ambition === "award" || contract.workflow.ambition === "experimental")
+    && (contract.experimentalPeaks ?? []).some((peak) => /\b(?:tab|form|calculator|card grid|carousel|fade[- ]?in)\b/i.test(`${peak.mechanismFamily} ${peak.plannedBehaviour}`)))
+    errors.push("PLAN_EXPERIMENTAL_PEAK_TOO_GENERIC: ordinary UI cannot satisfy a creative peak");
+  return errors;
+}
+
 export function validateCanonicalPlan(value: unknown): string[] {
   const plan = value as Partial<CanonicalPlan> | null;
   if (!plan || typeof plan !== "object") return ["plan must be an object"];
@@ -606,6 +783,8 @@ export function validateCanonicalPlan(value: unknown): string[] {
   if (!plan.execution || typeof plan.execution !== "object") errors.push("plan.execution is required");
   const contract = plan.contract;
   const workflow = contract.workflow;
+  if (contract.scope?.substantial && workflow)
+    errors.push(...validateCertificationPlan(contract));
   if (!workflow || !AMBITIONS.includes(workflow.ambition)) errors.push("contract.workflow.ambition must be standard, expressive, award, or experimental");
   if (!workflow || !EXECUTIONS.includes(workflow.execution)) errors.push("contract.workflow.execution is invalid");
   if (!workflow || !PROTOTYPES.includes(workflow.prototype)) errors.push("contract.workflow.prototype is invalid");
@@ -719,14 +898,26 @@ export function validateCanonicalPlan(value: unknown): string[] {
   return errors;
 }
 
-export function approvePlan(projectDir: string, approvedBy = "user"): CanonicalPlan {
+export function approvePlan(projectDir: string, options: string | { mode: ApprovalMode; origin: "interactive-user" | "explicit-preauthorization"; approvedBy?: string } = { mode: "human", origin: "interactive-user" }): CanonicalPlan {
   const plan = readPlan(projectDir);
   const errors = validateCanonicalPlan(plan).filter((item) => !item.startsWith("approved contract hash"));
   if (errors.length) throw new Error(`cannot approve invalid plan:\n${errors.join("\n")}`);
   const hash = contractHash(plan.contract);
+  const approval = typeof options === "string"
+    ? { mode: "human" as const, origin: "interactive-user" as const, approvedBy: options }
+    : options;
+  if (approval.mode === "human" && approval.origin !== "interactive-user") throw new Error("FAKE_HUMAN_APPROVAL: human approval must originate from an interactive user prompt");
+  if (approval.mode === "pre-authorized-dogfood" && plan.contract.workflow.purpose !== "dreative-dogfood")
+    throw new Error("pre-authorized-dogfood approval is only valid for Dreative Dogfood");
+  const sourceAtApproval = hashFiles(projectDir, sourceFiles(projectDir));
+  if (plan.contract.sourceBaselineHashAtCreation && sourceAtApproval !== plan.contract.sourceBaselineHashAtCreation)
+    throw new Error("IMPLEMENTATION_STARTED_BEFORE_PLAN_APPROVAL: material application source changed after plan creation and before approval");
   plan.approval = {
     ...plan.approval, status: "approved", revision: plan.approval.revision + 1, contractHash: hash,
-    approvedAt: now(), approvedBy, decisionHistory: [...plan.approval.decisionHistory, { at: now(), decision: "approved", contractHash: hash }],
+    approvedAt: now(), approvedBy: approval.approvedBy ?? (approval.mode === "human" ? "user" : "dogfood-preauthorization"),
+    approvalMode: approval.mode, approvalOrigin: approval.origin,
+    approvedSourceBaselineHash: sourceAtApproval,
+    decisionHistory: [...plan.approval.decisionHistory, { at: now(), decision: `approved:${approval.mode}`, contractHash: hash }],
   };
   plan.execution.currentPhase = "approval";
   plan.execution.lastUpdatedAt = now();

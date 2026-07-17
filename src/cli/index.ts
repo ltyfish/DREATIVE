@@ -17,6 +17,8 @@ import { printDoctor, resumePlan, runDoctor } from "./doctor.js";
 import { renderTreatmentSummary } from "../shared/treatments.js";
 import { TREATMENTS } from "../shared/planGovernance.js";
 import { renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
+import { runTrustedVerification } from "./verify.js";
+import { runTrustedCritic } from "./criticRun.js";
 
 const port = Number(process.env.DREATIVE_PORT || 4820);
 const base = `http://localhost:${port}`;
@@ -34,7 +36,8 @@ const USAGE = `usage: dreative [command]
   preflight        detect the current framework, package manager, scripts and capabilities
                    --mechanisms a,b   resolve mechanism-led package/install requirements
   catalogue        search the executable creative catalogue [--query phrase] [--json]
-  plan             init | validate | status | diff | approve | export-json | migrate
+  plan             init | validate | status | diff | summary | approve | prototype-decision |
+                   implementation-start | export-json | migrate
                    init source flags: --references | --no-references | --suggest-references
                    --generated-images allow|deny|ask --sourced-images allow|deny|ask
                    --generated-video allow|deny|ask --sourced-video allow|deny|ask
@@ -50,6 +53,9 @@ const USAGE = `usage: dreative [command]
   resume           continue safely from the last valid phase checkpoint
   audit            validate current plan, runtime, evidence, critic, and policy artifacts
                    --json
+  verify           Dreative-owned browser runner --browser-command "npm run dev" [--url URL]
+                   [--browser-executable PATH] [--prototype-id ID --prototype-location PATH]
+  critic-run       sealed separate critic process --command "critic command"
   finalize         fail-closed commands + installation + audit + certification gate
                    --codex
   critic-prompt    render the objective-only critic prompt
@@ -122,6 +128,24 @@ async function main(): Promise<void> {
       const report = runDirectDesignAudit(process.cwd());
       printAudit(report, args.includes("--json"));
       if (!report.ok) process.exitCode = 1;
+      return;
+    }
+    case "verify": {
+      const option = (flag: string) => { const index = args.indexOf(flag); return index >= 0 ? args[index + 1] : undefined; };
+      const result = await runTrustedVerification(process.cwd(), {
+        browserCommand: option("--browser-command"), url: option("--url"), browserExecutable: option("--browser-executable"),
+        prototypeId: option("--prototype-id"), prototypeLocation: option("--prototype-location"), packageVersion,
+      });
+      console.log(`Trusted verification completed: ${result.runId}`);
+      console.log(result.manifestPath);
+      return;
+    }
+    case "critic-run": {
+      const commandIndex = args.indexOf("--command");
+      const inputIndex = args.indexOf("--input");
+      const result = runTrustedCritic(process.cwd(), commandIndex >= 0 ? args[commandIndex + 1] ?? "" : "", inputIndex >= 0 ? args[inputIndex + 1] : undefined);
+      console.log(`Trusted critic completed: ${result.runId}`);
+      console.log(result.manifestPath);
       return;
     }
     case "finalize": {

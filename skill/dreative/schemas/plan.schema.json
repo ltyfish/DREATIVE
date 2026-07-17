@@ -19,6 +19,41 @@
         "mechanismFallbacks", "conceptExemptions", "changeRequests"
       ],
       "properties": {
+        "createdAt": { "type": "string", "format": "date-time" },
+        "sourceBaselineHashAtCreation": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "projectDefinition": {
+          "type": "object", "additionalProperties": false,
+          "required": ["purpose", "targetAudience", "primaryUserJourney", "routes", "requiredFunctionality", "extractedRequirements", "nonGoals", "preservedContentOrFunctionality"],
+          "properties": {
+            "purpose": { "type": "string" }, "targetAudience": { "type": "string" }, "primaryUserJourney": { "type": "string" },
+            "routes": { "$ref": "#/$defs/nonEmptyStrings" }, "requiredFunctionality": { "$ref": "#/$defs/nonEmptyStrings" },
+            "extractedRequirements": { "$ref": "#/$defs/nonEmptyStrings" }, "nonGoals": { "$ref": "#/$defs/strings" },
+            "preservedContentOrFunctionality": { "$ref": "#/$defs/strings" }
+          }
+        },
+        "creativeDirection": {
+          "type": "object", "additionalProperties": false,
+          "required": ["selectedConcept", "fitRationale", "nonGenericQualities", "visualLanguage", "compositionStrategy", "typographyStrategy", "mediaStrategy", "motionInteractionPhilosophy", "experienceProgression"],
+          "properties": {
+            "selectedConcept": { "type": "string" }, "fitRationale": { "type": "string" }, "nonGenericQualities": { "type": "string" },
+            "visualLanguage": { "type": "string" }, "compositionStrategy": { "type": "string" }, "typographyStrategy": { "type": "string" },
+            "mediaStrategy": { "type": "string" }, "motionInteractionPhilosophy": { "type": "string" }, "experienceProgression": { "type": "string" }
+          }
+        },
+        "sectionContracts": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/sectionContract" } },
+        "continuityContract": {
+          "type": "object", "additionalProperties": false,
+          "required": ["owner", "medium", "sourceOwner", "sectionChanges", "persistenceVerification", "breakConditions"],
+          "properties": {
+            "owner": { "type": "string" }, "medium": { "enum": ["DOM", "SVG", "Canvas", "WebGL", "media", "hybrid"] },
+            "sourceOwner": { "type": "string" }, "sectionChanges": { "type": "string" },
+            "persistenceVerification": { "type": "string" }, "breakConditions": { "type": "string" }
+          }
+        },
+        "mechanismContracts": { "type": "array", "items": { "$ref": "#/$defs/mechanismContract" } },
+        "requirementTraceability": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/requirementTrace" } },
+        "packagePlan": { "type": "object" },
+        "verificationPlan": { "type": "object" },
         "target": { "type": "object" },
         "scope": { "type": "object" },
         "creativeSources": {
@@ -58,7 +93,11 @@
               "contribution": { "type": "string" },
               "dependencies": { "$ref": "#/$defs/treatments" },
               "acceptance": { "$ref": "#/$defs/strings" },
-              "routeRole": { "enum": ["peak", "connective-tissue", "foundation"] }
+              "routeRole": { "enum": ["peak", "connective-tissue", "foundation"] },
+              "mechanismIds": { "$ref": "#/$defs/nonEmptyStrings" },
+              "mobileObligation": { "type": "string" },
+              "reducedMotionObligation": { "type": "string" },
+              "failureCriteria": { "$ref": "#/$defs/nonEmptyStrings" }
             }
           }
         },
@@ -105,18 +144,65 @@
         "changeRequests": { "type": "array", "items": { "type": "object" } }
       }
     },
-    "approval": { "type": "object", "properties": { "contractHash": { "type": ["string", "null"] } } },
+    "approval": {
+      "type": "object",
+      "properties": {
+        "contractHash": { "type": ["string", "null"] },
+        "approvalMode": { "enum": ["human", "pre-authorized-dogfood"] },
+        "approvalOrigin": { "enum": ["interactive-user", "explicit-preauthorization"] },
+        "approvedSourceBaselineHash": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
     "execution": {
       "type": "object",
       "properties": {
         "runtimeObservations": { "type": "array", "items": { "$ref": "#/$defs/runtimeObservation" } },
         "signatureMediaPackages": { "type": "array", "items": { "$ref": "#/$defs/signatureMediaPackage" } },
-        "capabilityActions": { "type": "array", "items": { "$ref": "#/$defs/capabilityAction" } }
+        "capabilityActions": { "type": "array", "items": { "$ref": "#/$defs/capabilityAction" } },
+        "firstMaterialSourceChangeAt": { "type": ["string", "null"], "format": "date-time" },
+        "planSummaryShownAt": { "type": ["string", "null"], "format": "date-time" },
+        "prototypeGate": { "type": "object" }
       }
     }
   },
   "$defs": {
     "strings": { "type": "array", "items": { "type": "string" } },
+    "nonEmptyStrings": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "sectionContract": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "route", "narrativePurpose", "mainUserAction", "visualRole", "mediaRole", "interactionRole", "entryState", "activeState", "resolvedState", "handoff", "mobileBehavior", "reducedMotionBehavior", "fallbackBehavior", "verificationRequirement"],
+      "properties": {
+        "id": { "type": "string" }, "route": { "type": "string" }, "narrativePurpose": { "type": "string" },
+        "mainUserAction": { "type": "string" }, "visualRole": { "type": "string" }, "mediaRole": { "type": "string" },
+        "interactionRole": { "type": "string" }, "entryState": { "type": "string" }, "activeState": { "type": "string" },
+        "resolvedState": { "type": "string" }, "handoff": { "type": "string" }, "mobileBehavior": { "type": "string" },
+        "reducedMotionBehavior": { "type": "string" }, "fallbackBehavior": { "type": "string" }, "verificationRequirement": { "type": "string" }
+      }
+    },
+    "mechanismContract": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "catalogueSourceOrCustomRationale", "routeOrSection", "inputDriver", "startState", "activeState", "endState", "reverseBehavior", "rapidInputBehavior", "refreshAtProgressBehavior", "mobileBehavior", "reducedMotionBehavior", "dependency", "performanceExpectation", "approvedFallback", "fallbackTrigger", "requiredCaptureStates", "successCriteria", "failureCriteria"],
+      "properties": {
+        "id": { "type": "string" }, "catalogueSourceOrCustomRationale": { "type": "string" }, "routeOrSection": { "type": "string" },
+        "inputDriver": { "enum": ["scroll-progress", "velocity", "pointer", "drag", "hold", "time", "audio", "route", "keyboard", "click", "media-progress"] },
+        "startState": { "type": "string" }, "activeState": { "type": "string" }, "endState": { "type": "string" },
+        "reverseBehavior": { "type": "string" }, "rapidInputBehavior": { "type": "string" }, "refreshAtProgressBehavior": { "type": "string" },
+        "mobileBehavior": { "type": "string" }, "reducedMotionBehavior": { "type": "string" }, "dependency": { "type": "string" },
+        "performanceExpectation": { "type": "string" }, "approvedFallback": { "type": "string" }, "fallbackTrigger": { "type": "string" },
+        "requiredCaptureStates": { "$ref": "#/$defs/nonEmptyStrings" }, "successCriteria": { "$ref": "#/$defs/nonEmptyStrings" },
+        "failureCriteria": { "$ref": "#/$defs/nonEmptyStrings" }
+      }
+    },
+    "requirementTrace": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "source", "wording", "plannedImplementation", "routeOrComponent", "browserTest", "evidenceId", "status"],
+      "properties": {
+        "id": { "type": "string" }, "source": { "type": "string" }, "wording": { "type": "string" },
+        "plannedImplementation": { "type": "string" }, "routeOrComponent": { "type": "string" },
+        "browserTest": { "type": "string" }, "evidenceId": { "type": "string" },
+        "status": { "enum": ["planned", "implemented", "verified", "failed", "removed"] }
+      }
+    },
     "workflow": {
       "type": "object",
       "additionalProperties": false,

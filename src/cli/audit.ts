@@ -28,6 +28,7 @@ import { PLAN_FILE, approvalStatus, readPlan, validateCanonicalPlan, type Canoni
 import { validateExperienceDelivery } from "../shared/experienceGates.js";
 import { validateRuntimeObservationGrounding } from "../shared/runtimeEvidence.js";
 import { hashFiles, sourceFiles } from "../shared/projectIdentity.js";
+import { inspectTrustedArtifacts, sha256, validateTrustedRun } from "../shared/trustedRuns.js";
 
 export interface AuditFinding {
   level: "error" | "warning";
@@ -40,12 +41,149 @@ export interface AuditReport {
   findings: AuditFinding[];
 }
 
+function findTrustedManifest(projectDir: string, name: "trusted-verification.json" | "trusted-critic.json", runId?: string): string | null {
+  const runs = path.join(projectDir, ".dreative", "runs");
+  if (!fs.existsSync(runs)) return null;
+  if (runId) {
+    const exact = path.join(runs, runId, name);
+    return fs.existsSync(exact) ? exact : null;
+  }
+  const files = fs.readdirSync(runs, { withFileTypes: true })
+    .filter((item) => item.isDirectory()).map((item) => path.join(runs, item.name, name)).filter((item) => fs.existsSync(item));
+  return files.sort((a, b) => fs.statSync(b).mtimeMs - fs.statSync(a).mtimeMs)[0] ?? null;
+}
+
+function checkSourceContracts(projectDir: string, plan: CanonicalPlan): AuditFinding[] {
+  const findings: AuditFinding[] = [];
+  const source = sourceFiles(projectDir).filter((item) => /\.(?:[cm]?[jt]sx?|html|css|vue|svelte)$/i.test(item))
+    .map((item) => fs.readFileSync(path.join(projectDir, item), "utf8")).join("\n");
+  const runtimeSource = sourceFiles(projectDir).filter((item) => /\.(?:[cm]?[jt]sx?|html|vue|svelte)$/i.test(item))
+    .map((item) => fs.readFileSync(path.join(projectDir, item), "utf8")).join("\n");
+  const mechanisms = plan.contract.mechanismContracts ?? [];
+  for (const mechanism of mechanisms) {
+    if (mechanism.inputDriver === "scroll-progress" && !/\b(?:onscroll|addEventListener\(\s*["']scroll|IntersectionObserver|ScrollTrigger|useScroll|scrollYProgress|scrollTimeline)\b/.test(runtimeSource))
+      findings.push(finding("error", "source-reconciliation", `PLANNED_SCROLL_MECHANISM_MISSING: ${mechanism.id} in ${PLAN_FILE} has no scroll, observer or timeline implementation in application source`));
+    if (mechanism.inputDriver === "scroll-progress" && /\bonClick\b|addEventListener\(\s*["']click/.test(source) && !/\b(?:scroll|IntersectionObserver|ScrollTrigger|useScroll)\b/.test(source))
+      findings.push(finding("error", "source-reconciliation", `MATERIAL_MECHANISM_SUBSTITUTION: ${mechanism.id} scroll progress was replaced with click/button state`));
+    if (/\bGSAP\b|\bgsap\b/.test(mechanism.dependency) && !/\bgsap\b/.test(source))
+      findings.push(finding("error", "source-reconciliation", `PLANNED_RUNTIME_MISSING: ${mechanism.id} declares GSAP but no production import/use exists`));
+    if (/\bCanvas\b/i.test(mechanism.catalogueSourceOrCustomRationale + mechanism.dependency) && !/<canvas\b|getContext\(\s*["']2d/.test(source))
+      findings.push(finding("error", "source-reconciliation", `PLANNED_CANVAS_MISSING: ${mechanism.id} has no Canvas implementation`));
+    if (/\bWebGL|three(?:\.js)?\b/i.test(mechanism.catalogueSourceOrCustomRationale + mechanism.dependency) && !/\bWebGL|THREE\.|from\s+["']three/.test(source))
+      findings.push(finding("error", "source-reconciliation", `PLANNED_WEBGL_MISSING: ${mechanism.id} has no WebGL implementation`));
+    if (/\bvideo\b/i.test(mechanism.catalogueSourceOrCustomRationale + mechanism.dependency) && !/<video\b|createElement\(\s*["']video/.test(source))
+      findings.push(finding("error", "source-reconciliation", `PLANNED_VIDEO_MISSING: ${mechanism.id} has no video element or runtime asset consumer`));
+  }
+  if (mechanisms.length === 0) for (const mechanism of plan.contract.mechanismFallbacks ?? []) {
+    const scrollPlanned = /\bscroll(?:-controlled|-progress| timeline)?\b/i.test(`${mechanism.id} ${mechanism.primaryImplementation}`);
+    if (scrollPlanned && !/\b(?:onscroll|addEventListener\(\s*["']scroll|IntersectionObserver|ScrollTrigger|useScroll|scrollYProgress|scrollTimeline)\b/.test(runtimeSource))
+      findings.push(finding("error", "source-reconciliation", `PLANNED_SCROLL_MECHANISM_MISSING: ${mechanism.id} in ${PLAN_FILE} has no scroll/observer/timeline implementation in application source`));
+    if (scrollPlanned && /\b(?:button|onClick|setState|useState)\b/.test(runtimeSource))
+      findings.push(finding("error", "source-reconciliation", `MATERIAL_MECHANISM_SUBSTITUTION: ${mechanism.id} is implemented through button/click state without approved revision and reapproval`));
+  }
+  const owner = plan.contract.continuityContract;
+  if (owner && !source.includes(owner.sourceOwner))
+    findings.push(finding("error", "source-reconciliation", `CONTINUITY_OWNER_NOT_SOURCE_OWNED: ${owner.sourceOwner} is not present in application source`));
+  const promptFile = ["PROMPT.md", "prompt.md"].map((item) => path.join(projectDir, item)).find((item) => fs.existsSync(item));
+  const prompt = promptFile ? fs.readFileSync(promptFile, "utf8") : "";
+  if (/specifications (?:view|download|action)|specifications download or view/i.test(prompt)
+    && !/(?:href|download|onClick|<button)[^\n>]{0,120}specification|specification[^\n<]{0,80}(?:button|download|view)/i.test(runtimeSource))
+    findings.push(finding("error", "requirements", "MISSING_REQUIRED_FUNCTIONALITY: specifications view/download action from the prompt is absent"));
+  if (/close and reopen the form|Escape-key handling for modals/i.test(prompt)
+    && !/<dialog\b|role\s*=\s*["']dialog|aria-modal|(?:Escape|keydown)[\s\S]{0,200}(?:close|open)|(?:close|open)[A-Z]\w*(?:Dialog|Modal|Reservation)/i.test(runtimeSource))
+    findings.push(finding("error", "requirements", "MISSING_REQUIRED_FUNCTIONALITY: reservation close/reopen and Escape behavior from the prompt are absent"));
+  return findings;
+}
+
+function checkCertificationTrust(projectDir: string, plan: CanonicalPlan, verificationFile: string): AuditFinding[] {
+  const findings: AuditFinding[] = [];
+  const strict = plan.contract.scope.substantial;
+  if (!strict) return findings;
+  if (!plan.approval.approvalMode || !plan.approval.approvalOrigin)
+    findings.push(finding("error", "approval", "FAKE_HUMAN_APPROVAL: certification requires a recorded human or pre-authorized-dogfood origin"));
+  if (!plan.execution.planSummaryShownAt || (plan.approval.approvedAt && Date.parse(plan.execution.planSummaryShownAt) > Date.parse(plan.approval.approvedAt)))
+    findings.push(finding("error", "approval", "PLAN_SUMMARY_NOT_SHOWN: the concise plan summary must be shown before approval"));
+  if (plan.approval.approvalMode === "human" && plan.approval.approvalOrigin !== "interactive-user")
+    findings.push(finding("error", "approval", "FAKE_HUMAN_APPROVAL: approvedBy text is not proof of user-originated approval"));
+  if (plan.approval.approvalMode === "pre-authorized-dogfood" && plan.contract.workflow.purpose !== "dreative-dogfood")
+    findings.push(finding("error", "approval", "pre-authorized-dogfood cannot certify a human-reviewed project"));
+  if (!plan.contract.sourceBaselineHashAtCreation || !plan.approval.approvedSourceBaselineHash)
+    findings.push(finding("error", "approval-order", "IMPLEMENTATION_STARTED_BEFORE_PLAN_APPROVAL: source baselines are missing"));
+  if (plan.contract.workflow.prototype === "required") {
+    const gate = plan.execution.prototypeGate;
+    if (!gate || !gate.verificationRunId || !gate.decidedAt || !["approved-for-integration", "fallback-approved", "mechanism-declined"].includes(gate.decision ?? ""))
+      findings.push(finding("error", "prototype", "PROTOTYPE_GATE_INCOMPLETE: required prototype needs trusted verification and a decision before integration"));
+    if (gate?.verificationRunId) {
+      const prototypeManifestFile = findTrustedManifest(projectDir, "trusted-verification.json", gate.verificationRunId);
+      if (!prototypeManifestFile) findings.push(finding("error", "prototype", `PROTOTYPE_PROVENANCE_MISSING: ${gate.prototypeId} has no sealed browser run ${gate.verificationRunId}`));
+      else {
+        const prototypeManifest = readJson(prototypeManifestFile) as any;
+        for (const message of validateTrustedRun(projectDir, "browser-verification", prototypeManifest)) findings.push(finding("error", "prototype", message));
+        for (const message of inspectTrustedArtifacts(projectDir, prototypeManifest.artifacts ?? [])) findings.push(finding("error", "prototype", message));
+      }
+    }
+    if (!plan.execution.firstMaterialSourceChangeAt)
+      findings.push(finding("error", "prototype-order", "PROTOTYPE_ORDER_UNPROVEN: first material application-source change was not recorded"));
+    else if (gate?.decidedAt && Date.parse(plan.execution.firstMaterialSourceChangeAt) <= Date.parse(gate.decidedAt))
+      findings.push(finding("error", "prototype-order", "PROTOTYPE_CREATED_AFTER_FULL_IMPLEMENTATION: prototype decision did not precede implementation"));
+  }
+  const verification = fs.existsSync(verificationFile) ? readJson(verificationFile) as any : null;
+  const trustedFile = findTrustedManifest(projectDir, "trusted-verification.json", verification?.runId);
+  if (!trustedFile) {
+    findings.push(finding("error", "evidence-provenance", "UNTRUSTED_PLAYWRIGHT_PROVENANCE: verification was not generated by `dreative verify`"));
+    const suppliedTelemetry = (verification?.evidence ?? []).some((item: any) => {
+      const proof = item.proof ?? {};
+      return ["pixelDifferenceFromPrevious", "structuralDifferenceFromPrevious", "averageFps", "maxFrameTimeMs", "worstFrameTimeMs", "longTaskCount", "controlledProgress", "frameIndex", "mediaCurrentTime", "shaderUniforms", "particleState", "maskProgress"].some((key) => proof[key] !== undefined);
+    }) || (plan.execution.runtimeObservations ?? []).some((item) => item.samples?.some((sample) => sample.pixelDifferenceFromPrevious !== undefined || sample.structuralDifferenceFromPrevious !== undefined));
+    if (suppliedTelemetry) findings.push(finding("error", "evidence-provenance", "MODEL_AUTHORED_TELEMETRY_REJECTED: visual differences, progress and performance values require a sealed Dreative runner observation"));
+  }
+  else {
+    const manifest = readJson(trustedFile) as any;
+    for (const message of validateTrustedRun(projectDir, "browser-verification", manifest)) findings.push(finding("error", "evidence-provenance", message));
+    for (const message of inspectTrustedArtifacts(projectDir, manifest.artifacts ?? [])) findings.push(finding("error", "evidence-artifact", message));
+    if (manifest.approvedPlanHash !== approvalStatus(plan).currentHash) findings.push(finding("error", "evidence-provenance", "EVIDENCE_PLAN_HASH_MISMATCH: trusted run belongs to another plan"));
+    const currentSource = hashFiles(projectDir, sourceFiles(projectDir));
+    if (manifest.sourceHash !== currentSource) findings.push(finding("error", "evidence-provenance", "EVIDENCE_SOURCE_HASH_MISMATCH: trusted run belongs to another source tree"));
+    if (!manifest.artifacts?.some((item: any) => item.type === "trace" || item.type === "recording"))
+      findings.push(finding("error", "evidence-artifact", "TRUSTED_TEMPORAL_ARTIFACT_MISSING: JSON manifests cannot satisfy recording or trace requirements"));
+    if (!manifest.artifacts?.some((item: any) => item.type === "screenshot"))
+      findings.push(finding("error", "evidence-artifact", "TRUSTED_SCREENSHOT_MISSING: browser run produced no real image capture"));
+    if (!manifest.captureManifest) findings.push(finding("error", "evidence-provenance", "EMPTY_BROWSER_ARRAYS_ARE_NOT_EVIDENCE: route monitoring and inspection manifest is missing"));
+  }
+  const evidenceIds = new Set((verification?.evidence ?? []).filter((item: any) => item.status === "pass").map((item: any) => item.id));
+  for (const requirement of plan.contract.requirementTraceability ?? []) {
+    if (requirement.status !== "verified" || !evidenceIds.has(requirement.evidenceId))
+      findings.push(finding("error", "requirements", `MISSING_REQUIRED_FUNCTIONALITY: ${requirement.id} (${requirement.wording}) lacks passing trusted browser evidence ${requirement.evidenceId}`));
+  }
+  const criticFile = findTrustedManifest(projectDir, "trusted-critic.json");
+  if (!criticFile) findings.push(finding("error", "critic-independence", "BUILDER_AUTHORED_CRITIC: no sealed separate critic invocation exists"));
+  else {
+    const manifest = readJson(criticFile) as any;
+    for (const message of validateTrustedRun(projectDir, "critic", manifest)) findings.push(finding("error", "critic-independence", message));
+    for (const message of inspectTrustedArtifacts(projectDir, manifest.artifact ? [manifest.artifact] : [])) findings.push(finding("error", "critic-independence", message));
+    if (manifest.approvedPlanHash !== approvalStatus(plan).currentHash) findings.push(finding("error", "critic-independence", "CRITIC_PLAN_HASH_MISMATCH: critic reviewed another plan"));
+    if (manifest.sourceHash !== hashFiles(projectDir, sourceFiles(projectDir))) findings.push(finding("error", "critic-independence", "CRITIC_SOURCE_HASH_MISMATCH: critic reviewed another source tree"));
+    const trustedVerificationFile = findTrustedManifest(projectDir, "trusted-verification.json", verification?.runId);
+    const trustedVerification = trustedVerificationFile ? readJson(trustedVerificationFile) as any : null;
+    if (manifest.verificationRunId !== verification?.runId || manifest.buildHash !== trustedVerification?.buildHash)
+      findings.push(finding("error", "critic-independence", "CRITIC_INPUT_HASH_MISMATCH: critic did not inspect the current trusted verification run/build"));
+    const canonicalCritic = path.join(projectDir, ".dreative", "critic.json");
+    if (fs.existsSync(canonicalCritic)) {
+      const report = (readJson(canonicalCritic) as any).report;
+      if (report && sha256(JSON.stringify(report)) !== manifest.reportHash)
+        findings.push(finding("error", "critic-independence", "CRITIC_OUTPUT_HASH_MISMATCH: canonical critic report differs from the sealed process output"));
+    }
+  }
+  findings.push(...checkSourceContracts(projectDir, plan));
+  return findings;
+}
+
 function runCanonicalPlanAudit(projectDir: string): AuditReport {
   const findings: AuditFinding[] = [];
   let plan: CanonicalPlan;
   try { plan = readPlan(projectDir); }
   catch (error) { return { ok: false, findings: [finding("error", "plan", String(error))] }; }
-  for (const message of validateCanonicalPlan(plan)) findings.push(finding("error", "plan", message));
+  for (const message of validateCanonicalPlan(plan)) findings.push(finding("error", "plan", `${PLAN_FILE}: ${message}`));
   const approval = approvalStatus(plan);
   if (!approval.approved) findings.push(finding("error", "approval", approval.drifted
     ? `approved contract drifted (${approval.approvedHash} -> ${approval.currentHash}); record a change request and re-approve`
@@ -137,6 +275,7 @@ function runCanonicalPlanAudit(projectDir: string): AuditReport {
       // Parsing errors are already reported by checkArtifact.
     }
   }
+  findings.push(...checkCertificationTrust(projectDir, plan, verificationFile));
   return { ok: !findings.some((item) => item.level === "error"), findings };
 }
 
@@ -310,6 +449,14 @@ export function checkVerificationProof(projectDir: string, verificationFile: str
       return;
     }
     const extension = path.extname(target).toLowerCase();
+    if (label.includes("recording") && ![".webm", ".mp4"].includes(extension)) {
+      findings.push(finding("error", "motion-evidence", `${itemId}: EVIDENCE_ARTIFACT_TYPE_MISMATCH recordingPath ${artifactPath} must be .webm or .mp4, not ${extension || "an extensionless file"}`));
+      return;
+    }
+    if (label.includes("trace") && extension !== ".zip") {
+      findings.push(finding("error", "motion-evidence", `${itemId}: EVIDENCE_ARTIFACT_TYPE_MISMATCH tracePath ${artifactPath} must be a supported .zip browser trace`));
+      return;
+    }
     const header = fs.readFileSync(target).subarray(0, 16);
     const validImage = extension === ".png" ? header.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
       : [".jpg", ".jpeg"].includes(extension) ? header[0] === 0xff && header[1] === 0xd8 && header[2] === 0xff
