@@ -115,15 +115,15 @@ export function renderDetailedPlanGuide(profileId: DeliveryProfileId): string {
     `Detailed ${profile.label} plan`,
     "",
     "Build a project-specific Creative Decision Brief with:",
-    "1. Current state — routes, content, working behavior, assets, defects, and preservation.",
-    "2. Selected direction — palette/material, typography, composition, media, motion, interaction, and why it fits.",
-    `3. Workflow — show Fast/Lean/Full Audit, Skip/Auto/Required, references, sources, and packages; recommend ${profile.review} + ${profile.prototype} for ${profile.label}.`,
-    `4. Treatment guide — all ten treatments with project-specific use, cost, risk, insufficiency, and decisions. ${profile.treatments}`,
-    "5. Section allocation and tensions — route order, post-hero strength, continuity owner, mobile, performance, and accessibility.",
-    "6. Capability/source preflight — supplied/missing assets and actual package, image, video, 3D, processing, and browser capabilities.",
-    "7. Risks, fallbacks, and one editable decision reply.",
+    "1. Product truth/current state — audience, task, routes, content, subject vocabulary, behavior, assets, defects, and preservation.",
+    "2. Selected direction — project-native premise, composition, type, material, media, motion/interaction grammar, continuity, and three product-only decisions.",
+    "3. Reference synthesis — each adopted principle, deliberate differences, and the complete-fingerprint independence check.",
+    `4. Workflow/resources — Fast/Lean/Full Audit, Skip/Auto/Required, references, sources, packages, and detected capability; recommend ${profile.review} + ${profile.prototype} for ${profile.label}.`,
+    `5. Treatment guide and section allocation — project-specific use, cost, risk, insufficiency, post-hero peak, and continuity owner. ${profile.treatments}`,
+    "6. Build architecture — signature mechanism, runtime ownership, component/asset pipeline, mobile and semantic fallbacks, accessibility, and performance.",
+    "7. Observable review, risks, fallbacks, and one editable decision reply.",
     "",
-    "The brief must adapt every decision to the inspected project. Do not emit a generic template or require another implementation-contract approval.",
+    "The brief must adapt every decision to the inspected project. Do not imitate a named site, emit a generic template, or require another implementation-contract approval.",
   ].join("\n");
 }
 

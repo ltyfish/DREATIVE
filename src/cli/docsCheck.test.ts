@@ -47,3 +47,13 @@ test("docs-check rejects a detailed plan that hides source or execution controls
   const report = runDocsCheck(skillDir);
   assert.ok(report.findings.some((finding) => finding.check === "delivery-contract"));
 });
+
+test("docs-check rejects named-site imitation in the public workflow", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-docs-imitation-"));
+  const skillDir = path.join(root, "dreative");
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.cpSync(path.resolve("skill", "dreative"), skillDir, { recursive: true });
+  fs.appendFileSync(path.join(skillDir, "PLAN.md"), "\nBuild an Unseen-style transition.\n");
+  const report = runDocsCheck(skillDir);
+  assert.ok(report.findings.some((finding) => finding.check === "reference-imitation"));
+});

@@ -1,9 +1,10 @@
 # Dreative
 
-Dreative is a product-first frontend design skill for coding agents. It chooses
-a project-specific direction, lets the user configure delivery without
-ceremony, implements in the real application, and refines the entire rendered
-experience.
+Dreative is a frontend design-builder skill for coding agents. It acts as a
+creative director, resource guide, implementation system, and visual refiner:
+it develops a project-native direction, selects useful capabilities such as
+GSAP, Lenis, Canvas, Three.js/OGL, and sourced/generated media, builds in the
+real application, and corrects the complete rendered experience.
 
 ## Planning flow
 
@@ -61,15 +62,16 @@ Success prints `DREATIVE_FINALIZED`.
 - `dreative start-editor` — explicitly start the optional editor without
   opening a browser.
 
-Legacy plan, audit, treatment, verify, and critic commands remain available for
-migration compatibility, but the 1.0 workflow does not require them.
+Legacy plan, audit, treatment, verify, and critic commands remain callable for
+migration compatibility but are hidden from normal help and excluded from the
+installed active skill.
 
 ## Design philosophy
 
-Dreative borrows the best product qualities of focused creative libraries:
-small public surfaces, composable primitives, clear ownership, and mechanisms
-that earn their cost. GSAP, Lenis, Three.js, OGL, Canvas, and media pipelines
-are tools—not ambition badges.
+Dreative uses focused creative libraries as capabilities, not house styles.
+Concepts begin with product content, behavior, assets, history, and audience.
+External references are decomposed and synthesized across domains instead of
+being copied as complete visual fingerprints.
 
 Showcase integrates all treatments into a few complementary signatures rather
 than stacking unrelated effects. An effect that competes with content is a

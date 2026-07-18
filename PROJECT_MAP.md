@@ -5,6 +5,8 @@
 - `skill/dreative/SKILL.md` — product-first implementation and visual-review
   contract.
 - `skill/dreative/PLAN.md` — three concise delivery approaches.
+- `skill/dreative/references/CREATIVE_DIRECTION.md` — product-native concept
+  synthesis and reference-independence method.
 - `src/shared/deliveryProfiles.ts` — CLI representation of those approaches.
 - `src/cli/index.ts` — default brief command and explicit-only editor startup.
 - `src/cli/finalize.ts` — deterministic build/test/docs finalization.
@@ -22,4 +24,5 @@
 ## Compatibility surface
 
 The v9 plan, evidence, audit, critic, and migration modules remain for projects
-already using them. They are not part of the default 1.0 workflow.
+already using them. They are not shown in normal CLI help and are not copied
+into the installed active skill.

@@ -1,6 +1,10 @@
 # Creative execution
 
-Read this only when the concept needs an advanced runtime.
+Read this only after a project-native concept needs an advanced runtime.
+
+For every advanced mechanism, identify its semantic purpose, section owner,
+meaningful state change, mobile form, reduced-motion form, loading/failure
+fallback, and cleanup cost. A library name is never a design rationale.
 
 ## Choose by outcome
 
@@ -14,7 +18,7 @@ Read this only when the concept needs an advanced runtime.
   or embodies the subject.
 - Canvas: dense procedural drawing or continuous simulation that DOM/SVG cannot
   deliver cleanly.
-- Sharp/FFmpeg: build-time asset processing, never proof of creative authorship.
+- Sharp/FFmpeg: build-time asset processing, not creative direction.
 
 ## Runtime ownership
 
@@ -31,7 +35,8 @@ reduced-motion, or failed contexts.
 ## Quality threshold
 
 Prototype only when one signature mechanism is both central and technically
-uncertain. Use real content in the probe and discard it after the decision.
+uncertain. Define the decision the probe will answer, use real content, and
+discard the probe after the decision.
 
 Reject:
 

@@ -41,7 +41,7 @@ test("default configuration asks the material choices after direction selection"
 
 test("detailed planning is an adaptive Creative Decision Brief", () => {
   const detail = renderDetailedPlanGuide("showcase");
-  for (const field of ["Current state", "Selected direction", "Workflow", "Treatment guide", "Section allocation", "Capability/source preflight", "Risks"])
+  for (const field of ["Current state", "Selected direction", "Reference synthesis", "Workflow", "Treatment guide", "section allocation", "Build architecture", "Risks"])
     assert.match(detail, new RegExp(field, "i"));
   assert.match(detail, /All ten/);
   assert.doesNotMatch(detail, /approval hash|attestation|independent critic|provenance/i);

@@ -41,4 +41,4 @@ Load only after three original spatial concepts are recorded. Record access in
 
 Live context and nonblank draw; asset loaded; texture/material identity; input
 response; reduced-motion still; mobile fallback; context-loss poster; no
-occlusion; capped DPR; frame-time and transferred-weight evidence.
+occlusion; capped DPR; observed frame time and transferred weight.

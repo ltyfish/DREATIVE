@@ -71,7 +71,19 @@ test("Codex target installs exact files and one safe AGENTS pointer", () => {
   installSkill({ sourceDir, projectDir: root, packageVersion: version, target: "codex", selected, explicitAll: true });
   installSkill({ sourceDir, projectDir: root, packageVersion: version, target: "codex", selected, explicitAll: true });
   assert.deepEqual(checkSkillInstallation({ sourceDir, projectDir: root, packageVersion: version, target: "codex" }), []);
-  assert.equal((fs.readFileSync(path.join(root, "AGENTS.md"), "utf8").match(/dreative-skill:start/g) ?? []).length, 1);
+  const pointer = fs.readFileSync(path.join(root, "AGENTS.md"), "utf8");
+  assert.equal((pointer.match(/dreative-skill:start/g) ?? []).length, 1);
+  assert.doesNotMatch(pointer, /Dogfood|Award|attest|provenance/i);
+  assert.match(pointer, /command success only, not visual quality/i);
+});
+
+test("active installation excludes legacy doctrine, schemas, and assurance resources", () => {
+  const root = temporary(); const selected = availableSkills(sourceDir);
+  const manifest = installSkill({ sourceDir, projectDir: root, packageVersion: version, target: "codex", selected, explicitAll: true });
+  for (const legacy of ["DESIGN.md", "references/RULES.json", "references/TIERS.md", "schemas/plan.schema.json"])
+    assert.equal(Object.hasOwn(manifest.files, legacy), false, legacy);
+  for (const active of ["SKILL.md", "PLAN.md", "references/CREATIVE_DIRECTION.md", "references/CREATIVE_EXECUTION.md", "agents/openai.yaml"])
+    assert.equal(Object.hasOwn(manifest.files, active), true, active);
 });
 
 test("Claude target does not create an AGENTS pointer", () => {

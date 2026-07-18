@@ -26,6 +26,6 @@ shipped through the CLI catalogue.
 Every primitive contract includes loading and asset-error states, resize,
 cleanup, reduced motion, mobile translation, semantic DOM fallback, adaptive
 performance controls, acceptable degradation, browser checks and initial /
-midpoint / peak / end evidence. WebGL implementations dispose renderer,
+midpoint / peak / end states. WebGL implementations dispose renderer,
 textures, materials and geometry, cap DPR, pause when hidden and retain DOM or
 static-media fallbacks.

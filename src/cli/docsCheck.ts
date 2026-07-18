@@ -66,11 +66,16 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   const skill = contents.get("SKILL.md") ?? "";
   const plan = contents.get("PLAN.md") ?? "";
   requireText(findings, "SKILL.md", skill, /never open.*editor|do not open.*editor/is, "must forbid opening the optional Dreative editor during frontend work");
-  requireText(findings, "SKILL.md", skill, /inspect the entire page/i, "must require inspection beyond the hero");
+  requireText(findings, "SKILL.md", skill, /design-builder/i, "must define Dreative as a frontend design-builder");
+  requireText(findings, "SKILL.md", skill, /CREATIVE_DIRECTION\.md/, "must route open-ended concept work through creative synthesis");
+  requireText(findings, "SKILL.md", skill, /project-native|product truth/i, "must derive concepts from the real product");
+  requireText(findings, "SKILL.md", skill, /do not narrate|not.*substitute/i, "must reject performative checklist compliance");
+  requireText(findings, "SKILL.md", skill, /inspect.*(?:entire|full).*page/is, "must require inspection beyond the hero");
   requireText(findings, "SKILL.md", skill, /1440|desktop/i, "must require a desktop browser review");
   requireText(findings, "SKILL.md", skill, /390px/i, "must require an authored mobile browser review");
-  requireText(findings, "SKILL.md", skill, /encoding|mojibake/i, "must check visible text integrity");
+  requireText(findings, "SKILL.md", skill, /encoding|mojibake|broken glyphs/i, "must check visible text integrity");
   requireText(findings, "SKILL.md", skill, /DREATIVE_FINALIZED/, "must retain fail-closed finalization");
+  requireText(findings, "references/CREATIVE_DIRECTION.md", contents.get("references/CREATIVE_DIRECTION.md") ?? "", /independence test/i, "must include a reference-independence test");
 
   for (const choice of ["Recommended", "Efficient", "Showcase"])
     requireText(findings, "PLAN.md", plan, new RegExp(`\\b${choice}\\b`, "i"), `missing concise ${choice} approach`);
@@ -91,6 +96,11 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   ]) {
     if (publicContract.includes(obsolete))
       findings.push({ check: "obsolete-ceremony", file: publicContract.indexOf(obsolete) < skill.length ? "SKILL.md" : "PLAN.md", message: `public workflow still exposes ${obsolete}` });
+  }
+
+  for (const imitation of ["Unseen-style", "Unseen-like", "Lenis-style"]) {
+    if (publicContract.toLowerCase().includes(imitation.toLowerCase()))
+      findings.push({ check: "reference-imitation", file: publicContract.indexOf(imitation) < skill.length ? "SKILL.md" : "PLAN.md", message: `public workflow must not prescribe ${imitation}` });
   }
 
   return { ok: findings.length === 0, findings };

@@ -1,9 +1,8 @@
 # Experimental mechanism catalog
 
-Use this catalog during Award and Experimental planning after original chapter
-candidates have been considered. Bind selected recipes to canonical v9
-`experimentalPeaks`, `prototypeContracts`, `mechanismFallbacks`, route roles,
-assets and current-run evidence.
+Use this catalogue for Showcase or experimental work after original chapter
+concepts have been considered. Bind selected recipes to the chosen route roles,
+real assets, responsive behavior, fallbacks, and observed runtime behavior.
 
 The machine-readable catalog is `src/shared/mechanisms.ts`. It covers:
 

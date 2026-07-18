@@ -18,7 +18,9 @@
     "prepublishOnly": "npm run build",
     "build:server": "tsc -p tsconfig.json",
     "build:ui": "vite build",
-    "test": "npm run build:server && node --test dist/shared/*.test.js dist/cli/*.test.js",
+    "test": "npm run test:active",
+    "test:active": "npm run build:server && node --test dist/shared/deliveryProfiles.test.js dist/shared/creativeCatalog.test.js dist/shared/preflight.test.js dist/cli/docsCheck.test.js dist/cli/finalize.test.js dist/cli/installSkill.test.js",
+    "test:all": "npm run build:server && node --test dist/shared/*.test.js dist/cli/*.test.js",
     "docs-check": "npm run build:server && node dist/cli/index.js docs-check",
     "dev": "concurrently \"tsx watch src/cli/index.ts --no-open\" \"vite\"",
     "start": "node dist/cli/index.js"

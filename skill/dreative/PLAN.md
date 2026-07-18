@@ -1,85 +1,82 @@
 # Planning protocol
 
-Planning has three stages: direction, compact configuration, and an optional
-detailed Creative Decision Brief.
+Planning has three user-facing stages: direction, compact configuration, and an
+optional detailed Creative Decision Brief. Keep private exploration private.
 
 ## Stage 1: direction
 
-Inspect the actual project first. Show exactly three project-specific creative
-directions in this format:
+Inspect the real product and read `references/CREATIVE_DIRECTION.md`. Privately
+create three genuinely different concepts before assigning them to delivery
+levels. They must differ in experience structure or interaction logic, not
+only color, type, and effort.
 
-1. **Recommended — <concept name>**
-   The direction the agent believes will produce the strongest result for this
-   specific product.
+Show exactly:
 
-2. **Efficient — <concept name>**
-   The most token- and implementation-efficient direction: small, high-value
-   changes using the current structure, assets, and stack wherever possible.
+1. **Recommended — <project-native concept>**
+   The direction most likely to produce the strongest product for this
+   audience, content, and implementation reality.
 
-3. **Showcase — <concept name>**
-   The absolute highest creative and technical ceiling. This direction plans
-   all ten treatments—UX, Mobile, Refined, Motion, Interaction, Media, 3D,
-   Immersive, Cinematic, and Experimental—inside one coherent hierarchy.
+2. **Efficient — <focused concept>**
+   The highest-value improvement using the least tokens and implementation cost,
+   preserving the current structure, assets, and stack where useful.
 
-Each description must be concrete: visual language, composition, meaningful
-media/interaction idea, and product fit. Do not show generic preset prose.
+3. **Showcase — <flagship concept>**
+   The highest creative and technical ceiling. Integrate UX, Mobile, Refined,
+   Motion, Interaction, Media, 3D, Immersive, Cinematic, and Experimental into
+   a few coherent systems.
+
+Each option must name its premise, composition, material/type voice, meaningful
+media or interaction, and product fit. Do not mention reference brands as the
+concept. Do not offer three versions of the same editorial landing page.
 
 End with:
 
 > I recommend **<direction>**. Reply with **1, 2, or 3**. You can also say
 > **show detailed plan**.
 
-If the user requests detail before choosing, expand Recommended by default and
-offer to expand Efficient or Showcase instead.
+If the user asks for detail before choosing, expand Recommended by default.
 
 ## Stage 2: compact configuration
 
-After the user selects a direction, show these choices in a short, scannable
-form. Mark recommendations based on the selected direction. End with:
+After selection, show five compact choices with direction-adapted
+recommendations. End with:
 
 > Reply **use recommended settings** or list any changes. Say **show detailed
 > plan** for the full project-specific Creative Decision Brief.
 
 ### Review depth
 
-- Fast—production build and one focused desktop/mobile primary-flow pass.
-- Lean—full-page desktop/mobile, key interactions, console/overflow/text
-  integrity, and a correction pass.
-- Full Audit—Lean plus 320px, reduced motion, performance, route/direct-load,
-  console/network, and final full-page regression.
+- Fast — production build and one focused desktop/mobile primary-flow pass.
+- Lean — full-page desktop/mobile, key interactions, console/overflow/text
+  integrity, and one visible correction pass.
+- Full Audit — Lean plus 320px, reduced motion, performance, direct routes,
+  console/network, asset failures, and final full-page regression.
 
 Defaults: Efficient=Fast, Recommended=Lean, Showcase=Full Audit.
 
-Full Audit is practical verification depth. It does not require approval
-hashes, attestation, provenance records, independent critics, or evidence
-bureaucracy.
+Full Audit increases observable review. It never adds approval hashes,
+attestation, provenance, evidence ledgers, or a mandatory critic.
 
 ### References
 
-- Follow a website, URL, or file the user provides.
-- Scout and adapt principles from relevant references.
+- Follow a website, URL, image, or file supplied by the user.
+- Scout and synthesize relevant references.
 - Use no external reference.
 
-Defaults: Efficient uses supplied references only. Recommended uses supplied
-references or a small relevant scout. Showcase uses supplied references and
-scouts strong relevant examples. Adapt principles; never copy a site.
+Efficient uses supplied references only. Recommended uses supplied material or
+a small cross-domain scout. Showcase uses supplied material plus two to four
+strong references from different domains. Extract principles; never reproduce
+a reference's complete visual fingerprint.
 
 ### Sources
 
-Keep this compact while allowing the user to override:
-
 - Existing assets only.
 - Allow sourced/licensed images.
-- Allow sourced and generated images; use video/3D if useful.
+- Allow sourced and generated images; use video or 3D when useful.
 - Ask before each new asset.
 
-If the user needs finer control, separately resolve sourced images, generated
-images, sourced video, generated video, and 3D sourcing/generation in the
-detailed brief.
-
-Defaults: Efficient=existing assets. Recommended=best-fit sourced/generated
-images with video/3D only when earned. Showcase=maximum useful sourced/generated
-images/video and 3D.
+Efficient defaults to existing assets. Recommended chooses best-fit media.
+Showcase permits maximum useful sourced/generated imagery, video, and 3D.
 
 ### Packages
 
@@ -87,132 +84,64 @@ images/video and 3D.
 - Keep the existing stack.
 - Ask before installing.
 
-Defaults: Efficient keeps the existing stack. Recommended and Showcase allow
-focused installation.
+Efficient keeps the stack. Recommended and Showcase allow packages whose
+capabilities are necessary for the selected experience.
 
 ### Prototype
 
-- Skip—build directly.
-- Auto—prototype only a genuinely uncertain signature mechanism.
-- Required—prototype the riskiest signature mechanism before integration.
+- Skip — build directly.
+- Auto — test only a central mechanism with real uncertainty.
+- Required — test the riskiest signature mechanism before integration.
 
 Defaults: Efficient=Skip, Recommended=Auto, Showcase=Required.
 
 ## Stage 3: detailed Creative Decision Brief
 
-Only show this when the user asks for `show detailed plan`. Adapt every block to
-the inspected project and selected direction. The supplied Northwind brief is
-the structural model, not reusable content.
+Only show this after `show detailed plan`. Adapt every decision to the inspected
+project and selected direction.
 
-### 1. Current state
+### 1. Product truth
 
-Summarize routes, sections, working interactions, existing visual equity,
-assets, dependencies, broken behavior, encoding defects, and what will be
-preserved or intentionally changed.
+Summarize audience, primary task, routes, content shape, subject vocabulary,
+working behavior, valuable visual equity, assets, dependencies, defects, and
+preservation.
 
 ### 2. Selected direction
 
-Name and fully describe:
+Define the project-native premise, composition rule, typography, material/color
+logic, media role, motion/interaction grammar, continuity device, and why they
+fit. Include three decisions that could only come from this product.
 
-- palette/material;
-- typography;
-- composition;
-- media;
-- motion;
-- interaction;
-- why it fits the content and audience.
+### 3. Reference synthesis
 
-The plan must change with the direction:
+For each supplied or scouted source, show only the principle being adapted and
+what will deliberately differ. Confirm that no source contributes the complete
+palette + type + layout + signature-motion combination.
 
-- Recommended shows the agent's best project-specific combination.
-- Efficient shows restrained, low-token, low-dependency decisions and small
-  changes.
-- Showcase makes maximum/all-treatment decisions and distributes high-end
-  behavior beyond the hero.
+### 4. Workflow and resources
 
-### 3. Workflow and source choices
+Show Fast/Lean/Full Audit, Skip/Auto/Required, reference strategy, Sourced images,
+Generated images, sourced/generated video, 3D sourcing or generation,
+Packages, and actual detected capabilities. Mark recommendations.
 
-Show all alternatives and mark the recommendations for:
+### 5. Treatment and experience allocation
 
-- Fast / Lean / Full Audit;
-- Skip / Auto / Required prototype;
-- specific supplied reference / scout references / no reference;
-- sourced images;
-- generated images;
-- sourced video;
-- generated video;
-- 3D sourcing/generation;
-- package installation.
+For all ten treatments, state the project-specific use, selected/declined
+decision, cost, risk, and insufficient version. Then map the selected treatments
+to route sections, including a meaningful post-hero peak and the continuity
+owner. UX and Mobile always apply. Showcase selects all ten.
 
-Do not show Purpose, Production Certification, Dogfood, assurance, or
-attestation controls.
+### 6. Build architecture
 
-### 4. Treatment decision guide
+Name the signature mechanism, semantic fallback, runtime ownership, component
+boundaries, asset pipeline, mobile transformation, accessibility behavior, and
+performance budget. Use a prototype only when its result can change the build.
 
-Show all ten treatments with project-specific:
+### 7. Review, risks, and decision
 
-- proposed select/decline decision;
-- what it changes;
-- substantive threshold;
-- dependencies and tensions;
-- cost and mobile/performance/accessibility risk;
-- what would be insufficient.
+List observable review passes, material risks, and fallbacks that preserve the
+concept. End with one editable decision line containing direction, review,
+prototype, treatments, references, sources, packages, and missing-content
+choices.
 
-UX and Mobile are mandatory. Recommended chooses the best combination.
-Efficient normally uses UX, Mobile, and Refined. Showcase selects all ten and
-must resolve their tensions rather than pruning them.
-
-### 5. Experience allocation
-
-Show route/section order, experience role, primary/supporting treatments,
-continuity owner, a meaningful post-hero peak, and the hero-removed test. Add a
-compact tension table for task access, motion control, touch/keyboard, mobile
-cost, media loading, readability, and experimental clarity.
-
-### 6. Capability and source preflight
-
-Report what is actually available or missing:
-
-- current runtime and packages;
-- browser verification;
-- supplied assets;
-- reference inputs;
-- image sourcing/generation/editing;
-- video sourcing/generation/processing;
-- 3D runtime/assets/authoring;
-- missing content/assets.
-
-Permission is a user choice; capability is detected reality.
-
-### 7. Risks, fallbacks, and decision reply
-
-Explain the material visual, mobile, performance, accessibility, asset, and
-mechanism risks. Give fallbacks that preserve the direction. End with one
-editable line containing the selected direction, review depth, prototype,
-treatments, references, sources, packages, and material missing-content
-decisions.
-
-After the user sends the line, implement. Do not generate another executable
-contract or request a second approval.
-
-## Northwind direction example
-
-Choose a redesign direction:
-
-1. **Recommended — Nordic Roastery Journal**
-   Editorial, tactile, and distinctly Bergen: warm paper tones, deep ink,
-   oxblood accents, bold serif typography, product imagery, and a brewing-guide
-   timeline. Preserves every product, link, and form while making the brand
-   feel premium and credible.
-
-2. **Efficient — Modern Coffee Market**
-   Clean Scandinavian commerce with compact navigation, crisp product cards,
-   clear pricing, restrained motion, and a faster shopping-focused layout.
-
-3. **Showcase — From Harbor to Cup**
-   The absolute best version: a cinematic story around the 1962 Probat, coastal
-   atmosphere, oversized typography, layered sourced/generated media, spatial
-   depth, rich interaction, and all treatments distributed through the route.
-
-I recommend **Nordic Roastery Journal**. Reply with **1, 2, or 3**. You can also
-say **show detailed plan**.
+After the reply, implement. Do not generate a second approval or contract gate.

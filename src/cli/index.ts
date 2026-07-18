@@ -49,39 +49,9 @@ const USAGE = `usage: dreative [command]
   preflight        detect the current framework, package manager, scripts and capabilities
                    --mechanisms a,b   resolve mechanism-led package/install requirements
   catalogue        search the executable creative catalogue [--query phrase] [--json]
-  plan             advanced compatibility tools: treatments | init | validate | status | diff | summary | approve | prototype-decision |
-                   implementation-start | inspect-missing | set | add-section | add-mechanism |
-                   add-subject | add-requirement | export-json | migrate
-                   init source flags: --references | --no-references | --suggest-references
-                   --generated-images allow|deny|ask --sourced-images allow|deny|ask
-                   --generated-video allow|deny|ask --sourced-video allow|deny|ask
-                   --3d-assets not-allowed|supplied-only|external-sourcing-allowed|
-                     generation-and-sourcing-allowed|ask-per-asset
-                   --package-install allow|deny
-                   --treatments a,b | all --confirm-all
-                   --capabilities-file .dreative/capabilities.json
-                   --capability id=state (repeatable)
-                   treatments --routes /,/other (show choices before init)
-                   migrate --source-plan <path> | --run-id <id> (v8 -> v9 supported)
-  treatments       advanced detailed-plan reference [--routes /]
-                   explain a chosen set with --all | --treatments a,b
-  doctor           verify skill, schema, packages, browser, source and current plan
-  resume           continue safely from the last valid phase checkpoint
-  audit            validate current plan, runtime, evidence, critic, and policy artifacts
-                   --json
-  verify           integrity-linked browser runner --browser-command "npm run preview" [--url URL]
-                   [--browser-executable PATH] [--prototype-id ID --prototype-location PATH]
-  critic-run       optional external review adapter --command "critic command"
-                   --provider-class project-local-advisory|host-isolated|externally-attested
-                   --provider-id ID --assurance local|host-attested|externally-attested
-                   (host/external classes require an adapter; shell commands cannot elevate)
-  finalize         fail-closed commands + installation + audit + certification gate
+  finalize         run build/test/typecheck/lint/docs checks; prints DREATIVE_FINALIZED on success
                    --codex
-  critic-prompt    render the objective-only critic prompt
-  docs-check       validate packaged documentation consistency [--json]
-  wait             (agent) wait for one visual-editor event
-  respond          (agent) respond <id> [result.json | --error msg]
-  baseline         (agent) snapshot the editor baseline`;
+  docs-check       validate packaged documentation consistency [--json]`;
 
 async function installCommand(): Promise<void> {
   const available = availableSkills(packagedSkillDir);
@@ -140,8 +110,11 @@ async function main(): Promise<void> {
       console.log(renderDeliveryBrief(recommendation));
       return;
     }
-    case "start":
+    case "start": {
       console.error("deprecated: use `dreative start-editor`; the editor is optional and will not open a browser");
+      process.exitCode = 1;
+      return;
+    }
     case "start-editor": {
       const server = createServer(process.cwd()).listen(port, () => {
         console.log(`\nOptional Dreative editor running for ${process.cwd()}\n${base}\n`);

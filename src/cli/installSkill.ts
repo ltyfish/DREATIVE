@@ -22,6 +22,20 @@ export interface InstallManifest {
 
 const hash = (value: Buffer | string) => crypto.createHash("sha256").update(value).digest("hex");
 const canonical = (value: unknown) => JSON.stringify(value, Object.keys(value as object).sort());
+const ACTIVE_ROOT_FILES = new Set(["SKILL.md", "PLAN.md", "llms.txt"]);
+const ACTIVE_REFERENCES = new Set([
+  "references/CREATIVE_DIRECTION.md",
+  "references/CREATIVE_EXECUTION.md",
+  "references/SKILL_CONTRACT.md",
+]);
+
+function activeSkillFile(relative: string, selectedSkills: Set<string>): boolean {
+  if (ACTIVE_ROOT_FILES.has(relative)) return true;
+  if (relative.startsWith("agents/")) return true;
+  if (relative.startsWith("frameworks/") || relative.startsWith("recipes/")) return true;
+  if (relative.startsWith("skills/")) return selectedSkills.has(path.basename(relative, ".md"));
+  return ACTIVE_REFERENCES.has(relative);
+}
 
 export function availableSkills(sourceDir: string): string[] {
   const directory = path.join(sourceDir, "skills");
@@ -58,7 +72,8 @@ export function installSkill(options: { sourceDir: string; projectDir: string; p
   fs.rmSync(destination, { recursive: true, force: true });
   fs.mkdirSync(destination, { recursive: true });
   const selectedSet = new Set(options.selected);
-  const files = walk(options.sourceDir).filter((relative) => relative !== INSTALL_MANIFEST && (!relative.startsWith("skills/") || selectedSet.has(path.basename(relative, ".md"))));
+  const files = walk(options.sourceDir).filter((relative) =>
+    relative !== INSTALL_MANIFEST && activeSkillFile(relative, selectedSet));
   const hashes: Record<string, string> = {};
   for (const relative of files) {
     const source = path.join(options.sourceDir, relative);
@@ -107,7 +122,7 @@ export function checkSkillInstallation(options: { sourceDir: string; projectDir:
 export function updateAgentsPointer(projectDir: string): void {
   const file = path.join(projectDir, "AGENTS.md");
   const existing = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
-  const block = `${DREATIVE_AGENT_START}\n## Dreative fail-closed frontend delivery\nFor frontend work, read \`.codex/skills/dreative/SKILL.md\` first. Expressive, Award, Experimental, Full Audit, and Dogfood work is incomplete unless \`dreative finalize --codex\` succeeds against the current source and prints \`DREATIVE_FINALIZED\`. After any audit or finalization failure, report the build as incomplete and list the blockers; never claim completion.\n${DREATIVE_AGENT_END}`;
+  const block = `${DREATIVE_AGENT_START}\n## Dreative frontend design-builder\nFor frontend design or redesign work, read \`.codex/skills/dreative/SKILL.md\` first. Build in the real application, inspect the rendered full page at desktop and mobile, correct visible failures, and run the project's deterministic checks. Substantial work is incomplete unless \`dreative finalize --codex\` succeeds against the current source and prints \`DREATIVE_FINALIZED\`. This marker certifies command success only, not visual quality. After any finalization failure, report the build as incomplete and list the blockers.\n${DREATIVE_AGENT_END}`;
   const pattern = new RegExp(`\\n?${DREATIVE_AGENT_START}[\\s\\S]*?${DREATIVE_AGENT_END}\\n?`, "g");
   const legacy = /\n?<!-- dreative-skill -->[\s\S]*?(?=\n{2,}|$)/g;
   const stripped = existing.replace(pattern, "\n").replace(legacy, "\n").trimEnd();
