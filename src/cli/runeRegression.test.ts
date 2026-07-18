@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import AdmZip from "adm-zip";
 import { runDirectDesignAudit } from "./audit.js";
 import { runFinalize } from "./finalize.js";
 
@@ -15,8 +15,12 @@ const packageVersion = JSON.parse(fs.readFileSync(path.join(packageRoot, "packag
 
 function extractRune(): string {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-rune-regression-"));
-  const result = spawnSync("tar", ["-xf", archive, "-C", root, "--exclude=idk/node_modules/*", "--exclude=__MACOSX/*"], { encoding: "utf8" });
-  assert.equal(result.status, 0, result.stderr);
+  const zip = new AdmZip(archive);
+  for (const entry of zip.getEntries()) {
+    const name = entry.entryName.replaceAll("\\", "/");
+    if (name.startsWith("__MACOSX/") || name.startsWith("idk/node_modules/")) continue;
+    zip.extractEntryTo(entry, root, true, true);
+  }
   return path.join(root, "idk");
 }
 

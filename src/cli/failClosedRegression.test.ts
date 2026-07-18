@@ -37,7 +37,8 @@ test("certification planning rejects missing contracts, placeholders and fake pe
   assert.match(errors, /PLAN_MISSING_PRIMARY_JOURNEY/);
   assert.match(errors, /PLAN_MISSING_SECTION_STATE_CONTRACT/);
   assert.match(errors, /PLAN_MISSING_REQUIREMENT_TRACEABILITY/);
-  assert.match(errors, /PLAN_EXPERIMENTAL_PEAK_TOO_GENERIC/);
+  assert.match(errors, /PLAN_MISSING_STRUCTURED_MECHANISM|PLAN_MISSING_MECHANISM_CONTRACT/);
+  assert.match(errors, /PLAN_MISSING_SUBJECT_INVENTORY/);
 });
 
 test("approval records cannot claim a non-interactive human origin", () => {

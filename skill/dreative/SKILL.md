@@ -24,15 +24,15 @@ Use this workflow for substantial interactive design and redesign.
    a source-owned continuity contract, treatment and mechanism obligations,
    requirement traceability, asset/package strategy and the verification plan.
    Run `dreative plan summary`; do not make the user review raw YAML.
-6. Record approval honestly. Human approval is interactive
-   (`dreative plan approve --mode human --confirm-human-approval`).
-   Explicitly pre-authorized Dogfood uses
-   `--mode pre-authorized-dogfood` and must never be described as human review.
+6. Record approval with host-neutral provenance and an explicit assurance
+   level. TTY plus a CLI flag records only `user-origin-unverified`; it is not
+   human attestation. Prompt preauthorization must predate planning and may use
+   a host-event ID/content hash, signed record or optional prompt file.
    Wait for approval before material application-source implementation.
 7. Hash only `contract`. Machine updates belong in `execution`. Any material
    contract edit needs a change request and reapproval.
 8. When required, prototype the uncertain mechanism in an isolated prototype
-   route/location, verify it through the trusted runner, and record a prototype
+   route/location, verify it through the integrity-linked runner, and record a prototype
    decision before integration. A completed application is not its prototype.
    Use `dreative verify --prototype-id <id> --prototype-location <path>`,
    `dreative plan prototype-decision --id <id> --decision <decision>`, then
@@ -40,12 +40,13 @@ Use this workflow for substantial interactive design and redesign.
 9. Implement the approved concept in the real application. Install runtime
    packages transactionally, one mechanism group at a time. Keep one explicit
    ticker/scroll owner and never silently downgrade.
-10. Run `dreative verify --browser-command "<dev command>"`. Only this
-    Dreative-owned runner may create trusted screenshots, traces, browser
-    observations, performance data and artifact hashes. Never hand-author or
-    edit trusted evidence.
-11. Run the critic in a separate process with
-    `dreative critic-run --command "<critic command>"`. Its closed input must
+10. Run `dreative verify --browser-command "<production preview command>"`.
+    Final workflows build and verify the exact production artifact. The runner
+    derives requirement outcomes from actions and assertions; screenshots do
+    not create passes.
+11. Run the critic through a declared provider with
+    `dreative critic-run --provider-class <class> --provider-id <id>`.
+    Project-local scripts are advisory only. Its closed input must
     contain the approved contract, requirement matrix, desktop/mobile/reduced
     motion captures, temporal evidence and functional/performance summaries.
 12. Run `dreative audit`, correct blockers and major issues, then
@@ -74,12 +75,18 @@ Specialists:
 - Keep observations in `execution`: pending/progress/final mechanism status, trigger evidence, prototype attempts/results, sourcing attempts, generated files, asset survival, browser results, critic findings and spread evidence. Never pre-claim a final outcome in the approved contract.
 - Permission is not capability. A connected authoring or sourcing tool must be explicitly detected or declared. Canvas, WebGL, video playback and other browser APIs begin as expected but unverified and become available only through current browser evidence.
 - Award, Experimental and explicit all-treatment delivery is machine-grounded in typed controlled-progress runtime observations. Free-form evidence strings cannot satisfy static-feeling, Media, 3D, Cinematic, Immersive or Experimental gates.
-- Full Audit and Dogfood require a genuinely fresh critic agent. Degraded, best-effort or same-agent review is insufficient independent evidence.
-- Browser verifier and critic provenance are sealed in a Dreative trust ledger
-  outside the project. JSON descriptions never count as screenshots,
-  recordings or browser traces. Audit re-hashes actual bytes and rejects edits,
-  missing files, stale plan/source/build identities and unsealed Playwright
-  claims.
+- Full Audit and Dogfood require a genuinely fresh, host-isolated critic agent. Degraded, best-effort or same-agent review is insufficient, and context isolation is not described as external independence.
+- Evidence records declare `local`, `host-attested` or
+  `externally-attested`. Local files are integrity-linked, not independently
+  trusted or tamper-proof. Production Certification requires host or external
+  attestation; Project Delivery and Dogfood may report an honest local
+  limitation.
+- Requirement actions and assertions are machine executed. Runtime gates own
+  observable state and artifact identity; the critic owns semantic resemblance,
+  authorship, composition, concept fidelity and perceptual ambition.
+- Corrections after failed verification, criticism or audit are allowed.
+  Incompatible evidence becomes stale and fresh compatible runs can certify the
+  corrected state.
 - Requirement rows are blocking contracts, not documentation. A missing
   browser test, missing evidence id, failed status, material substitution,
   unapproved fallback, missing exact viewport, or mobile deletion blocks

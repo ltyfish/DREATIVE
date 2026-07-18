@@ -548,7 +548,7 @@ export interface DecisionLedger {
 export interface VerificationEvidence {
   id: string;
   criterion: string;
-  status: "pass" | "fail" | "not-applicable";
+  status: "pass" | "fail" | "blocked" | "not-run" | "not-applicable";
   evidence: string;
   kind?: VerificationKind;
   criterionId?: string;
@@ -1072,7 +1072,7 @@ export function validateVerificationReport(value: unknown): string[] {
     )
       errors.push("verification refinement needs findings, changes, and evidenceIds arrays");
   }
-  if ((report.evidence ?? []).some((item) => item.status === "fail")) errors.push("verification report contains failing evidence");
+  if ((report.evidence ?? []).some((item) => ["fail", "blocked", "not-run"].includes(item.status))) errors.push("verification report contains failing, blocked, or unexecuted evidence");
   const timelineStates = new Set([
     "initial",
     "early",

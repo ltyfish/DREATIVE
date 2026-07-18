@@ -3,10 +3,13 @@ import fs from "node:fs";
 import path from "node:path";
 import { parse, stringify } from "yaml";
 import { detectProjectPreflight, type ProjectPreflight } from "./preflight.js";
-import { hashFiles, sourceFiles } from "./projectIdentity.js";
+import { computeCurrentIdentity, hashFiles, sourceFiles } from "./projectIdentity.js";
 import type { SpecialistSkill } from "./skillSystem.js";
 import { treatment } from "./treatments.js";
 import type { DesignAmbition, EvaluationPurpose, ExecutionMode, PrototypePolicy, WorkflowConfiguration } from "./workflow.js";
+import type { AssuranceLevel, ProvenanceRecord } from "./assurance.js";
+import { validateProvenance, validateProvenanceAssurance } from "./assurance.js";
+import { appendWorkflowEvent } from "./workflowTrace.js";
 
 export const PLAN_VERSION = 9;
 export const PLAN_FILE = ".dreative/plan.yaml";
@@ -72,6 +75,25 @@ export interface RequirementTrace {
   browserTest: string;
   evidenceId: string;
   status: "planned" | "implemented" | "verified" | "failed" | "removed";
+  actions?: RequirementAction[];
+  assertions?: RequirementAssertion[];
+}
+
+export interface RequirementAction {
+  action: "goto" | "click" | "fill" | "press" | "scroll" | "reverse-scroll" | "reload" | "wait";
+  selector?: string;
+  value?: string;
+}
+
+export interface RequirementAssertion {
+  type: "visible" | "hidden" | "text-contains" | "text-equals" | "url-contains" | "url-equals"
+    | "attribute-equals" | "input-value" | "selected" | "dialog-open" | "dialog-closed"
+    | "form-invalid" | "form-valid" | "network-request" | "network-success" | "download"
+    | "canvas-changed" | "media-changed" | "mechanism-state";
+  selector?: string;
+  attribute?: string;
+  expected?: string | boolean | number;
+  mechanismId?: string;
 }
 
 export interface SectionContract {
@@ -112,6 +134,34 @@ export interface MechanismContract {
   requiredCaptureStates: string[];
   successCriteria: string[];
   failureCriteria: string[];
+  sectionId?: string;
+  subjectIds?: string[];
+  treatments?: SpecialistSkill[];
+  runtimeOwner?: string;
+  trigger?: string;
+  actions?: RequirementAction[];
+  selectors?: string[];
+  assertions?: RequirementAssertion[];
+  expectedResults?: string[];
+  mobileTransformation?: string;
+  reducedMotionTransformation?: string;
+  fallbackId?: string;
+}
+
+export interface SubjectInventoryEntry {
+  id: string;
+  type: "primary-subject" | "hero-object" | "continuity-object" | "prop" | "component" | "environment" | "material" | "texture" | "still-composition" | "video" | "frame-sequence" | "spatial";
+  recognizableAs: string;
+  narrativeRole: string;
+  sectionIds: string[];
+  sourceMethod: "supplied" | "external-sourced" | "generated" | "procedural";
+  assetIds: string[];
+  rightsRequirements: string[];
+  recurring: boolean;
+  continuityPurpose?: string;
+  mobileRepresentation: string;
+  reducedMotionRepresentation: string;
+  fallbackClassification: SpatialAssetClassification;
 }
 
 export interface RuntimeStateSample {
@@ -278,6 +328,14 @@ export interface CreativeSourcePolicy {
 export interface PlanContract {
   createdAt?: string;
   sourceBaselineHashAtCreation?: string;
+  repositoryBaseline?: {
+    sourceHash: string;
+    packageJsonHash: string | null;
+    lockfileHash: string | null;
+    publicAssetHash: string;
+    configurationAndSourceHash: string;
+    existingBuildHash: string;
+  };
   projectDefinition?: {
     purpose: string; targetAudience: string; primaryUserJourney: string; routes: string[];
     requiredFunctionality: string[]; extractedRequirements: string[]; nonGoals: string[]; preservedContentOrFunctionality: string[];
@@ -294,6 +352,7 @@ export interface PlanContract {
   };
   mechanismContracts?: MechanismContract[];
   requirementTraceability?: RequirementTrace[];
+  subjectInventory?: SubjectInventoryEntry[];
   packagePlan?: {
     assets: string[]; rightsAndSources: string[]; placeholderRestrictions: string[]; derivatives: string[];
     mobileAssetStrategy: string; mechanismPackages: string[]; installPermission: boolean; preflightResults: string[];
@@ -368,6 +427,7 @@ export interface PlanApproval {
   approvedBy: string | null;
   approvalMode?: ApprovalMode;
   approvalOrigin?: "interactive-user" | "explicit-preauthorization";
+  provenance?: ProvenanceRecord;
   approvedSourceBaselineHash?: string | null;
   decisionHistory: { at: string; decision: string; contractHash: string | null; note?: string }[];
 }
@@ -489,6 +549,18 @@ export interface PlanExecution {
     assetManifest: string[];
     approvedChangeRequests: string[];
     finalizationStatus: "pending" | "passed" | "failed";
+    assuranceLevel?: AssuranceLevel;
+    verificationRunId?: string;
+    criticRunId?: string;
+  };
+  evidenceState?: {
+    verificationRunId: string | null;
+    verificationStatus: "missing" | "current" | "stale";
+    criticRunId: string | null;
+    criticStatus: "missing" | "current" | "stale";
+    certificationStatus: "missing" | "current" | "stale";
+    invalidatedAt?: string;
+    invalidationReason?: string;
   };
   assetObservation?: {
     manifestEntries: string[];
@@ -648,11 +720,22 @@ export function createPlan(projectDir: string, input: {
     ? [...new Set<SpecialistSkill>(["ux", "mobile", ...optional])]
     : [];
   const createdAt = now();
-  return {
+  const baselineIdentity = computeCurrentIdentity(projectDir, {
+    runId: "plan-baseline", dreativeVersion: "planning", schemaVersion: PLAN_VERSION,
+    framework: resolved.target.framework, packageManager: resolved.target.packageManager,
+    buildCommand: resolved.target.buildCommand ?? "", serverCommand: resolved.target.previewCommand ?? "",
+    testedOrigin: "", testedUrl: "", serverStartedAt: createdAt, verificationStartedAt: createdAt, verificationFinishedAt: createdAt,
+  });
+  const plan: CanonicalPlan = {
     version: PLAN_VERSION,
     contract: {
       createdAt,
       sourceBaselineHashAtCreation: hashFiles(projectDir, sourceFiles(projectDir)),
+      repositoryBaseline: {
+        sourceHash: baselineIdentity.sourceTreeHash, packageJsonHash: baselineIdentity.packageJsonHash,
+        lockfileHash: baselineIdentity.lockfileHash, publicAssetHash: baselineIdentity.publicAssetHash,
+        configurationAndSourceHash: baselineIdentity.sourceTreeHash, existingBuildHash: baselineIdentity.productionBuildHash,
+      },
       target: resolved.target,
       scope: {
         substantial: input.substantial ?? true, projectKind: input.projectKind ?? "redesign", routes: resolved.target.routeScope.routes,
@@ -682,7 +765,7 @@ export function createPlan(projectDir: string, input: {
       })),
       continuityOwner: "none",
       preservationRequirements: [], selectedConcept: "", blueprint: [], experienceDistribution: [], experimentalPeaks: [], prototypeContracts: [], assetStrategy: [], motionAndMediaStrategy: "", mobileTranslation: "",
-      functionalTruthRequirements: [], performanceBudget: [], acceptanceCriteria: [], mechanismFallbacks: [], conceptExemptions: [], changeRequests: [],
+      functionalTruthRequirements: [], performanceBudget: [], acceptanceCriteria: [], mechanismFallbacks: [], conceptExemptions: [], changeRequests: [], subjectInventory: [],
     },
     approval: { status: "pending", revision: 0, contractHash: null, approvedAt: null, approvedBy: null, approvedSourceBaselineHash: null, decisionHistory: [{ at: createdAt, decision: "plan-created", contractHash: null }] },
     execution: {
@@ -696,10 +779,13 @@ export function createPlan(projectDir: string, input: {
       capabilityActions: [],
       runtimeObservations: [],
       signatureMediaPackages: [],
+      evidenceState: { verificationRunId: null, verificationStatus: "missing", criticRunId: null, criticStatus: "missing", certificationStatus: "missing" },
       evidence: { transformations: [], sceneHandoffs: [], meaningfulInteractions: [], persistentSystemSections: [], pacing: [], mobileNative: [], reducedMotion: [], treatmentEvidence: {}, motionVocabulary: [], postFirstViewportEvents: [], treatmentObservations: {} },
       lastUpdatedAt: createdAt,
     },
   };
+  appendWorkflowEvent(projectDir, { type: "plan-created", data: { contractHash: contractHash(plan.contract), planVersion: PLAN_VERSION } });
+  return plan;
 }
 
 function validateCertificationPlan(contract: PlanContract): string[] {
@@ -753,23 +839,42 @@ function validateCertificationPlan(contract: PlanContract): string[] {
     if (!concrete(mechanism.id) || required.some((item) => !plannedText(item)) || !mechanism.requiredCaptureStates?.length
       || !mechanism.successCriteria?.length || !mechanism.failureCriteria?.length)
       errors.push(`PLAN_MISSING_MECHANISM_CONTRACT: ${mechanism.id || "unknown"} is incomplete`);
+    if (!concrete(mechanism.sectionId) || !mechanism.subjectIds?.length || !mechanism.treatments?.length
+      || !plannedText(mechanism.runtimeOwner) || !plannedText(mechanism.trigger)
+      || !mechanism.selectors?.length || !mechanism.assertions?.length || !mechanism.expectedResults?.length
+      || !plannedText(mechanism.mobileTransformation) || !plannedText(mechanism.reducedMotionTransformation))
+      errors.push(`PLAN_MISSING_STRUCTURED_MECHANISM: ${mechanism.id || "unknown"} needs typed ownership, subjects, selectors, assertions, states and adaptations`);
   }
+  const subjects = contract.subjectInventory ?? [];
+  if (!subjects.length) errors.push("PLAN_MISSING_SUBJECT_INVENTORY: identify the primary subject, props, environments and materials");
+  const subjectIds = new Set(subjects.map((item) => item.id));
+  for (const subject of subjects) {
+    if (!concrete(subject.id) || !plannedText(subject.recognizableAs) || !plannedText(subject.narrativeRole)
+      || !subject.sectionIds?.length || !subject.assetIds || !subject.rightsRequirements?.length
+      || !plannedText(subject.mobileRepresentation) || !plannedText(subject.reducedMotionRepresentation))
+      errors.push(`PLAN_MISSING_SUBJECT_INVENTORY: ${subject.id || "unknown"} is incomplete`);
+    if (subject.recurring && !plannedText(subject.continuityPurpose))
+      errors.push(`PLAN_RECURRING_SUBJECT_WITHOUT_PURPOSE: ${subject.id}`);
+  }
+  for (const mechanism of contract.mechanismContracts ?? []) for (const id of mechanism.subjectIds ?? [])
+    if (!subjectIds.has(id)) errors.push(`PLAN_UNKNOWN_SUBJECT_REFERENCE: ${mechanism.id} references ${id}`);
   const trace = contract.requirementTraceability;
   if (!trace?.length || (definition?.extractedRequirements.length ?? 0) > trace.length)
     errors.push("PLAN_MISSING_REQUIREMENT_TRACEABILITY: every meaningful prompt requirement needs implementation, browser test and evidence bindings");
-  for (const requirement of trace ?? []) if (!concrete(requirement.id) || !concrete(requirement.evidenceId)
-    || [requirement.source, requirement.wording, requirement.plannedImplementation,
-      requirement.routeOrComponent, requirement.browserTest].some((item) => !plannedText(item)))
-    errors.push(`PLAN_MISSING_REQUIREMENT_TRACEABILITY: ${requirement.id || "unknown"} is incomplete`);
+  for (const requirement of trace ?? []) {
+    if (!concrete(requirement.id) || !concrete(requirement.evidenceId)
+      || [requirement.source, requirement.wording, requirement.plannedImplementation,
+        requirement.routeOrComponent, requirement.browserTest].some((item) => !plannedText(item)))
+      errors.push(`PLAN_MISSING_REQUIREMENT_TRACEABILITY: ${requirement.id || "unknown"} is incomplete`);
+    if (!requirement.actions?.length || !requirement.assertions?.length)
+      errors.push(`PLAN_MISSING_EXECUTABLE_ASSERTIONS: ${requirement.id || "unknown"} requires browser actions and assertions`);
+  }
   const verification = contract.verificationPlan;
   if (!verification || !verification.viewports?.length || !verification.interactions?.length || !verification.accessibilityChecks?.length
     || !verification.mediaNetworkChecks?.length || !verification.criticInputs?.length || !verification.finalizationBlockers?.length)
     errors.push("PLAN_MISSING_VERIFICATION_BINDING: verificationPlan must bind exact viewports, interactions, accessibility, media/network, critic and blockers");
   if (!contract.packagePlan || !contract.packagePlan.preflightResults.length || !contract.packagePlan.placeholderRestrictions.length)
     errors.push("PLAN_MISSING_ASSET_PACKAGE_PLAN: asset/package plan must record preflight and placeholder restrictions");
-  if ((contract.workflow.ambition === "award" || contract.workflow.ambition === "experimental")
-    && (contract.experimentalPeaks ?? []).some((peak) => /\b(?:tab|form|calculator|card grid|carousel|fade[- ]?in)\b/i.test(`${peak.mechanismFamily} ${peak.plannedBehaviour}`)))
-    errors.push("PLAN_EXPERIMENTAL_PEAK_TOO_GENERIC: ordinary UI cannot satisfy a creative peak");
   return errors;
 }
 
@@ -783,6 +888,7 @@ export function validateCanonicalPlan(value: unknown): string[] {
   if (!plan.execution || typeof plan.execution !== "object") errors.push("plan.execution is required");
   const contract = plan.contract;
   const workflow = contract.workflow;
+  if (plan.approval?.status === "approved") errors.push(...validateProvenance(plan.approval.provenance, contract.createdAt));
   if (contract.scope?.substantial && workflow)
     errors.push(...validateCertificationPlan(contract));
   if (!workflow || !AMBITIONS.includes(workflow.ambition)) errors.push("contract.workflow.ambition must be standard, expressive, award, or experimental");
@@ -898,7 +1004,12 @@ export function validateCanonicalPlan(value: unknown): string[] {
   return errors;
 }
 
-export function approvePlan(projectDir: string, options: string | { mode: ApprovalMode; origin: "interactive-user" | "explicit-preauthorization"; approvedBy?: string } = { mode: "human", origin: "interactive-user" }): CanonicalPlan {
+export function approvePlan(projectDir: string, options: string | {
+  mode: ApprovalMode;
+  origin: "interactive-user" | "explicit-preauthorization";
+  approvedBy?: string;
+  provenance?: ProvenanceRecord;
+} = { mode: "human", origin: "interactive-user" }): CanonicalPlan {
   const plan = readPlan(projectDir);
   const errors = validateCanonicalPlan(plan).filter((item) => !item.startsWith("approved contract hash"));
   if (errors.length) throw new Error(`cannot approve invalid plan:\n${errors.join("\n")}`);
@@ -909,19 +1020,46 @@ export function approvePlan(projectDir: string, options: string | { mode: Approv
   if (approval.mode === "human" && approval.origin !== "interactive-user") throw new Error("FAKE_HUMAN_APPROVAL: human approval must originate from an interactive user prompt");
   if (approval.mode === "pre-authorized-dogfood" && plan.contract.workflow.purpose !== "dreative-dogfood")
     throw new Error("pre-authorized-dogfood approval is only valid for Dreative Dogfood");
+  const provenance: ProvenanceRecord = approval.provenance ?? {
+    authority: approval.mode === "pre-authorized-dogfood" ? "prompt-preauthorized" : "user-origin-unverified",
+    sourceType: "cli",
+    assuranceLevel: "local",
+    scope: ["contract"],
+    recordedAt: now(),
+    contentRecordedBeforePlanning: false,
+  };
+  const provenanceErrors = validateProvenance(provenance, plan.contract.createdAt);
+  provenanceErrors.push(...validateProvenanceAssurance(projectDir, provenance));
+  if (provenanceErrors.length) throw new Error(`cannot record approval provenance:\n${provenanceErrors.join("\n")}`);
   const sourceAtApproval = hashFiles(projectDir, sourceFiles(projectDir));
+  if (plan.contract.repositoryBaseline) {
+    const current = computeCurrentIdentity(projectDir, {
+      runId: "approval-baseline", dreativeVersion: "planning", schemaVersion: PLAN_VERSION,
+      framework: plan.contract.target.framework, packageManager: plan.contract.target.packageManager,
+      buildCommand: plan.contract.target.buildCommand ?? "", serverCommand: plan.contract.target.previewCommand ?? "",
+      testedOrigin: "", testedUrl: "", serverStartedAt: now(), verificationStartedAt: now(), verificationFinishedAt: now(),
+    });
+    if (current.lockfileHash !== plan.contract.repositoryBaseline.lockfileHash)
+      throw new Error("PACKAGE_LOCK_CHANGED_BEFORE_APPROVED_PACKAGE_PLAN");
+    if (current.packageJsonHash !== plan.contract.repositoryBaseline.packageJsonHash)
+      throw new Error("PACKAGE_MANIFEST_CHANGED_BEFORE_APPROVAL");
+    if (current.publicAssetHash !== plan.contract.repositoryBaseline.publicAssetHash)
+      throw new Error("ASSETS_CHANGED_BEFORE_ASSET_REQUIREMENTS_APPROVAL");
+  }
   if (plan.contract.sourceBaselineHashAtCreation && sourceAtApproval !== plan.contract.sourceBaselineHashAtCreation)
     throw new Error("IMPLEMENTATION_STARTED_BEFORE_PLAN_APPROVAL: material application source changed after plan creation and before approval");
   plan.approval = {
     ...plan.approval, status: "approved", revision: plan.approval.revision + 1, contractHash: hash,
     approvedAt: now(), approvedBy: approval.approvedBy ?? (approval.mode === "human" ? "user" : "dogfood-preauthorization"),
     approvalMode: approval.mode, approvalOrigin: approval.origin,
+    provenance,
     approvedSourceBaselineHash: sourceAtApproval,
     decisionHistory: [...plan.approval.decisionHistory, { at: now(), decision: `approved:${approval.mode}`, contractHash: hash }],
   };
   plan.execution.currentPhase = "approval";
   plan.execution.lastUpdatedAt = now();
   writePlan(projectDir, plan);
+  appendWorkflowEvent(projectDir, { type: "approval-recorded", assuranceLevel: provenance.assuranceLevel, provenance, data: { contractHash: hash, mode: approval.mode } });
   return plan;
 }
 
@@ -943,6 +1081,13 @@ export function invalidateApproval(plan: CanonicalPlan, note: string): void {
   plan.approval.approvedAt = null;
   plan.approval.approvedBy = null;
   plan.approval.decisionHistory.push({ at: now(), decision: "approval-invalidated", contractHash: old, note });
+  if (plan.execution.evidenceState) {
+    plan.execution.evidenceState.verificationStatus = plan.execution.evidenceState.verificationRunId ? "stale" : "missing";
+    plan.execution.evidenceState.criticStatus = plan.execution.evidenceState.criticRunId ? "stale" : "missing";
+    plan.execution.evidenceState.certificationStatus = "stale";
+    plan.execution.evidenceState.invalidatedAt = now();
+    plan.execution.evidenceState.invalidationReason = note;
+  }
 }
 
 function legacyAmbition(value: any): DesignAmbition {

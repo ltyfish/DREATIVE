@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.9.0
+
+- Assurance fails closed at the actual process boundary: standalone CLI files,
+  environment declarations, TTY state and shell critic commands remain local.
+- Added explicit local, host-attested and externally-attested assurance without
+  overstating builder-controlled hashes as independent trust.
+- Added host-neutral approval provenance, hash-linked workflow traces,
+  trace-derived Dogfood reports and generated certification.
+- Added structured subject/prop/material inventory, compact plan-authoring
+  commands and executable requirement actions/assertions.
+- Made final browser verification production-first and requirement-specific;
+  screenshots no longer create passes.
+- Added critic provider classes and allowlisting, central ambition thresholds,
+  stale-evidence invalidation and current-state final reconciliation.
+- Added coding-host/browser preflight and deterministic cross-platform RUNE ZIP
+  extraction.
+
 ## v.20.7
 
 - Replaced ambitious prose compliance with typed controlled-progress runtime

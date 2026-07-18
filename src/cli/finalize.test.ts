@@ -85,5 +85,5 @@ function validV9Fixture() {
 test("a structurally valid v9 fixture still cannot finalize with manual verify.json", () => {
   const result = runFinalize(validV9Fixture(), { target: "claude", sourceDir, packageVersion });
   assert.equal(result.ok, false);
-  assert.ok(result.blockers.some((item) => item.includes("sealed `dreative verify`")));
+  assert.ok(result.blockers.some((item) => item.includes("integrity-linked `dreative verify`")));
 });

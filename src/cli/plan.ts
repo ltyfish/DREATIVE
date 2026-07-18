@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import crypto from "node:crypto";
 import {
   AMBITIONS,
   EXECUTIONS,
@@ -25,6 +26,9 @@ import { renderCompleteTreatmentReview } from "../shared/treatments.js";
 import type { WorkflowConfiguration } from "../shared/workflow.js";
 import { CAPABILITY_IDS, CAPABILITY_STATES, detectProjectPreflight, parseCapabilitiesFile, renderCreativeCapabilityPreflight, type CapabilityInput, type CreativeCapabilityId, type CapabilityStatus } from "../shared/preflight.js";
 import { parse } from "yaml";
+import { appendWorkflowEvent } from "../shared/workflowTrace.js";
+import type { ApprovalAuthority, AssuranceLevel, ProvenanceSourceType } from "../shared/assurance.js";
+import { reconcileEvidenceState } from "../shared/evidenceState.js";
 
 const value = (args: string[], flag: string) => {
   const index = args.indexOf(flag);
@@ -262,12 +266,15 @@ function validate(projectDir: string): number {
 
 function status(projectDir: string): number {
   const plan = readPlan(projectDir);
-  if (reconcileApproval(plan)) writePlan(projectDir, plan);
+  const approvalChanged = reconcileApproval(plan);
+  const staleReasons = reconcileEvidenceState(projectDir, plan);
+  if (approvalChanged || staleReasons.length) writePlan(projectDir, plan);
   const status = approvalStatus(plan);
   console.log(JSON.stringify({
     file: PLAN_FILE, version: plan.version, workflow: plan.contract.workflow, routes: plan.contract.target.routeScope.routes,
     treatments: plan.contract.selectedTreatments, approval: plan.approval.status, contractHash: status.currentHash,
     approvedHash: status.approvedHash, drifted: status.drifted, currentPhase: plan.execution.currentPhase,
+    evidenceState: plan.execution.evidenceState, staleReasons,
   }, null, 2));
   return status.approved ? 0 : 1;
 }
@@ -285,6 +292,7 @@ export function renderPlanSummary(plan: CanonicalPlan): string {
     `Mechanisms: ${(c.mechanismContracts ?? []).map((item) => `${item.id} [${item.inputDriver}] at ${item.routeOrSection}`).join("; ") || "none"}`,
     `Creative peaks: ${(c.experimentalPeaks ?? []).map((item) => `${item.id} at ${item.chapter}`).join("; ") || "none"}`,
     `Assets/packages: ${c.packagePlan ? `${c.packagePlan.assets.length} assets; ${c.packagePlan.mechanismPackages.join(", ") || "no packages"}` : "(missing)"}`,
+    `Subjects: ${(c.subjectInventory ?? []).map((item) => `${item.id} (${item.type}) — ${item.narrativeRole}`).join("; ") || "(missing)"}`,
     `Mobile: ${c.mobileTranslation || c.creativeDirection?.experienceProgression || "(missing)"}`,
     `Reduced motion: ${(c.sectionContracts ?? []).map((item) => `${item.id}: ${item.reducedMotionBehavior}`).join("; ") || "(missing)"}`,
     `Fallbacks: ${(c.mechanismContracts ?? []).map((item) => `${item.id}: ${item.approvedFallback}`).join("; ") || "(missing)"}`,
@@ -300,6 +308,7 @@ function showSummary(projectDir: string): number {
   plan.execution.planSummaryShownAt = new Date().toISOString();
   plan.execution.lastUpdatedAt = plan.execution.planSummaryShownAt;
   writePlan(projectDir, plan);
+  appendWorkflowEvent(projectDir, { type: "plan-summary-displayed", data: { contractHash: approvalStatus(plan).currentHash } });
   return 0;
 }
 
@@ -324,7 +333,7 @@ function decidePrototype(projectDir: string, args: string[]): number {
   const id = value(args, "--id");
   const decision = value(args, "--decision") as NonNullable<typeof gate>["decision"];
   const allowed = ["approved-for-integration", "revise-prototype", "fallback-approved", "mechanism-declined"];
-  if (!gate || !id || gate.prototypeId !== id || !gate.verificationRunId) throw new Error("prototype decision requires the matching trusted --prototype-id run");
+  if (!gate || !id || gate.prototypeId !== id || !gate.verificationRunId) throw new Error("prototype decision requires the matching integrity-linked --prototype-id run");
   if (!decision || !allowed.includes(decision)) throw new Error(`prototype --decision must be ${allowed.join(", ")}`);
   gate.decision = decision;
   gate.decidedAt = new Date().toISOString();
@@ -338,12 +347,52 @@ function markImplementationStart(projectDir: string): number {
   const plan = readPlan(projectDir);
   if (!approvalStatus(plan).approved) throw new Error("implementation cannot start before approved plan");
   if (plan.contract.workflow.prototype === "required" && !["approved-for-integration", "fallback-approved", "mechanism-declined"].includes(plan.execution.prototypeGate?.decision ?? ""))
-    throw new Error("implementation cannot start before the required trusted prototype decision");
+    throw new Error("implementation cannot start before the required integrity-linked prototype decision");
   plan.execution.firstMaterialSourceChangeAt = new Date().toISOString();
   plan.execution.currentPhase = "implementation";
   plan.execution.lastUpdatedAt = plan.execution.firstMaterialSourceChangeAt;
   writePlan(projectDir, plan);
+  appendWorkflowEvent(projectDir, { type: "implementation-started", data: { contractHash: plan.approval.contractHash } });
   console.log(`Implementation start recorded at ${plan.execution.firstMaterialSourceChangeAt}.`);
+  return 0;
+}
+
+function parseRecord(raw: string | undefined, label: string): Record<string, unknown> {
+  if (!raw) throw new Error(`${label} requires a JSON or YAML object argument`);
+  const result = parse(raw);
+  if (!result || typeof result !== "object" || Array.isArray(result)) throw new Error(`${label} requires an object`);
+  return result as Record<string, unknown>;
+}
+
+function addRecord(projectDir: string, args: string[], kind: "section" | "mechanism" | "subject" | "requirement"): number {
+  const plan = readPlan(projectDir);
+  const record = parseRecord(args.join(" "), `plan add-${kind}`);
+  if (!record.id) record.id = `${kind}-${crypto.randomUUID().slice(0, 8)}`;
+  if (kind === "section") (plan.contract.sectionContracts ??= []).push(record as any);
+  if (kind === "mechanism") (plan.contract.mechanismContracts ??= []).push(record as any);
+  if (kind === "subject") (plan.contract.subjectInventory ??= []).push(record as any);
+  if (kind === "requirement") (plan.contract.requirementTraceability ??= []).push(record as any);
+  reconcileApproval(plan);
+  writePlan(projectDir, plan);
+  console.log(`Added ${kind} ${String(record.id)}.`);
+  return 0;
+}
+
+function setField(projectDir: string, args: string[]): number {
+  const [fieldPath, ...raw] = args;
+  if (!fieldPath?.startsWith("contract.")) throw new Error("plan set accepts contract.<field> paths only");
+  if (!raw.length) throw new Error("plan set requires a YAML/JSON value");
+  const plan = readPlan(projectDir);
+  const parts = fieldPath.split(".");
+  let owner: Record<string, unknown> = plan as unknown as Record<string, unknown>;
+  for (const key of parts.slice(0, -1)) {
+    if (!owner[key] || typeof owner[key] !== "object" || Array.isArray(owner[key])) owner[key] = {};
+    owner = owner[key] as Record<string, unknown>;
+  }
+  owner[parts.at(-1)!] = parse(raw.join(" "));
+  reconcileApproval(plan);
+  writePlan(projectDir, plan);
+  console.log(`Set ${fieldPath}.`);
   return 0;
 }
 
@@ -395,21 +444,44 @@ export function runPlanCommand(projectDir: string, args: string[]): number {
     case "init": return init(projectDir, args.slice(1));
     case "validate": return validate(projectDir);
     case "status": return status(projectDir);
+    case "inspect-missing": return validate(projectDir);
     case "diff": return diff(projectDir);
     case "summary": return showSummary(projectDir);
+    case "set": return setField(projectDir, args.slice(1));
+    case "add-section": return addRecord(projectDir, args.slice(1), "section");
+    case "add-mechanism": return addRecord(projectDir, args.slice(1), "mechanism");
+    case "add-subject": return addRecord(projectDir, args.slice(1), "subject");
+    case "add-requirement": return addRecord(projectDir, args.slice(1), "requirement");
     case "prototype-decision": return decidePrototype(projectDir, args.slice(1));
     case "implementation-start": return markImplementationStart(projectDir);
     case "approve": {
       const mode = (value(args, "--mode") ?? "human") as "human" | "pre-authorized-dogfood";
       if (!readPlan(projectDir).execution.planSummaryShownAt) throw new Error("PLAN_SUMMARY_NOT_SHOWN: run `dreative plan summary` before approval");
       if (mode === "human" && (!process.stdin.isTTY || !args.includes("--confirm-human-approval")))
-        throw new Error("FAKE_HUMAN_APPROVAL: show `dreative plan summary`, then a human must run this command interactively with --confirm-human-approval");
+        throw new Error("USER_ORIGIN_NOT_RECORDED: show `dreative plan summary`, then record the user-origin event interactively; TTY and the flag do not create attestation");
+      const sourceType = (value(args, "--source-type") ?? "cli") as ProvenanceSourceType;
+      const filePath = value(args, "--file");
+      const absoluteFile = filePath ? path.resolve(projectDir, filePath) : undefined;
+      const fileHash = absoluteFile && fs.existsSync(absoluteFile) ? crypto.createHash("sha256").update(fs.readFileSync(absoluteFile)).digest("hex") : undefined;
+      const recordedAt = value(args, "--recorded-at") ?? new Date().toISOString();
       const plan = approvePlan(projectDir, {
         mode,
         origin: mode === "human" ? "interactive-user" : "explicit-preauthorization",
         approvedBy: mode === "human" ? "user" : "dogfood-preauthorization",
+        provenance: {
+          authority: (value(args, "--authority") ?? (mode === "human" ? "user-origin-unverified" : "prompt-preauthorized")) as ApprovalAuthority,
+          sourceType,
+          sourceId: value(args, "--source-id"),
+          contentHash: value(args, "--content-hash") ?? fileHash,
+          filePath,
+          attestationProvider: value(args, "--attestation-provider"),
+          assuranceLevel: (value(args, "--assurance") ?? "local") as AssuranceLevel,
+          scope: values(value(args, "--scope")).length ? values(value(args, "--scope")) : ["contract"],
+          recordedAt,
+          contentRecordedBeforePlanning: args.includes("--content-before-planning"),
+        },
       });
-      console.log(`${mode === "human" ? "Human-approved" : "Dogfood pre-authorization recorded for"} contract revision ${plan.approval.revision}: ${plan.approval.contractHash}`);
+      console.log(`Approval provenance recorded (${plan.approval.provenance?.authority}, ${plan.approval.provenance?.assuranceLevel}) for contract revision ${plan.approval.revision}: ${plan.approval.contractHash}`);
       return 0;
     }
     case "export-json": {
@@ -419,6 +491,6 @@ export function runPlanCommand(projectDir: string, args: string[]): number {
       return 0;
     }
     case "migrate": return migrate(projectDir, args.slice(1));
-    default: throw new Error("usage: dreative plan init|validate|status|diff|summary|approve|prototype-decision|implementation-start|export-json|migrate");
+    default: throw new Error("usage: dreative plan init|validate|inspect-missing|status|diff|summary|set|add-section|add-mechanism|add-subject|add-requirement|approve|prototype-decision|implementation-start|export-json|migrate");
   }
 }

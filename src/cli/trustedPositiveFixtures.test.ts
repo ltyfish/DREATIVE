@@ -52,6 +52,10 @@ function fixture(motion: boolean): string {
     plannedImplementation: motion ? "Native scroll updates the motion rail." : "Semantic main content renders Ready and Continue.",
     routeOrComponent: "home/main", browserTest: motion ? "Scroll to the midpoint." : "Open the route.",
     evidenceId: motion ? "motion-runtime" : "ready-runtime", status: "verified",
+    actions: motion ? [{ action: "scroll", value: "600" }] : [{ action: "press", value: "Tab" }],
+    assertions: motion
+      ? [{ type: "visible", selector: "#motion-rail" }, { type: "mechanism-state", selector: "#motion-rail", expected: "matrix", mechanismId: "motion-rail" }]
+      : [{ type: "text-contains", selector: "main", expected: "Ready" }, { type: "visible", selector: "button" }],
   }];
   plan.contract.verificationPlan = {
     viewports: [{ name: "desktop", width: 1280, height: 800 }, { name: "mobile", width: 390, height: 844 }],

@@ -96,11 +96,28 @@ function completePlan(dir: string): CanonicalPlan {
     approvedFallback: "Three semantic rail states controlled by section intersection.", fallbackTrigger: "Measured scroll timeline failure in the trusted prototype.",
     requiredCaptureStates: ["start", "active", "resolved", "reverse", "mobile", "reduced-motion"],
     successCriteria: ["One rail visibly transforms across chapters."], failureCriteria: ["Buttons or duplicated images replace scroll progress."],
+    sectionId: "work", subjectIds: ["editorial-rail"], treatments: ["motion", "interaction"], runtimeOwner: "EditorialRail",
+    trigger: "Scroll progress crosses the work and finale chapters.", actions: [{ action: "scroll", value: "600" }],
+    selectors: ["#editorial-rail"], assertions: [{ type: "mechanism-state", selector: "#editorial-rail", expected: "active", mechanismId: "rail" }],
+    expectedResults: ["The rail reaches its active state and later resolves."],
+    mobileTransformation: "Vertical touch progress preserves the controlled rail state.",
+    reducedMotionTransformation: "Three authored still states replace interpolation.", fallbackId: "rail-fallback",
+  }];
+  plan.contract.subjectInventory = [{
+    id: "editorial-rail", type: "primary-subject", recognizableAs: "the persistent editorial product rail",
+    narrativeRole: "Carries product comparison from opening through resolution.", sectionIds: ["hero", "work", "finale"],
+    sourceMethod: "procedural", assetIds: [], rightsRequirements: ["Project-authored DOM and CSS."], recurring: true,
+    continuityPurpose: "Makes three chapters feel like one developing comparison instrument.",
+    mobileRepresentation: "A compact vertical rail remains recognizable on touch screens.",
+    reducedMotionRepresentation: "Three authored still rail compositions retain the narrative.",
+    fallbackClassification: "static-image",
   }];
   plan.contract.requirementTraceability = [{
     id: "REQ-1", source: "user prompt", wording: "The experience must develop beyond the hero.",
     plannedImplementation: "EditorialRail transforms through work and finale chapters.", routeOrComponent: "home/EditorialRail",
     browserTest: "Scroll start to finale and reverse while capturing rail states.", evidenceId: "rail-runtime", status: "planned",
+    actions: [{ action: "scroll", value: "600" }],
+    assertions: [{ type: "visible", selector: "#editorial-rail" }, { type: "mechanism-state", selector: "#editorial-rail", expected: "active", mechanismId: "rail" }],
   }];
   plan.contract.packagePlan = {
     assets: ["Layered editorial product media."], rightsAndSources: ["Commercial rights must be recorded."],
@@ -277,7 +294,11 @@ test("Dogfood pre-authorization remains explicit and never claims human review",
   const dir = root();
   const plan = completePlan(dir);
   writePlan(dir, plan);
-  const approved = approvePlan(dir, { mode: "pre-authorized-dogfood", origin: "explicit-preauthorization" });
+  const approved = approvePlan(dir, { mode: "pre-authorized-dogfood", origin: "explicit-preauthorization", provenance: {
+    authority: "prompt-preauthorized", sourceType: "host-event", sourceId: "event-before-plan",
+    contentHash: "a".repeat(64), assuranceLevel: "local", scope: ["contract", "dogfood"],
+    recordedAt: new Date(Date.parse(plan.contract.createdAt!) - 1000).toISOString(), contentRecordedBeforePlanning: true,
+  } });
   assert.equal(approved.approval.approvalMode, "pre-authorized-dogfood");
   assert.equal(approved.approval.approvalOrigin, "explicit-preauthorization");
   assert.equal(approved.approval.approvedBy, "dogfood-preauthorization");
@@ -368,4 +389,30 @@ test("validation rejects unresolved target and material intake", () => {
   const errors = validateCanonicalPlan(plan);
   assert.ok(errors.some((item) => item.includes("previewUrl or previewCommand")));
   assert.ok(errors.some((item) => item.includes("routeScope.routes")));
+});
+
+test("concise structurally complete planning passes without prose padding", () => {
+  const errors = validateCanonicalPlan(completePlan(root()));
+  assert.deepEqual(errors, []);
+});
+
+test("a verbose browser-test description cannot replace executable assertions", () => {
+  const plan = completePlan(root());
+  plan.contract.requirementTraceability![0].actions = [];
+  plan.contract.requirementTraceability![0].assertions = [];
+  plan.contract.requirementTraceability![0].browserTest = "Open every route and very carefully test that the complete premium cinematic responsive experience works exactly as intended.";
+  assert.ok(validateCanonicalPlan(plan).some((item) => item.includes("PLAN_MISSING_EXECUTABLE_ASSERTIONS")));
+});
+
+test("aesthetic vocabulary is not a prose blacklist", () => {
+  const plan = completePlan(root());
+  plan.contract.selectedConcept = "A premium cinematic immersive rail enhances the responsive comparison journey.";
+  plan.contract.creativeDirection!.selectedConcept = plan.contract.selectedConcept;
+  assert.ok(!validateCanonicalPlan(plan).some((item) => /premium|cinematic|immersive|responsive|enhance/i.test(item)));
+});
+
+test("recurring subjects require a continuity purpose", () => {
+  const plan = completePlan(root());
+  plan.contract.subjectInventory![0].continuityPurpose = "";
+  assert.ok(validateCanonicalPlan(plan).some((item) => item.includes("PLAN_RECURRING_SUBJECT_WITHOUT_PURPOSE")));
 });

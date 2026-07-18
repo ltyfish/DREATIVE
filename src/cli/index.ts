@@ -6,7 +6,7 @@ import readline from "node:readline";
 import open from "open";
 import { createServer } from "../server/index.js";
 import { configurationFromArgs } from "../shared/workflow.js";
-import { detectProjectPreflight, resolveRuntimeRequirements } from "../shared/preflight.js";
+import { detectCodingHost, detectProjectPreflight, resolveRuntimeRequirements } from "../shared/preflight.js";
 import { printAudit, runDirectDesignAudit } from "./audit.js";
 import { renderCriticPrompt } from "./critic.js";
 import { printDocsCheck, runDocsCheck } from "./docsCheck.js";
@@ -28,6 +28,15 @@ const packageRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), ".."
 const packagedSkillDir = path.join(packageRoot, "skill", "dreative");
 const packageVersion = JSON.parse(fs.readFileSync(path.join(packageRoot, "package.json"), "utf8")).version as string;
 
+function hostTarget(): "codex" | "claude" {
+  if (args.includes("--codex")) return "codex";
+  if (args.includes("--claude")) return "claude";
+  const detected = detectCodingHost(process.cwd());
+  if (!detected.expectedSkillTarget)
+    throw new Error("CODING_HOST_UNKNOWN: pass --codex or --claude (or set DREATIVE_HOST); Dreative will not silently default to Claude");
+  return detected.expectedSkillTarget;
+}
+
 const USAGE = `usage: dreative [command]
   start            serve the visual editor (default)
   install-skill    exact-sync the packaged skill and write a hashed manifest
@@ -37,7 +46,8 @@ const USAGE = `usage: dreative [command]
                    --mechanisms a,b   resolve mechanism-led package/install requirements
   catalogue        search the executable creative catalogue [--query phrase] [--json]
   plan             init | validate | status | diff | summary | approve | prototype-decision |
-                   implementation-start | export-json | migrate
+                   implementation-start | inspect-missing | set | add-section | add-mechanism |
+                   add-subject | add-requirement | export-json | migrate
                    init source flags: --references | --no-references | --suggest-references
                    --generated-images allow|deny|ask --sourced-images allow|deny|ask
                    --generated-video allow|deny|ask --sourced-video allow|deny|ask
@@ -53,9 +63,12 @@ const USAGE = `usage: dreative [command]
   resume           continue safely from the last valid phase checkpoint
   audit            validate current plan, runtime, evidence, critic, and policy artifacts
                    --json
-  verify           Dreative-owned browser runner --browser-command "npm run dev" [--url URL]
+  verify           integrity-linked browser runner --browser-command "npm run preview" [--url URL]
                    [--browser-executable PATH] [--prototype-id ID --prototype-location PATH]
-  critic-run       sealed separate critic process --command "critic command"
+  critic-run       local advisory critic process --command "critic command"
+                   --provider-class project-local-advisory|host-isolated|externally-attested
+                   --provider-id ID --assurance local|host-attested|externally-attested
+                   (host/external classes require an adapter; shell commands cannot elevate)
   finalize         fail-closed commands + installation + audit + certification gate
                    --codex
   critic-prompt    render the objective-only critic prompt
@@ -71,7 +84,7 @@ async function installCommand(): Promise<void> {
     for (const name of available) console.log(`  ${name}`);
     return;
   }
-  const target = args.includes("--codex") ? "codex" as const : "claude" as const;
+  const target = hostTarget();
   if (args.includes("--check")) {
     const errors = checkSkillInstallation({ sourceDir: packagedSkillDir, projectDir: process.cwd(), packageVersion, target });
     if (errors.length) { errors.forEach((error) => console.error(`ERROR ${error}`)); process.exitCode = 1; return; }
@@ -118,7 +131,7 @@ async function main(): Promise<void> {
       return;
     }
     case "doctor": {
-      const report = runDoctor(process.cwd(), { target: args.includes("--codex") ? "codex" : "claude", sourceDir: packagedSkillDir, packageVersion });
+      const report = runDoctor(process.cwd(), { target: hostTarget(), sourceDir: packagedSkillDir, packageVersion });
       printDoctor(report);
       if (!report.ok) process.exitCode = 1;
       return;
@@ -136,20 +149,23 @@ async function main(): Promise<void> {
         browserCommand: option("--browser-command"), url: option("--url"), browserExecutable: option("--browser-executable"),
         prototypeId: option("--prototype-id"), prototypeLocation: option("--prototype-location"), packageVersion,
       });
-      console.log(`Trusted verification completed: ${result.runId}`);
+      console.log(`Integrity-linked verification completed: ${result.runId}`);
       console.log(result.manifestPath);
       return;
     }
     case "critic-run": {
       const commandIndex = args.indexOf("--command");
       const inputIndex = args.indexOf("--input");
-      const result = runTrustedCritic(process.cwd(), commandIndex >= 0 ? args[commandIndex + 1] ?? "" : "", inputIndex >= 0 ? args[inputIndex + 1] : undefined);
-      console.log(`Trusted critic completed: ${result.runId}`);
+      const option = (flag: string) => { const index = args.indexOf(flag); return index >= 0 ? args[index + 1] : undefined; };
+      const result = runTrustedCritic(process.cwd(), commandIndex >= 0 ? args[commandIndex + 1] ?? "" : "", inputIndex >= 0 ? args[inputIndex + 1] : undefined, {
+        providerClass: option("--provider-class") as any, providerId: option("--provider-id"), assuranceLevel: option("--assurance") as any,
+      });
+      console.log(`Critic evidence run completed: ${result.runId}`);
       console.log(result.manifestPath);
       return;
     }
     case "finalize": {
-      const result = runFinalize(process.cwd(), { target: args.includes("--codex") ? "codex" : "claude", sourceDir: packagedSkillDir, packageVersion });
+      const result = runFinalize(process.cwd(), { target: hostTarget(), sourceDir: packagedSkillDir, packageVersion });
       for (const item of result.commands) console.log(`${item.exitCode === 0 ? "PASS" : "FAIL"} ${item.command}`);
       if (!result.ok) {
         result.blockers.forEach((item) => console.error(`BLOCKER ${item}`));

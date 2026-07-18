@@ -29,6 +29,8 @@ import { validateExperienceDelivery } from "../shared/experienceGates.js";
 import { validateRuntimeObservationGrounding } from "../shared/runtimeEvidence.js";
 import { hashFiles, sourceFiles } from "../shared/projectIdentity.js";
 import { inspectTrustedArtifacts, sha256, validateTrustedRun } from "../shared/trustedRuns.js";
+import { assuranceAtLeast, requiredAssurance, validateProvenance, validateProvenanceAssurance, validateProvenanceSource } from "../shared/assurance.js";
+import { deriveDogfoodReport, validateWorkflowTrace } from "../shared/workflowTrace.js";
 
 export interface AuditFinding {
   level: "error" | "warning";
@@ -110,10 +112,19 @@ function checkCertificationTrust(projectDir: string, plan: CanonicalPlan, verifi
     if (!plan.contract.sourceBaselineHashAtCreation || !plan.approval.approvedSourceBaselineHash)
       findings.push(finding("error", "approval-order", "IMPLEMENTATION_STARTED_BEFORE_PLAN_APPROVAL: source baselines are missing"));
   }
+  for (const message of validateProvenance(plan.approval.provenance, plan.contract.createdAt))
+    findings.push(finding("error", "approval-provenance", message));
+  for (const message of validateProvenanceSource(projectDir, plan.approval.provenance))
+    findings.push(finding("error", "approval-provenance", message));
+  for (const message of validateProvenanceAssurance(projectDir, plan.approval.provenance))
+    findings.push(finding("error", "approval-provenance", message));
+  const requiredLevel = requiredAssurance(plan.contract.workflow.purpose);
+  if (!assuranceAtLeast(plan.approval.provenance?.assuranceLevel ?? "local", requiredLevel))
+    findings.push(finding("error", "approval-provenance", `APPROVAL_ASSURANCE_BLOCKED: ${plan.contract.workflow.purpose} requires ${requiredLevel} approval provenance`));
   if (strict && plan.contract.workflow.prototype === "required") {
     const gate = plan.execution.prototypeGate;
     if (!gate || !gate.verificationRunId || !gate.decidedAt || !["approved-for-integration", "fallback-approved", "mechanism-declined"].includes(gate.decision ?? ""))
-      findings.push(finding("error", "prototype", "PROTOTYPE_GATE_INCOMPLETE: required prototype needs trusted verification and a decision before integration"));
+      findings.push(finding("error", "prototype", "PROTOTYPE_GATE_INCOMPLETE: required prototype needs integrity-linked verification and a decision before integration"));
     if (gate?.verificationRunId) {
       const prototypeManifestFile = findTrustedManifest(projectDir, "trusted-verification.json", gate.verificationRunId);
       if (!prototypeManifestFile) findings.push(finding("error", "prototype", `PROTOTYPE_PROVENANCE_MISSING: ${gate.prototypeId} has no sealed browser run ${gate.verificationRunId}`));
@@ -142,21 +153,25 @@ function checkCertificationTrust(projectDir: string, plan: CanonicalPlan, verifi
     const manifest = readJson(trustedFile) as any;
     for (const message of validateTrustedRun(projectDir, "browser-verification", manifest)) findings.push(finding("error", "evidence-provenance", message));
     for (const message of inspectTrustedArtifacts(projectDir, manifest.artifacts ?? [])) findings.push(finding("error", "evidence-artifact", message));
-    if (manifest.approvedPlanHash !== approvalStatus(plan).currentHash) findings.push(finding("error", "evidence-provenance", "EVIDENCE_PLAN_HASH_MISMATCH: trusted run belongs to another plan"));
+    if (manifest.approvedPlanHash !== approvalStatus(plan).currentHash) findings.push(finding("error", "evidence-provenance", "EVIDENCE_PLAN_HASH_MISMATCH: evidence run belongs to another plan"));
     const currentSource = hashFiles(projectDir, sourceFiles(projectDir));
-    if (manifest.sourceHash !== currentSource) findings.push(finding("error", "evidence-provenance", "EVIDENCE_SOURCE_HASH_MISMATCH: trusted run belongs to another source tree"));
+    if (manifest.sourceHash !== currentSource) findings.push(finding("error", "evidence-provenance", "EVIDENCE_SOURCE_HASH_MISMATCH: evidence run belongs to another source tree"));
     if (!manifest.artifacts?.some((item: any) => item.type === "trace" || item.type === "recording"))
       findings.push(finding("error", "evidence-artifact", "TRUSTED_TEMPORAL_ARTIFACT_MISSING: JSON manifests cannot satisfy recording or trace requirements"));
     if (!manifest.artifacts?.some((item: any) => item.type === "screenshot"))
       findings.push(finding("error", "evidence-artifact", "TRUSTED_SCREENSHOT_MISSING: browser run produced no real image capture"));
     if (!manifest.captureManifest) findings.push(finding("error", "evidence-provenance", "EMPTY_BROWSER_ARRAYS_ARE_NOT_EVIDENCE: route monitoring and inspection manifest is missing"));
+    if ((plan.contract.workflow.execution === "full-audit" || plan.contract.workflow.purpose !== "project-delivery") && manifest.verificationMode !== "production")
+      findings.push(finding("error", "production-verification", "DEVELOPMENT_VERIFICATION_CANNOT_CERTIFY: final workflows require the exact production build and preview"));
+    if (!assuranceAtLeast(manifest.assuranceLevel ?? "local", requiredLevel))
+      findings.push(finding("error", "evidence-assurance", `EVIDENCE_ASSURANCE_BLOCKED: ${plan.contract.workflow.purpose} requires ${requiredLevel} browser evidence`));
   }
   const evidenceIds = new Set((verification?.evidence ?? []).filter((item: any) => item.status === "pass").map((item: any) => item.id));
   for (const requirement of plan.contract.requirementTraceability ?? []) {
     if (requirement.status !== "verified" || !evidenceIds.has(requirement.evidenceId))
-      findings.push(finding("error", "requirements", `MISSING_REQUIRED_FUNCTIONALITY: ${requirement.id} (${requirement.wording}) lacks passing trusted browser evidence ${requirement.evidenceId}`));
+      findings.push(finding("error", "requirements", `MISSING_REQUIRED_FUNCTIONALITY: ${requirement.id} (${requirement.wording}) lacks passing integrity-linked browser evidence ${requirement.evidenceId}`));
   }
-  const criticFile = findTrustedManifest(projectDir, "trusted-critic.json");
+  const criticFile = findTrustedManifest(projectDir, "trusted-critic.json", plan.execution.evidenceState?.criticRunId ?? undefined);
   if (!criticFile) findings.push(finding("error", "critic-independence", "BUILDER_AUTHORED_CRITIC: no sealed separate critic invocation exists"));
   else {
     const manifest = readJson(criticFile) as any;
@@ -167,7 +182,15 @@ function checkCertificationTrust(projectDir: string, plan: CanonicalPlan, verifi
     const trustedVerificationFile = findTrustedManifest(projectDir, "trusted-verification.json", verification?.runId);
     const trustedVerification = trustedVerificationFile ? readJson(trustedVerificationFile) as any : null;
     if (manifest.verificationRunId !== verification?.runId || manifest.buildHash !== trustedVerification?.buildHash)
-      findings.push(finding("error", "critic-independence", "CRITIC_INPUT_HASH_MISMATCH: critic did not inspect the current trusted verification run/build"));
+      findings.push(finding("error", "critic-provenance", "CRITIC_INPUT_HASH_MISMATCH: critic did not inspect the current verification run/build"));
+    const certifyingMode = plan.contract.workflow.execution === "full-audit"
+      || plan.contract.workflow.purpose === "dreative-dogfood"
+      || plan.contract.workflow.purpose === "production-certification";
+    if (certifyingMode && manifest.providerClass === "project-local-advisory")
+      findings.push(finding("error", "critic-provider", "ADVISORY_CRITIC_CANNOT_CERTIFY"));
+    if (!assuranceAtLeast(manifest.assuranceLevel ?? "local", requiredLevel))
+      findings.push(finding("error", "critic-assurance", `CRITIC_ASSURANCE_BLOCKED: ${plan.contract.workflow.purpose} requires ${requiredLevel}`));
+    if (!manifest.computedResult?.pass) findings.push(finding("error", "critic-result", "Dreative-computed critic result is not passing"));
     const canonicalCritic = path.join(projectDir, ".dreative", "critic.json");
     if (fs.existsSync(canonicalCritic)) {
       const report = (readJson(canonicalCritic) as any).report;
@@ -219,38 +242,15 @@ function runCanonicalPlanAudit(projectDir: string): AuditReport {
     findings.push(finding("error", "capability-preflight", "FFmpeg editing cannot be used as original video-generation evidence"));
   if (plan.execution.runtime?.competingOwners.length) findings.push(finding("error", "runtime-owner", `competing ticker/scroll/render owners: ${plan.execution.runtime.competingOwners.join(", ")}`));
   if (plan.execution.runtime?.packageTransactions.some((item) => item.status === "failed")) findings.push(finding("error", "runtime-install", "a runtime package transaction failed without a completed rollback/recovery"));
-  const criticRequired = plan.contract.scope.substantial && plan.contract.workflow.execution !== "fast";
-  if (criticRequired) {
-    const critic = plan.execution.critic;
-    if (!critic) findings.push(finding("error", "critic", "substantial Lean, Full Audit and Dogfood work requires an independent perceptual critic"));
-    else {
-      const currentContractHash = approvalStatus(plan).currentHash;
-      if ((plan.contract.workflow.execution === "full-audit" || plan.contract.workflow.purpose === "dreative-dogfood")
-        && critic.independence !== "fresh-agent")
-        findings.push(finding("error", "critic-independence", "Full Audit and Dogfood require a genuinely fresh critic agent; fresh-context or degraded self-review cannot finalize"));
-      if (critic.approvedContractHash !== currentContractHash) findings.push(finding("error", "critic", "critic reviewed a different contract revision"));
-      const requiredInputs = ["approved-contract", "original-baseline", "desktop-captures", "mobile-captures", "runtime-traces", "interaction-instructions", "treatment-allocation", "acceptance-criteria"];
-      for (const input of requiredInputs) if (!critic.firstPassInputs.includes(input)) findings.push(finding("error", "critic", `critic first pass is missing ${input}`));
-      if (!critic.builderContextExcluded) findings.push(finding("error", "critic", "critic first pass must exclude builder rationale, excuses and self-authored quality claims"));
-      const scoreKeys = ["ambitionFidelity", "conceptFidelity", "authorship", "staticFeeling", "temporalDevelopment", "treatmentPerceptibility", "mediaIntegrity", "typographyHierarchy", "mobileComposition", "interactionPurpose", "brandAppropriateness", "functionalHonesty", "visibleRegressions"];
-      for (const key of scoreKeys) if (typeof critic.scores[key] !== "number") findings.push(finding("error", "critic", `critic score missing: ${key}`));
-      const spread = plan.execution.checkpoints.adaptiveSpread;
-      if (spread?.continuousRecordingRequired && spread.continuousRecordingEvidenceIds.length === 0) findings.push(finding("error", "critic", "Adaptive Spread requires one representative continuity recording for this mechanism"));
-      if (spread?.mobileRecordingRequired && spread.mobileRecordingEvidenceIds.length === 0) findings.push(finding("error", "critic", "Adaptive Spread requires mobile recording because mobile choreography materially differs"));
-      if (spread?.reverseScrollRequired && spread.reverseScrollEvidenceIds.length === 0) findings.push(finding("error", "critic", "Adaptive Spread requires reverse-scroll evidence for the declared reversible or lifecycle-sensitive mechanism"));
-      if (critic.verdict === "fail" || critic.blockers.length) findings.push(finding("error", "critic", "critic blockers remain unresolved"));
-      if ((plan.contract.workflow.execution === "full-audit" || plan.contract.workflow.purpose === "dreative-dogfood") && critic.majorIssues.length) findings.push(finding("error", "critic", "Full Audit and Dogfood require correction of all major critic issues"));
-    }
-  }
+  const spread = plan.execution.checkpoints.adaptiveSpread;
+  if (spread?.continuousRecordingRequired && spread.continuousRecordingEvidenceIds.length === 0) findings.push(finding("error", "critic", "Adaptive Spread requires one representative continuity recording for this mechanism"));
+  if (spread?.mobileRecordingRequired && spread.mobileRecordingEvidenceIds.length === 0) findings.push(finding("error", "critic", "Adaptive Spread requires mobile recording because mobile choreography materially differs"));
+  if (spread?.reverseScrollRequired && spread.reverseScrollEvidenceIds.length === 0) findings.push(finding("error", "critic", "Adaptive Spread requires reverse-scroll evidence for the declared reversible or lifecycle-sensitive mechanism"));
   if (plan.contract.workflow.purpose === "dreative-dogfood") {
-    const dogfood = plan.execution.dogfood;
-    if (!dogfood) findings.push(finding("error", "dogfood", "Dreative Dogfood requires a workflow behaviour report"));
-    else {
-      for (const question of dogfood.questionsRequired) if (!dogfood.questionsAsked.includes(question)) findings.push(finding("error", "dogfood", `required question was omitted: ${question}`));
-      if (dogfood.incorrectlyDefaulted.length) findings.push(finding("error", "dogfood", "workflow information was incorrectly defaulted or inferred"));
-      if (dogfood.verdict === "fail") findings.push(finding("error", "dogfood", "Dogfood workflow verdict is fail"));
-      if (/yes|true|would have/i.test(dogfood.falsePositiveRisk)) findings.push(finding("error", "dogfood", "Dogfood detected false-positive finalization risk"));
-    }
+    for (const message of validateWorkflowTrace(projectDir)) findings.push(finding("error", "workflow-trace", message));
+    const dogfood = deriveDogfoodReport(projectDir);
+    if (dogfood.planBypassDetected || dogfood.incorrectDefaultingDetected || dogfood.falsePositiveRiskDetected || dogfood.selfCertificationDetected)
+      findings.push(finding("error", "dogfood", "Trace-derived Dogfood safety findings block completion"));
   }
   if (plan.execution.run) {
     const currentSourceHash = hashFiles(projectDir, sourceFiles(projectDir));
@@ -665,7 +665,7 @@ export function checkCriticArtifacts(projectDir: string, plan: DirectDesignPlan,
     findings.push(...checkArtifact(criticFile, "critic", validateCriticArtifact));
     if (findings.some((item) => item.level === "error")) return findings;
     const artifact = readJson(criticFile) as CriticArtifact;
-    if (!artifact.report) return [...findings, finding("error", "critic", "critic.json is missing its independent report")];
+    if (!artifact.report) return [...findings, finding("error", "critic", "critic.json is missing its context-isolated report")];
     if (plan.version === 6 && verification?.buildIdentity) {
       const input = artifact.input as CriticInput & { verificationRunId?: string; buildIdentityHash?: string };
       if (input.verificationRunId !== verification.runId || input.buildIdentityHash !== verification.buildIdentity.sourceTreeHash) findings.push(finding("error", "critic", "critic input belongs to another verification run or build"));
@@ -704,7 +704,7 @@ export function checkCriticArtifacts(projectDir: string, plan: DirectDesignPlan,
   }
   if (plan.projectKind === "redesign" && !input.baselineAvailable) findings.push(finding("error", "visual-critic", "redesign critic input must include the available baseline rather than degrading as a new build"));
   if (report.verdict !== "PASS" && report.verdict !== "PASS AFTER REVISION") findings.push(finding("error", "visual-critic", `completion is blocked by critic verdict ${report.verdict}`));
-  if (verification && Date.parse(report.revision?.followUpReviewedAt ?? report.reviewedAt) >= Date.parse(verification.generatedAt)) findings.push(finding("error", "visual-critic", "independent critic and any focused follow-up must complete before final verification"));
+  if (verification && Date.parse(report.revision?.followUpReviewedAt ?? report.reviewedAt) >= Date.parse(verification.generatedAt)) findings.push(finding("error", "visual-critic", "context-isolated critic and any focused follow-up must complete before final verification"));
   const resolutions = new Map(report.revision?.resolutions.map((item) => [item.findingId, item.status]) ?? []);
   for (const item of report.findings.filter((candidate) => candidate.blocksCompletion)) {
     const resolution = resolutions.get(item.id);

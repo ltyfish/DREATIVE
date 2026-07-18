@@ -77,8 +77,9 @@ one media switch:
 
 `contract` is user-editable and contains target/scope, workflow, transformation
 depth, treatments, priority/allocation, preservation, concept, blueprint,
-experience arc, motion/media, mobile, functional truth, performance and
-acceptance criteria.
+experience arc, subject/prop/material inventory, typed mechanisms, executable
+requirement actions/assertions, motion/media, mobile, functional truth,
+performance and acceptance criteria.
 
 `approval` hashes only `contract`. `execution` may change without invalidating
 that hash. After planning, show a concise summary, point to
@@ -86,6 +87,12 @@ that hash. After planning, show a concise summary, point to
 
 Material edits require a same-file change request describing reason,
 consequence and alternative. They invalidate approval until approved again.
+
+Approval provenance is host-neutral. Prefer an immutable host event ID plus
+exact-content hash, then a signed record, then an optional prompt file with its
+original-byte hash. A CLI/TTY record remains `user-origin-unverified`. Every
+record declares `local`, `host-attested` or `externally-attested`; ordinary
+local files never claim independence.
 
 ## Prototype and concept checkpoint
 
@@ -96,7 +103,7 @@ composition or experience arc.
 Award, Experimental, Full Audit Dogfood and explicit all-treatment work require
 a real application vertical slice: actual hero, one downstream section, real
 visual system, defining temporal/media idea, 390px composition and reduced
-motion. A user or independent critic must approve it before system-wide spread.
+motion. A user or qualifying context-isolated critic must approve it before system-wide spread.
 
 ## Canonical v9 planning and lifecycle rules
 
@@ -115,6 +122,24 @@ The v9 contract stores intent only. Mechanism status, prototype results,
 sourcing attempts, generated files, browser observations, asset survival,
 critic findings and verification evidence belong under `execution`. Normal
 execution updates therefore do not change the approved contract hash.
+
+Use `plan inspect-missing`, `plan set`, `plan add-section`,
+`plan add-mechanism`, `plan add-subject` and `plan add-requirement` to author a
+compact contract without inspecting compiled internals. Stable IDs are
+generated when omitted. Validation reports missing executable structures; it
+does not blacklist aesthetic words.
+
+Final verification runs the configured production build and preview, then binds
+contract, source, package, lockfile, public assets, build output, route,
+viewport, DPR and browser observations. Changes invalidate incompatible
+verification, critic and certification records rather than permanently
+rejecting the project.
+
+Runtime verification establishes DOM/state changes, forms, navigation,
+requests, media decode, canvas/WebGL output change, mobile/reduced-motion and
+non-hero coverage. The critic decides semantic resemblance, coherence,
+authorship, narrative continuity and ambition quality. A technical pixel or
+transform difference is never itself a perceptual pass.
 
 Tiny maintenance exemption: `--tiny` is only for a narrow, non-creative repair
 that does not alter visual direction, treatment allocation, media strategy,
@@ -146,8 +171,9 @@ lifecycle risk.
 
 ## Runtime-grounded ambitious delivery
 
-Award, Experimental and explicit all-treatment work records typed
-`execution.runtimeObservations` for every important mechanism. Each observation
+For Award, Experimental and explicit all-treatment work, `dreative verify`
+generates typed `execution.runtimeObservations` for every important mechanism.
+Each observation
 names the implementation owner, source assets, mechanism family, input drivers,
 honest spatial classification, mobile/reduced-motion form, performance result,
 handoff architecture, recordings and controlled 0/25/50/75/100 samples.
@@ -164,7 +190,7 @@ on ordinary controls and a rigid textured plane.
 Capability and ambition prototypes are separate. Capability proves the API or
 mechanism works. Ambition proves final-quality media, one complete post-hero
 peak, a true asset transformation, a 10–20 second recording, desktop/mobile
-authorship and fresh independent criticism. Approval containing a concern is
+authorship and fresh context-isolated criticism. Approval containing a concern is
 `approved-with-required-revisions` until those revisions are recaptured.
 
 When video is allowed and Media plus Cinematic/Experimental is selected, the

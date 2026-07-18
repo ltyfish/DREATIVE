@@ -100,6 +100,7 @@ export interface VisualCriticReport {
   };
   initialVerdict: CriticVerdict;
   verdict: CriticVerdict;
+  scores?: Record<string, number>;
   strongestQualities: { location: string; quality: string; evidenceIds: string[] }[];
   findings: CriticFinding[];
   baselineRegressions: string[];

@@ -26,7 +26,7 @@
           "sectionId": { "type": "string", "minLength": 1 },
           "viewportClass": { "enum": ["desktop", "mobile", "narrow-mobile", "non-visual"] },
           "mobileChecks": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["no-horizontal-overflow", "no-clipped-content", "fixed-elements-clear-content", "safe-area-spacing", "primary-task-discoverable", "primary-action-reachable", "touch-targets", "software-keyboard-usable", "no-hover-only", "intentional-mobile-composition", "mobile-content-order", "motion-media-translated", "no-decorative-task-blocker"] } },
-          "status": { "enum": ["pass", "fail", "not-applicable"] },
+          "status": { "enum": ["pass", "fail", "blocked", "not-run", "not-applicable"] },
           "evidence": { "type": "string", "minLength": 1 },
           "timelineState": {
             "enum": ["initial", "early", "mid-transition", "final", "handoff", "pinned-midpoint", "pinned-exit", "reverse-interaction", "mobile", "reduced-motion"]

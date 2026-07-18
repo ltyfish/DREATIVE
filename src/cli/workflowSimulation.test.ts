@@ -84,8 +84,24 @@ test("focused simulated workflow covers intake, edit, approval, drift, broken me
     approvedFallback: "Intersection-controlled semantic rail states.", fallbackTrigger: "Trusted prototype shows scroll timeline failure.",
     requiredCaptureStates: ["start", "active", "resolved", "reverse", "mobile", "reduced-motion"],
     successCriteria: ["One rail transforms across chapters."], failureCriteria: ["Buttons or duplicated images replace the rail."],
+    sectionId: "work", subjectIds: ["gallery-rail-subject"], treatments: ["motion", "interaction", "media"],
+    runtimeOwner: "GalleryRail", trigger: "Scroll enters the work and finale chapters.",
+    actions: [{ action: "scroll", value: "600" }], selectors: ["#gallery-rail"],
+    assertions: [{ type: "mechanism-state", selector: "#gallery-rail", expected: "active", mechanismId: "gallery-rail" }],
+    expectedResults: ["GalleryRail reaches an active state before resolving."],
+    mobileTransformation: "Touch scroll preserves the rail as a vertical composition.",
+    reducedMotionTransformation: "Authored still rail frames replace interpolation.", fallbackId: "gallery-rail-fallback",
   }];
-  plan.contract.requirementTraceability = [{ id: "REQ-1", source: "user prompt", wording: "The experience develops beyond the hero and primary media loads.", plannedImplementation: "GalleryRail transforms across work and finale.", routeOrComponent: "home/GalleryRail", browserTest: "Scroll and reverse through the complete route.", evidenceId: "gallery-runtime", status: "planned" }];
+  plan.contract.subjectInventory = [{
+    id: "gallery-rail-subject", type: "primary-subject", recognizableAs: "the persistent product gallery rail",
+    narrativeRole: "Carries product media through opening, work and finale.", sectionIds: ["hero", "work", "finale"],
+    sourceMethod: "procedural", assetIds: ["gallery-media"], rightsRequirements: ["Commercial web rights."], recurring: true,
+    continuityPurpose: "Connects the three route chapters through one recognizable object.",
+    mobileRepresentation: "A compact vertical rail remains visible on touch screens.",
+    reducedMotionRepresentation: "Three authored still compositions retain the gallery narrative.", fallbackClassification: "static-image",
+  }];
+  plan.contract.requirementTraceability = [{ id: "REQ-1", source: "user prompt", wording: "The experience develops beyond the hero and primary media loads.", plannedImplementation: "GalleryRail transforms across work and finale.", routeOrComponent: "home/GalleryRail", browserTest: "Scroll and reverse through the complete route.", evidenceId: "gallery-runtime", status: "planned",
+    actions: [{ action: "scroll", value: "600" }], assertions: [{ type: "visible", selector: "#gallery-rail" }] }];
   plan.contract.packagePlan = { assets: ["Layered gallery images"], rightsAndSources: ["Commercial rights required"], placeholderRestrictions: ["No placeholder media"], derivatives: ["Mobile and desktop layers"], mobileAssetStrategy: "Compact mobile derivatives", mechanismPackages: ["native browser APIs"], installPermission: true, preflightResults: ["Dreative browser runner required"], prototypeProof: ["Prove scroll lifecycle"] };
   plan.contract.verificationPlan = { viewports: [{ name: "desktop", width: 1440, height: 900 }, { name: "mobile", width: 390, height: 844 }], interactions: [{ id: "scroll", route: "/", action: "scroll", mechanismId: "gallery-rail" }], mechanismStates: ["start", "active", "resolved", "reverse"], mobileTests: ["Rail remains"], reducedMotionTests: ["Still states"], accessibilityChecks: ["Keyboard and focus"], performanceChecks: ["Long tasks"], mediaNetworkChecks: ["Images and requests"], criticInputs: ["Desktop, mobile, trace"], finalizationBlockers: ["Missing functionality or rail states"] };
   plan.contract.videoDeliveryDecision = {

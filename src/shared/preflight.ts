@@ -92,6 +92,35 @@ export interface ProjectPreflight {
   animationTicker: string | null;
   assetCapabilities: string[];
   creativeCapabilities: CapabilityAssessment[];
+  codingHost: {
+    name: "codex" | "claude" | "unknown";
+    detectionSource: "explicit-override" | "environment" | "project-markers" | "none";
+    confidence: "high" | "medium" | "low";
+    expectedSkillTarget: "codex" | "claude" | null;
+  };
+  browserPreflight: {
+    status: "available" | "transactionally-installable" | "blocked" | "not-required";
+    executable: string | null;
+    productionPreviewCommand: string | null;
+    recordingExpected: boolean;
+    limitation: string | null;
+  };
+}
+
+export function detectCodingHost(projectDir: string, explicit = process.env.DREATIVE_HOST): ProjectPreflight["codingHost"] {
+  if (explicit === "codex" || explicit === "claude")
+    return { name: explicit, detectionSource: "explicit-override", confidence: "high", expectedSkillTarget: explicit };
+  if (process.env.CODEX_HOME || process.env.CODEX_THREAD_ID || process.env.CODEX_SANDBOX)
+    return { name: "codex", detectionSource: "environment", confidence: "high", expectedSkillTarget: "codex" };
+  if (process.env.CLAUDE_CODE || process.env.CLAUDE_PROJECT_DIR)
+    return { name: "claude", detectionSource: "environment", confidence: "high", expectedSkillTarget: "claude" };
+  const codex = fs.existsSync(path.join(projectDir, ".codex"));
+  const claude = fs.existsSync(path.join(projectDir, ".claude"));
+  if (codex !== claude) {
+    const name = codex ? "codex" : "claude";
+    return { name, detectionSource: "project-markers", confidence: "medium", expectedSkillTarget: name };
+  }
+  return { name: "unknown", detectionSource: "none", confidence: "low", expectedSkillTarget: null };
 }
 
 export interface RuntimeRequirement {
@@ -328,6 +357,13 @@ export function detectProjectPreflight(projectDir: string, options: { permission
     threeDPolicy: "not-allowed", packageInstallationAllowed: false, ...options.permissions,
   };
   const ffmpeg = commandAvailable("ffmpeg");
+  const browserExecutable = [
+    process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH, process.env.CHROME_PATH,
+    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+    "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
+    "/usr/bin/google-chrome", "/usr/bin/chromium", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  ].find((item) => Boolean(item && fs.existsSync(item!))) ?? null;
   const base = {
     capturedAt: new Date().toISOString(), framework: frameworkName ?? "unknown", frameworkVersion: deps[frameworkName ?? ""] ?? "unknown",
     packageManager: manager, lockfile: activeLockfile(projectDir), sourceLayout, installedCapabilities, scripts: pkg.scripts ?? {},
@@ -337,6 +373,14 @@ export function detectProjectPreflight(projectDir: string, options: { permission
     animationTicker: /gsap\.ticker/.test(source) ? "gsap" : /requestAnimationFrame/.test(source) ? "requestAnimationFrame" : null,
     assetCapabilities: [deps.sharp && "sharp", ffmpeg && "ffmpeg"].filter(Boolean) as string[],
     creativeCapabilities: resolveCreativeCapabilities(installedCapabilities, permissions, options.explicitCapabilities, { ffmpeg, unresolvedPermissions: options.permissionsUnresolved }),
+    codingHost: detectCodingHost(projectDir),
+    browserPreflight: {
+      status: (browserExecutable ? "available" : permissions.packageInstallationAllowed ? "transactionally-installable" : "blocked") as ProjectPreflight["browserPreflight"]["status"],
+      executable: browserExecutable,
+      productionPreviewCommand: pkg.scripts?.preview ? `${manager} run preview` : pkg.scripts?.start ? `${manager} run start` : null,
+      recordingExpected: true,
+      limitation: browserExecutable ? null : "No Chromium executable was detected for the integrity-linked runner.",
+    },
   };
   return { ...base, identity: capabilityPreflightIdentity(base) };
 }
