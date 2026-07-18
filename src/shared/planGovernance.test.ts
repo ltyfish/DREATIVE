@@ -4,7 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { approvePlan, approvalStatus, contractHash, createPlan, migrateLegacyPlan, readPlan, validateCanonicalPlan, writePlan, type CanonicalPlan } from "./planGovernance.js";
-import { runPlanCommand, unresolvedCreativeSourceQuestions } from "../cli/plan.js";
+import { renderExecutablePlanReview, runPlanCommand, unresolvedCreativeSourceQuestions } from "../cli/plan.js";
 import { detectProjectPreflight } from "./preflight.js";
 
 function root(): string {
@@ -57,6 +57,14 @@ function completePlan(dir: string): CanonicalPlan {
   plan.contract.motionAndMediaStrategy = "Structural media states hand off between chapters.";
   plan.contract.mobileTranslation = "The signature becomes a swipe-controlled compact instrument.";
   plan.contract.acceptanceCriteria = ["Observe start, midpoint, handoff and resolution."];
+  plan.contract.performanceBudget = ["Interaction long tasks stay at or below 50ms.", "Initial transferred media stays at or below 1500000 bytes."];
+  plan.contract.prototypeContracts = [{
+    id: "editorial-rail-prototype", riskFamily: "shared-element-handoff", mechanismId: "rail", required: true,
+    uncertainty: "The persistent rail must survive scroll, resize, mobile and reduced-motion state changes.",
+    acceptanceConditions: ["One owner reaches start, active and resolved states at desktop and mobile widths."],
+    maximumScope: "An isolated rail route containing one opening and one downstream handoff.",
+    failureImplications: "Revise the mechanism or request approval for the declared semantic-state fallback.",
+  }];
   plan.contract.projectDefinition = {
     purpose: "Present an authored editorial product journey.", targetAudience: "Prospective customers comparing the product.",
     primaryUserJourney: "Open the route, explore the editorial rail, then complete the final action.", routes: ["/"],
@@ -127,7 +135,10 @@ function completePlan(dir: string): CanonicalPlan {
     prototypeProof: ["Prove scroll lifecycle and reduced motion before integration."],
   };
   plan.contract.verificationPlan = {
-    viewports: [{ name: "desktop", width: 1440, height: 900 }, { name: "mobile", width: 390, height: 844 }],
+    viewports: [
+      { name: "narrow-mobile", width: 320, height: 720 }, { name: "mobile", width: 390, height: 844 },
+      { name: "tablet", width: 768, height: 1024 }, { name: "desktop", width: 1440, height: 900 },
+    ],
     interactions: [{ id: "rail-scroll", route: "/", action: "scroll", mechanismId: "rail" }],
     mechanismStates: ["start", "active", "resolved", "reverse"], mobileTests: ["Central rail remains present"],
     reducedMotionTests: ["Authored still states"], accessibilityChecks: ["Keyboard navigation and visible focus"],
@@ -146,6 +157,27 @@ function completePlan(dir: string): CanonicalPlan {
   }
   return plan;
 }
+
+test("executable review surfaces the implementation contracts instead of only a compact summary", () => {
+  const review = renderExecutablePlanReview(completePlan(root()));
+  for (const phrase of [
+    "Dreative Executable Plan Review",
+    "Project and executable requirements",
+    "Treatment decisions and allocations",
+    "Section contracts",
+    "Mechanism and fallback contracts",
+    "Package and prototype contracts",
+    "Subject, prop, asset and reference contracts",
+    "Verification and completion contract",
+    "Actions:",
+    "Assertions:",
+    "Verification and insufficiency boundary:",
+  ]) assert.match(review, new RegExp(phrase, "i"));
+});
+
+test("treatment guide is available before plan initialization", () => {
+  assert.equal(runPlanCommand(root(), ["treatments", "--routes", "/coffee"]), 0);
+});
 
 test("substantial plan init stops when Ambition is missing", () => {
   const dir = root();

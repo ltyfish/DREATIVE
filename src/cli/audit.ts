@@ -103,8 +103,10 @@ function checkCertificationTrust(projectDir: string, plan: CanonicalPlan, verifi
   if (strict) {
     if (!plan.approval.approvalMode || !plan.approval.approvalOrigin)
       findings.push(finding("error", "approval", "FAKE_HUMAN_APPROVAL: certification requires a recorded human or pre-authorized-dogfood origin"));
-    if (!plan.execution.planSummaryShownAt || (plan.approval.approvedAt && Date.parse(plan.execution.planSummaryShownAt) > Date.parse(plan.approval.approvedAt)))
-      findings.push(finding("error", "approval", "PLAN_SUMMARY_NOT_SHOWN: the concise plan summary must be shown before approval"));
+    if (!plan.execution.planSummaryShownAt
+      || plan.execution.planReviewContractHash !== approvalStatus(plan).currentHash
+      || (plan.approval.approvedAt && Date.parse(plan.execution.planSummaryShownAt) > Date.parse(plan.approval.approvedAt)))
+      findings.push(finding("error", "approval", "EXECUTABLE_PLAN_REVIEW_NOT_SHOWN: the complete executable plan review must be shown without blockers before approval"));
     if (plan.approval.approvalMode === "human" && plan.approval.approvalOrigin !== "interactive-user")
       findings.push(finding("error", "approval", "FAKE_HUMAN_APPROVAL: approvedBy text is not proof of user-originated approval"));
     if (plan.approval.approvalMode === "pre-authorized-dogfood" && plan.contract.workflow.purpose !== "dreative-dogfood")

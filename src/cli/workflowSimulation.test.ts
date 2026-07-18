@@ -103,7 +103,15 @@ test("focused simulated workflow covers intake, edit, approval, drift, broken me
   plan.contract.requirementTraceability = [{ id: "REQ-1", source: "user prompt", wording: "The experience develops beyond the hero and primary media loads.", plannedImplementation: "GalleryRail transforms across work and finale.", routeOrComponent: "home/GalleryRail", browserTest: "Scroll and reverse through the complete route.", evidenceId: "gallery-runtime", status: "planned",
     actions: [{ action: "scroll", value: "600" }], assertions: [{ type: "visible", selector: "#gallery-rail" }] }];
   plan.contract.packagePlan = { assets: ["Layered gallery images"], rightsAndSources: ["Commercial rights required"], placeholderRestrictions: ["No placeholder media"], derivatives: ["Mobile and desktop layers"], mobileAssetStrategy: "Compact mobile derivatives", mechanismPackages: ["native browser APIs"], installPermission: true, preflightResults: ["Dreative browser runner required"], prototypeProof: ["Prove scroll lifecycle"] };
-  plan.contract.verificationPlan = { viewports: [{ name: "desktop", width: 1440, height: 900 }, { name: "mobile", width: 390, height: 844 }], interactions: [{ id: "scroll", route: "/", action: "scroll", mechanismId: "gallery-rail" }], mechanismStates: ["start", "active", "resolved", "reverse"], mobileTests: ["Rail remains"], reducedMotionTests: ["Still states"], accessibilityChecks: ["Keyboard and focus"], performanceChecks: ["Long tasks"], mediaNetworkChecks: ["Images and requests"], criticInputs: ["Desktop, mobile, trace"], finalizationBlockers: ["Missing functionality or rail states"] };
+  plan.contract.performanceBudget = ["Interaction long tasks stay at or below 50ms.", "Initial transferred media stays at or below 1500000 bytes."];
+  plan.contract.prototypeContracts = [{
+    id: "gallery-rail-prototype", riskFamily: "shared-element-handoff", mechanismId: "gallery-rail", required: true,
+    uncertainty: "The persistent gallery rail must survive scroll, resize, mobile and reduced-motion states.",
+    acceptanceConditions: ["One rail owner reaches start, active and resolved states on desktop and mobile."],
+    maximumScope: "An isolated opening-to-work handoff.",
+    failureImplications: "Revise the rail or request approval for the declared fallback.",
+  }];
+  plan.contract.verificationPlan = { viewports: [{ name: "narrow-mobile", width: 320, height: 720 }, { name: "mobile", width: 390, height: 844 }, { name: "tablet", width: 768, height: 1024 }, { name: "desktop", width: 1440, height: 900 }], interactions: [{ id: "scroll", route: "/", action: "scroll", mechanismId: "gallery-rail" }], mechanismStates: ["start", "active", "resolved", "reverse"], mobileTests: ["Rail remains"], reducedMotionTests: ["Still states"], accessibilityChecks: ["Keyboard and focus"], performanceChecks: ["Long tasks"], mediaNetworkChecks: ["Images and requests"], criticInputs: ["Desktop, mobile, trace"], finalizationBlockers: ["Missing functionality or rail states"] };
   plan.contract.videoDeliveryDecision = {
     decision: "frame-sequence-or-prerendered-motion",
     reason: "A bounded image sequence supplies deterministic chapter timing without depending on original video generation.",

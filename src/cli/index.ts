@@ -14,7 +14,7 @@ import { runFinalize } from "./finalize.js";
 import { availableSkills, checkSkillInstallation, installSkill, installationDirectory, resolveSkillSelection } from "./installSkill.js";
 import { runPlanCommand } from "./plan.js";
 import { printDoctor, resumePlan, runDoctor } from "./doctor.js";
-import { renderTreatmentSummary } from "../shared/treatments.js";
+import { renderTreatmentDecisionGuide, renderTreatmentSummary } from "../shared/treatments.js";
 import { TREATMENTS } from "../shared/planGovernance.js";
 import { renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
 import { runTrustedVerification } from "./verify.js";
@@ -45,7 +45,7 @@ const USAGE = `usage: dreative [command]
   preflight        detect the current framework, package manager, scripts and capabilities
                    --mechanisms a,b   resolve mechanism-led package/install requirements
   catalogue        search the executable creative catalogue [--query phrase] [--json]
-  plan             init | validate | status | diff | summary | approve | prototype-decision |
+  plan             treatments | init | validate | status | diff | summary | approve | prototype-decision |
                    implementation-start | inspect-missing | set | add-section | add-mechanism |
                    add-subject | add-requirement | export-json | migrate
                    init source flags: --references | --no-references | --suggest-references
@@ -57,8 +57,10 @@ const USAGE = `usage: dreative [command]
                    --treatments a,b | all --confirm-all
                    --capabilities-file .dreative/capabilities.json
                    --capability id=state (repeatable)
+                   treatments --routes /,/other (show choices before init)
                    migrate --source-plan <path> | --run-id <id> (v8 -> v9 supported)
-  treatments       explain selected treatments [--all | --treatments a,b]
+  treatments       compare user-selectable treatments and clashes [--routes /]
+                   explain a chosen set with --all | --treatments a,b
   doctor           verify skill, schema, packages, browser, source and current plan
   resume           continue safely from the last valid phase checkpoint
   audit            validate current plan, runtime, evidence, critic, and policy artifacts
@@ -126,6 +128,12 @@ async function main(): Promise<void> {
     }
     case "treatments": {
       const index = args.indexOf("--treatments");
+      if (index < 0 && !args.includes("--all")) {
+        const routesIndex = args.indexOf("--routes");
+        const routes = routesIndex >= 0 ? (args[routesIndex + 1] ?? "").split(",").map((item) => item.trim()).filter(Boolean) : [];
+        console.log(renderTreatmentDecisionGuide(routes));
+        return;
+      }
       const selected = args.includes("--all") ? [...TREATMENTS] : index >= 0 ? (args[index + 1] ?? "").split(",").map((item) => item.trim()).filter(Boolean) as typeof TREATMENTS : [...TREATMENTS];
       console.log(renderTreatmentSummary(selected, args.includes("--all")));
       return;

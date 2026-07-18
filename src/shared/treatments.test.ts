@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { renderCompleteTreatmentReview, renderProposedTreatmentAllocation, renderTreatmentSummary } from "./treatments.js";
+import { renderCompleteTreatmentReview, renderProposedTreatmentAllocation, renderTreatmentDecisionGuide, renderTreatmentSummary } from "./treatments.js";
 
 test("treatment intake discloses substance, insufficiency, dependencies, tension, risk, role and acceptance", () => {
   const text = renderTreatmentSummary(["motion", "interaction", "media", "3d", "immersive", "cinematic", "experimental"], true);
@@ -20,5 +20,13 @@ test("complete review discloses every treatment and resolves ownership overlaps"
   for (const name of ["UX", "MOBILE", "REFINED", "MOTION", "INTERACTION", "MEDIA", "3D", "IMMERSIVE", "CINEMATIC", "EXPERIMENTAL"])
     assert.match(text, new RegExp(`${name} \\[SELECTED\\]`));
   for (const phrase of ["Meaning:", "Substantive delivery:", "Does not count:", "Proposed page/section allocation:", "Dependencies:", "Tensions/conflicts:", "Observable acceptance:", "Immersive owns full-route continuity", "Motion owns the single normalized scroll/timeline clock"])
+    assert.match(text, new RegExp(phrase, "i"));
+});
+
+test("decision guide gives the user explicit treatment control and compatibility tradeoffs", () => {
+  const text = renderTreatmentDecisionGuide(["/coffee"]);
+  for (const name of ["UX", "MOBILE", "REFINED", "MOTION", "INTERACTION", "MEDIA", "3D", "IMMERSIVE", "CINEMATIC", "EXPERIMENTAL"])
+    assert.match(text, new RegExp(name));
+  for (const phrase of ["recommendations are not selections", "mandatory foundations", "select | decline | unsure", "What it changes:", "Works well with:", "Tensions/clashes to resolve:", "Required reply grammar:", "cannot create the contract"])
     assert.match(text, new RegExp(phrase, "i"));
 });

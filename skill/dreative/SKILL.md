@@ -17,19 +17,24 @@ Use this workflow for substantial interactive design and redesign.
    facts already provided or reliably detected. Explicitly resolve references,
    generated images/video, externally sourced images/video, supplied assets,
    missing assets, and 3D props/assets.
-4. Present the complete Creative Approval Brief defined in `PLAN.md`. It is a
-   user-facing planning artifact, not an internal note: include one
+4. Present the complete Creative Decision Brief defined in `PLAN.md`. It is a
+   user-facing decision artifact, not an implementation approval: include one
    inspection-grounded recommended direction, all four workflow choices, all
-   ten treatments, concrete section allocation, capability/source decisions,
-   risks and one copyable reply line. Do not replace it with a short question,
-   a treatment list or a generic "what style do you want?" prompt. Explain
-   candidate treatments using `references/SKILL_CONTRACT.md`. User selection is
-   authoritative. Regex routing is suggestion-only.
+   ten treatments, what each treatment changes, what it works with and clashes
+   with, capability/source decisions, risks and one copyable decision line.
+   Recommendations are non-binding. Wait until the user explicitly selects or
+   declines every optional treatment. Do not replace this with a short
+   question, a preselected treatment list or a generic "what style do you
+   want?" prompt. Explain candidate treatments using
+   `references/SKILL_CONTRACT.md`. User selection is authoritative. Regex
+   routing is suggestion-only.
 5. Write the single editable contract to `.dreative/plan.yaml` v9. It must
    include project definition, creative direction, per-section state contracts,
    a source-owned continuity contract, treatment and mechanism obligations,
    requirement traceability, asset/package strategy and the verification plan.
-   Run `dreative plan summary`; do not make the user review raw YAML.
+   Validate it, then run `dreative plan summary` to display the complete
+   Executable Plan Review defined in `PLAN.md`; do not make the user review raw
+   YAML. A creative brief or compact summary cannot substitute for this review.
 6. Record approval with host-neutral provenance and an explicit assurance
    level. TTY plus a CLI flag records only `user-origin-unverified`; it is not
    human attestation. Prompt preauthorization must predate planning and may use
@@ -106,11 +111,12 @@ performance/accessibility risk, proposed sections, role and acceptance
 condition. Selecting all requires one confirmation, one continuity owner and
 concrete allocation; no selected treatment may be silently pruned.
 
-The first approval request is complete only when it visibly contains every
-Creative Approval Brief block from `PLAN.md`. "Concise" applies after the
-complete brief and after contract authoring; it never permits hiding workflow
-alternatives, declined treatments, source permissions, section allocation or
-the proposed experience arc.
+The creative decision request is complete only when it visibly contains every
+Creative Decision Brief block from `PLAN.md`. The later implementation approval
+request is complete only when it visibly contains every Executable Plan Review
+block. "Concise" never permits hiding workflow alternatives, treatment choices,
+section/mechanism contracts, source permissions, assets, packages, prototypes,
+fallbacks, route decisions or measurable verification obligations.
 
 Run creative capability preflight before promising media, video or 3D.
 Permission, package installation, runtime rendering, sourcing and authoring are

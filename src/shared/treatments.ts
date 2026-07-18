@@ -26,10 +26,48 @@ export const TREATMENT_DEFINITIONS: TreatmentDefinition[] = [
   { name: "experimental", explanation: "Adds two or three purposeful unconventional behaviours while preserving clarity and usability.", dependencies: ["motion", "interaction", "media", "ux", "mobile"], cost: "high", risk: "Raises creative variance, implementation uncertainty and usability risk.", tensions: ["Experimental treatments must be limited to selected peaks.", "Refined and Experimental are compatible, but refinement must discipline experimental peaks."], substantive: ["Two or three selected provocations have real implementation bindings."], insufficient: ["Shipping every explored idea or using novelty labels without behavior."], defaultRole: "primary", acceptanceExample: "Two or three non-obvious peaks have bindings and controlled state evidence." },
 ];
 
+const TREATMENT_COMPATIBILITY: Record<SpecialistSkill, { worksWith: SpecialistSkill[]; clashes: string[] }> = {
+  ux: { worksWith: ["mobile", "refined", "interaction"], clashes: ["Immersive or cinematic pacing must not delay primary task access.", "Novel interaction must preserve truthful controls and routes."] },
+  mobile: { worksWith: ["ux", "refined", "interaction"], clashes: ["Dense motion, media and 3D compete for battery, decode and viewport space.", "Pointer-only mechanisms require touch and keyboard translations."] },
+  refined: { worksWith: ["ux", "mobile", "media"], clashes: ["Information density can reduce readability.", "Over-restraint can erase selected motion or experimental peaks."] },
+  motion: { worksWith: ["interaction", "media", "immersive", "cinematic"], clashes: ["Multiple tickers, smooth-scroll engines or scroll owners conflict.", "Motion density competes with mobile battery and reduced-motion needs."] },
+  interaction: { worksWith: ["ux", "mobile", "motion", "media"], clashes: ["Pointer effects require touch and keyboard equivalence.", "Novel controls can obscure familiar product actions."] },
+  media: { worksWith: ["refined", "motion", "cinematic", "immersive"], clashes: ["High visual quality competes with transfer, decode and crop budgets.", "Media plus 3D and cinematic sequences can overload mobile."] },
+  "3d": { worksWith: ["interaction", "media", "immersive"], clashes: ["3D plus large media or cinematic sequencing has high GPU, battery and loading cost.", "A spatial stage must not become an isolated viewer or block content."] },
+  immersive: { worksWith: ["motion", "interaction", "media"], clashes: ["Persistent continuity can slow direct product/task access.", "Immersive and Cinematic need one declared primary continuity owner."] },
+  cinematic: { worksWith: ["motion", "media", "immersive"], clashes: ["Authored pacing can conflict with user-controlled navigation speed.", "Cinematic and Immersive need one declared primary continuity owner."] },
+  experimental: { worksWith: ["refined", "motion", "interaction", "media"], clashes: ["Novelty competes with UX clarity and predictability.", "Generated consistency can make subjects/products insufficiently differentiated."] },
+};
+
 export function treatment(name: SpecialistSkill): TreatmentDefinition {
   const found = TREATMENT_DEFINITIONS.find((item) => item.name === name);
   if (!found) throw new Error(`unknown treatment ${name}`);
   return found;
+}
+
+export function renderTreatmentDecisionGuide(routes: string[] = []): string {
+  const route = routes.length ? routes.join(", ") : "target route (must be resolved)";
+  return [
+    "Dreative treatment decision guide — recommendations are not selections:",
+    "UX and Mobile are mandatory foundations. Choose select, decline or unsure for every other treatment.",
+    ...TREATMENT_DEFINITIONS.map((item) => {
+      const compatibility = TREATMENT_COMPATIBILITY[item.name];
+      const choice = item.name === "ux" || item.name === "mobile" ? "FOUNDATION — acknowledge" : "USER CHOICE — select | decline | unsure";
+      return [
+        `${item.name.toUpperCase()} [${choice}]`,
+        `  What it changes: ${item.explanation}`,
+        `  Project location to decide: ${route}.`,
+        `  Substantive threshold: ${item.substantive.join(" ")}`,
+        `  Works well with: ${compatibility.worksWith.join(", ") || "any treatment when scoped deliberately"}.`,
+        `  Tensions/clashes to resolve: ${compatibility.clashes.join(" ")}`,
+        `  Dependencies: ${item.dependencies.join(", ") || "none"}. Cost: ${item.cost}. Risk: ${item.risk}`,
+        `  Insufficient: ${item.insufficient.join(" ")}`,
+      ].join("\n");
+    }),
+    "Required reply grammar:",
+    "select: refined,motion; decline: interaction,media,3d,immersive,cinematic,experimental; unsure: none",
+    "Dreative must explain every `unsure` tradeoff and cannot create the contract until each optional treatment is selected or declined.",
+  ].join("\n");
 }
 
 export function renderTreatmentSummary(selected: SpecialistSkill[], explicitAll = false): string {
@@ -90,6 +128,7 @@ export function renderCompleteTreatmentReview(selected: SpecialistSkill[], route
       `  Proposed page/section allocation: ${location(item.name)}.`,
       `  Proposed role: ${item.defaultRole}; route role: ${routeRole(item)}.`,
       `  Dependencies: ${item.dependencies.join(", ") || "none"}.`,
+      `  Works well with: ${TREATMENT_COMPATIBILITY[item.name].worksWith.join(", ") || "any deliberately scoped treatment"}.`,
       `  Tensions/conflicts: ${item.tensions.join(" ") || "Shared implementation and accessibility budgets still apply."}`,
       `  Cost: ${item.cost}. Mobile/performance/accessibility risk: ${item.risk}`,
       `  Observable acceptance: ${item.acceptanceExample}`,
@@ -100,5 +139,8 @@ export function renderCompleteTreatmentReview(selected: SpecialistSkill[], route
     "  Refined disciplines hierarchy and finish without pruning Experimental peaks. Experimental selects two or three unconventional behaviours rather than making every section noisy.",
     "  Mobile and reduced motion must translate each defining state and interaction; disabling or deleting the concept does not count.",
     "  Interaction must change media, layout, viewpoint, navigation structure, or meaningful application state; ordinary tabs, buttons, cards, and hover styling do not count.",
+    "Decision authority:",
+    "  UX and Mobile are mandatory foundations. Every other treatment remains a user choice; a recommendation, inferred keyword or proposed allocation is not a selection.",
+    "  The user may select any combination. Dreative must resolve the listed tensions or recommend a decline, but cannot silently decide on the user's behalf.",
   ].join("\n");
 }

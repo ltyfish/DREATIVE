@@ -44,12 +44,13 @@ Purpose:
 
 Do not ask again for values already supplied.
 
-## Mandatory Creative Approval Brief
+## Gate 1: Mandatory Creative Decision Brief
 
-Before any contract is written, present one self-contained Creative Approval
-Brief in the conversation. This is the planning deliverable the user approves;
-do not scatter it across several messages and do not make the user inspect raw
-YAML to understand the proposal.
+Before any contract is written, present one self-contained Creative Decision
+Brief in the conversation. This gate collects the user's decisions; it is not
+authorization to implement and it is not the final executable plan. Do not
+scatter it across several messages and do not make the user inspect raw YAML to
+understand the proposal.
 
 The brief must use this order and contain every block:
 
@@ -63,12 +64,16 @@ The brief must use this order and contain every block:
    Purpose alternatives. Mark exactly one recommendation in each group and
    briefly explain any recommendation that is not the normal Expressive, Lean,
    Auto, Project Delivery baseline. Recommendations are not selections.
-4. **Complete treatment review.** Show UX, Mobile, Refined, Motion,
+4. **Complete treatment decision guide.** Show UX, Mobile, Refined, Motion,
    Interaction, Media, 3D, Immersive, Cinematic and Experimental in one
-   scannable table or equally explicit structure. Every row must state:
-   proposed select/decline/foundation status; substantive delivery threshold;
-   concrete project sections; dependencies or ownership tension; cost and
-   mobile/performance/accessibility risk; and what would be insufficient.
+   scannable selectable table or equally explicit structure. For every
+   treatment state what it changes in plain language, a project-specific
+   example, substantive delivery threshold, dependencies, treatments it
+   combines well with, tensions or clashes that must be resolved, cost,
+   mobile/performance/accessibility risk and what would be insufficient.
+   Clearly mark UX and Mobile as mandatory foundations and every other
+   treatment as a user choice with `select`, `decline` or `unsure`. A
+   recommendation is never recorded as the user's selection.
 5. **Experience allocation.** Name every major section in route order, assign
    Peak, Transformation, Preparation, Echo, Rest, Resolution or Functional
    Utility, allocate primary/supporting treatments and name the continuity
@@ -82,22 +87,114 @@ The brief must use this order and contain every block:
 7. **Delivery risks and fallbacks.** Name the important mechanism risks,
    performance/mobile/reduced-motion implications and any proposed fallback.
    A fallback is a proposal requiring approval, not a silent downgrade.
-8. **One-line approval reply.** End with one copyable line containing workflow,
-   selected treatments, direction, package permission, each image/video source
-   policy, 3D policy and reference-reuse decision. Tell the user they may edit
-   any phrase.
+8. **One-line decision reply.** End with one copyable line containing workflow,
+   `select` and `decline` treatment lists, direction, package permission, each
+   image/video source policy, 3D policy and reference-reuse decision. Tell the
+   user they may edit any phrase. If any treatment is `unsure`, explain the
+   exact tradeoff and ask for its decision before contract creation.
 
-The first approval request is invalid if it only asks questions, only lists
+The decision request is invalid if it only asks questions, only lists
 workflow controls, only describes selected treatments, omits declined
 treatments, uses generic section names without allocation, or says "details are
-in `.dreative/plan.yaml`". A compact answer is acceptable only after the full
-brief has been shown in the same approval cycle.
+in `.dreative/plan.yaml`". It is also invalid if the proposed selections are
+silently treated as user choices. Do not create the contract until UX and
+Mobile are acknowledged as foundations and every optional treatment is
+explicitly selected or declined by the user.
 
 The complete ten-treatment review must include proposed section allocation,
 ownership overlaps and tensions, plus a creative capability preflight.
 Unresolved permissions are reported as unresolved rather than denied. The same
 intake explicitly asks for package-installation permission; permission and
 detected capability are never collapsed into one state.
+
+Use a visible tension matrix after the treatment guide. At minimum resolve:
+
+- Immersive continuity versus fast task/product access.
+- Cinematic pacing versus user-controlled navigation speed.
+- Smooth scrolling versus native scrolling, accessibility and one scroll owner.
+- Motion/Interaction pointer behaviour versus touch and keyboard equivalence.
+- Motion/Media/3D density versus mobile battery, decode and transfer budgets.
+- Media quality versus loading performance.
+- Refined information density versus readability.
+- Generated asset consistency versus subject/product differentiation.
+- Experimental novelty versus UX clarity.
+
+Treatments are not automatically incompatible. A "clash" means the plan must
+name an owner, budget or adaptation that resolves the tension. If it cannot,
+recommend declining one and leave the final choice to the user.
+
+## Gate 2: Mandatory Executable Plan Review
+
+After the user makes the Gate 1 decisions, author and validate the complete
+`.dreative/plan.yaml`, then display a self-contained Executable Plan Review in
+the conversation before requesting implementation approval. Never ask the user
+to approve merely the creative direction, treatment table or a compact summary.
+
+The review must include every block below with concrete, project-specific
+content:
+
+1. **Project and requirement contract.** Routes, audience, primary journey,
+   preserved functionality/design equity, non-goals, every extracted
+   requirement, its planned implementation, executable browser actions and
+   assertions, and its evidence ID. Contradictory requirements or known broken
+   routes must have a decision: create, relink, clearly disable/remove, or
+   remain an explicit user-content blocker.
+2. **Creative and experience contract.** Approved direction, visual,
+   composition, typography, media and motion language; ordered experience arc;
+   peaks, transformations, rests and resolution; continuity owner; and a
+   justified hero-removed test based on contracted post-hero mechanisms.
+3. **Treatment decision and allocation contract.** All ten explicit user
+   decisions, reasons for declines, locations and mechanism IDs for selections,
+   mobile/reduced-motion obligations, failure criteria and every resolved
+   cross-treatment tension. Do not silently add, prune or downgrade a treatment.
+4. **Section contracts.** One row or subsection per major section containing
+   required content/functionality, visual composition, named mechanism, entry/
+   active/resolved states, user action, handoff, desktop behaviour, authored
+   mobile behaviour, reduced-motion behaviour, loading/failure fallback,
+   verification evidence and explicit insufficiency criteria. A list such as
+   "Hero — Refined, Media, Motion" is not a section contract.
+5. **Mechanism and fallback contracts.** For every important mechanism show
+   input driver, runtime owner, dependency, source subjects/assets, start/
+   active/end/reverse/rapid-input/refresh states, selectors and assertions,
+   performance expectation, primary acceptance, approved fallback, objective
+   fallback trigger, trigger evidence and whether reapproval is required.
+6. **Package contract.** Show the exact proposed package shortlist and purpose
+   before approval. Install only packages required by approved mechanisms. Name
+   the single scroll/ticker owner; treat Lenis as optional; do not include
+   Three.js/R3F unless selected spatial work requires it; distinguish authoring,
+   processing, runtime and verification packages.
+7. **Prototype contract.** Name each uncertainty, mechanism, required/optional
+   status, exact probe scope, acceptance conditions, limitations and failure
+   consequence. `Auto` may skip a probe only when an equivalent mechanism
+   already exists in the current source and has current browser evidence.
+   Prior failure or an unverified defining mechanism requires a prototype; do
+   not let the builder self-declare that nothing is uncertain.
+8. **Subject, prop and asset contracts.** List required subjects, props,
+   environments and materials; permitted people/hands and fictional or real
+   branding; composition/background treatment; aspect ratios, crop-safe zones,
+   formats, desktop/mobile/reduced-motion variants, size budgets, source method,
+   rights/provenance, reuse policy, loading fallback and required locations.
+9. **Reference contract.** Record every reference actually supplied in the
+   current run or inherited with explicit user permission. For each, state what
+   may be adapted, what must not be copied, which design/mechanism decision it
+   informs, licence/source-code boundary and whether reuse is permitted. Never
+   say "none supplied" without checking current prompt, attachments and valid
+   run context.
+10. **Verification and completion contract.** Exact desktop, tablet and mobile
+    viewports including 320px and 390px for authored public pages; mouse,
+    keyboard and touch flows; reduced-motion states; no-overflow checks;
+    build/lint/type/console/network/media checks; treatment-specific capture or
+    recording evidence; performance and transfer/image budgets; provenance
+    checks; failure conditions and finalization blockers. Every threshold must
+    be measurable or browser-observable.
+11. **Unresolved decisions and blockers.** List none or enumerate each missing
+    user/content/capability decision. Validation errors must be shown here.
+    Dreative may not request approval while this block is non-empty.
+
+End with an explicit statement that approval authorizes this contract revision,
+not the earlier creative brief. Any material change to mechanisms, treatments,
+packages, assets, routes, fallbacks or thresholds requires a change request and
+reapproval.
 
 Resolve repository root, preview URL or command, routes and scope, required
 workflows, preserved content/brand, supplied and missing assets, installation

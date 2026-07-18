@@ -435,6 +435,7 @@ export interface PlanApproval {
 export interface PlanExecution {
   firstMaterialSourceChangeAt?: string | null;
   planSummaryShownAt?: string | null;
+  planReviewContractHash?: string | null;
   currentPhase: string;
   phases: { id: string; status: "pending" | "in-progress" | "completed" | "failed"; completedAt?: string; error?: string }[];
   checkpoints: {
@@ -873,8 +874,26 @@ function validateCertificationPlan(contract: PlanContract): string[] {
   if (!verification || !verification.viewports?.length || !verification.interactions?.length || !verification.accessibilityChecks?.length
     || !verification.mediaNetworkChecks?.length || !verification.criticInputs?.length || !verification.finalizationBlockers?.length)
     errors.push("PLAN_MISSING_VERIFICATION_BINDING: verificationPlan must bind exact viewports, interactions, accessibility, media/network, critic and blockers");
-  if (!contract.packagePlan || !contract.packagePlan.preflightResults.length || !contract.packagePlan.placeholderRestrictions.length)
-    errors.push("PLAN_MISSING_ASSET_PACKAGE_PLAN: asset/package plan must record preflight and placeholder restrictions");
+  const widths = new Set(verification?.viewports?.map((item) => item.width) ?? []);
+  if (![320, 390].every((width) => widths.has(width))
+    || !(verification?.viewports ?? []).some((item) => item.width >= 768 && item.width < 1200)
+    || !(verification?.viewports ?? []).some((item) => item.width >= 1200))
+    errors.push("PLAN_MISSING_RESPONSIVE_THRESHOLDS: verification must include authored 320px, 390px, tablet and desktop viewports");
+  if (!contract.performanceBudget?.length || !contract.performanceBudget.some((item) => /\d/.test(item)))
+    errors.push("PLAN_MISSING_PERFORMANCE_BUDGET: define measurable frame-time, transfer, image-weight or interaction budgets");
+  if (!contract.packagePlan || !contract.packagePlan.assets.length || !contract.packagePlan.rightsAndSources.length
+    || !contract.packagePlan.derivatives.length || !plannedText(contract.packagePlan.mobileAssetStrategy)
+    || !contract.packagePlan.mechanismPackages.length || !contract.packagePlan.preflightResults.length
+    || !contract.packagePlan.placeholderRestrictions.length || !contract.packagePlan.prototypeProof.length)
+    errors.push("PLAN_MISSING_ASSET_PACKAGE_PLAN: asset/package plan must list exact mechanism packages, sources/rights, derivatives, mobile strategy, preflight, prototype proof and placeholder restrictions");
+  if (contract.workflow.prototype === "required" && !contract.prototypeContracts.some((item) => item.required))
+    errors.push("PLAN_MISSING_REQUIRED_PROTOTYPE: Required workflow needs a named mandatory prototype contract");
+  for (const prototype of contract.prototypeContracts) {
+    if (!concrete(prototype.id) || !concrete(prototype.riskFamily) || !concrete(prototype.mechanismId)
+      || !plannedText(prototype.uncertainty) || !prototype.acceptanceConditions.length
+      || !plannedText(prototype.maximumScope) || !plannedText(prototype.failureImplications))
+      errors.push(`PLAN_MISSING_PROTOTYPE_CONTRACT: ${prototype.id || "unknown"} must define uncertainty, bounded probe, acceptance and failure consequence`);
+  }
   return errors;
 }
 

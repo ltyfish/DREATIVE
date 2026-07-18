@@ -22,7 +22,7 @@ import {
   type PlanTarget,
 } from "../shared/planGovernance.js";
 import type { SpecialistSkill } from "../shared/skillSystem.js";
-import { renderCompleteTreatmentReview } from "../shared/treatments.js";
+import { renderCompleteTreatmentReview, renderTreatmentDecisionGuide } from "../shared/treatments.js";
 import type { WorkflowConfiguration } from "../shared/workflow.js";
 import { CAPABILITY_IDS, CAPABILITY_STATES, detectProjectPreflight, parseCapabilitiesFile, renderCreativeCapabilityPreflight, type CapabilityInput, type CreativeCapabilityId, type CapabilityStatus } from "../shared/preflight.js";
 import { parse } from "yaml";
@@ -302,10 +302,109 @@ export function renderPlanSummary(plan: CanonicalPlan): string {
   ].join("\n");
 }
 
+export function renderExecutablePlanReview(plan: CanonicalPlan): string {
+  const c = plan.contract;
+  const bullets = (items: string[] | undefined, empty = "(missing)") => items?.length ? items.map((item) => `- ${item}`) : [`- ${empty}`];
+  return [
+    "# Dreative Executable Plan Review",
+    "Approval applies to this complete contract revision, not the earlier creative decision brief.",
+    "",
+    "## Project and executable requirements",
+    renderPlanSummary(plan),
+    `Purpose: ${c.projectDefinition?.purpose || "(missing)"}`,
+    `Audience: ${c.projectDefinition?.targetAudience || "(missing)"}`,
+    `Routes: ${c.projectDefinition?.routes.join(", ") || "(missing)"}`,
+    "Required functionality:", ...bullets(c.projectDefinition?.requiredFunctionality),
+    "Preservation:", ...bullets(c.projectDefinition?.preservedContentOrFunctionality),
+    ...(c.requirementTraceability?.flatMap((item) => [
+      `- ${item.id}: ${item.wording}`,
+      `  Build: ${item.plannedImplementation}`,
+      `  Test: ${item.browserTest}`,
+      `  Actions: ${item.actions?.map((action) => `${action.action}${action.selector ? ` ${action.selector}` : ""}`).join(" -> ") || "(missing)"}`,
+      `  Assertions: ${item.assertions?.map((assertion) => `${assertion.type}${assertion.selector ? ` ${assertion.selector}` : ""}`).join(", ") || "(missing)"}`,
+      `  Evidence: ${item.evidenceId}`,
+    ]) ?? ["- (missing requirement traceability)"]),
+    "",
+    "## Treatment decisions and allocations",
+    ...c.treatmentDecisions.flatMap((decision) => [
+      `- ${decision.treatment}: ${decision.state}; explicitly decided=${decision.explicitlyDecided}; ${decision.reason || "(missing reason)"}`,
+      ...c.treatmentAllocation.filter((item) => item.treatment === decision.treatment)
+        .map((item) => `  Locations=${item.locations.join(", ")}; mechanisms=${item.mechanismIds?.join(", ") || "(missing)"}; mobile=${item.mobileObligation || "(missing)"}; reduced motion=${item.reducedMotionObligation || "(missing)"}; failure=${item.failureCriteria?.join("; ") || "(missing)"}`),
+    ]),
+    "",
+    "## Section contracts",
+    ...(c.sectionContracts?.flatMap((section) => [
+      `### ${section.route} — ${section.id}`,
+      `Purpose/action: ${section.narrativePurpose}; ${section.mainUserAction}`,
+      `Composition/media/mechanism: ${section.visualRole}; ${section.mediaRole}; ${section.interactionRole}`,
+      `States: entry=${section.entryState}; active=${section.activeState}; resolved=${section.resolvedState}`,
+      `Handoff: ${section.handoff}`,
+      `Mobile: ${section.mobileBehavior}`,
+      `Reduced motion: ${section.reducedMotionBehavior}`,
+      `Fallback: ${section.fallbackBehavior}`,
+      `Verification and insufficiency boundary: ${section.verificationRequirement}`,
+    ]) ?? ["- (missing)"]),
+    "",
+    "## Mechanism and fallback contracts",
+    ...(c.mechanismContracts?.flatMap((mechanism) => [
+      `### ${mechanism.id} — ${mechanism.routeOrSection}`,
+      `Treatments/subjects: ${mechanism.treatments?.join(", ") || "(missing)"}; ${mechanism.subjectIds?.join(", ") || "(missing)"}`,
+      `Driver/owner/dependency: ${mechanism.inputDriver}; ${mechanism.runtimeOwner || "(missing)"}; ${mechanism.dependency}`,
+      `States: ${mechanism.startState} -> ${mechanism.activeState} -> ${mechanism.endState}; reverse=${mechanism.reverseBehavior}`,
+      `Rapid input/refresh: ${mechanism.rapidInputBehavior}; ${mechanism.refreshAtProgressBehavior}`,
+      `Mobile/reduced motion: ${mechanism.mobileTransformation || mechanism.mobileBehavior}; ${mechanism.reducedMotionTransformation || mechanism.reducedMotionBehavior}`,
+      `Success: ${mechanism.successCriteria.join("; ")}`,
+      `Failure: ${mechanism.failureCriteria.join("; ")}`,
+      `Fallback: ${mechanism.approvedFallback}; trigger=${mechanism.fallbackTrigger}; performance=${mechanism.performanceExpectation}`,
+    ]) ?? ["- (missing)"]),
+    ...(c.mechanismFallbacks.length ? c.mechanismFallbacks.map((item) => `- Fallback ${item.id}: ${item.primaryImplementation} -> ${item.fallbackImplementation}; trigger=${item.fallbackTrigger}; evidence=${item.triggerEvidenceRequired.join(", ")}; reapproval=${item.userReapprovalRequired}`) : ["- No separate fallback contracts"]),
+    "",
+    "## Package and prototype contracts",
+    `Package installation allowed: ${c.packagePlan?.installPermission ?? "(missing)"}`,
+    "Exact mechanism packages:", ...bullets(c.packagePlan?.mechanismPackages),
+    "Preflight:", ...bullets(c.packagePlan?.preflightResults),
+    "Install rule: only packages required by approved mechanisms; one scroll/ticker owner.",
+    ...(c.prototypeContracts.length ? c.prototypeContracts.flatMap((item) => [
+      `- Prototype ${item.id}: required=${item.required}; mechanism=${item.mechanismId}; risk=${item.riskFamily}`,
+      `  Uncertainty/scope: ${item.uncertainty}; ${item.maximumScope}`,
+      `  Acceptance: ${item.acceptanceConditions.join("; ")}`,
+      `  Failure consequence: ${item.failureImplications}`,
+    ]) : ["- Prototypes: none"]),
+    "",
+    "## Subject, prop, asset and reference contracts",
+    ...(c.subjectInventory?.map((item) => `- ${item.id} [${item.type}]: ${item.recognizableAs}; role=${item.narrativeRole}; sections=${item.sectionIds.join(", ")}; source=${item.sourceMethod}; assets=${item.assetIds.join(", ") || "none"}; mobile=${item.mobileRepresentation}; reduced motion=${item.reducedMotionRepresentation}; fallback=${item.fallbackClassification}; rights=${item.rightsRequirements.join("; ")}`) ?? ["- (missing subject inventory)"]),
+    ...(c.assetStrategy.length ? c.assetStrategy.map((item) => `- Asset ${item.id}: ${item.requiredSubjectAndComposition}; role=${item.intendedRole}; source=${item.priority}/${item.sourcingPolicy}; formats=${item.expectedFormatsAndVariants.join(", ")}; locations=${item.requiredLocations.join(", ")}; reuse=${item.reusePolicy}; budget=${item.sizeBudgetBytes ?? "not set"} bytes; rights=${item.rightsRequirements.join("; ")}`) : ["- (missing asset strategy)"]),
+    `References: ${c.creativeSources.references.preference}; URLs=${c.creativeSources.references.urls.join(", ") || "none"}; adoption/licence notes=${c.creativeSources.references.notes.join("; ") || "none"}; anti-references=${c.creativeSources.references.antiReferences.join("; ") || "none"}`,
+    `Source policies: generated images=${c.creativeSources.generatedImages}; sourced images=${c.creativeSources.sourcedImages}; generated video=${c.creativeSources.generatedVideo}; sourced video=${c.creativeSources.sourcedVideo}; 3D=${c.creativeSources.threeDAssets}`,
+    `Missing/needed assets: ${c.creativeSources.missingOrNeededAssets.join(", ") || "none"}`,
+    "",
+    "## Verification and completion contract",
+    `Viewports: ${c.verificationPlan?.viewports.map((item) => `${item.name}=${item.width}x${item.height}`).join(", ") || "(missing)"}`,
+    ...(c.verificationPlan?.interactions.map((item) => `- Interaction ${item.id}: ${item.action} on ${item.route}${item.selector ? ` ${item.selector}` : ""}${item.mechanismId ? `; mechanism=${item.mechanismId}` : ""}`) ?? ["- (missing interactions)"]),
+    "Mechanism states:", ...bullets(c.verificationPlan?.mechanismStates),
+    "Mobile tests:", ...bullets(c.verificationPlan?.mobileTests),
+    "Reduced-motion tests:", ...bullets(c.verificationPlan?.reducedMotionTests),
+    "Accessibility:", ...bullets(c.verificationPlan?.accessibilityChecks),
+    "Performance/budgets:", ...bullets([...(c.performanceBudget ?? []), ...(c.verificationPlan?.performanceChecks ?? [])]),
+    "Media/network/provenance:", ...bullets(c.verificationPlan?.mediaNetworkChecks),
+    "Finalization blockers:", ...bullets(c.verificationPlan?.finalizationBlockers),
+  ].join("\n");
+}
+
 function showSummary(projectDir: string): number {
   const plan = readPlan(projectDir);
-  console.log(renderPlanSummary(plan));
+  console.log(renderExecutablePlanReview(plan));
+  const errors = validateCanonicalPlan(plan);
+  if (errors.length) {
+    console.error("\n## Unresolved decisions and blockers");
+    errors.forEach((item) => console.error(`- ${item}`));
+    console.error("Executable plan review is incomplete. Resolve every blocker, validate, and show the review again before approval.");
+    return 1;
+  }
+  console.log("\n## Unresolved decisions and blockers\n- none");
+  console.log("\nApproval authorizes this exact contract revision. Material changes require a change request and reapproval.");
   plan.execution.planSummaryShownAt = new Date().toISOString();
+  plan.execution.planReviewContractHash = approvalStatus(plan).currentHash;
   plan.execution.lastUpdatedAt = plan.execution.planSummaryShownAt;
   writePlan(projectDir, plan);
   appendWorkflowEvent(projectDir, { type: "plan-summary-displayed", data: { contractHash: approvalStatus(plan).currentHash } });
@@ -441,6 +540,10 @@ function findRunPlans(root: string): string[] {
 export function runPlanCommand(projectDir: string, args: string[]): number {
   const subcommand = args[0] ?? "status";
   switch (subcommand) {
+    case "treatments": {
+      console.log(renderTreatmentDecisionGuide(values(value(args, "--routes"))));
+      return 0;
+    }
     case "init": return init(projectDir, args.slice(1));
     case "validate": return validate(projectDir);
     case "status": return status(projectDir);
@@ -456,7 +559,10 @@ export function runPlanCommand(projectDir: string, args: string[]): number {
     case "implementation-start": return markImplementationStart(projectDir);
     case "approve": {
       const mode = (value(args, "--mode") ?? "human") as "human" | "pre-authorized-dogfood";
-      if (!readPlan(projectDir).execution.planSummaryShownAt) throw new Error("PLAN_SUMMARY_NOT_SHOWN: run `dreative plan summary` before approval");
+      const reviewPlan = readPlan(projectDir);
+      const currentReviewHash = approvalStatus(reviewPlan).currentHash;
+      if (!reviewPlan.execution.planSummaryShownAt || reviewPlan.execution.planReviewContractHash !== currentReviewHash)
+        throw new Error("EXECUTABLE_PLAN_REVIEW_NOT_SHOWN: run `dreative plan summary` for the current contract revision and resolve every displayed blocker before approval");
       if (mode === "human" && (!process.stdin.isTTY || !args.includes("--confirm-human-approval")))
         throw new Error("USER_ORIGIN_NOT_RECORDED: show `dreative plan summary`, then record the user-origin event interactively; TTY and the flag do not create attestation");
       const sourceType = (value(args, "--source-type") ?? "cli") as ProvenanceSourceType;
@@ -491,6 +597,6 @@ export function runPlanCommand(projectDir: string, args: string[]): number {
       return 0;
     }
     case "migrate": return migrate(projectDir, args.slice(1));
-    default: throw new Error("usage: dreative plan init|validate|inspect-missing|status|diff|summary|set|add-section|add-mechanism|add-subject|add-requirement|approve|prototype-decision|implementation-start|export-json|migrate");
+    default: throw new Error("usage: dreative plan treatments|init|validate|inspect-missing|status|diff|summary|set|add-section|add-mechanism|add-subject|add-requirement|approve|prototype-decision|implementation-start|export-json|migrate");
   }
 }

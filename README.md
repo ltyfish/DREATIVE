@@ -34,6 +34,7 @@ updates do not invalidate approval; material contract edits do.
 
 ```sh
 dreative install-skill --codex --skills all
+dreative treatments --routes /
 dreative plan init --ambition award --execution lean --prototype auto \
   --purpose project-delivery --preview-url http://localhost:4173 \
   --routes / --treatments motion,interaction,media \
@@ -56,7 +57,7 @@ dreative plan prototype-decision --id highest-risk --decision approved-for-integ
 dreative plan implementation-start
 dreative plan export-json
 dreative plan migrate --from .dreative/plan.json
-dreative treatments --all
+dreative treatments --treatments motion,interaction,media
 dreative doctor --codex
 dreative resume
 dreative verify --browser-command "npm run preview"
@@ -65,6 +66,11 @@ dreative critic-run --provider-class project-local-advisory \
 dreative audit
 dreative finalize --codex
 ```
+
+`dreative treatments` is the pre-plan decision guide. It explains what every
+treatment changes, what it works well with, its tensions/clashes, cost, risk and
+insufficient delivery. UX and Mobile are foundations; every other treatment is
+explicitly selected or declined by the user before `plan init`.
 
 `plan init` auto-detects repository details, package manager, framework, scripts
 and lockfile. It stops when material target or scope information is unresolved.
@@ -78,6 +84,12 @@ allowed sourcing or generation policy for 3D props.
 Selecting every treatment shows a cost, tension and performance summary and
 requires one confirmation. Every selected treatment must receive a perceptible
 contribution and implementation binding; none may be silently pruned.
+
+`plan summary` displays the complete executable review—requirements, treatment
+decisions, section and mechanism contracts, packages, prototypes, assets,
+references, fallbacks and measurable verification. It returns non-zero and
+does not unlock approval while canonical validation reports a blocker. The
+review hash must match the exact contract revision being approved.
 
 Award, Experimental, explicit all-treatment work, and Full Audit Dogfood require
 a real-application concept checkpoint after any mechanism prototype. Audit then

@@ -164,6 +164,7 @@
         "capabilityActions": { "type": "array", "items": { "$ref": "#/$defs/capabilityAction" } },
         "firstMaterialSourceChangeAt": { "type": ["string", "null"], "format": "date-time" },
         "planSummaryShownAt": { "type": ["string", "null"], "format": "date-time" },
+        "planReviewContractHash": { "type": ["string", "null"] },
         "prototypeGate": { "type": "object" },
         "evidenceState": { "type": "object" }
       }
