@@ -9,3 +9,10 @@ help explain a visual issue; they are not a substitute for judgment.
 `dreative finalize` certifies only deterministic local facts: build, available
 tests/typecheck/lint, and internal skill-document consistency. It intentionally
 does not claim that a model-authored attestation proves visual quality.
+
+Review depth is separate:
+
+- Fast checks the primary desktop/mobile flow once.
+- Lean adds full-page interaction and correction review.
+- Full Audit adds narrow mobile, reduced motion, performance, routes,
+  console/network, and a final regression pass.

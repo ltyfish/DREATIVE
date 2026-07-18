@@ -1,9 +1,19 @@
 # Changelog
 
+## 1.0.1
+
+- Defined Recommended, Efficient, and Showcase as adaptive directions;
+  Showcase owns the absolute highest/all-treatment ceiling.
+- Added a compact post-direction configuration for review depth, references,
+  sources, packages, and prototype policy.
+- Added a direction-adaptive detailed Creative Decision Brief.
+- Restored Fast, Lean, and Full Audit as practical review depths without
+  approval, attestation, critic, or provenance bureaucracy.
+
 ## 1.0.0
 
 - Replaced the multi-gate planning contract with three concise public
-  approaches: Recommended, Efficient, and Showcase.
+  approaches.
 - Made the optional editor explicit-only and removed automatic browser opening.
 - Recentered the skill on full-page desktop/mobile browser refinement and
   visible product quality.

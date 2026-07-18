@@ -23,9 +23,13 @@ server.
    obvious defects.
 2. Read `PLAN.md`. If the user already chose an approach or clearly asked the
    agent to use its judgment, select the matching approach and proceed. For an
-   open-ended redesign, show the three concise approaches and wait for one
-   choice. Do not expose internal treatment matrices, audit modes, source
-   policies, schemas, or prototype controls.
+   open-ended redesign, show three project-specific directions—Recommended,
+   Efficient, and Showcase—and wait for one choice. After selection, show the
+   compact configuration choices from `PLAN.md`: review depth, references,
+   sources, packages, and prototype policy, each with recommendations adapted
+   to the selected direction. If the user asks for `show detailed plan`, expand
+   that direction into the project-specific Creative Decision Brief in
+   `PLAN.md`.
 3. State the selected concept in a compact implementation note: one named
    direction, why it fits, the main visual idea, and the most important
    preserved behavior. This is the only approval boundary.
@@ -39,17 +43,28 @@ server.
 6. Critique the rendered product, correct visible failures, and repeat a
    focused browser pass. Stop adding mechanisms once the concept is complete.
 7. Run the production build plus available type, test, and lint scripts. For
-   Expressive, Award, Experimental, Full Audit, or Dogfood work, run
-   `dreative finalize --codex`; completion requires `DREATIVE_FINALIZED`.
+   any substantial redesign, run `dreative finalize --codex`; completion
+   requires `DREATIVE_FINALIZED`.
 
 ## Planning behavior
 
-- The public plan contains exactly three approaches: Recommended, Efficient,
-  and Showcase.
-- Recommend one based on the inspected product. Recommended is the default,
-  not a euphemism for maximum complexity.
-- Offer `show detailed plan` for users who want section, asset, motion,
-  package, and verification detail.
+- The direction step contains exactly Recommended, Efficient, and Showcase.
+- Recommended is whatever direction the agent judges best for the inspected
+  project. Its default configuration is Lean, Prototype=Auto, best-fit sources,
+  relevant references, and focused package installation.
+- Efficient is the most token- and implementation-efficient direction. Its
+  defaults are Fast, Prototype=Skip, supplied references/existing assets, and
+  the existing stack.
+- Showcase is the absolute highest creative and technical ceiling. It uses all
+  ten treatments and defaults to Full Audit, Prototype=Required, strong
+  supplied/scouted references, maximum useful sourced/generated media, and
+  package installation. Integrate every treatment into one hierarchy rather
+  than stacking unrelated effects.
+- The compact configuration step always lets the user override Fast/Lean/Full
+  Audit, reference strategy, sources, packages, and prototype policy.
+- `show detailed plan` produces a complete, adaptive Creative Decision Brief
+  for the selected direction. It shows the agent's decisions rather than a
+  generic questionnaire. The user may edit the final decision reply.
 - Ask only about a missing decision that would materially change the product.
   Detect everything else from the repository.
 - Do not require `.dreative/plan.yaml`, treatment-by-treatment approval,
@@ -75,9 +90,10 @@ concept. Use Three.js/OGL only when spatial behavior materially improves
 meaning or product understanding. Vanta-like atmosphere is a principle, not a
 reason to add a generic shader background.
 
-Recommended work usually has one signature mechanism. Showcase work may have
-two complementary signatures. Never stack GSAP, Lenis, WebGL, telemetry, and
-custom interaction merely to signal ambition.
+Recommended work usually has one signature mechanism. Showcase work integrates
+the required treatments through a small number of complementary signatures.
+Never stack GSAP, Lenis, WebGL, telemetry, and custom interaction merely to
+signal ambition.
 
 ### Full-page quality
 

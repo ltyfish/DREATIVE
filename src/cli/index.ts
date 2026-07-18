@@ -18,7 +18,7 @@ import { TREATMENTS } from "../shared/planGovernance.js";
 import { renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
 import { runTrustedVerification } from "./verify.js";
 import { runTrustedCritic } from "./criticRun.js";
-import { renderDeliveryBrief, type DeliveryProfileId } from "../shared/deliveryProfiles.js";
+import { renderConfigurationChoices, renderDeliveryBrief, renderDetailedPlanGuide, type DeliveryProfileId } from "../shared/deliveryProfiles.js";
 
 const port = Number(process.env.DREATIVE_PORT || 4820);
 const base = `http://localhost:${port}`;
@@ -40,6 +40,8 @@ function hostTarget(): "codex" | "claude" {
 const USAGE = `usage: dreative [command]
   brief            show the three concise delivery approaches (default)
                    --recommend efficient|recommended|showcase
+                   --configure efficient|recommended|showcase
+                   --detailed efficient|recommended|showcase
   start-editor     explicitly serve the optional visual editor; never opens a browser
   install-skill    exact-sync the packaged skill and write a hashed manifest
                    --list | --skills all|a,b | --codex | --check
@@ -115,6 +117,22 @@ async function main(): Promise<void> {
   if (args.includes("--help") || args.includes("-h")) { console.log(USAGE); return; }
   switch (cmd) {
     case "brief": {
+      const configureIndex = args.indexOf("--configure");
+      if (configureIndex >= 0) {
+        const selected = (args[configureIndex + 1] ?? "") as DeliveryProfileId;
+        if (!["efficient", "recommended", "showcase"].includes(selected))
+          throw new Error(`invalid --configure: ${selected}`);
+        console.log(renderConfigurationChoices(selected));
+        return;
+      }
+      const detailedIndex = args.indexOf("--detailed");
+      if (detailedIndex >= 0) {
+        const selected = (args[detailedIndex + 1] ?? "recommended") as DeliveryProfileId;
+        if (!["efficient", "recommended", "showcase"].includes(selected))
+          throw new Error(`invalid --detailed: ${selected}`);
+        console.log(renderDetailedPlanGuide(selected));
+        return;
+      }
       const index = args.indexOf("--recommend");
       const recommendation = (index >= 0 ? args[index + 1] : "recommended") as DeliveryProfileId;
       if (!["efficient", "recommended", "showcase"].includes(recommendation))

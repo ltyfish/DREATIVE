@@ -5,14 +5,14 @@
 Dreative 1.0 separates product quality from unverifiable local ceremony.
 
 The default CLI command is `brief`; it prints Recommended, Efficient, and
-Showcase. The optional editor is available only through `start-editor` and
-never opens a browser. The installed skill explicitly forbids visiting the
-editor during frontend work.
+Showcase. `brief --configure <direction>` prints compact review, reference,
+source, package, and prototype choices. `brief --detailed <direction>` prints
+the adaptive Creative Decision Brief structure. The optional editor is
+available only through `start-editor` and never opens a browser.
 
-The agent performs one concise planning decision, builds in the real
-application, then inspects the entire desktop and mobile route. Visual judgment
-is grounded in the rendered result: hierarchy, collisions, overflow, dead
-space, downstream quality, interaction, text integrity, and mobile composition.
+The agent performs a direction choice and compact configuration, then builds in
+the real application and inspects the entire desktop and mobile route. Detailed
+planning is opt-in.
 
 `dreative finalize` runs deterministic project scripts and documentation
 checks. It does not require plan hashes, approval provenance, critic

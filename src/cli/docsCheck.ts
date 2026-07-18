@@ -75,7 +75,11 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   for (const choice of ["Recommended", "Efficient", "Showcase"])
     requireText(findings, "PLAN.md", plan, new RegExp(`\\b${choice}\\b`, "i"), `missing concise ${choice} approach`);
   requireText(findings, "PLAN.md", plan, /show detailed plan/i, "must offer detail on request");
-  requireText(findings, "PLAN.md", plan, /one approval|single decision|choose one/i, "must use one concise user decision");
+  requireText(findings, "PLAN.md", plan, /second approval/i, "must avoid a second approval gate");
+  for (const choice of ["References", "Treatments", "Sourced images", "Generated images", "Packages", "Prototype", "Review depth", "Fast", "Lean", "Full Audit"])
+    requireText(findings, "PLAN.md", plan, new RegExp(`\\b${choice}\\b`, "i"), `detailed planning is missing ${choice}`);
+  requireText(findings, "PLAN.md", plan, /all ten/i, "Showcase must explicitly select all ten treatments");
+  requireText(findings, "PLAN.md", plan, /token-.+efficient|least tokens/i, "Efficient must optimize token use");
 
   const publicContract = `${skill}\n${plan}`;
   for (const obsolete of [
@@ -84,7 +88,6 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
     "Dreative Dogfood",
     "host-attested",
     "externally-attested",
-    "all ten treatments",
   ]) {
     if (publicContract.includes(obsolete))
       findings.push({ check: "obsolete-ceremony", file: publicContract.indexOf(obsolete) < skill.length ? "SKILL.md" : "PLAN.md", message: `public workflow still exposes ${obsolete}` });

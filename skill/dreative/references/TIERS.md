@@ -3,9 +3,10 @@
 The public choices are Recommended, Efficient, and Showcase.
 
 - Efficient maps to a focused professional redesign using the existing stack.
-- Recommended maps to expressive product craft with one signature mechanism.
-- Showcase maps to the highest justified ambition with at most two
-  complementary signature mechanisms.
+- Recommended maps to agent-selected expressive product craft, Prototype=Auto,
+  and Review=Lean.
+- Showcase maps to all ten treatments at their highest useful level,
+  Prototype=Required, and Review=Full Audit.
 
 Legacy ambition words may still appear in user prompts:
 

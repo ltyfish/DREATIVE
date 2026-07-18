@@ -33,3 +33,17 @@ test("docs-check rejects missing responsive and full-page quality requirements",
   const report = runDocsCheck(skillDir);
   assert.ok(report.findings.some((finding) => finding.check === "delivery-contract"));
 });
+
+test("docs-check rejects a detailed plan that hides source or execution controls", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-docs-detail-"));
+  const skillDir = path.join(root, "dreative");
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.cpSync(path.resolve("skill", "dreative"), skillDir, { recursive: true });
+  const file = path.join(skillDir, "PLAN.md");
+  const content = fs.readFileSync(file, "utf8")
+    .replaceAll("Sourced images", "External pictures")
+    .replaceAll("Full Audit", "Deep check");
+  fs.writeFileSync(file, content);
+  const report = runDocsCheck(skillDir);
+  assert.ok(report.findings.some((finding) => finding.check === "delivery-contract"));
+});
