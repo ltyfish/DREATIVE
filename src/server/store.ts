@@ -13,14 +13,14 @@ export class Store {
     if (!fs.existsSync(readme)) {
       fs.writeFileSync(
         readme,
-        "# Dreative run artifacts — NOT the skill\n\n" +
-          "Everything in this folder (plan.yaml, critic.json, verify.json,\n" +
-          "project.json, optional audit artifacts, and evidence) is OUTPUT of a Dreative design run,\n" +
-          "not instructions. The actual skill lives at\n" +
+        "# Optional Dreative editor files - NOT the skill\n\n" +
+          "This folder contains the optional editor's working files: project state,\n" +
+          "references, generated previews, a baseline, and the final layout diff.\n" +
+          "They are not instructions or proof that frontend work is complete.\n" +
+          "The actual skill lives at\n" +
           "`<agent-dir>/skills/dreative/SKILL.md` (look in `.claude/`, `.codex/`, or\n" +
-          "`.agents/`). For any new design request: read that SKILL.md and run its\n" +
-          "protocol from the start — these artifacts are the previous run's history,\n" +
-          "never proof the new request is already done.\n"
+          "`.agents/`). For a new design request, read that SKILL.md and follow its\n" +
+          "workflow from the start.\n"
       );
     }
   }

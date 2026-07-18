@@ -11,7 +11,6 @@ export type SpecialistSkill =
   | "experimental";
 
 export type AmbitionTier = "standard" | "expressive" | "award" | "experimental";
-export type LegacyAmbitionTier = "solid" | "premium";
 
 export interface SkillDefinition {
   name: SpecialistSkill;
@@ -31,7 +30,7 @@ export interface SkillRoutingRequest {
   selected: SpecialistSkill[];
   /** Explicit user assignments. These always win over automatic placement. */
   assignments?: Record<string, SpecialistSkill[]>;
-  /** True enables legacy suggestion placement. Canonical v9 allocation is explicit and concept-led. */
+  /** True places selected-but-unassigned treatments using project evidence. */
   autoRouteUnassigned?: boolean;
 }
 

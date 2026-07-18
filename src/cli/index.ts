@@ -4,20 +4,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import readline from "node:readline";
 import { createServer } from "../server/index.js";
-import { configurationFromArgs } from "../shared/workflow.js";
 import { detectCodingHost, detectProjectPreflight, resolveRuntimeRequirements } from "../shared/preflight.js";
-import { printAudit, runDirectDesignAudit } from "./audit.js";
-import { renderCriticPrompt } from "./critic.js";
 import { printDocsCheck, runDocsCheck } from "./docsCheck.js";
 import { runFinalize } from "./finalize.js";
 import { availableSkills, checkSkillInstallation, installSkill, installationDirectory, resolveSkillSelection } from "./installSkill.js";
-import { runPlanCommand } from "./plan.js";
-import { printDoctor, resumePlan, runDoctor } from "./doctor.js";
-import { renderTreatmentDecisionGuide, renderTreatmentSummary } from "../shared/treatments.js";
-import { TREATMENTS } from "../shared/planGovernance.js";
 import { renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
-import { runTrustedVerification } from "./verify.js";
-import { runTrustedCritic } from "./criticRun.js";
 import { renderConfigurationChoices, renderDeliveryBrief, renderDetailedPlanGuide, type DeliveryProfileId } from "../shared/deliveryProfiles.js";
 
 const port = Number(process.env.DREATIVE_PORT || 4820);
@@ -45,7 +36,6 @@ const USAGE = `usage: dreative [command]
   start-editor     explicitly serve the optional visual editor; never opens a browser
   install-skill    exact-sync the packaged skill and write a hashed manifest
                    --list | --skills all|a,b | --codex | --check
-  config           resolve independent workflow controls
   preflight        detect the current framework, package manager, scripts and capabilities
                    --mechanisms a,b   resolve mechanism-led package/install requirements
   catalogue        search the executable creative catalogue [--query phrase] [--json]
@@ -123,57 +113,6 @@ async function main(): Promise<void> {
       return;
     }
     case "install-skill": await installCommand(); return;
-    case "plan": {
-      const exitCode = runPlanCommand(process.cwd(), args.slice(1));
-      if (exitCode) process.exitCode = exitCode;
-      return;
-    }
-    case "treatments": {
-      const index = args.indexOf("--treatments");
-      if (index < 0 && !args.includes("--all")) {
-        const routesIndex = args.indexOf("--routes");
-        const routes = routesIndex >= 0 ? (args[routesIndex + 1] ?? "").split(",").map((item) => item.trim()).filter(Boolean) : [];
-        console.log(renderTreatmentDecisionGuide(routes));
-        return;
-      }
-      const selected = args.includes("--all") ? [...TREATMENTS] : index >= 0 ? (args[index + 1] ?? "").split(",").map((item) => item.trim()).filter(Boolean) as typeof TREATMENTS : [...TREATMENTS];
-      console.log(renderTreatmentSummary(selected, args.includes("--all")));
-      return;
-    }
-    case "doctor": {
-      const report = runDoctor(process.cwd(), { target: hostTarget(), sourceDir: packagedSkillDir, packageVersion });
-      printDoctor(report);
-      if (!report.ok) process.exitCode = 1;
-      return;
-    }
-    case "resume": console.log(resumePlan(process.cwd())); return;
-    case "audit": {
-      const report = runDirectDesignAudit(process.cwd());
-      printAudit(report, args.includes("--json"));
-      if (!report.ok) process.exitCode = 1;
-      return;
-    }
-    case "verify": {
-      const option = (flag: string) => { const index = args.indexOf(flag); return index >= 0 ? args[index + 1] : undefined; };
-      const result = await runTrustedVerification(process.cwd(), {
-        browserCommand: option("--browser-command"), url: option("--url"), browserExecutable: option("--browser-executable"),
-        prototypeId: option("--prototype-id"), prototypeLocation: option("--prototype-location"), packageVersion,
-      });
-      console.log(`Integrity-linked verification completed: ${result.runId}`);
-      console.log(result.manifestPath);
-      return;
-    }
-    case "critic-run": {
-      const commandIndex = args.indexOf("--command");
-      const inputIndex = args.indexOf("--input");
-      const option = (flag: string) => { const index = args.indexOf(flag); return index >= 0 ? args[index + 1] : undefined; };
-      const result = runTrustedCritic(process.cwd(), commandIndex >= 0 ? args[commandIndex + 1] ?? "" : "", inputIndex >= 0 ? args[inputIndex + 1] : undefined, {
-        providerClass: option("--provider-class") as any, providerId: option("--provider-id"), assuranceLevel: option("--assurance") as any,
-      });
-      console.log(`Critic evidence run completed: ${result.runId}`);
-      console.log(result.manifestPath);
-      return;
-    }
     case "finalize": {
       const result = runFinalize(process.cwd(), { target: hostTarget(), sourceDir: packagedSkillDir, packageVersion });
       for (const item of result.commands) console.log(`${item.exitCode === 0 ? "PASS" : "FAIL"} ${item.command}`);
@@ -184,12 +123,6 @@ async function main(): Promise<void> {
         return;
       }
       console.log("DREATIVE_FINALIZED");
-      return;
-    }
-    case "config": {
-      const resolution = configurationFromArgs(args.slice(1));
-      resolution.deprecations.forEach((notice) => console.error(`deprecated: ${notice}`));
-      console.log(JSON.stringify(resolution.configuration, null, 2));
       return;
     }
     case "preflight": {
@@ -206,7 +139,6 @@ async function main(): Promise<void> {
       else console.log(renderAgentCatalogue(query || undefined));
       return;
     }
-    case "critic-prompt": console.log(renderCriticPrompt(process.cwd(), args[1] || ".dreative/critic.json")); return;
     case "docs-check": {
       const report = runDocsCheck(packagedSkillDir); printDocsCheck(report, args.includes("--json"));
       if (!report.ok) process.exitCode = 1; return;

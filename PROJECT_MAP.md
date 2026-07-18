@@ -21,8 +21,8 @@
 - `skill/dreative/llms.txt` and `src/shared/creativeCatalog.ts` — searchable
   creative catalogue.
 
-## Compatibility surface
+## Removed compatibility surface
 
-The v9 plan, evidence, audit, critic, and migration modules remain for projects
-already using them. They are not shown in normal CLI help and are not copied
-into the installed active skill.
+The unused v9 plan, evidence, approval, audit, critic, verification, and
+migration implementation was removed. See `LEGACY_SYSTEM_REMOVAL.md` for the
+scope, rationale, retained safeguards, and findings from prior testing.

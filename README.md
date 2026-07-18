@@ -11,8 +11,8 @@ real application, and corrects the complete rendered experience.
 1. Direction: Recommended, Efficient, or Showcase.
 2. Compact configuration: Fast/Lean/Full Audit, references, sources, packages,
    and prototype policy.
-3. Optional detail: a full project-specific Creative Decision Brief adapted to
-   the selected direction.
+3. Private implementation blueprint: always created and used after the choices
+   are resolved; the full Creative Decision Brief is shown only on request.
 
 Recommended is the direction the agent judges best for the inspected product.
 Efficient is the most token- and implementation-efficient direction. Showcase
@@ -61,10 +61,6 @@ Success prints `DREATIVE_FINALIZED`.
 - `dreative finalize --codex` — deterministic delivery gate.
 - `dreative start-editor` — explicitly start the optional editor without
   opening a browser.
-
-Legacy plan, audit, treatment, verify, and critic commands remain callable for
-migration compatibility but are hidden from normal help and excluded from the
-installed active skill.
 
 ## Design philosophy
 

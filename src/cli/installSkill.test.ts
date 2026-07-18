@@ -41,15 +41,15 @@ test("modified installed specialist fails installation check", () => {
   assert.ok(checkSkillInstallation({ sourceDir, projectDir: root, packageVersion: version, target: "claude" }).some((item) => item.includes("modified installed")));
 });
 
-test("older installed canonical skill is detected", () => {
+test("older installer schema is detected", () => {
   const root = temporary(); const selected = availableSkills(sourceDir);
   installSkill({ sourceDir, projectDir: root, packageVersion: version, target: "codex", selected, explicitAll: true });
   const manifestFile = path.join(installationDirectory(root, "codex"), ".dreative-install.json");
   const manifest = JSON.parse(fs.readFileSync(manifestFile, "utf8"));
-  manifest.canonicalPlanVersion = 8;
+  manifest.schemaVersion = 1;
   fs.writeFileSync(manifestFile, JSON.stringify(manifest, null, 2));
   const errors = checkSkillInstallation({ sourceDir, projectDir: root, packageVersion: version, target: "codex" });
-  assert.ok(errors.some((item) => item.includes("canonical plan v8")));
+  assert.ok(errors.some((item) => item.includes("installer schema must be 2")));
 });
 
 test("reinstall removes obsolete unselected specialist files", () => {
@@ -77,11 +77,14 @@ test("Codex target installs exact files and one safe AGENTS pointer", () => {
   assert.match(pointer, /command success only, not visual quality/i);
 });
 
-test("active installation excludes legacy doctrine, schemas, and assurance resources", () => {
+test("active installation contains only routed skill resources", () => {
   const root = temporary(); const selected = availableSkills(sourceDir);
   const manifest = installSkill({ sourceDir, projectDir: root, packageVersion: version, target: "codex", selected, explicitAll: true });
-  for (const legacy of ["DESIGN.md", "references/RULES.json", "references/TIERS.md", "schemas/plan.schema.json"])
-    assert.equal(Object.hasOwn(manifest.files, legacy), false, legacy);
+  assert.equal(Object.keys(manifest.files).some((file) => file.startsWith("schemas/")), false);
+  assert.deepEqual(
+    Object.keys(manifest.files).filter((file) => file.startsWith("references/")).sort(),
+    ["references/CREATIVE_DIRECTION.md", "references/CREATIVE_EXECUTION.md", "references/SKILL_CONTRACT.md"],
+  );
   for (const active of ["SKILL.md", "PLAN.md", "references/CREATIVE_DIRECTION.md", "references/CREATIVE_EXECUTION.md", "agents/openai.yaml"])
     assert.equal(Object.hasOwn(manifest.files, active), true, active);
 });

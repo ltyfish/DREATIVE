@@ -1,7 +1,9 @@
 # Planning protocol
 
-Planning has three user-facing stages: direction, compact configuration, and an
-optional detailed Creative Decision Brief. Keep private exploration private.
+Planning has two required user-facing stages—direction and compact
+configuration—plus an optional reveal of the detailed Creative Decision Brief.
+The reveal is optional; creating and using the complete private brief is not.
+Keep private exploration private.
 
 ## Stage 1: direction
 
@@ -28,6 +30,9 @@ Show exactly:
 Each option must name its premise, composition, material/type voice, meaningful
 media or interaction, and product fit. Do not mention reference brands as the
 concept. Do not offer three versions of the same editorial landing page.
+Each must be the strongest honest design for its stated constraint: Efficient
+is not deliberately weak, Recommended is not a diluted Showcase, and Showcase
+must genuinely reach the highest coherent creative and technical ceiling.
 
 End with:
 
@@ -95,10 +100,32 @@ capabilities are necessary for the selected experience.
 
 Defaults: Efficient=Skip, Recommended=Auto, Showcase=Required.
 
-## Stage 3: detailed Creative Decision Brief
+## Stage 3: private Creative Decision Brief and optional reveal
 
-Only show this after `show detailed plan`. Adapt every decision to the inspected
-project and selected direction.
+After direction and configuration are resolved, always complete this entire
+project-specific brief privately before implementation. It is the working
+blueprint for section allocation, treatments, assets, signature mechanisms,
+continuity, mobile transformation, runtime ownership, fallbacks, and review.
+Keep it current when repository inspection or prototyping changes a decision.
+
+Do not require the user to read or approve it. By default, show only the short
+build brief required by `SKILL.md`. If the user says `show detailed plan`,
+reveal the current full brief. Do not create a plan file, approval record, or
+other compliance artifact merely to prove that the private brief exists.
+
+Adapt every decision below to the inspected project and selected direction.
+The user's explicit choices and corrections are the source of truth. Use tier
+defaults and agent judgment only where the user left a decision open. Do not
+reinterpret a tier label to reduce its promised scope, and do not change taste,
+intensity, treatments, or page allocation merely because implementation is
+harder than expected.
+
+Ask one focused question before implementation when two plausible readings of
+the user's intent would materially change a page or section, or when uncertain
+whether a major section should carry an unusually intense, spatial, cinematic,
+or experimental treatment. Ask again before any later material deviation from
+the brief unless the user delegated that choice. Do not interrupt for routine
+craft decisions the selected direction already resolves.
 
 ### 1. Product truth
 
@@ -129,7 +156,11 @@ Packages, and actual detected capabilities. Mark recommendations.
 For all ten treatments, state the project-specific use, selected/declined
 decision, cost, risk, and insufficient version. Then map the selected treatments
 to route sections, including a meaningful post-hero peak and the continuity
-owner. UX and Mobile always apply. Showcase selects all ten.
+owner. User-selected treatment names or counts override tier defaults. UX and
+Mobile always apply. Showcase selects all ten unless the user explicitly
+overrides it. Selection is a delivery promise, not checkbox coverage: every
+selected treatment needs a named owner and perceptible contribution, although
+one coherent mechanism may serve several treatments.
 
 ### 6. Build architecture
 
@@ -143,5 +174,12 @@ List observable review passes, material risks, and fallbacks that preserve the
 concept. End with one editable decision line containing direction, review,
 prototype, treatments, references, sources, packages, and missing-content
 choices.
+
+Before completion, reconcile the rendered product against this current brief.
+Check every promised route, section role, treatment owner, signature mechanism,
+mobile transformation, preserved behavior, fallback, and chosen review pass.
+Do not call the work complete while an item is absent, imperceptible, replaced
+by a weaker substitute, or unverified. Continue correcting it or report the
+specific blocker and remaining scope.
 
 After the reply, implement. Do not generate a second approval or contract gate.

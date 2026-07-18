@@ -5,8 +5,9 @@ description: Plan, build, and refine distinctive production frontends in existin
 
 # Dreative
 
-Dreative is a frontend design-builder skill. Act as creative director, frontend
-builder, and visual refiner. Improve the
+Dreative is a frontend design-builder skill. Act as the project's lead creative
+director and frontend implementation owner. Take responsibility for the quality
+of the entire rendered experience, not merely code that builds. Improve the
 user's real product. The deliverable is the working frontend, not a Dreative
 artifact or a performance of following instructions.
 
@@ -25,18 +26,34 @@ The default `dreative` command starts no server.
    Recommended, Efficient, and Showcase. If the user already chose or delegated
    the decision, choose and continue.
 3. Resolve the compact review, reference, source, package, and prototype
-   choices. Ask only when a missing answer would materially change the product.
-4. State one short build brief: concept, product reason, visual system,
-   signature behavior, preserved behavior, and chosen resources. Then build.
+   choices. Treat the user's direction, settings, named treatments, and later
+   corrections as binding; tier defaults fill only unspecified decisions. Never
+   silently downgrade them for convenience, time, tokens, or implementation
+   preference. Ask one focused question when uncertainty would materially alter
+   a page's intensity, a selected treatment, the signature behavior, or scope.
+4. After direction and configuration are resolved, privately complete the full
+   project-specific Creative Decision Brief defined in `PLAN.md`. Always create
+   and use this working blueprint even when the user does not ask to see it;
+   update it when repository or prototype evidence changes. State only a short
+   build brief by default: concept, product reason, visual system, signature
+   behavior, preserved behavior, and chosen resources. Reveal the full brief
+   only on request. Do not wait for its reveal or approval; proceed to build.
 5. Read `references/CREATIVE_EXECUTION.md` before adding an advanced runtime.
    Load only the relevant specialty and one recipe. Prototype only a central,
    uncertain mechanism whose result could change the build.
 6. Finish the real route, including post-hero sections and mobile composition.
-   Preserve required behavior and fix scoped defects.
+   Implement every selected treatment in its named section or state and make
+   its contribution perceptible. Preserve required behavior and fix scoped
+   defects. Before materially changing the brief, ask the user unless they
+   explicitly delegated the decision; technical fallbacks must preserve the
+   chosen concept and tier.
 7. Inspect the rendered full page at desktop and mobile, exercise the primary
    journey, correct visible failures, and repeat a focused pass. Run production
    build plus existing test/typecheck/lint scripts. Substantial work requires
-   `dreative finalize --codex` to print `DREATIVE_FINALIZED`.
+   `dreative finalize --codex` to print `DREATIVE_FINALIZED`. Compare the final
+   product against the current brief and user choices. Claim completion only
+   when every promised route, section, treatment, behavior, and review pass is
+   implemented and verified; otherwise continue or report the exact blockers.
 
 ## Creative decisions
 
@@ -100,6 +117,10 @@ reduced-motion, loading, and failure behavior.
 Verify what changes the outcome: build/tests, full-page desktop/mobile,
 interactions and direct routes, console/network/asset/text failures, reduced
 motion, heavy-runtime performance, and a visible correction pass.
+
+Completion means the selected direction is visibly and functionally realized
+across the entire experience, with preserved behavior genuinely working; it
+does not mean that code was written or the build passed.
 
 Do not create plan YAML, approval hashes, attestations, provenance, evidence
 ledgers, certification artifacts, or mandatory critic loops. Do not narrate

@@ -2,8 +2,12 @@ import { spawnSync } from "node:child_process";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import { activeLockfile } from "./projectIdentity.js";
 import { CREATIVE_MECHANISMS, PACKAGE_PROFILES } from "./creativeCatalog.js";
+
+function activeLockfile(projectDir: string): string | null {
+  return ["pnpm-lock.yaml", "yarn.lock", "bun.lock", "bun.lockb", "package-lock.json", "npm-shrinkwrap.json"]
+    .find((name) => fs.existsSync(path.join(projectDir, name))) ?? null;
+}
 
 export type CapabilityStatus =
   | "available"

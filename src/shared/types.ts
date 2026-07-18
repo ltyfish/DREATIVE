@@ -136,11 +136,11 @@ export interface Page {
 }
 
 /** Project-wide design direction, edited in the UI and passed to the agent
- *  with every propose/design request. Interpreted per skill/dreative/DESIGN.md. */
+ *  with every propose/design request. */
 export interface DesignBrief {
   /** aesthetic preset: minimal | editorial | premium | playful | brutalist | dark-tech | trust */
   aesthetic?: string;
-  /** free vibe words, e.g. "calm, Linear-style" */
+  /** free project-specific vibe words, e.g. "calm, precise, tactile" */
   vibe?: string;
   /** who the UI is for, e.g. "technical buyers" */
   audience?: string;

@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Removed the unused v9 plan, approval, assurance, evidence, critic,
+  verification, certification, migration, and compatibility implementation.
+- Removed its hidden CLI commands, schemas, fixtures, tests, and unused runtime
+  dependencies while retaining deterministic installation and build checks.
+- Added `LEGACY_SYSTEM_REMOVAL.md` with the rationale, prior findings, and
+  criteria for reconsidering any removed mechanism.
+
 ## 1.0.1
 
 - Defined Recommended, Efficient, and Showcase as adaptive directions;

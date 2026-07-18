@@ -1,7 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { detectSpecialistSkills, resolveAmbitionTier, resolveSkillDependencies, routeSkillsAcrossPages } from "./skillSystem.js";
-import { validatePlan, validatePreservationManifest, validateVerificationReport } from "./artifacts.js";
 
 test("detects every previously un-routed specialist family", () => {
   assert.deepEqual(detectSpecialistSkills(["experimental mobile-first gallery with generated video"]), [
@@ -73,59 +72,4 @@ test("routing can be disabled while waiting for explicit page assignments", () =
   });
   assert.deepEqual(routed.unassigned, ["motion"]);
   assert.deepEqual(routed.byPage.home, ["ux", "mobile"]);
-});
-
-test("plan validator rejects unfinished sections", () => {
-  const errors = validatePlan({
-    version: 2,
-    request: "Redesign",
-    createdAt: new Date().toISOString(),
-    tier: "premium",
-    depth: "restructure",
-    skills: ["ux", "mobile"],
-    skillPolicy: { mode: "hybrid", global: ["ux", "mobile"], routingApproved: true, userAssignments: [] },
-    designRead: { register: "editorial", concept: "signal", signature: "rail" },
-    preservationManifest: ".dreative/preservation.json",
-    decisionLedger: ".dreative/ledger.json",
-    pages: [
-      {
-        id: "home",
-        name: "Home",
-        skills: ["ux", "mobile"],
-        sections: [
-          {
-            id: "hero",
-            name: "Hero",
-            layoutFamily: "split",
-            skills: ["ux", "mobile"],
-            interactions: [],
-            mobile: "stack",
-            fallback: "static",
-            verification: ["Headline visible"],
-            assets: [],
-            status: "planned",
-          },
-        ],
-      },
-    ],
-  });
-  assert.ok(errors.some((error) => error.includes("still planned")));
-});
-
-test("preservation validator requires reasons for intentional changes", () => {
-  const errors = validatePreservationManifest({
-    version: 1,
-    createdAt: new Date().toISOString(),
-    items: [{ id: "cta", kind: "link", file: "src/App.tsx", needle: "/buy", purpose: "Purchase", intentionallyChanged: true }],
-  });
-  assert.ok(errors.some((error) => error.includes("changeReason")));
-});
-
-test("verification rejects text-only self-reporting", () => {
-  const errors = validateVerificationReport({
-    version: 1,
-    generatedAt: new Date().toISOString(),
-    evidence: [{ id: "mobile", criterion: "Works at 390px", status: "pass", evidence: "Tested at 390px" }],
-  });
-  assert.ok(errors.some((error) => error.includes("proof")));
 });
