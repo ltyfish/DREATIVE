@@ -3,7 +3,6 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import readline from "node:readline";
-import open from "open";
 import { createServer } from "../server/index.js";
 import { configurationFromArgs } from "../shared/workflow.js";
 import { detectCodingHost, detectProjectPreflight, resolveRuntimeRequirements } from "../shared/preflight.js";
@@ -19,11 +18,12 @@ import { TREATMENTS } from "../shared/planGovernance.js";
 import { renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
 import { runTrustedVerification } from "./verify.js";
 import { runTrustedCritic } from "./criticRun.js";
+import { renderDeliveryBrief, type DeliveryProfileId } from "../shared/deliveryProfiles.js";
 
 const port = Number(process.env.DREATIVE_PORT || 4820);
 const base = `http://localhost:${port}`;
 const args = process.argv.slice(2);
-const cmd = args[0] && !args[0].startsWith("-") ? args[0] : "start";
+const cmd = args[0] && !args[0].startsWith("-") ? args[0] : "brief";
 const packageRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const packagedSkillDir = path.join(packageRoot, "skill", "dreative");
 const packageVersion = JSON.parse(fs.readFileSync(path.join(packageRoot, "package.json"), "utf8")).version as string;
@@ -38,14 +38,16 @@ function hostTarget(): "codex" | "claude" {
 }
 
 const USAGE = `usage: dreative [command]
-  start            serve the visual editor (default)
+  brief            show the three concise delivery approaches (default)
+                   --recommend efficient|recommended|showcase
+  start-editor     explicitly serve the optional visual editor; never opens a browser
   install-skill    exact-sync the packaged skill and write a hashed manifest
                    --list | --skills all|a,b | --codex | --check
   config           resolve independent workflow controls
   preflight        detect the current framework, package manager, scripts and capabilities
                    --mechanisms a,b   resolve mechanism-led package/install requirements
   catalogue        search the executable creative catalogue [--query phrase] [--json]
-  plan             treatments | init | validate | status | diff | summary | approve | prototype-decision |
+  plan             advanced compatibility tools: treatments | init | validate | status | diff | summary | approve | prototype-decision |
                    implementation-start | inspect-missing | set | add-section | add-mechanism |
                    add-subject | add-requirement | export-json | migrate
                    init source flags: --references | --no-references | --suggest-references
@@ -59,7 +61,7 @@ const USAGE = `usage: dreative [command]
                    --capability id=state (repeatable)
                    treatments --routes /,/other (show choices before init)
                    migrate --source-plan <path> | --run-id <id> (v8 -> v9 supported)
-  treatments       compare user-selectable treatments and clashes [--routes /]
+  treatments       advanced detailed-plan reference [--routes /]
                    explain a chosen set with --all | --treatments a,b
   doctor           verify skill, schema, packages, browser, source and current plan
   resume           continue safely from the last valid phase checkpoint
@@ -67,7 +69,7 @@ const USAGE = `usage: dreative [command]
                    --json
   verify           integrity-linked browser runner --browser-command "npm run preview" [--url URL]
                    [--browser-executable PATH] [--prototype-id ID --prototype-location PATH]
-  critic-run       local advisory critic process --command "critic command"
+  critic-run       optional external review adapter --command "critic command"
                    --provider-class project-local-advisory|host-isolated|externally-attested
                    --provider-id ID --assurance local|host-attested|externally-attested
                    (host/external classes require an adapter; shell commands cannot elevate)
@@ -112,10 +114,19 @@ async function installCommand(): Promise<void> {
 async function main(): Promise<void> {
   if (args.includes("--help") || args.includes("-h")) { console.log(USAGE); return; }
   switch (cmd) {
-    case "start": {
+    case "brief": {
+      const index = args.indexOf("--recommend");
+      const recommendation = (index >= 0 ? args[index + 1] : "recommended") as DeliveryProfileId;
+      if (!["efficient", "recommended", "showcase"].includes(recommendation))
+        throw new Error(`invalid --recommend: ${recommendation}`);
+      console.log(renderDeliveryBrief(recommendation));
+      return;
+    }
+    case "start":
+      console.error("deprecated: use `dreative start-editor`; the editor is optional and will not open a browser");
+    case "start-editor": {
       const server = createServer(process.cwd()).listen(port, () => {
-        console.log(`\nDreative running for ${process.cwd()}\n${base}\n`);
-        if (!args.includes("--no-open")) open(base).catch(() => {});
+        console.log(`\nOptional Dreative editor running for ${process.cwd()}\n${base}\n`);
       });
       server.on("error", (error) => { console.error(`failed to start on :${port} — ${String(error)}`); process.exit(1); });
       return;

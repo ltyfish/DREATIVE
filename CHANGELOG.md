@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.0
+
+- Replaced the multi-gate planning contract with three concise public
+  approaches: Recommended, Efficient, and Showcase.
+- Made the optional editor explicit-only and removed automatic browser opening.
+- Recentered the skill on full-page desktop/mobile browser refinement and
+  visible product quality.
+- Reduced specialist instruction size and made advanced recipes progressive.
+- Replaced approval, attestation, critic, and evidence requirements in
+  finalization with deterministic build/test/type/lint/docs checks.
+- Retained legacy v9 tools only for migration compatibility.
+
 ## 0.9.0
 
 - Assurance fails closed at the actual process boundary: standalone CLI files,

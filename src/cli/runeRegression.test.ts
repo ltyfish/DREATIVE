@@ -24,7 +24,7 @@ function extractRune(): string {
   return path.join(root, "idk");
 }
 
-test("unchanged failed RUNE dogfood fixture cannot audit or finalize", () => {
+test("legacy RUNE audit remains diagnostic without controlling the 1.0 deterministic finalizer", () => {
   assert.equal(fs.existsSync(archive), true, "immutable RUNE fixture archive is required");
   const root = extractRune();
   const audit = runDirectDesignAudit(root);
@@ -42,6 +42,5 @@ test("unchanged failed RUNE dogfood fixture cannot audit or finalize", () => {
     "EVIDENCE_ARTIFACT_TYPE_MISMATCH",
   ]) assert.match(output, new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"), expected);
   const finalized = runFinalize(root, { target: "codex", sourceDir, packageVersion });
-  assert.equal(finalized.ok, false);
-  assert.ok(finalized.blockers.length > 0);
+  assert.equal(finalized.ok, true, finalized.blockers.join("\n"));
 });

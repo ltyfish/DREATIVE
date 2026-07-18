@@ -18,7 +18,11 @@ const packageVersion = JSON.parse(fs.readFileSync(path.join(packageRoot, "packag
 function fixture(motion: boolean): string {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), motion ? "dreative-motion-positive-" : "dreative-minimal-positive-"));
   fs.mkdirSync(path.join(root, "src"));
-  fs.writeFileSync(path.join(root, "package.json"), JSON.stringify({ name: "trusted-positive", version: "1.0.0" }));
+  fs.writeFileSync(path.join(root, "package.json"), JSON.stringify({
+    name: "trusted-positive",
+    version: "1.0.0",
+    scripts: { build: "node -e \"process.exit(0)\"" },
+  }));
   fs.writeFileSync(path.join(root, "src", "App.js"), motion
     ? `addEventListener("scroll",()=>document.documentElement.style.setProperty("--progress",String(scrollY))); export const MotionRail="motion-rail";`
     : `export const Ready="ready-state";`);

@@ -1,170 +1,131 @@
 ---
 name: dreative
-description: Plan, implement and fail-closed verify authored frontend design in the real application.
+description: Design and ship a distinctive, usable frontend through concise planning, real implementation, and full-page browser refinement.
 ---
 
 # Dreative
 
-Universal foundation: ux and baseline mobile apply to every web page.
+Dreative is a frontend design skill. Its job is to improve the user's product,
+not to operate Dreative itself.
 
-Use this workflow for substantial interactive design and redesign.
+## Hard boundary
 
-1. Inspect the repository, current behavior, routes, assets, package state and
-   existing design equity before editing.
-2. Resolve Ambition, Execution, Prototype and Purpose explicitly. A user-facing task is interactive; ask in plain text if needed and never silently default a
-   missing control. Full Audit controls evidence, not visual ambition.
-3. Complete the missing-information intake in `PLAN.md`. Do not ask again for
-   facts already provided or reliably detected. Explicitly resolve references,
-   generated images/video, externally sourced images/video, supplied assets,
-   missing assets, and 3D props/assets.
-4. Present the complete Creative Decision Brief defined in `PLAN.md`. It is a
-   user-facing decision artifact, not an implementation approval: include one
-   inspection-grounded recommended direction, all four workflow choices, all
-   ten treatments, what each treatment changes, what it works with and clashes
-   with, capability/source decisions, risks and one copyable decision line.
-   Recommendations are non-binding. Wait until the user explicitly selects or
-   declines every optional treatment. Do not replace this with a short
-   question, a preselected treatment list or a generic "what style do you
-   want?" prompt. Explain candidate treatments using
-   `references/SKILL_CONTRACT.md`. User selection is authoritative. Regex
-   routing is suggestion-only.
-5. Write the single editable contract to `.dreative/plan.yaml` v9. It must
-   include project definition, creative direction, per-section state contracts,
-   a source-owned continuity contract, treatment and mechanism obligations,
-   requirement traceability, asset/package strategy and the verification plan.
-   Validate it, then run `dreative plan summary` to display the complete
-   Executable Plan Review defined in `PLAN.md`; do not make the user review raw
-   YAML. A creative brief or compact summary cannot substitute for this review.
-6. Record approval with host-neutral provenance and an explicit assurance
-   level. TTY plus a CLI flag records only `user-origin-unverified`; it is not
-   human attestation. Prompt preauthorization must predate planning and may use
-   a host-event ID/content hash, signed record or optional prompt file.
-   Wait for approval before material application-source implementation.
-7. Hash only `contract`. Machine updates belong in `execution`. Any material
-   contract edit needs a change request and reapproval.
-8. When required, prototype the uncertain mechanism in an isolated prototype
-   route/location, verify it through the integrity-linked runner, and record a prototype
-   decision before integration. A completed application is not its prototype.
-   Use `dreative verify --prototype-id <id> --prototype-location <path>`,
-   `dreative plan prototype-decision --id <id> --decision <decision>`, then
-   `dreative plan implementation-start` before material source edits.
-9. Implement the approved concept in the real application. Install runtime
-   packages transactionally, one mechanism group at a time. Keep one explicit
-   ticker/scroll owner and never silently downgrade.
-10. Run `dreative verify --browser-command "<production preview command>"`.
-    Final workflows build and verify the exact production artifact. The runner
-    derives requirement outcomes from actions and assertions; screenshots do
-    not create passes.
-11. Run the critic through a declared provider with
-    `dreative critic-run --provider-class <class> --provider-id <id>`.
-    Project-local scripts are advisory only. Its closed input must
-    contain the approved contract, requirement matrix, desktop/mobile/reduced
-    motion captures, temporal evidence and functional/performance summaries.
-12. Run `dreative audit`, correct blockers and major issues, then
-    `dreative finalize`. Dogfood failure prevents `DREATIVE_FINALIZED`.
+Never open, navigate to, or inspect the optional Dreative editor at
+`http://localhost:4820` during frontend work. Never run `dreative start` or
+`dreative start-editor` unless the user explicitly asks for the editor.
+`dreative` without a command prints a planning brief and does not start a
+server.
 
-Canonical Ambition values are `standard`, `expressive`, `award` and
-`experimental`. Legacy `solid` and `premium` are migration inputs only.
+## Default workflow
 
-Specialists:
+1. Inspect the real repository before proposing a direction: framework, routes,
+   content, working behavior, assets, dependencies, current visual equity, and
+   obvious defects.
+2. Read `PLAN.md`. If the user already chose an approach or clearly asked the
+   agent to use its judgment, select the matching approach and proceed. For an
+   open-ended redesign, show the three concise approaches and wait for one
+   choice. Do not expose internal treatment matrices, audit modes, source
+   policies, schemas, or prototype controls.
+3. State the selected concept in a compact implementation note: one named
+   direction, why it fits, the main visual idea, and the most important
+   preserved behavior. This is the only approval boundary.
+4. Build in the real application. Preserve content and functions unless the
+   user asked to change them. Fix existing defects encountered in the scoped
+   experience, including broken routes and mojibake/encoding errors.
+5. Inspect the entire page in the browser at desktop (normally 1440px) and
+   mobile (normally 390px), not only the hero. Exercise the primary journey and
+   important interactions. Inspect 320px when the product targets narrow phones
+   or when the 390px pass shows density risk.
+6. Critique the rendered product, correct visible failures, and repeat a
+   focused browser pass. Stop adding mechanisms once the concept is complete.
+7. Run the production build plus available type, test, and lint scripts. For
+   Expressive, Award, Experimental, Full Audit, or Dogfood work, run
+   `dreative finalize --codex`; completion requires `DREATIVE_FINALIZED`.
 
-- `ux`: functional and accessible truth.
-- `mobile`: mobile-native composition and touch behavior.
-- `refined`: typography, spacing, hierarchy and material finish.
-- `motion`: structural temporal change and choreography.
-- `interaction`: meaningful input-driven state.
-- `media`: real image/video production and transformation.
-- `3d`: visible spatial/WebGL contribution and fallback.
-- `immersive`: continuity across sections.
-- `cinematic`: pacing, framing and scene handoffs.
-- `experimental`: two or three purposeful unconventional peaks.
+## Planning behavior
 
-## Canonical v9 lifecycle rules
+- The public plan contains exactly three approaches: Recommended, Efficient,
+  and Showcase.
+- Recommend one based on the inspected product. Recommended is the default,
+  not a euphemism for maximum complexity.
+- Offer `show detailed plan` for users who want section, asset, motion,
+  package, and verification detail.
+- Ask only about a missing decision that would materially change the product.
+  Detect everything else from the repository.
+- Do not require `.dreative/plan.yaml`, treatment-by-treatment approval,
+  approval hashes, attestations, independent critics, provenance theater, or
+  repeated reapproval.
 
-- Disclose all ten treatments before writing a substantial contract. Recommendations remain recommendations. The user must explicitly select or decline the optional treatments; only then add UX and Mobile as mandatory foundations. `all` requires an explicit confirmation.
-- Keep stable intent in `contract`: treatment decisions and allocation, mechanism primary/fallback policy, prototype uncertainty and acceptance, and asset requirements/policies.
-- Keep observations in `execution`: pending/progress/final mechanism status, trigger evidence, prototype attempts/results, sourcing attempts, generated files, asset survival, browser results, critic findings and spread evidence. Never pre-claim a final outcome in the approved contract.
-- Permission is not capability. A connected authoring or sourcing tool must be explicitly detected or declared. Canvas, WebGL, video playback and other browser APIs begin as expected but unverified and become available only through current browser evidence.
-- Award, Experimental and explicit all-treatment delivery is machine-grounded in typed controlled-progress runtime observations. Free-form evidence strings cannot satisfy static-feeling, Media, 3D, Cinematic, Immersive or Experimental gates.
-- Full Audit and Dogfood require a genuinely fresh, host-isolated critic agent. Degraded, best-effort or same-agent review is insufficient, and context isolation is not described as external independence.
-- Evidence records declare `local`, `host-attested` or
-  `externally-attested`. Local files are integrity-linked, not independently
-  trusted or tamper-proof. Production Certification requires host or external
-  attestation; Project Delivery and Dogfood may report an honest local
-  limitation.
-- Requirement actions and assertions are machine executed. Runtime gates own
-  observable state and artifact identity; the critic owns semantic resemblance,
-  authorship, composition, concept fidelity and perceptual ambition.
-- Corrections after failed verification, criticism or audit are allowed.
-  Incompatible evidence becomes stale and fresh compatible runs can certify the
-  corrected state.
-- Requirement rows are blocking contracts, not documentation. A missing
-  browser test, missing evidence id, failed status, material substitution,
-  unapproved fallback, missing exact viewport, or mobile deletion blocks
-  finalization.
-- Asset order is supplied, rights-safe external sourcing, advantageously generated, then procedural. When a confirmed sourcing tool exists and suitable media could exist, record a search attempt or a concrete asset-specific generation-first exemption.
-- Direct YAML authoring follows the same rules: all ten treatment decision records are mandatory and mutable outcomes in `contract` are invalid.
+## Product-quality rules
 
-Before concept approval, show every selected treatment's summary, substantive
-threshold, insufficiency examples, dependencies, tensions, cost, mobile/
-performance/accessibility risk, proposed sections, role and acceptance
-condition. Selecting all requires one confirmation, one continuity owner and
-concrete allocation; no selected treatment may be silently pruned.
+### One coherent idea
 
-The creative decision request is complete only when it visibly contains every
-Creative Decision Brief block from `PLAN.md`. The later implementation approval
-request is complete only when it visibly contains every Executable Plan Review
-block. "Concise" never permits hiding workflow alternatives, treatment choices,
-section/mechanism contracts, source permissions, assets, packages, prototypes,
-fallbacks, route decisions or measurable verification obligations.
+Choose a content-specific concept that can be recognized after the hero is
+removed. Carry it through typography, composition, color/material, imagery,
+interaction, and section rhythm. A repeated badge, grid line, canvas, or
+background color is not continuity by itself.
 
-Run creative capability preflight before promising media, video or 3D.
-Permission, package installation, runtime rendering, sourcing and authoring are
-separate. Three.js is not model generation; GSAP is not cinematic authorship;
-FFmpeg is not original video generation; browser tools verify.
+### Restraint before machinery
 
-Assign every major section Peak, Transformation, Preparation, Echo, Rest,
-Resolution or Functional Utility. The hero cannot be the only meaningful event
-for Expressive, Award or Experimental work. Apply the hero-removed test.
+Use the smallest technical system that produces the intended experience.
+CSS and native scrolling are preferred for ordinary layout and transitions.
+Use GSAP for choreography that needs sequencing, scrubbing, pinning, or
+reversibility. Use Lenis only when interpolated scroll behavior is part of the
+concept. Use Three.js/OGL only when spatial behavior materially improves
+meaning or product understanding. Vanta-like atmosphere is a principle, not a
+reason to add a generic shader background.
 
-Record every primary mechanism, acceptance conditions, fallback, trigger,
-trigger evidence, reapproval policy and final status. Convenience is not a
-trigger. Prefer supplied, rights-safe sourced, advantageously generated, then
-procedural assets, and reconcile manifest, disk and shipped use.
+Recommended work usually has one signature mechanism. Showcase work may have
+two complementary signatures. Never stack GSAP, Lenis, WebGL, telemetry, and
+custom interaction merely to signal ambition.
 
-Classify spatial contributions honestly as model, spatial cutout, layered
-billboard, pre-rendered angles, frame sequence, WebGL media plane or static
-image. Store evidence under `.dreative/runs/<run-id>/` and reject stale source
-hashes or cross-run artifacts. Run Adaptive Spread Validation; recordings,
-reverse scroll and montage are conditional.
+### Full-page quality
 
-Read the selected `skills/<name>.md` summaries first. Read a
-`recipes/<name>-recipes.md` file only after its mechanism is approved.
+The hero must not consume all design effort. Every major section needs a clear
+job, readable hierarchy, intentional spacing, and an authored transition from
+the previous section. Alternate density and rest. Keep the primary task easy to
+find.
 
-## Executable creative catalogue
+Reject:
 
-During concept planning, search `llms.txt` through
-`dreative catalogue --query "<natural visual phrase>" --json`. Compare the
-typed outcome, ambitions/treatments, content and continuity roles, package
-profiles, primitive, recipe, risks, fallback and evidence contract. Use the
-smallest coherent mechanism set; do not start from a component menu.
+- tiny decorative text used where users need readable content;
+- empty viewport-sized gaps without narrative or functional purpose;
+- persistent overlays, canvases, telemetry, or labels covering content;
+- clipped controls, awkward sticky releases, and mobile desktop-shrinkage;
+- repeated generic cards or fade-up sections presented as a system;
+- advanced effects that are more visible than the product;
+- placeholder assets, repeated imagery, broken glyphs, or fabricated claims.
 
-Read `references/CREATIVE_EXECUTION.md` before installing an advanced runtime.
-It defines native-scroll defaulting, GSAP/Lenis clock ownership, scoped React
-cleanup, WebGL disposal, truthful Remotion/media capability gating, external
-reference scouting, React Bits adaptation without redistribution, performance
-budgets and temporal verification. Original primitive contracts are in
-`recipes/primitives.md`; tested technical patterns are in
-`recipes/positive-exemplars.md`. Family recipes are linked by catalogue entries.
+### Mobile is a composition
 
-Award and Experimental plans must distribute substantive behavior after the
-hero, connect transformations to real project content and adjacent chapters,
-and include peaks, rests and resolution. Reject fade/translate/scale-only
-delivery, unused advanced dependencies, generic WebGL backgrounds, isolated
-model viewers, untreated video rectangles, component soup and mobile deletion.
-For all-treatment work, allocate one or two dominant treatments per section,
-choose continuity/motion/material/spatial owners, and resolve tensions with
-section hierarchy, budgets and fallbacks rather than pruning selections.
+At 390px, reconsider order, crop, density, type scale, controls, sticky
+behavior, and motion. Do not merely stack desktop columns. Persistent desktop
+ornament should usually become inline, bounded, or absent when it competes
+with content. Touch targets, keyboard behavior, reduced motion, and readable
+text remain required.
 
-Never weaken preservation, accessibility, responsive, reduced-motion,
-source-identity, critic independence or fail-closed guarantees.
+### Visual review
+
+Review screenshots and live behavior section by section. Ask:
+
+1. Is the concept visible without an explanation?
+2. Does every section remain legible and composed at its actual viewport?
+3. Do motion and interaction clarify state rather than decorate it?
+4. Are there collisions, clipping, overflow, dead space, or weak handoffs?
+5. Does mobile feel intentionally designed?
+6. Are text, prices, routes, forms, and visible claims correct?
+
+A successful build is not a visual pass. A checklist file is not evidence of
+quality. Fix what is visible.
+
+## Progressive references
+
+- Read `references/CREATIVE_EXECUTION.md` before adding an advanced runtime.
+- Read the relevant `skills/<name>.md` only when that specialty materially
+  serves the chosen concept.
+- Read one matching recipe only after choosing the mechanism.
+- Use `llms.txt` or `dreative catalogue` as a focused lookup, never as a
+  component menu.
+
+Specialties: `ux`, `mobile`, `refined`, `motion`, `interaction`, `media`, `3d`,
+`immersive`, `cinematic`, `experimental`.
