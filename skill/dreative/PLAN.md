@@ -44,12 +44,60 @@ Purpose:
 
 Do not ask again for values already supplied.
 
-Before any contract is written, the first intake output must show the complete
-ten-treatment review, proposed section allocation, ownership overlaps and
-tensions, plus a creative capability preflight. Unresolved permissions are
-reported as unresolved rather than denied. The same intake explicitly asks for
-package-installation permission; permission and detected capability are never
-collapsed into one state.
+## Mandatory Creative Approval Brief
+
+Before any contract is written, present one self-contained Creative Approval
+Brief in the conversation. This is the planning deliverable the user approves;
+do not scatter it across several messages and do not make the user inspect raw
+YAML to understand the proposal.
+
+The brief must use this order and contain every block:
+
+1. **Reset/staleness note when applicable.** State whether an existing plan
+   belongs to the current source and task. Never reuse a stale direction.
+2. **Recommended direction.** Give the concept a memorable name and describe
+   its content-specific visual system, palette/materials, typography character,
+   media language, interaction/motion idea and why it fits the inspected
+   product. This must be a real proposal, not a list of adjectives.
+3. **Workflow choices.** Show all canonical Ambition, Execution, Prototype and
+   Purpose alternatives. Mark exactly one recommendation in each group and
+   briefly explain any recommendation that is not the normal Expressive, Lean,
+   Auto, Project Delivery baseline. Recommendations are not selections.
+4. **Complete treatment review.** Show UX, Mobile, Refined, Motion,
+   Interaction, Media, 3D, Immersive, Cinematic and Experimental in one
+   scannable table or equally explicit structure. Every row must state:
+   proposed select/decline/foundation status; substantive delivery threshold;
+   concrete project sections; dependencies or ownership tension; cost and
+   mobile/performance/accessibility risk; and what would be insufficient.
+5. **Experience allocation.** Name every major section in route order, assign
+   Peak, Transformation, Preparation, Echo, Rest, Resolution or Functional
+   Utility, allocate primary/supporting treatments and name the continuity
+   owner. Identify at least one post-hero peak for Expressive, Award or
+   Experimental proposals and state the hero-removed test result.
+6. **Capability and source preflight.** Separately report package-installation
+   permission; detected runtime/browser capability; references; generated and
+   sourced images; generated and sourced video; 3D assets/props; supplied
+   assets; and missing assets. Use `unresolved` when unanswered. Permission
+   never proves capability.
+7. **Delivery risks and fallbacks.** Name the important mechanism risks,
+   performance/mobile/reduced-motion implications and any proposed fallback.
+   A fallback is a proposal requiring approval, not a silent downgrade.
+8. **One-line approval reply.** End with one copyable line containing workflow,
+   selected treatments, direction, package permission, each image/video source
+   policy, 3D policy and reference-reuse decision. Tell the user they may edit
+   any phrase.
+
+The first approval request is invalid if it only asks questions, only lists
+workflow controls, only describes selected treatments, omits declined
+treatments, uses generic section names without allocation, or says "details are
+in `.dreative/plan.yaml`". A compact answer is acceptable only after the full
+brief has been shown in the same approval cycle.
+
+The complete ten-treatment review must include proposed section allocation,
+ownership overlaps and tensions, plus a creative capability preflight.
+Unresolved permissions are reported as unresolved rather than denied. The same
+intake explicitly asks for package-installation permission; permission and
+detected capability are never collapsed into one state.
 
 Resolve repository root, preview URL or command, routes and scope, required
 workflows, preserved content/brand, supplied and missing assets, installation

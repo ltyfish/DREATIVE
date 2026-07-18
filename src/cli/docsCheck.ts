@@ -193,6 +193,21 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   for (const choice of ["Lean (Recommended)", "Auto (Recommended)", "Project Delivery (Recommended)", "Fast", "Full Audit", "Skip", "Required", "Production Certification", "Dreative Dogfood"])
     if (!planning.includes(choice)) add(findings, "workflow-choices", "PLAN.md", `missing user-facing configuration choice: ${choice}`);
   if (!/non-interactive/i.test(planning) || !/contract\.workflow/.test(planning)) add(findings, "workflow-choices", "PLAN.md", "configuration choices must preserve explicit automation input and persist to contract.workflow");
+  for (const block of [
+    "Mandatory Creative Approval Brief",
+    "Recommended direction",
+    "Workflow choices",
+    "Complete treatment review",
+    "Experience allocation",
+    "Capability and source preflight",
+    "Delivery risks and fallbacks",
+    "One-line approval reply",
+  ]) {
+    if (!planning.includes(block))
+      add(findings, "approval-brief", "PLAN.md", `mandatory user-facing approval brief is missing block: ${block}`);
+  }
+  if (!/do not scatter it across several messages/i.test(planning) || !/do not make the user inspect raw\s+YAML/i.test(planning))
+    add(findings, "approval-brief", "PLAN.md", "approval brief must be self-contained in the conversation rather than deferred to raw YAML");
   for (const file of ["SKILL.md", "PLAN.md"]) {
     const content = contents.get(file) ?? "";
     if (!/user-facing task is interactive/i.test(content) || !/plain text/i.test(content) || !/never silently default/i.test(content))

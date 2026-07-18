@@ -17,8 +17,14 @@ Use this workflow for substantial interactive design and redesign.
    facts already provided or reliably detected. Explicitly resolve references,
    generated images/video, externally sourced images/video, supplied assets,
    missing assets, and 3D props/assets.
-4. Explain candidate treatments using `references/SKILL_CONTRACT.md`. User
-   selection is authoritative. Regex routing is suggestion-only.
+4. Present the complete Creative Approval Brief defined in `PLAN.md`. It is a
+   user-facing planning artifact, not an internal note: include one
+   inspection-grounded recommended direction, all four workflow choices, all
+   ten treatments, concrete section allocation, capability/source decisions,
+   risks and one copyable reply line. Do not replace it with a short question,
+   a treatment list or a generic "what style do you want?" prompt. Explain
+   candidate treatments using `references/SKILL_CONTRACT.md`. User selection is
+   authoritative. Regex routing is suggestion-only.
 5. Write the single editable contract to `.dreative/plan.yaml` v9. It must
    include project definition, creative direction, per-section state contracts,
    a source-owned continuity contract, treatment and mechanism obligations,
@@ -99,6 +105,12 @@ threshold, insufficiency examples, dependencies, tensions, cost, mobile/
 performance/accessibility risk, proposed sections, role and acceptance
 condition. Selecting all requires one confirmation, one continuity owner and
 concrete allocation; no selected treatment may be silently pruned.
+
+The first approval request is complete only when it visibly contains every
+Creative Approval Brief block from `PLAN.md`. "Concise" applies after the
+complete brief and after contract authoring; it never permits hiding workflow
+alternatives, declined treatments, source permissions, section allocation or
+the proposed experience arc.
 
 Run creative capability preflight before promising media, video or 3D.
 Permission, package installation, runtime rendering, sourcing and authoring are
