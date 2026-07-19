@@ -100,6 +100,14 @@ Choose mechanisms after the concept:
 - Canvas/shaders for bounded procedural behavior the DOM cannot deliver.
 - Sourced/generated media when it materially strengthens art direction.
 
+Treat Native Foundations as baseline implementation skeletons, not preferred
+substitutes for mature specialist runtimes. Use one only when it fully
+satisfies the selected mechanism's visual, interaction, performance, and
+coordination requirements. Do not select a foundation merely because it is
+already available, familiar, cheaper, or easier. For advanced choreography,
+rendering, state orchestration, or smooth-scroll coordination, choose the
+appropriate established runtime when it better serves the required result.
+
 Use specialist systems confidently when they create real value, but make each
 one own a meaningful state change, mobile form, fallback, and cleanup path.
 Showcase has access to every treatment but selects only those that strengthen

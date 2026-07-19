@@ -8,6 +8,13 @@ fallback, and cleanup cost. A library name is never a design rationale.
 
 ## Choose by outcome
 
+Choose between a Native Foundation and a specialist runtime from the required
+visual and technical result, never from implementation convenience. A
+foundation is sufficient only when it fully delivers the selected mechanism;
+availability is not a selection reason. Prefer the mature runtime when advanced
+choreography, rendering, state orchestration, or scroll coordination requires
+its capabilities.
+
 - Native scroll + CSS/SVG: ordinary layout, hover/focus states, reveals, and
   simple transitions.
 - Motion: component-state layout, enter/exit, hover, press, drag, and shared

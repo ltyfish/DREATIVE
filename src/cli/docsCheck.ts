@@ -78,7 +78,10 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /preflight --probe-browser.*preview-url/i, "must require launch plus preview-navigation evidence before browser verification");
   requireText(findings, "SKILL.md", skill, /\.dreative\/context\.json/, "must preserve durable project memory");
   requireText(findings, "references/VISUAL_REFINEMENT.md", contents.get("references/VISUAL_REFINEMENT.md") ?? "", /capture full-page screenshots|inspect the pixels/i, "visual refinement must require screenshot inspection");
-  requireText(findings, "systems/NATIVE_FOUNDATIONS.md", contents.get("systems/NATIVE_FOUNDATIONS.md") ?? "", /twelve implementation-neutral foundations/i, "must expose a bounded native-foundation set");
+  const foundations = contents.get("systems/NATIVE_FOUNDATIONS.md") ?? "";
+  requireText(findings, "systems/NATIVE_FOUNDATIONS.md", foundations, /twelve implementation-neutral foundations/i, "must expose a bounded native-foundation set");
+  requireText(findings, "systems/NATIVE_FOUNDATIONS.md", foundations, /not preferred substitutes[\s\S]+Do not select a Native Foundation merely because it is[\s\S]+available or easier/i, "must prevent convenience-driven Native Foundation selection");
+  requireText(findings, "SKILL.md", skill, /Native Foundations as baseline implementation skeletons[\s\S]+Do not select a foundation merely because it is[\s\S]+available[\s\S]+easier/i, "must choose foundations or mature runtimes by required outcome rather than convenience");
   requireText(findings, "references/CREATIVE_DIRECTION.md", contents.get("references/CREATIVE_DIRECTION.md") ?? "", /independence test/i, "must include a reference-independence test");
 
   for (const choice of ["Recommended", "Efficient", "Showcase"])

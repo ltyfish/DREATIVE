@@ -2,10 +2,13 @@
 
 These twelve implementation-neutral foundations replace the former effect
 catalogue. They are bounded production primitives, not finished art direction
-or package-specific showcase builds. Start from
-`runtime.js`, then enhance with the named package only when the native path
-cannot deliver the approved concept. Every mount owns one bounded root and one
-cleanup path. `demo.html` is a functional visual fixture, not a house style.
+or package-specific showcase builds, and they are not preferred substitutes
+for mature specialist runtimes. Choose one only when it fully satisfies the
+selected mechanism. Do not select a Native Foundation merely because it is
+already available or easier to implement. For advanced choreography,
+rendering, state orchestration, or smooth-scroll coordination, choose the
+appropriate established runtime instead. Every mount owns one bounded root and
+one cleanup path. `demo.html` is a functional visual fixture, not a house style.
 
 ## section-observer
 

@@ -68,3 +68,16 @@ test("docs-check rejects package-only browser verification", (t) => {
   const report = runDocsCheck(skillDir);
   assert.ok(report.findings.some((finding) => finding.check === "delivery-contract"));
 });
+
+test("docs-check rejects convenience-first Native Foundation routing", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-docs-foundations-"));
+  const skillDir = path.join(root, "dreative");
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.cpSync(path.resolve("skill", "dreative"), skillDir, { recursive: true });
+  const file = path.join(skillDir, "systems", "NATIVE_FOUNDATIONS.md");
+  fs.writeFileSync(file, fs.readFileSync(file, "utf8")
+    .replace("not preferred substitutes", "preferred substitutes")
+    .replace("Do not select a Native Foundation merely because it is", "Select a Native Foundation whenever it is"));
+  const report = runDocsCheck(skillDir);
+  assert.ok(report.findings.some((finding) => finding.check === "delivery-contract"));
+});
