@@ -11,5 +11,5 @@ Alternate peaks and rests, preserve direct task access, and give mobile a
 bounded form. Release persistent elements before they overlap later content.
 
 Reject a hero effect that disappears downstream and overlays that compete with
-the page. Read `../recipes/immersive-recipes.md` only after selecting this
-structure.
+the page. Read only the selected continuity system in
+`../systems/GOLDEN_SYSTEMS.md`.

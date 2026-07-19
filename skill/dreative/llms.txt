@@ -1,21 +1,18 @@
-# Dreative executable creative catalogue
+# Dreative executable golden systems
 
-Search the machine-readable catalogue before selecting an advanced mechanism:
+Search the small machine-readable system set after selecting an advanced need:
 
-    dreative catalogue --query "image tornado" --json
+    dreative catalogue --query "persistent product" --json
 
-Natural-language aliases include photo disintegration, photo reconstruction,
-scroll image sequence, frame-by-frame product animation, velocity distortion,
-smooth-scroll WebGL, persistent product across sections, shared-element
-transition, image tears into pieces, type becomes image, 3D gallery,
-drag-controlled images, cinematic video chapter, depth-map zoom, liquid chrome,
-video becomes layout, media plane distortion, and spatial product story.
+The catalogue deliberately contains twelve systems rather than a vocabulary of
+effects. Each record links executable source, a functional visual fixture,
+appropriate and bad uses, mobile/reduced-motion behavior, cleanup, a performance
+budget, and browser checks.
 
-The compiled catalogue is `dist/shared/creativeCatalog.js`. Human implementation
-guidance is in `references/CREATIVE_EXECUTION.md`, primitive contracts in
-`recipes/primitives.md`, and tested patterns in `recipes/positive-exemplars.md`.
-React Bits is reference vocabulary only and is never distributed by Dreative.
-The catalogue is an implementation lookup after a project-native concept has
-been chosen. It must never supply the concept or a named site's house style.
-Native scroll is the default. GSAP, Lenis, WebGL, and build-time media tools are
-selected only when the mechanism earns its cost and the capability is present.
+The compiled registry is `dist/shared/creativeCatalog.js`. Source and examples
+are in `systems/runtime.js`, `systems/GOLDEN_SYSTEMS.md`, and
+`systems/demo.html`. Advanced runtime selection is in
+`references/CREATIVE_EXECUTION.md`; build-time media work is in
+`references/ASSET_PIPELINES.md`. The system set is an implementation lookup
+after a project-native concept has been chosen. It must never supply the concept
+or a named site's house style.

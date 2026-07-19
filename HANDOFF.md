@@ -8,15 +8,21 @@ product quality from unverifiable local ceremony.
 The default CLI command is `brief`; it prints Recommended, Efficient, and
 Showcase. `brief --configure <direction>` prints compact review, reference,
 source, package, and prototype choices. `brief --detailed <direction>` prints
-the adaptive Creative Decision Brief structure. The optional editor is
-available only through `start-editor` and never opens a browser.
+the adaptive Creative Decision Brief structure. Dreative is a skill and CLI;
+the legacy visual editor and its server have been removed.
 
 The agent extracts product DNA, synthesizes original directions from product
 truth and decomposed cross-domain references, resolves a compact configuration,
 selects specialist resources after the concept, builds in the real application,
-and inspects the entire desktop and mobile route. The complete private
+and runs a screenshot–critique–repair loop over the entire desktop and mobile
+route. The complete private
 implementation blueprint is mandatory; only revealing the detailed brief is
 opt-in.
+
+The former broad mechanism catalogue is replaced by twelve executable golden
+systems in `skill/dreative/systems/`. `.dreative/context.json` is optional
+durable working memory and must never be interpreted as approval, visual proof,
+or completion certification.
 
 `dreative finalize` runs deterministic project scripts and documentation
 checks. It does not require plan hashes, approval provenance, critic

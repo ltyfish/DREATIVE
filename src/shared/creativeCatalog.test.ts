@@ -3,89 +3,67 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import {
-  CREATIVE_EXEMPLARS, CREATIVE_MECHANISMS, CREATIVE_PRIMITIVES, PACKAGE_PROFILES,
-  allocateTreatmentHierarchy, renderAgentCatalogue, resolveCreativeStack, searchCreativeCatalog, validateCreativeCatalog,
-  validateCreativeDelivery, validateExternalReference,
+  CREATIVE_MECHANISMS,
+  PACKAGE_PROFILES,
+  renderAgentCatalogue,
+  resolveCreativeStack,
+  searchCreativeCatalog,
+  validateCreativeCatalog,
+  validateExternalReference,
 } from "./creativeCatalog.js";
 
-test("creative catalogue is linked, unique, risk-aware and substantially broader than category doctrine", () => {
-  assert.equal(validateCreativeCatalog().join("\n"), "");
-  assert.ok(CREATIVE_MECHANISMS.length >= 100);
+test("catalogue is constrained to executable golden systems", () => {
+  assert.deepEqual(validateCreativeCatalog(), []);
+  assert.ok(CREATIVE_MECHANISMS.length >= 12 && CREATIVE_MECHANISMS.length <= 20);
   assert.equal(new Set(CREATIVE_MECHANISMS.map((item) => item.id)).size, CREATIVE_MECHANISMS.length);
-  assert.ok(PACKAGE_PROFILES.length >= 26);
-  assert.equal(CREATIVE_PRIMITIVES.length, 16);
-  assert.ok(CREATIVE_EXEMPLARS.length >= 10);
   for (const item of CREATIVE_MECHANISMS) {
-    assert.ok(item.suitableAmbitions.length && item.suitableTreatments.length);
-    assert.ok(item.semanticFallback && item.reducedMotionStrategy && item.mobileTranslation);
-    assert.ok(item.requiredEvidence.length && item.references.every((reference) => reference.license));
+    assert.equal(item.implementation, "systems/runtime.js");
+    assert.ok(item.implementationExport && item.useWhen && item.rejectWhen);
+    assert.ok(item.cleanup.length && item.performanceBudget.length && item.browserTest.length);
   }
 });
 
-test("natural-language catalogue lookup maps ambitious phrases to executable records", () => {
-  assert.equal(searchCreativeCatalog("image tornado")[0].id, "image-tornado");
-  assert.equal(searchCreativeCatalog("photo reconstruction")[0].id, "image-reconstruction");
-  assert.equal(searchCreativeCatalog("persistent product across sections")[0].id, "section-to-section-persistent-object");
-  assert.match(renderAgentCatalogue("velocity distortion"), /dreative-velocity-material/);
+test("natural-language lookup routes to a small system rather than an effect name", () => {
+  assert.equal(searchCreativeCatalog("persistent product across sections")[0].id, "persistent-stage");
+  assert.equal(searchCreativeCatalog("frame-by-frame product animation")[0].id, "frame-sequence");
+  assert.equal(searchCreativeCatalog("3D gallery")[0].id, "spatial-gallery");
+  assert.match(renderAgentCatalogue("image trail"), /mountMediaTrail/);
+  assert.equal(searchCreativeCatalog("image tornado").some((item) => item.id === "image-tornado"), false);
 });
 
-test("resolver keeps native scroll by default and selects GSAP or Lenis only from mechanisms", () => {
-  const simple = resolveCreativeStack(["grain"], { installationAllowed: true });
-  assert.equal(simple.scrollOwner, "native"); assert.equal(simple.timelineEngine, "native");
-  const pinned = resolveCreativeStack(["pinned-narrative-chapter"], { installationAllowed: true });
-  assert.equal(pinned.scrollOwner, "native"); assert.equal(pinned.timelineEngine, "gsap");
-  const velocity = resolveCreativeStack(["velocity-reactive-scene"], { installationAllowed: true });
-  assert.equal(velocity.scrollOwner, "lenis"); assert.ok(velocity.packageProfiles.some((item) => item.id === "gsap-scrolltrigger"));
+test("package routing distinguishes Motion, GSAP, PixiJS, Rive, and Three", () => {
+  assert.ok(PACKAGE_PROFILES.some((item) => item.id === "motion"));
+  assert.ok(PACKAGE_PROFILES.some((item) => item.id === "pixi"));
+  assert.ok(PACKAGE_PROFILES.some((item) => item.id === "rive"));
+  const drag = resolveCreativeStack(["drag-rail"], { installationAllowed: true });
+  assert.equal(drag.timelineEngine, "motion");
+  const pinned = resolveCreativeStack(["pinned-chapter"], { installationAllowed: true });
+  assert.equal(pinned.timelineEngine, "gsap");
+  const native = resolveCreativeStack(["section-observer"], { installationAllowed: true });
+  assert.equal(native.timelineEngine, "native");
 });
 
-test("Remotion is capability-gated and package failure yields an explicit fallback", () => {
-  const gated = resolveCreativeStack(["remotion-rendered-sequence"], { installationAllowed: true, capabilities: [] });
-  assert.ok(gated.blockers.some((item) => /renderer/.test(item)));
-  const denied = resolveCreativeStack(["scroll-controlled-frame-sequence"], { installationAllowed: false });
-  assert.equal(denied.installCommands.length, 0); assert.ok(denied.fallbacks.length);
-});
-
-test("external references require licensing truth and at least three transformations", () => {
+test("external references require an adaptation and deliberate differences", () => {
   const errors = validateExternalReference({
-    source: "React Bits", sourceType: "repository", mechanism: "gallery", principleExtracted: "spatial selection",
-    projectSpecificUse: "product archive", brandSpecificTransformation: "editorial monochrome system", plannedDifferences: ["composition"], packages: [],
-    license: "verify-current", attributionRequired: true, performanceRisk: "medium", accessibilityRisk: "medium", originalityRisk: "high", transformations: ["content", "assets"],
+    source: "reference.example",
+    sourceType: "case study",
+    principleExtracted: "velocity changes material clarity",
+    adapt: "map reading speed to archive focus",
+    deliberatelyDiffer: ["content only"],
+    license: "reference only",
+    attributionRequired: false,
   });
-  assert.ok(errors.some((item) => /three dimensions/.test(item)));
+  assert.ok(errors.some((item) => /two concrete differences/.test(item)));
 });
 
-test("delivery rejects React Bits-style component soup, hero-only/fade-only motion and unused advanced dependencies", () => {
-  const findings = validateCreativeDelivery({ ambition: "award", heroSection: "hero", sectionMechanisms: [{ section: "hero", mechanisms: ["a", "b", "c", "d"], role: "peak" }],
-    motionVocabulary: ["fade-up", "opacity"], installedAdvancedPackages: ["gsap", "three"], usedAdvancedPackages: ["gsap"], externalReferences: [] });
-  assert.ok(findings.some((item) => /hero-only/.test(item)));
-  assert.ok(findings.some((item) => /fade-only/.test(item)));
-  assert.ok(findings.some((item) => /component soup/.test(item)));
-  assert.ok(findings.some((item) => /unused: three/.test(item)));
-});
-
-test("React Bits remains a reference and is never a distributable package profile", () => {
-  assert.equal(PACKAGE_PROFILES.some((item) => /react-bits/i.test(item.packageName)), false);
-  assert.ok(CREATIVE_MECHANISMS.every((item) => item.references.some((reference) => /react-bits/.test(reference.source))));
-  const rejected = validateExternalReference({ source: "react-bits", sourceType: "repository", mechanism: "gallery", principleExtracted: "spatial selection", projectSpecificUse: "archive", brandSpecificTransformation: "project composition", plannedDifferences: ["all visuals"], packages: [], license: "verified", attributionRequired: true, performanceRisk: "medium", accessibilityRisk: "medium", originalityRisk: "high", transformations: ["content", "composition", "motion"], redistributedWithDreative: true });
-  assert.ok(rejected.some((item) => /must not be redistributed/.test(item)));
-});
-
-test("every registry recipe file and heading exists and the catalogue schema parses", () => {
-  JSON.parse(fs.readFileSync(path.join(process.cwd(), "skill", "dreative", "schemas", "creative-catalog.schema.json"), "utf8"));
+test("every golden system export, guide heading, and visual anchor exists", async () => {
+  const runtimePath = path.join(process.cwd(), "skill", "dreative", "systems", "runtime.js");
+  const guide = fs.readFileSync(path.join(process.cwd(), "skill", "dreative", "systems", "GOLDEN_SYSTEMS.md"), "utf8");
+  const demo = fs.readFileSync(path.join(process.cwd(), "skill", "dreative", "systems", "demo.html"), "utf8");
+  const runtime = await import(`${new URL(`file:///${runtimePath.replaceAll("\\", "/")}`).href}?test=${Date.now()}`);
   for (const item of CREATIVE_MECHANISMS) {
-    const [relative, anchor] = item.recipe.split("#");
-    const content = fs.readFileSync(path.join(process.cwd(), "skill", "dreative", relative), "utf8");
-    assert.match(content.toLowerCase(), new RegExp(`^## ${anchor.replace(/-/g, "[ -]")}$`, "m"), item.id);
+    assert.equal(typeof runtime[item.implementationExport], "function", item.implementationExport);
+    assert.match(guide, new RegExp(`^## ${item.id}$`, "m"), item.id);
+    assert.match(demo, new RegExp(`id=["']${item.id}["']`), item.id);
   }
-});
-
-test("all treatments are allocated through hierarchy and explicit tension resolution", () => {
-  const selected = ["ux", "mobile", "refined", "motion", "interaction", "media", "3d", "immersive", "cinematic", "experimental"] as const;
-  const hierarchy = allocateTreatmentHierarchy([...selected], ["hero", "handoff", "field", "reading", "finale"]);
-  const allocated = new Set(hierarchy.sections.flatMap((item) => [...item.dominant, ...item.supporting]));
-  assert.deepEqual([...selected].filter((item) => !allocated.has(item)), []);
-  assert.ok(hierarchy.sections.every((item) => item.dominant.length <= 2));
-  assert.equal(hierarchy.continuityOwner, "immersive");
-  assert.ok(hierarchy.tensionResolutions.some((item) => /Refined.*Experimental/.test(item)));
-  assert.ok(hierarchy.tensionResolutions.some((item) => /Lenis remains optional/.test(item)));
 });

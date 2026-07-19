@@ -3,16 +3,14 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import readline from "node:readline";
-import { createServer } from "../server/index.js";
 import { detectCodingHost, detectProjectPreflight, resolveRuntimeRequirements } from "../shared/preflight.js";
 import { printDocsCheck, runDocsCheck } from "./docsCheck.js";
 import { runFinalize } from "./finalize.js";
 import { availableSkills, checkSkillInstallation, installSkill, installationDirectory, resolveSkillSelection } from "./installSkill.js";
 import { renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
 import { renderConfigurationChoices, renderDeliveryBrief, renderDetailedPlanGuide, type DeliveryProfileId } from "../shared/deliveryProfiles.js";
+import { initializeProjectContext, readProjectContext } from "../shared/projectContext.js";
 
-const port = Number(process.env.DREATIVE_PORT || 4820);
-const base = `http://localhost:${port}`;
 const args = process.argv.slice(2);
 const cmd = args[0] && !args[0].startsWith("-") ? args[0] : "brief";
 const packageRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -33,11 +31,11 @@ const USAGE = `usage: dreative [command]
                    --recommend efficient|recommended|showcase
                    --configure efficient|recommended|showcase
                    --detailed efficient|recommended|showcase
-  start-editor     explicitly serve the optional visual editor; never opens a browser
   install-skill    exact-sync the packaged skill and write a hashed manifest
                    --list | --skills all|a,b | --codex | --check
   preflight        detect the current framework, package manager, scripts and capabilities
                    --mechanisms a,b   resolve mechanism-led package/install requirements
+  context          durable project design memory: init | check | show
   catalogue        search the executable creative catalogue [--query phrase] [--json]
   finalize         run build/test/typecheck/lint/docs checks; prints DREATIVE_FINALIZED on success
                    --codex
@@ -100,18 +98,6 @@ async function main(): Promise<void> {
       console.log(renderDeliveryBrief(recommendation));
       return;
     }
-    case "start": {
-      console.error("deprecated: use `dreative start-editor`; the editor is optional and will not open a browser");
-      process.exitCode = 1;
-      return;
-    }
-    case "start-editor": {
-      const server = createServer(process.cwd()).listen(port, () => {
-        console.log(`\nOptional Dreative editor running for ${process.cwd()}\n${base}\n`);
-      });
-      server.on("error", (error) => { console.error(`failed to start on :${port} — ${String(error)}`); process.exit(1); });
-      return;
-    }
     case "install-skill": await installCommand(); return;
     case "finalize": {
       const result = runFinalize(process.cwd(), { target: hostTarget(), sourceDir: packagedSkillDir, packageVersion });
@@ -132,6 +118,29 @@ async function main(): Promise<void> {
       console.log(JSON.stringify({ preflight, runtimeRequirements: resolveRuntimeRequirements(mechanisms, preflight) }, null, 2));
       return;
     }
+    case "context": {
+      const action = args[1] ?? "check";
+      if (action === "init") {
+        const result = initializeProjectContext(process.cwd());
+        console.log(`${result.created ? "created" : "exists"} ${result.file}`);
+        return;
+      }
+      const result = readProjectContext(process.cwd());
+      if (!result.context) {
+        console.error(result.errors.length ? result.errors.join("\n") : `missing ${result.file}; run dreative context init`);
+        process.exitCode = 1;
+        return;
+      }
+      if (result.errors.length) {
+        result.errors.forEach((error) => console.error(`ERROR ${error}`));
+        process.exitCode = 1;
+        return;
+      }
+      if (action === "show") console.log(JSON.stringify(result.context, null, 2));
+      else if (action === "check") console.log(`valid ${result.file} (${result.context.status})`);
+      else throw new Error("usage: dreative context init|check|show");
+      return;
+    }
     case "catalogue": {
       const index = args.indexOf("--query");
       const query = index >= 0 ? args[index + 1] ?? "" : args.slice(1).filter((item) => !item.startsWith("--")).join(" ");
@@ -142,32 +151,6 @@ async function main(): Promise<void> {
     case "docs-check": {
       const report = runDocsCheck(packagedSkillDir); printDocsCheck(report, args.includes("--json"));
       if (!report.ok) process.exitCode = 1; return;
-    }
-    case "wait": {
-      const index = args.indexOf("--timeout");
-      const deadline = Date.now() + (index >= 0 ? Number(args[index + 1]) : 480) * 1000;
-      while (Date.now() < deadline) {
-        const response = await fetch(`${base}/api/agent/next`);
-        if (response.status === 204) continue;
-        if (!response.ok) throw new Error(`server error ${response.status}`);
-        console.log(JSON.stringify(await response.json())); return;
-      }
-      console.log(JSON.stringify({ kind: "none" })); return;
-    }
-    case "respond": {
-      const id = args[1]; if (!id) throw new Error("usage: dreative respond <requestId> [resultFile] [--error msg]");
-      const errorIndex = args.indexOf("--error");
-      const body: { id: string; result?: unknown; error?: string } = { id };
-      if (errorIndex >= 0) body.error = args[errorIndex + 1] || "agent error";
-      else body.result = args[2] ? JSON.parse(fs.readFileSync(args[2], "utf8")) : { ok: true };
-      const response = await fetch(`${base}/api/agent/respond`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-      if (!response.ok) throw new Error(`respond failed: ${await response.text()}`);
-      console.log("ok"); return;
-    }
-    case "baseline": {
-      const response = await fetch(`${base}/api/baseline`, { method: "POST" });
-      if (!response.ok) throw new Error(`baseline failed: ${await response.text()}`);
-      console.log("ok"); return;
     }
     default: console.error(`unknown command: ${cmd}\n${USAGE}`); process.exit(1);
   }

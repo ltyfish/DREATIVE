@@ -11,5 +11,5 @@
     "declaration": false,
     "sourceMap": false
   },
-  "include": ["src/cli", "src/server", "src/shared"]
+  "include": ["src/cli", "src/shared"]
 }

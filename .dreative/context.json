@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "status": "current",
+  "productPurpose": "Help coding agents plan, build, inspect, and refine distinctive production frontends in the user's real application.",
+  "creativeFingerprint": {
+    "premise": "Product-native creative direction becomes trustworthy only when it survives implementation and rendered correction.",
+    "composition": "A compact operating contract routes progressively into direction, one relevant specialty, one golden system, and a full-page refinement loop.",
+    "typeVoice": "Direct, exact, anti-performative language that distinguishes creative judgment from objective command checks.",
+    "materialAndMedia": "Documentation remains compact; executable runtime source and a restrained functional visual fixture demonstrate advanced systems.",
+    "motionAndInteraction": "Native-first with one owner; Motion serves component state, GSAP serves choreography, and GPU runtimes are optional when the concept earns them.",
+    "continuity": "Product truth flows into a concept fingerprint, selected implementation system, desktop/mobile screenshots, visible repairs, and durable project memory."
+  },
+  "protectedContracts": [
+    "Dreative is a frontend agent skill and CLI, not a visual editor or deterministic design engine.",
+    "DREATIVE_FINALIZED certifies command success only, never taste or visual quality.",
+    "Rendered pixel inspection at desktop and 390px cannot be replaced by DOM or accessibility snapshots.",
+    "Showcase has no minimum treatment count.",
+    "Do not add approval hashes, attestations, critic scores, evidence ledgers, or fabricated benchmark claims."
+  ],
+  "runtimeOwners": {
+    "scroll": "Native scroll by default; Lenis only when the concept requires velocity or DOM/WebGL synchronization.",
+    "animation": "One selected owner per behavior: Motion for component state, GSAP for coordinated choreography, native CSS/WAAPI for simpler states.",
+    "spatial": "None by default; PixiJS for high-density 2D and Three.js/R3F/OGL for earned spatial behavior."
+  },
+  "importantAssets": [
+    {
+      "path": "skill/dreative/systems/runtime.js",
+      "role": "Executable source for the twelve golden systems.",
+      "status": "available"
+    },
+    {
+      "path": "skill/dreative/systems/demo.html",
+      "role": "Functional visual fixture for desktop and mobile inspection.",
+      "status": "available"
+    },
+    {
+      "path": "skill/dreative/references/VISUAL_REFINEMENT.md",
+      "role": "Screenshot, critique, repair, and recapture workflow.",
+      "status": "available"
+    }
+  ],
+  "testedStates": [
+    {
+      "route": "golden systems fixture /",
+      "viewport": "1440x900",
+      "checks": [
+        "opening and post-hero composition visually inspected",
+        "scroll progress, drag rail, and spatial selection exercised",
+        "console and page errors absent"
+      ]
+    },
+    {
+      "route": "golden systems fixture /",
+      "viewport": "390x844",
+      "checks": [
+        "opening, frame sequence, adaptive canvas, spatial gallery, and final section visually inspected",
+        "persistent stage no longer leaks into the opening",
+        "no horizontal page overflow observed"
+      ]
+    },
+    {
+      "route": "golden systems fixture /",
+      "viewport": "390x844 prefers-reduced-motion",
+      "checks": [
+        "kinetic type resolves immediately",
+        "observed content remains visible",
+        "spatial depth resolves to a shallow mobile state"
+      ]
+    }
+  ],
+  "deliberateDecisions": [
+    {
+      "decision": "Replace the broad effect catalogue with twelve executable golden systems.",
+      "reason": "Execution reliability and bounded choice are more useful than a large vocabulary of unproven effects."
+    },
+    {
+      "decision": "Keep project memory small and human-readable.",
+      "reason": "Future agents need durable design intent without another governance or certification layer."
+    },
+    {
+      "decision": "Defer benchmark implementation.",
+      "reason": "The user explicitly deferred it; no comparative quality claim should be made without controlled runs and blind evaluation."
+    }
+  ],
+  "outstandingVisualIssues": []
+}

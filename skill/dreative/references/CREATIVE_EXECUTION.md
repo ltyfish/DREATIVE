@@ -10,6 +10,8 @@ fallback, and cleanup cost. A library name is never a design rationale.
 
 - Native scroll + CSS/SVG: ordinary layout, hover/focus states, reveals, and
   simple transitions.
+- Motion: component-state layout, enter/exit, hover, press, drag, and shared
+  state changes in product interfaces.
 - GSAP: coordinated timelines, reversible sequences, pinning, scrubbing,
   shared-element movement, and DOM/SVG/WebGL choreography.
 - Lenis: intentional interpolated scrolling, velocity-driven behavior, or a
@@ -18,6 +20,10 @@ fallback, and cleanup cost. A library name is never a design rationale.
   or embodies the subject.
 - Canvas: dense procedural drawing or continuous simulation that DOM/SVG cannot
   deliver cleanly.
+- PixiJS: high-density interactive 2D sprites, filters, shaders, text, or image
+  fields that do not need a 3D scene.
+- Rive: an authored `.riv` state machine for a branded diagram, mascot, icon, or
+  input-responsive component. A runtime without the asset is not capability.
 - Sharp/FFmpeg: build-time asset processing, not creative direction.
 
 ## Runtime ownership
@@ -47,5 +53,6 @@ Reject:
 - effects that cover controls, reduce readability, or vanish on mobile;
 - a prototype that consumes more effort than the final product.
 
-After integration, inspect the mechanism at desktop, 390px, reduced motion, and
-its loading/failure state. Judge the actual composition, not numeric telemetry.
+After integration, run `VISUAL_REFINEMENT.md`: inspect screenshots at desktop,
+390px, reduced motion, and the loading/failure state, fix visible findings, and
+recapture. Judge the actual composition, not numeric telemetry.

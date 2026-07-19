@@ -23,9 +23,8 @@ Show exactly:
    preserving the current structure, assets, and stack where useful.
 
 3. **Showcase — <flagship concept>**
-   The highest creative and technical ceiling. Integrate UX, Mobile, Refined,
-   Motion, Interaction, Media, 3D, Immersive, Cinematic, and Experimental into
-   a few coherent systems.
+   The highest creative and technical ceiling. Any treatment is available, but
+   select only those that materially strengthen the premise.
 
 Each option must name its premise, composition, material/type voice, meaningful
 media or interaction, and product fit. Do not mention reference brands as the
@@ -114,9 +113,9 @@ reveal the current full brief. Do not create a plan file, approval record, or
 other compliance artifact merely to prove that the private brief exists.
 
 Adapt every decision below to the inspected project and selected direction.
-The user's explicit choices and corrections are the source of truth. Use tier
+The user's explicit choices and corrections are the source of truth. Use direction
 defaults and agent judgment only where the user left a decision open. Do not
-reinterpret a tier label to reduce its promised scope, and do not change taste,
+reinterpret a direction label to reduce its promised scope, and do not change taste,
 intensity, treatments, or page allocation merely because implementation is
 harder than expected.
 
@@ -153,12 +152,12 @@ Packages, and actual detected capabilities. Mark recommendations.
 
 ### 5. Treatment and experience allocation
 
-For all ten treatments, state the project-specific use, selected/declined
+For each relevant treatment, state the project-specific use, selected/declined
 decision, cost, risk, and insufficient version. Then map the selected treatments
 to route sections, including a meaningful post-hero peak and the continuity
-owner. User-selected treatment names or counts override tier defaults. UX and
-Mobile always apply. Showcase selects all ten unless the user explicitly
-overrides it. Selection is a delivery promise, not checkbox coverage: every
+owner. User-selected treatment names or counts override direction defaults. UX and
+Mobile always apply. Showcase may use any treatment but has no minimum treatment
+count. Selection is a delivery promise, not checkbox coverage: every
 selected treatment needs a named owner and perceptible contribution, although
 one coherent mechanism may serve several treatments.
 

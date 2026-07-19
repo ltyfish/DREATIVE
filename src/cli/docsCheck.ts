@@ -65,7 +65,6 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
 
   const skill = contents.get("SKILL.md") ?? "";
   const plan = contents.get("PLAN.md") ?? "";
-  requireText(findings, "SKILL.md", skill, /never open.*editor|do not open.*editor/is, "must forbid opening the optional Dreative editor during frontend work");
   requireText(findings, "SKILL.md", skill, /design-builder/i, "must define Dreative as a frontend design-builder");
   requireText(findings, "SKILL.md", skill, /CREATIVE_DIRECTION\.md/, "must route open-ended concept work through creative synthesis");
   requireText(findings, "SKILL.md", skill, /project-native|product truth/i, "must derive concepts from the real product");
@@ -75,6 +74,10 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /390px/i, "must require an authored mobile browser review");
   requireText(findings, "SKILL.md", skill, /encoding|mojibake|broken glyphs/i, "must check visible text integrity");
   requireText(findings, "SKILL.md", skill, /DREATIVE_FINALIZED/, "must retain fail-closed finalization");
+  requireText(findings, "SKILL.md", skill, /VISUAL_REFINEMENT\.md/, "must route completion through the rendered screenshot correction loop");
+  requireText(findings, "SKILL.md", skill, /\.dreative\/context\.json/, "must preserve durable project memory");
+  requireText(findings, "references/VISUAL_REFINEMENT.md", contents.get("references/VISUAL_REFINEMENT.md") ?? "", /capture full-page screenshots|inspect the pixels/i, "visual refinement must require screenshot inspection");
+  requireText(findings, "systems/GOLDEN_SYSTEMS.md", contents.get("systems/GOLDEN_SYSTEMS.md") ?? "", /twelve systems|twelve golden/i, "must expose a bounded golden-system set");
   requireText(findings, "references/CREATIVE_DIRECTION.md", contents.get("references/CREATIVE_DIRECTION.md") ?? "", /independence test/i, "must include a reference-independence test");
 
   for (const choice of ["Recommended", "Efficient", "Showcase"])
@@ -83,7 +86,7 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "PLAN.md", plan, /second approval/i, "must avoid a second approval gate");
   for (const choice of ["References", "Treatments", "Sourced images", "Generated images", "Packages", "Prototype", "Review depth", "Fast", "Lean", "Full Audit"])
     requireText(findings, "PLAN.md", plan, new RegExp(`\\b${choice}\\b`, "i"), `detailed planning is missing ${choice}`);
-  requireText(findings, "PLAN.md", plan, /all ten/i, "Showcase must explicitly select all ten treatments");
+  requireText(findings, "PLAN.md", plan, /no minimum treatment|select only those/i, "Showcase must select treatments by concept fit rather than count");
   requireText(findings, "PLAN.md", plan, /token-.+efficient|least tokens/i, "Efficient must optimize token use");
 
   const publicContract = `${skill}\n${plan}`;

@@ -27,6 +27,7 @@ export type CapabilityConfidence = "verified" | "detected" | "expected" | "unver
 
 export const CAPABILITY_IDS = [
   "dom-css-runtime", "canvas-runtime", "webgl-runtime", "webgpu-runtime", "threejs-runtime", "gsap-runtime",
+  "motion-runtime", "pixi-runtime", "rive-runtime",
   "scrolltrigger-runtime", "video-playback", "image-sequence-playback",
   "ffmpeg-processing", "sharp-processing", "image-conversion", "video-transcoding", "frame-extraction", "compression",
   "remotion-renderer", "external-model-server",
@@ -136,6 +137,8 @@ export interface RuntimeRequirement {
 
 const RUNTIME_RULES: { pattern: RegExp; packages: { name: string; compatibleVersion: string }[] }[] = [
   { pattern: /motion(?:\/react)?|layout motion|spring|presence|gesture/i, packages: [{ name: "motion", compatibleVersion: "^12" }] },
+  { pattern: /pixi|2d sprite|sprite field/i, packages: [{ name: "pixi.js", compatibleVersion: "^8" }] },
+  { pattern: /rive|state-machine illustration/i, packages: [{ name: "@rive-app/webgl2", compatibleVersion: "^2" }] },
   { pattern: /gsap|scrolltrigger|pinned timeline/i, packages: [{ name: "gsap", compatibleVersion: "^3" }] },
   { pattern: /lenis|smooth scroll/i, packages: [{ name: "lenis", compatibleVersion: "^1" }] },
   { pattern: /react three|r3f|@react-three\/fiber/i, packages: [{ name: "three", compatibleVersion: "^0" }, { name: "@react-three/fiber", compatibleVersion: "^9" }] },
@@ -145,6 +148,7 @@ const RUNTIME_RULES: { pattern: RegExp; packages: { name: string; compatibleVers
 const CATEGORY: Record<CreativeCapabilityId, CapabilityCategory> = {
   "dom-css-runtime": "runtime-rendering", "canvas-runtime": "runtime-rendering", "webgl-runtime": "runtime-rendering",
   "webgpu-runtime": "runtime-rendering", "threejs-runtime": "runtime-rendering", "gsap-runtime": "runtime-rendering",
+  "motion-runtime": "runtime-rendering", "pixi-runtime": "runtime-rendering", "rive-runtime": "runtime-rendering",
   "scrolltrigger-runtime": "runtime-rendering", "video-playback": "runtime-rendering", "image-sequence-playback": "runtime-rendering",
   "ffmpeg-processing": "processing", "sharp-processing": "processing", "image-conversion": "processing",
   "video-transcoding": "processing", "frame-extraction": "processing", "compression": "processing",
@@ -159,7 +163,7 @@ const CATEGORY: Record<CreativeCapabilityId, CapabilityCategory> = {
 };
 
 const commandAvailable = (command: string): boolean =>
-  spawnSync(command, ["-version"], { stdio: "ignore", shell: process.platform === "win32" }).status === 0;
+  spawnSync(command, ["-version"], { stdio: "ignore", windowsHide: true }).status === 0;
 
 const permissionFor = (id: CreativeCapabilityId, permissions: CreativePermissions, unresolved = false): PermissionState => {
   if (unresolved && ["image-generation", "image-editing", "video-generation", "video-editing", "frame-sequence-creation", "audio-generation", "image-search", "font-search", "texture-search", "video-search", "3d-asset-search", "3d-model-generation", "3d-model-editing"].includes(id)) return "unresolved";
@@ -257,6 +261,9 @@ export function resolveCreativeCapabilities(installed: string[], permissions: Cr
     browserExpected("webgpu-runtime", "WebGPU support is browser/device dependent and unverified."),
     runtimePackage("threejs-runtime", "three", has("three") || has("@react-three/fiber"), "Three.js renders spatial scenes; it does not generate or author models."),
     runtimePackage("gsap-runtime", "gsap", has("gsap"), "GSAP orchestrates animation; it does not create cinematic design."),
+    runtimePackage("motion-runtime", "motion", has("motion"), "Motion animates state and layout; it does not choose the visual direction."),
+    runtimePackage("pixi-runtime", "pixi.js", has("pixi.js"), "PixiJS renders high-density 2D scenes; it does not make a generic effect product-specific."),
+    runtimePackage("rive-runtime", "@rive-app/webgl2", has("@rive-app/webgl2") || has("@rive-app/react-canvas"), "A Rive runtime requires a real authored .riv asset and state-machine contract."),
     runtimePackage("scrolltrigger-runtime", "gsap", has("gsap"), "ScrollTrigger coordinates scroll states; it does not author choreography."),
     browserExpected("video-playback", "Video playback depends on codec, browser and device verification."),
     browserExpected("image-sequence-playback", "Image-sequence playback requires runtime decode and performance verification."),
@@ -354,7 +361,7 @@ export function detectProjectPreflight(projectDir: string, options: { permission
   const sourceLayout = ["src", "app", "pages", "components", "public", "assets"].filter((name) => fs.existsSync(path.join(projectDir, name)));
   const files = sourceLayout.flatMap((name) => walk(path.join(projectDir, name))).filter((file) => /\.(?:[jt]sx?|vue|svelte|css|scss)$/.test(file) && !/\.(?:test|spec)\.[jt]sx?$/.test(file));
   const source = files.map((file) => fs.readFileSync(file, "utf8")).join("\n");
-  const capabilityPackages = ["motion", "framer-motion", "gsap", "@gsap/react", "lenis", "three", "@react-three/fiber", "@react-three/drei", "@react-three/postprocessing", "postprocessing", "ogl", "@use-gesture/react", "matter-js", "@react-three/rapier", "sharp", "remotion", "@remotion/cli", "@remotion/player", "playwright", "@playwright/test"];
+  const capabilityPackages = ["motion", "framer-motion", "gsap", "@gsap/react", "lenis", "pixi.js", "@rive-app/webgl2", "@rive-app/react-canvas", "three", "@react-three/fiber", "@react-three/drei", "@react-three/postprocessing", "postprocessing", "ogl", "@use-gesture/react", "matter-js", "@react-three/rapier", "sharp", "remotion", "@remotion/cli", "@remotion/player", "playwright", "@playwright/test"];
   const installedCapabilities = capabilityPackages.filter((name) => deps[name]);
   const permissions: CreativePermissions = {
     generatedImagesAllowed: false, externalImagesAllowed: false, generatedVideoAllowed: false, externalVideoAllowed: false,

@@ -19,7 +19,7 @@ test("direction planning exposes Recommended, Efficient, and Showcase", () => {
 test("direction meanings and adaptive defaults are fixed", () => {
   assert.match(deliveryProfile("recommended").promise, /specific product/);
   assert.match(deliveryProfile("efficient").promise, /token-efficient/);
-  assert.match(deliveryProfile("showcase").treatments, /All ten/);
+  assert.match(deliveryProfile("showcase").treatments, /no minimum count/i);
   assert.deepEqual(
     DELIVERY_PROFILES.map(({ id, prototype, review }) => ({ id, prototype, review })),
     [
@@ -43,6 +43,6 @@ test("detailed planning is an adaptive Creative Decision Brief", () => {
   const detail = renderDetailedPlanGuide("showcase");
   for (const field of ["Current state", "Selected direction", "Reference synthesis", "Workflow", "Treatment guide", "section allocation", "Build architecture", "Risks"])
     assert.match(detail, new RegExp(field, "i"));
-  assert.match(detail, /All ten/);
+  assert.match(detail, /no minimum count/i);
   assert.doesNotMatch(detail, /approval hash|attestation|independent critic|provenance/i);
 });

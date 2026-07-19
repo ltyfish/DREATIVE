@@ -8,11 +8,17 @@ import { detectProjectPreflight, resolveCreativeCapabilities, resolveRuntimeRequ
 test("project preflight detects framework, manager, scripts and existing capabilities", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-preflight-"));
   fs.mkdirSync(path.join(root, "src"));
-  fs.writeFileSync(path.join(root, "package.json"), JSON.stringify({ dependencies: { react: "^18", vite: "^6", gsap: "^3" }, scripts: { build: "vite build" } }));
+  fs.writeFileSync(path.join(root, "package.json"), JSON.stringify({ dependencies: { react: "^18", vite: "^6", gsap: "^3", motion: "^12", "pixi.js": "^8", "@rive-app/webgl2": "^2" }, scripts: { build: "vite build" } }));
   fs.writeFileSync(path.join(root, "package-lock.json"), "{}");
   fs.writeFileSync(path.join(root, "src", "App.tsx"), "const reduced = matchMedia('(prefers-reduced-motion: reduce)')");
   const result = detectProjectPreflight(root);
   assert.equal(result.framework, "vite"); assert.equal(result.packageManager, "npm"); assert.ok(result.installedCapabilities.includes("gsap")); assert.equal(result.scripts.build, "vite build");
+  assert.ok(result.installedCapabilities.includes("motion"));
+  assert.ok(result.installedCapabilities.includes("pixi.js"));
+  assert.ok(result.installedCapabilities.includes("@rive-app/webgl2"));
+  assert.equal(result.creativeCapabilities.find((item) => item.id === "motion-runtime")?.status, "available");
+  assert.equal(result.creativeCapabilities.find((item) => item.id === "pixi-runtime")?.status, "available");
+  assert.equal(result.creativeCapabilities.find((item) => item.id === "rive-runtime")?.status, "available");
 });
 
 test("runtime resolver installs only packages required by approved mechanisms", () => {

@@ -5,8 +5,15 @@ skill and is not copied into an agent installation.
 
 ## What was removed
 
-The retired v9 compatibility surface was deleted:
+The retired editor, deterministic design engine, and v9 compatibility surface
+were deleted:
 
+- the React canvas/editor/inspector and Vite application;
+- the Express preview server, queue, generated-preview pipeline, and editor
+  persistence types;
+- keyword-triggered aesthetics, numeric design dials, ambition-tier resolution,
+  layout-family assignment, and the claim that Dreative decides while the agent
+  only executes;
 - `.dreative/plan.yaml` governance, migrations, approvals, and requirement IDs;
 - approval provenance, contract hashes, workflow traces, and assurance levels;
 - model-authored evidence ledgers, trusted-run manifests, and certification
@@ -20,11 +27,17 @@ The retired v9 compatibility surface was deleted:
 
 ## Why it was removed
 
-These mechanisms added substantial implementation and maintenance cost but did
-not establish independent trust. The same coding agent could write the plan,
-produce the evidence, score the critic output, update the hashes, and declare
-the gates satisfied. That made the artifacts internally consistent without
-proving that the rendered website was good.
+The editor and deterministic engine expressed a different product philosophy
+from the current skill. They treated design as keyword routing and rule output,
+while the active skill gives the coding agent responsibility for product-native
+creative judgment and rendered quality. Keeping both made the repository
+internally contradictory.
+
+The governance mechanisms also added substantial implementation and maintenance
+cost but did not establish independent trust. The same coding agent could write
+the plan, produce the evidence, score the critic output, update the hashes, and
+declare the gates satisfied. That made the artifacts internally consistent
+without proving that the rendered website was good.
 
 Dogfood runs showed that more ceremony did not reliably prevent:
 

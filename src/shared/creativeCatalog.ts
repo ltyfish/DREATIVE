@@ -1,359 +1,230 @@
-import type { SpecialistSkill } from "./skillSystem.js";
+export type SpecialistSkill =
+  | "ux" | "mobile" | "refined" | "motion" | "interaction"
+  | "media" | "3d" | "immersive" | "cinematic" | "experimental";
 
-export type CreativeAmbition = "standard" | "expressive" | "award" | "experimental";
 export type CreativeRisk = "low" | "medium" | "high";
-export type CreativeMechanismFamily = "scroll-choreography" | "media-transformation" | "spatial-3d" | "typography" | "interaction" | "scene-transition" | "atmosphere";
 
 export interface PackageProfile {
   id: string;
   packageName: string;
-  versionStrategy: string;
-  frameworks: string[];
-  install: string;
   importForm: string;
-  licenseConsiderations: string;
-  runtimeCapabilities: string[];
-  browserLimitations: string[];
-  reducedMotion: string;
-  mobile: string;
-  buildChecks: string[];
-  browserChecks: string[];
+  useWhen: string;
+  rejectWhen: string;
   cleanup: string[];
   optional: boolean;
   buildTimeOnly?: boolean;
 }
 
-const profile = (id: string, packageName: string, importForm: string, options: Partial<PackageProfile> = {}): PackageProfile => ({
-  id, packageName, importForm,
-  versionStrategy: "Resolve the current compatible stable release from the target lockfile and framework; never invent or silently widen a version.",
-  frameworks: ["vanilla", "react", "next", "vite"],
-  install: `npm install ${packageName}`,
-  licenseConsiderations: "Check the current upstream package and plugin license before installation; record source, version, notices and any use restrictions.",
-  runtimeCapabilities: ["modern browser JavaScript"],
-  browserLimitations: ["Verify on the actual target browsers and low-power mobile hardware."],
-  reducedMotion: "Do not initialize non-essential continuous motion when prefers-reduced-motion is active; retain an intentional resolved state.",
-  mobile: "Use a touch-native translation and measure frame time, memory, loading and input behavior.",
-  buildChecks: ["package resolves", "production build passes", "tree-shaken plugin remains registered when applicable"],
-  browserChecks: ["no runtime or hydration errors", "expected visual state is observable"],
-  cleanup: ["remove listeners, tickers and observers", "dispose owned runtime resources"],
+const profile = (
+  id: string,
+  packageName: string,
+  importForm: string,
+  useWhen: string,
+  rejectWhen: string,
+  options: Partial<PackageProfile> = {},
+): PackageProfile => ({
+  id, packageName, importForm, useWhen, rejectWhen,
+  cleanup: ["remove owned listeners, observers, tickers, and resources"],
   optional: true,
   ...options,
 });
 
 export const PACKAGE_PROFILES: PackageProfile[] = [
-  profile("gsap", "gsap", "import { gsap } from 'gsap'", { optional: false }),
-  profile("gsap-react", "@gsap/react", "import { useGSAP } from '@gsap/react'", { frameworks: ["react", "next", "vite"], cleanup: ["use useGSAP with a scope ref", "wrap delayed handlers with contextSafe"] }),
-  profile("gsap-scrolltrigger", "gsap", "import { ScrollTrigger } from 'gsap/ScrollTrigger'; gsap.registerPlugin(ScrollTrigger)", { runtimeCapabilities: ["layout measurement", "scroll progress"], browserChecks: ["pin entry and exit do not jump", "reverse scroll works", "refresh after fonts and media load"] }),
-  profile("gsap-flip", "gsap", "import { Flip } from 'gsap/Flip'; gsap.registerPlugin(Flip)"),
-  profile("gsap-observer", "gsap", "import { Observer } from 'gsap/Observer'; gsap.registerPlugin(Observer)"),
-  profile("gsap-draggable", "gsap", "import { Draggable } from 'gsap/Draggable'; gsap.registerPlugin(Draggable)"),
-  profile("gsap-inertia", "gsap", "import { InertiaPlugin } from 'gsap/InertiaPlugin'; gsap.registerPlugin(InertiaPlugin)"),
-  profile("gsap-motionpath", "gsap", "import { MotionPathPlugin } from 'gsap/MotionPathPlugin'; gsap.registerPlugin(MotionPathPlugin)"),
-  profile("gsap-splittext", "gsap", "import { SplitText } from 'gsap/SplitText'; gsap.registerPlugin(SplitText)"),
-  profile("gsap-morphsvg", "gsap", "import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin'; gsap.registerPlugin(MorphSVGPlugin)"),
-  profile("lenis", "lenis", "import Lenis from 'lenis'; import 'lenis/dist/lenis.css'", { runtimeCapabilities: ["single shared scroll clock"], browserChecks: ["anchors work", "nested and modal scroll are not trapped", "navigation stops or resets inertia", "no duplicate RAF loop"], cleanup: ["remove the exact GSAP ticker callback when shared", "destroy Lenis"] }),
-  profile("three", "three", "import * as THREE from 'three'", { runtimeCapabilities: ["WebGL"], cleanup: ["dispose renderer, textures, materials and geometries", "remove resize and visibility handlers"] }),
-  profile("react-three-fiber", "@react-three/fiber", "import { Canvas, useFrame } from '@react-three/fiber'", { frameworks: ["react", "next", "vite"] }),
-  profile("react-three-drei", "@react-three/drei", "import { useTexture } from '@react-three/drei'", { frameworks: ["react", "next", "vite"] }),
-  profile("react-three-postprocessing", "@react-three/postprocessing", "import { EffectComposer } from '@react-three/postprocessing'", { frameworks: ["react", "next", "vite"] }),
-  profile("postprocessing", "postprocessing", "import { EffectComposer } from 'postprocessing'", { runtimeCapabilities: ["WebGL2 recommended"] }),
-  profile("ogl", "ogl", "import { Renderer, Program, Mesh } from 'ogl'", { runtimeCapabilities: ["WebGL"] }),
-  profile("motion", "motion", "import { animate } from 'motion'"),
-  profile("use-gesture", "@use-gesture/react", "import { useDrag } from '@use-gesture/react'", { frameworks: ["react", "next", "vite"] }),
-  profile("matter", "matter-js", "import Matter from 'matter-js'", { runtimeCapabilities: ["Canvas or DOM physics mapping"] }),
-  profile("rapier", "@react-three/rapier", "import { Physics } from '@react-three/rapier'", { frameworks: ["react", "next", "vite"], runtimeCapabilities: ["WebAssembly", "WebGL"] }),
-  profile("sharp", "sharp", "import sharp from 'sharp'", { frameworks: ["node-build"], buildTimeOnly: true, runtimeCapabilities: ["Node native module support"], browserLimitations: ["Never import into client bundles."] }),
-  profile("ffmpeg", "ffmpeg-static", "import ffmpegPath from 'ffmpeg-static'", { frameworks: ["node-build"], buildTimeOnly: true, runtimeCapabilities: ["confirmed executable binary"], browserLimitations: ["Build-time only; validate generated codecs separately."] }),
-  profile("remotion", "remotion", "import { Composition } from 'remotion'", { frameworks: ["react", "node-build"], buildTimeOnly: true, runtimeCapabilities: ["confirmed Remotion renderer and browser executable"] }),
-  profile("remotion-cli", "@remotion/cli", "npx remotion render", { frameworks: ["node-build"], buildTimeOnly: true, runtimeCapabilities: ["confirmed browser executable", "filesystem output"] }),
-  profile("remotion-player", "@remotion/player", "import { Player } from '@remotion/player'", { frameworks: ["react", "next", "vite"] }),
-  profile("remotion-transitions", "@remotion/transitions", "import { TransitionSeries } from '@remotion/transitions'", { frameworks: ["react", "node-build"], buildTimeOnly: true }),
-  profile("image-sequence", "sharp", "Use sharp plus a bounded frame manifest generated at build time", { frameworks: ["node-build"], buildTimeOnly: true }),
+  profile("motion", "motion", `import { animate } from "motion"`, "animation follows component state, layout, enter/exit, hover, press, or drag", "the page needs a coordinated multi-system timeline"),
+  profile("gsap", "gsap", `import { gsap } from "gsap"`, "a reversible or coordinated timeline owns several DOM/SVG states", "a CSS transition or component-state animation is sufficient"),
+  profile("gsap-react", "@gsap/react", `import { useGSAP } from "@gsap/react"`, "GSAP runs inside React and must be scoped to a component", "the project is not React", { cleanup: ["scope with useGSAP and revert on unmount"] }),
+  profile("gsap-scrolltrigger", "gsap", `import { ScrollTrigger } from "gsap/ScrollTrigger"`, "measured pinning or scrubbed choreography is central", "ordinary sticky positioning and native scroll progress are sufficient"),
+  profile("gsap-flip", "gsap", `import { Flip } from "gsap/Flip"`, "one semantic subject must move between layouts", "a crossfade communicates the state change"),
+  profile("gsap-splittext", "gsap", `import { SplitText } from "gsap/SplitText"`, "semantic typography needs measured word or glyph choreography", "type movement is decorative or harms reading order"),
+  profile("lenis", "lenis", `import Lenis from "lenis"`, "velocity or DOM/WebGL synchronization is part of the concept", "smoothness is the only rationale", { cleanup: ["remove the exact shared ticker callback", "destroy Lenis"] }),
+  profile("pixi", "pixi.js", `import { Application } from "pixi.js"`, "the experience is fundamentally high-density interactive 2D", "DOM/SVG handles the object count and effects cleanly", { cleanup: ["stop ticker", "destroy application, children, textures, and canvas"] }),
+  profile("rive", "@rive-app/webgl2", `import { Rive } from "@rive-app/webgl2"`, "a supplied state-machine asset drives a branded diagram, mascot, or control", "there is no authored .riv asset or the animation is passive decoration", { cleanup: ["stop and delete the Rive instance", "remove canvas listeners"] }),
+  profile("three", "three", `import * as THREE from "three"`, "real depth, camera, lighting, or geometry explains the subject", "the output behaves like a flat image", { cleanup: ["dispose renderer, textures, materials, and geometries"] }),
+  profile("react-three-fiber", "@react-three/fiber", `import { Canvas } from "@react-three/fiber"`, "Three.js belongs to a React component tree", "raw Three.js has a smaller and clearer ownership boundary"),
+  profile("ogl", "ogl", `import { Renderer, Program, Mesh } from "ogl"`, "a bounded WebGL media treatment needs a small low-level runtime", "Three.js scene features or native Canvas are a better fit"),
+  profile("sharp", "sharp", `import sharp from "sharp"`, "build-time responsive images, posters, atlases, or displacement assets are required", "the work is expected in a client bundle", { buildTimeOnly: true }),
+  profile("ffmpeg", "ffmpeg-static", `import ffmpegPath from "ffmpeg-static"`, "existing footage needs compression, posters, transparent fallbacks, or frame extraction", "no verified executable or source footage is available", { buildTimeOnly: true }),
 ];
 
-export interface CreativePrimitive {
+export interface GoldenSystem {
   id: string;
-  semanticPurpose: string;
-  compositionRequirements: string[];
-  contentRoles: string[];
+  name: string;
+  aliases: string[];
+  summary: string;
+  suitableTreatments: SpecialistSkill[];
   packageProfiles: string[];
-  reactGuidance: string;
-  vanillaGuidance: string;
-  lifecycleCleanup: string[];
-  resizeHandling: string;
-  loadingHandling: string;
-  assetErrorHandling: string;
-  reducedMotionMode: string;
+  implementation: string;
+  implementationExport: string;
+  guide: string;
+  useWhen: string;
+  rejectWhen: string;
   mobileTranslation: string;
+  reducedMotionStrategy: string;
   semanticFallback: string;
-  performanceControls: string[];
-  acceptableDegradation: string;
-  browserVerification: string[];
-  evidenceStates: string[];
-  antiPatterns: string[];
+  cleanup: string[];
+  performanceBudget: string[];
+  browserTest: string[];
+  visualExample: string;
+  risk: CreativeRisk;
 }
 
-const primitive = (id: string, semanticPurpose: string, packageProfiles: string[] = [], extra: Partial<CreativePrimitive> = {}): CreativePrimitive => ({
-  id, semanticPurpose, packageProfiles,
-  compositionRequirements: ["Bind to real project content and a named section role.", "Define start, active and resolved compositions before implementation."],
-  contentRoles: ["structural transition", "continuity system", "authored media moment"],
-  reactGuidance: "Keep the imperative runtime in an isolated client leaf; use scoped cleanup and stable refs rather than render-loop state.",
-  vanillaGuidance: "Own one root, one lifecycle controller and an idempotent destroy function.",
-  lifecycleCleanup: ["remove listeners and ticker callbacks", "cancel pending loads", "dispose owned GPU or media resources"],
-  resizeHandling: "Use ResizeObserver or the runtime resize API, refresh measured timelines after assets settle, and preserve current progress.",
-  loadingHandling: "Render semantic DOM and a poster/skeleton before the advanced layer becomes ready; expose bounded progress for sequences.",
-  assetErrorHandling: "Keep the semantic fallback visible, record the failed asset, and activate the approved fallback without calling missing APIs.",
-  reducedMotionMode: "Render intentional start and resolved semantic states without continuous or vestibular travel.",
-  mobileTranslation: "Translate the same narrative cause and effect for touch, with lower counts, shorter travel and measured budgets.",
-  semanticFallback: "Accessible DOM content and project-specific still media remain reachable when the advanced layer fails.",
-  performanceControls: ["intersection activation", "visibility pause", "adaptive quality", "bounded asset and object counts"],
-  acceptableDegradation: "Reduce density, depth or duration while preserving identity, hierarchy and section role.",
-  browserVerification: ["initial, midpoint and end differ visibly", "mobile and reduced-motion states work", "no console error, trapped scroll or blank surface"],
-  evidenceStates: ["initial", "midpoint", "peak", "end", "mobile", "reduced-motion"],
-  antiPatterns: ["demo styling", "hero-only use", "decorative overlay", "unscoped lifecycle", "silent mobile removal"],
-  ...extra,
+const system = (
+  id: string,
+  name: string,
+  implementationExport: string,
+  options: Omit<GoldenSystem, "id" | "name" | "implementation" | "implementationExport" | "guide" | "visualExample">,
+): GoldenSystem => ({
+  id, name, implementationExport,
+  implementation: "systems/runtime.js",
+  guide: `systems/GOLDEN_SYSTEMS.md#${id}`,
+  visualExample: `systems/demo.html#${id}`,
+  ...options,
 });
 
-export const CREATIVE_PRIMITIVES: CreativePrimitive[] = [
-  primitive("dreative-scroll-clock", "Own one normalized native or Lenis scroll clock and publish progress, direction and clamped velocity.", ["lenis", "gsap-scrolltrigger"], { antiPatterns: ["competing RAF loops", "Lenis without a mechanism need", "broken native anchors"] }),
-  primitive("dreative-gsap-scope", "Scope GSAP timelines and plugin lifecycle to one component or route.", ["gsap", "gsap-react"]),
-  primitive("dreative-pinned-chapter", "Hold one narrative chapter while content, media and type progress through authored states.", ["gsap-scrolltrigger"]),
-  primitive("dreative-persistent-stage", "Carry one media or spatial subject across several sections with explicit berths and occlusion rules.", ["gsap-scrolltrigger", "three"]),
-  primitive("dreative-media-plane", "Render project media as a controllable DOM, Canvas, OGL or Three.js surface.", ["ogl", "three"]),
-  primitive("dreative-velocity-material", "Map clamped input velocity to temporary material distortion and a crisp settle.", ["lenis", "gsap-scrolltrigger", "ogl"]),
-  primitive("dreative-fragment-field", "Segment one project image into authored pieces that change composition.", ["gsap", "three"]),
-  primitive("dreative-particle-reconstruction", "Reconstruct a recognizable project subject from bounded particles.", ["three"]),
-  primitive("dreative-frame-sequence", "Progressively load and scrub a responsive image sequence with posters and missing-frame recovery.", ["gsap-scrolltrigger", "sharp", "ffmpeg"]),
-  primitive("dreative-shared-element-handoff", "Preserve subject identity while ownership moves between layouts or renderers.", ["gsap-flip"]),
-  primitive("dreative-depth-dive", "Travel through layered project media into a related destination chapter.", ["gsap-scrolltrigger", "three"]),
-  primitive("dreative-spatial-gallery", "Navigate an authored field of distinct project media with pointer, touch and keyboard equivalents.", ["three", "use-gesture"]),
-  primitive("dreative-kinetic-type", "Make semantic typography participate in hierarchy, geometry or media revelation.", ["gsap-splittext"]),
-  primitive("dreative-video-texture", "Use decoded footage as treated scene material with poster, codec and still fallbacks.", ["three", "ffmpeg"]),
-  primitive("dreative-scene-transition", "Connect adjacent sections through one reversible structural handoff.", ["gsap", "gsap-scrolltrigger"]),
-  primitive("dreative-drag-constellation", "Arrange project media in a bounded inertial field with touch and list fallbacks.", ["gsap-draggable", "gsap-inertia", "use-gesture"]),
-];
-
-export interface MechanismReference { source: string; sourceType: "primary-docs" | "repository" | "project-reference"; license: string; attributionRequired: boolean; principle: string; }
-export interface CreativeMechanism {
-  id: string; name: string; aliases: string[]; family: CreativeMechanismFamily; summary: string; visualOutcome: string;
-  suitableAmbitions: CreativeAmbition[]; suitableTreatments: SpecialistSkill[]; contentRoles: string[]; continuityRoles: string[];
-  preferredImplementations: string[]; possibleImplementations: string[]; preferredPackages: string[]; optionalPackages: string[]; packageProfiles: string[];
-  primitive: string; recipe: string; exemplar?: string; prototypeRisk: CreativeRisk; performanceRisk: CreativeRisk; accessibilityRisk: CreativeRisk;
-  mobileRisk: CreativeRisk; originalityRisk: CreativeRisk; reducedMotionStrategy: string; mobileTranslation: string; semanticFallback: string;
-  requiredEvidence: string[]; knownTensions: string[]; incompatibleCombinations: string[]; compositionalRequirements: string[];
-  continuityRequirements: string[]; antiPatterns: string[]; positiveSignals: string[]; references: MechanismReference[];
-}
-
-type MechanismSeed = readonly [name: string, aliases?: string[], packages?: string[], primitive?: string, exemplar?: string];
-const families: Record<CreativeMechanismFamily, MechanismSeed[]> = {
-  "scroll-choreography": [
-    ["pinned narrative chapter"], ["continuous scroll scene", ["smooth scroll WebGL"], ["gsap-scrolltrigger"], "dreative-scroll-clock"], ["horizontal scroll gallery", [], ["gsap-scrolltrigger", "lenis"]], ["infinite spatial rail", [], ["lenis", "gsap-observer"]], ["velocity-reactive scene", ["velocity distortion"], ["lenis", "gsap-scrolltrigger"], "dreative-velocity-material"], ["scroll-controlled frame sequence", ["scroll image sequence", "frame-by-frame product animation"], ["gsap-scrolltrigger", "sharp", "ffmpeg"], "dreative-frame-sequence", "frame-sequence"], ["scroll-driven camera path", [], ["gsap-scrolltrigger", "three"]], ["scroll-controlled text transformation"], ["overlapping card stack"], ["sticky media handoff"], ["section-to-section persistent object", ["persistent product across sections", "spatial product story"], ["gsap-scrolltrigger"], "dreative-persistent-stage", "persistent-object"], ["reversible scrubbed timeline"], ["snap-assisted chapter"], ["scroll-progress material transformation"]
-  ],
-  "media-transformation": [
-    ["image fragmentation", ["photo disintegration", "image tears into pieces"], ["gsap", "three"], "dreative-fragment-field", "fragment-reconstruction"], ["image reconstruction", ["photo reconstruction"], ["three"], "dreative-particle-reconstruction", "fragment-reconstruction"], ["image tornado", ["photo tornado"], ["gsap", "three"], "dreative-fragment-field", "image-tornado"], ["image trail"], ["image swarm"], ["image slice transition"], ["torn-paper transition"], ["folded-media transition"], ["pixel dissolve"], ["particle dissolve"], ["fluid displacement"], ["velocity smear", ["media plane distortion"], ["lenis", "ogl"], "dreative-velocity-material", "velocity-refraction"], ["chromatic separation"], ["depth-map displacement", ["depth-map zoom"], ["three"], "dreative-depth-dive"], ["parallax media plane"], ["refractive media plane"], ["liquid distortion"], ["metallic material"], ["shader-based reveal"], ["video texture", ["cinematic video chapter"], ["three", "ffmpeg"], "dreative-video-texture", "video-to-layout"], ["video mask"], ["video-to-canvas sampling"], ["image-sequence scrub"], ["texture atlas animation"], ["layered cutout parallax"], ["editorial crop choreography"], ["image-to-video transition"], ["particle reconstruction"], ["media plane refraction"], ["frame extraction pipeline"], ["remotion rendered sequence", [], ["remotion", "remotion-cli", "ffmpeg"]]
-  ],
-  "spatial-3d": [
-    ["spatial gallery", ["3D gallery"], ["three", "react-three-fiber"], "dreative-spatial-gallery", "drag-constellation"], ["dome gallery"], ["poster tunnel"], ["orbiting media"], ["depth dive"], ["camera fly-through"], ["3D product stage"], ["model viewer"], ["object constellation", ["drag-controlled images"]], ["drag-controlled spatial composition"], ["physics-assisted object field", [], ["matter", "rapier"]], ["particle field"], ["spatial ribbon field", ["ribbon field"]], ["volumetric light"], ["WebGL media carousel"], ["scene portal"], ["shared 3D object across sections"], ["spatial product story"]
-  ],
-  typography: [
-    ["split-character entrance"], ["split-word entrance"], ["kinetic typography"], ["variable-font proximity"], ["scroll velocity typography"], ["text scrambling"], ["text decryption"], ["text-to-shape transition"], ["text-to-image transition", ["type becomes image"], ["gsap", "three"], "dreative-kinetic-type", "type-to-media"], ["curved text"], ["path-based typography"], ["typography fragmentation"], ["typography reconstruction"], ["masked video typography"], ["3D type"], ["perspective type field"], ["text pressure"], ["text trail"], ["animated counter"], ["editorial type choreography"]
-  ],
-  interaction: [
-    ["magnetic interaction"], ["drag inertia"], ["elastic controls"], ["custom cursor"], ["image-follow cursor"], ["target cursor"], ["proximity deformation"], ["hover refraction"], ["cursor-driven spotlight"], ["card tilt"], ["glare and specular response"], ["object peel"], ["liquid navigation"], ["interactive physics"], ["gesture-controlled gallery"], ["pointer-controlled shader"], ["audio-reactive scene"]
-  ],
-  "scene-transition": [
-    ["shared-element transition", [], ["gsap-flip"], "dreative-shared-element-handoff", "shared-element"], ["FLIP transition"], ["masking transition"], ["depth transition"], ["camera transition"], ["page cover transition"], ["media takeover"], ["object handoff"], ["continuity morph"], ["scene reconstruction"], ["video-to-layout transition", ["video becomes layout"], ["gsap", "three"], "dreative-video-texture", "video-to-layout"], ["layout-to-canvas transition"], ["canvas-to-DOM transition"]
-  ],
-  atmosphere: [
-    ["procedural gradient"], ["shader field"], ["particle atmosphere"], ["grain"], ["dithering"], ["volumetric rays"], ["noise displacement"], ["liquid chrome", ["liquid chrome background"]], ["iridescence"], ["aurora field"], ["line field"], ["atmospheric ribbon field", ["ribbon field"]], ["depth fog"], ["light tunnel"], ["responsive texture system"]
-  ],
+const shared = {
+  semanticFallback: "Keep the real content and controls in accessible DOM with an intentional resolved still.",
+  cleanup: ["return one idempotent destroy function", "remove every owned listener, observer, RAF, and generated node"],
+  performanceBudget: ["activate only near the viewport", "allocate nothing continuously inside the frame loop", "measure on the target mobile viewport"],
+  browserTest: ["verify initial, active, reverse, and resolved states", "verify 390px, reduced motion, keyboard access, and cleanup"],
 };
 
-const slug = (value: string) => value.toLowerCase().replace(/3d/g, "3d").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-const familyDefaults: Record<CreativeMechanismFamily, { treatments: SpecialistSkill[]; primitive: string; packages: string[]; risk: CreativeRisk }> = {
-  "scroll-choreography": { treatments: ["motion", "cinematic", "immersive"], primitive: "dreative-pinned-chapter", packages: ["gsap-scrolltrigger"], risk: "medium" },
-  "media-transformation": { treatments: ["media", "motion", "experimental"], primitive: "dreative-media-plane", packages: ["gsap"], risk: "medium" },
-  "spatial-3d": { treatments: ["3d", "immersive", "interaction"], primitive: "dreative-spatial-gallery", packages: ["three"], risk: "high" },
-  typography: { treatments: ["motion", "refined", "experimental"], primitive: "dreative-kinetic-type", packages: ["gsap"], risk: "medium" },
-  interaction: { treatments: ["interaction", "motion", "mobile"], primitive: "dreative-drag-constellation", packages: ["gsap"], risk: "medium" },
-  "scene-transition": { treatments: ["cinematic", "motion", "immersive"], primitive: "dreative-scene-transition", packages: ["gsap"], risk: "medium" },
-  atmosphere: { treatments: ["refined", "immersive", "experimental"], primitive: "dreative-media-plane", packages: [], risk: "medium" },
-};
-const primaryRefs: Record<string, MechanismReference> = {
-  gsap: { source: "https://gsap.com/docs/", sourceType: "primary-docs", license: "verify-current", attributionRequired: false, principle: "Scoped, reversible timeline orchestration." },
-  lenis: { source: "https://github.com/darkroomengineering/lenis", sourceType: "repository", license: "MIT", attributionRequired: true, principle: "Optional normalized scroll interpolation and velocity." },
-  reactbits: { source: "https://github.com/DavidHDev/react-bits", sourceType: "repository", license: "verify-component-and-repository", attributionRequired: true, principle: "Reference vocabulary only; select and substantially transform in the user project." },
-};
-
-export const CREATIVE_MECHANISMS: CreativeMechanism[] = Object.entries(families).flatMap(([family, seeds]) => seeds.map(([name, aliases = [], packageOverride, primitiveOverride, exemplar]) => {
-  const defaults = familyDefaults[family as CreativeMechanismFamily];
-  const packageProfiles = packageOverride ?? defaults.packages;
-  return {
-    id: slug(name), name, aliases, family: family as CreativeMechanismFamily,
-    summary: `Use ${name} as an authored structural mechanism bound to project content, not as a detached demonstration effect.`,
-    visualOutcome: `${name} produces distinct start, active and resolved states that change composition, material, viewpoint or meaning.`,
-    suitableAmbitions: family === "atmosphere" ? ["expressive", "award", "experimental"] : ["award", "experimental"],
-    suitableTreatments: defaults.treatments, contentRoles: ["section peak", "transition", "continuity"], continuityRoles: ["handoff", "development", "resolution"],
-    preferredImplementations: packageProfiles.length ? ["package-backed scoped runtime"] : ["native DOM, CSS, SVG or Canvas"],
-    possibleImplementations: ["DOM/SVG", "Canvas", "WebGL", "pre-rendered media"], preferredPackages: packageProfiles.slice(0, 1), optionalPackages: packageProfiles.slice(1), packageProfiles,
-    primitive: primitiveOverride ?? defaults.primitive, recipe: `recipes/${family}-recipes.md#${slug(name)}`, exemplar,
-    prototypeRisk: defaults.risk, performanceRisk: defaults.risk, accessibilityRisk: family === "interaction" ? "high" : "medium", mobileRisk: defaults.risk, originalityRisk: "medium",
-    reducedMotionStrategy: "Preserve the semantic start and resolved composition, remove continuous travel, and keep all content and navigation reachable.",
-    mobileTranslation: "Keep the same project-specific cause and effect with touch input, shorter travel, lower density and an explicit mobile budget.",
-    semanticFallback: "Render the real content in accessible DOM with a project-specific poster or resolved still; disclose why the advanced path was unavailable.",
-    requiredEvidence: ["initial state", "meaningful midpoint", "resolved end", "mobile translation", "reduced-motion state", "runtime health"],
-    knownTensions: ["performance versus density", "authored continuity versus navigation speed"], incompatibleCombinations: ["second scroll owner", "unscoped competing animation loop"],
-    compositionalRequirements: ["real project content", "named section role", "hierarchy with other mechanisms"], continuityRequirements: ["connect to at least one adjacent section or recurring motion language"],
-    antiPatterns: ["default demo styling", "decorative-only use", "hero-only allocation", "fade-only substitute", "silent mobile disable"], positiveSignals: ["project media changes internally", "states are reversible when promised", "later sections remain authored"],
-    references: [...(packageProfiles.includes("lenis") ? [primaryRefs.lenis] : []), ...(packageProfiles.some((item) => item.startsWith("gsap")) ? [primaryRefs.gsap] : []), primaryRefs.reactbits],
-  };
-}));
-
-export interface CreativeExemplar {
-  id: string; title: string; mechanismIds: string[]; packageProfiles: string[]; primitiveIds: string[]; implementationOutline: string[];
-  expectedStates: string[]; performanceControls: string[]; reducedMotion: string; mobile: string; evidence: string[]; cleanup: string[]; failureFallback: string;
-}
-const exemplar = (id: string, title: string, mechanismIds: string[], packageProfiles: string[], primitiveIds: string[], outline: string[]): CreativeExemplar => ({
-  id, title, mechanismIds, packageProfiles, primitiveIds, implementationOutline: outline,
-  expectedStates: ["prepared", "active midpoint", "peak", "resolved"], performanceControls: ["lazy activate", "cap DPR/counts", "pause offscreen", "ship responsive derivatives"],
-  reducedMotion: "Show a designed preparation and resolved state with no continuous travel.", mobile: "Shorten the path, reduce density and provide touch-native control without deleting the concept.",
-  evidence: ["start", "25%", "50%", "75%", "end", "reverse when promised", "mobile", "reduced motion"], cleanup: ["revert scoped timelines", "remove tickers/listeners", "dispose media/GPU resources"],
-  failureFallback: "Use the approved project-specific DOM, SVG, still or pre-rendered equivalent and record the observed trigger.",
-});
-export const CREATIVE_EXEMPLARS: CreativeExemplar[] = [
-  exemplar("image-tornado", "Project image tornado becomes the next section", ["image-tornado"], ["gsap", "three"], ["dreative-fragment-field", "dreative-scene-transition"], ["sample source pixels into bounded project-specific fragments", "drive one reversible timeline", "land fragments as destination media rather than decorative debris"]),
-  exemplar("fragment-reconstruction", "Image fragmentation and reconstruction", ["image-fragmentation", "image-reconstruction"], ["gsap", "three"], ["dreative-fragment-field", "dreative-particle-reconstruction"], ["author segmentation from the source image", "preserve subject identity at midpoint", "reconstruct into the next content role"]),
-  exemplar("frame-sequence", "Responsive scroll-controlled frame sequence", ["scroll-controlled-frame-sequence"], ["gsap-scrolltrigger", "sharp", "ffmpeg"], ["dreative-frame-sequence"], ["generate desktop/mobile manifests and posters", "progressively decode a bounded window", "map clamped scroll progress and tolerate missing frames"]),
-  exemplar("persistent-object", "Persistent subject across four sections", ["section-to-section-persistent-object"], ["gsap-scrolltrigger", "three"], ["dreative-persistent-stage"], ["declare four section berths", "interpolate pose and material through one owner", "release to semantic DOM at resolution"]),
-  exemplar("velocity-refraction", "Lenis and GSAP synchronized velocity refraction", ["velocity-reactive-scene", "refractive-media-plane"], ["lenis", "gsap-scrolltrigger", "ogl"], ["dreative-scroll-clock", "dreative-velocity-material"], ["attach Lenis to the GSAP ticker", "clamp velocity into shader displacement", "settle crisply and remove the same ticker callback on cleanup"]),
-  exemplar("type-to-media", "Semantic typography transforms into media geometry", ["text-to-image-transition"], ["gsap", "three"], ["dreative-kinetic-type", "dreative-shared-element-handoff"], ["retain semantic text", "map measured glyph bounds to media geometry", "resolve as editorial media with reading order intact"]),
-  exemplar("shared-element", "GSAP Flip shared-element handoff", ["shared-element-transition"], ["gsap", "gsap-flip", "gsap-react"], ["dreative-gsap-scope", "dreative-shared-element-handoff"], ["capture Flip state", "move the real project node between semantic containers", "animate from the captured geometry and restore focus"]),
-  exemplar("drag-constellation", "Drag-controlled project image constellation", ["drag-controlled-spatial-composition"], ["gsap-draggable", "gsap-inertia", "use-gesture"], ["dreative-drag-constellation"], ["place distinct project media in a bounded field", "map drag velocity to depth and selection", "provide keyboard list and mobile snap rail"]),
-  exemplar("video-to-layout", "Video texture resolves into editorial DOM", ["video-texture", "video-to-layout-transition"], ["three", "gsap", "ffmpeg"], ["dreative-video-texture", "dreative-shared-element-handoff"], ["show poster until decoded", "treat footage as scene material", "match the last frame into accessible editorial DOM"]),
-  exemplar("cinematic-arc", "Cinematic preparation, escalation, peak, rest and resolution", ["pinned-narrative-chapter", "masking-transition"], ["gsap", "gsap-scrolltrigger"], ["dreative-pinned-chapter", "dreative-scene-transition"], ["allocate preparation and escalation before the first peak", "use a structural handoff", "include a quiet reading section and authored resolution"]),
+export const CREATIVE_MECHANISMS: GoldenSystem[] = [
+  system("section-observer", "Section observer", "mountSectionObserver", {
+    aliases: ["section reveal", "in-view states"], summary: "Publish one-shot or reversible section states without hiding readable content.",
+    suitableTreatments: ["refined", "motion"], packageProfiles: [], useWhen: "section state changes need a small native trigger", rejectWhen: "the only result is repeated fade-up animation",
+    mobileTranslation: "Shorten travel and keep content visible before JavaScript.", reducedMotionStrategy: "Publish the resolved state immediately.", risk: "low", ...shared,
+  }),
+  system("scroll-progress", "Normalized scroll progress", "mountScrollProgress", {
+    aliases: ["scroll clock", "scroll velocity"], summary: "Own normalized progress, direction, and clamped velocity for one scroll subject.",
+    suitableTreatments: ["motion", "immersive"], packageProfiles: [], useWhen: "several effects need the same measured native-scroll signal", rejectWhen: "a CSS scroll timeline or no shared signal is enough",
+    mobileTranslation: "Clamp velocity more aggressively and avoid continuous decorative work.", reducedMotionStrategy: "Publish progress without velocity-driven distortion.", risk: "medium", ...shared,
+  }),
+  system("pinned-chapter", "Pinned narrative chapter", "mountPinnedChapter", {
+    aliases: ["sticky chapter", "scroll story"], summary: "Map one sticky chapter to discrete authored states with safe entry and release.",
+    suitableTreatments: ["motion", "cinematic", "immersive"], packageProfiles: ["gsap-scrolltrigger"], useWhen: "the content has a real sequence that benefits from controlled comparison", rejectWhen: "pinning delays access to ordinary copy",
+    mobileTranslation: "Use shorter sticky travel or a swipe/step sequence.", reducedMotionStrategy: "Render the states as a normal vertical sequence.", risk: "high", ...shared,
+  }),
+  system("shared-element-handoff", "Shared-element handoff", "runSharedElementHandoff", {
+    aliases: ["shared element", "FLIP transition"], summary: "Preserve subject identity while its owning layout changes.",
+    suitableTreatments: ["motion", "interaction", "cinematic"], packageProfiles: ["motion", "gsap-flip"], useWhen: "the same product, image, or object genuinely continues into another state", rejectWhen: "source and destination do not represent the same subject",
+    mobileTranslation: "Keep the handoff shorter and preserve focus after the state change.", reducedMotionStrategy: "Change layout instantly while retaining focus and identity.", risk: "medium", ...shared,
+  }),
+  system("frame-sequence", "Responsive frame sequence", "mountFrameSequence", {
+    aliases: ["image sequence", "frame scrub", "product turntable", "frame-by-frame product animation"], summary: "Scrub a bounded manifest with posters, missing-frame recovery, and responsive sources.",
+    suitableTreatments: ["media", "motion", "cinematic"], packageProfiles: ["sharp", "ffmpeg"], useWhen: "pre-rendered motion gives better fidelity or cost than real-time simulation", rejectWhen: "a short video or two stills communicate the same thing",
+    mobileTranslation: "Load fewer frames, smaller derivatives, and a poster-first fallback.", reducedMotionStrategy: "Show the most informative resolved frame.", risk: "high", ...shared,
+  }),
+  system("persistent-stage", "Persistent subject stage", "mountPersistentStage", {
+    aliases: ["persistent product", "cross-section stage"], summary: "Carry one semantic subject through named section berths without covering content.",
+    suitableTreatments: ["media", "immersive", "3d"], packageProfiles: ["gsap-scrolltrigger"], useWhen: "one subject develops meaning across several sections", rejectWhen: "the object is merely a floating decoration",
+    mobileTranslation: "Dock the subject in-flow at deliberate handoff points.", reducedMotionStrategy: "Place resolved stills at each meaningful berth.", risk: "high", ...shared,
+  }),
+  system("drag-rail", "Accessible drag rail", "mountDragRail", {
+    aliases: ["drag gallery", "inertial rail"], summary: "Provide pointer drag, touch scroll, keyboard stepping, bounds, and snap states.",
+    suitableTreatments: ["interaction", "mobile", "media"], packageProfiles: ["motion"], useWhen: "direct manipulation improves browsing distinct items", rejectWhen: "a standard list or carousel is clearer",
+    mobileTranslation: "Prefer native horizontal scrolling with snap and visible next content.", reducedMotionStrategy: "Remove inertia and snap instantly.", risk: "medium", ...shared,
+  }),
+  system("kinetic-type", "Semantic kinetic type", "mountKineticType", {
+    aliases: ["split text", "type choreography"], summary: "Animate semantic words as hierarchy while preserving the original accessible text.",
+    suitableTreatments: ["refined", "motion", "experimental"], packageProfiles: ["gsap-splittext"], useWhen: "language itself is a meaningful visual material", rejectWhen: "splitting delays reading or creates decorative letter noise",
+    mobileTranslation: "Animate fewer groups with shorter distance.", reducedMotionStrategy: "Keep the final semantic text unchanged.", risk: "medium", ...shared,
+  }),
+  system("adaptive-canvas", "Adaptive 2D canvas", "mountAdaptiveCanvas", {
+    aliases: ["pixi field", "2D renderer", "sprite field"], summary: "Own a bounded high-density 2D surface with DPR caps, visibility pause, and DOM fallback.",
+    suitableTreatments: ["media", "interaction", "experimental"], packageProfiles: ["pixi"], useWhen: "many sprites or a 2D shader exceed clean DOM/SVG handling", rejectWhen: "the scene is actually 3D or a few DOM nodes suffice",
+    mobileTranslation: "Reduce count and resolution; switch to the fallback below the measured budget.", reducedMotionStrategy: "Render a static composition and stop the ticker.", risk: "high", ...shared,
+  }),
+  system("video-handoff", "Video-to-layout handoff", "mountVideoHandoff", {
+    aliases: ["video becomes layout", "cinematic video chapter"], summary: "Match a meaningful video frame into accessible editorial DOM.",
+    suitableTreatments: ["media", "cinematic"], packageProfiles: ["ffmpeg"], useWhen: "footage establishes information that continues into the page", rejectWhen: "video is a background loop unrelated to the content",
+    mobileTranslation: "Use a poster or short muted derivative before handing off early.", reducedMotionStrategy: "Use the matched poster and resolved DOM.", risk: "high", ...shared,
+  }),
+  system("spatial-gallery", "Bounded spatial gallery", "mountSpatialGallery", {
+    aliases: ["3D gallery", "depth gallery"], summary: "Navigate a finite media field with selection, list semantics, and bounded depth.",
+    suitableTreatments: ["3d", "interaction", "immersive"], packageProfiles: ["three", "react-three-fiber"], useWhen: "spatial relationships help users understand or browse the collection", rejectWhen: "depth adds travel without information",
+    mobileTranslation: "Use a snap rail or shallow stacked depth with the same selection model.", reducedMotionStrategy: "Render the semantic list with no camera travel.", risk: "high", ...shared,
+  }),
+  system("media-trail", "Bounded media trail", "mountMediaTrail", {
+    aliases: ["image trail", "pointer trail"], summary: "Reveal a short-lived trail of real project media with strict density and input bounds.",
+    suitableTreatments: ["interaction", "media", "experimental"], packageProfiles: ["pixi"], useWhen: "exploration or authorship is expressed through accumulating project imagery", rejectWhen: "a cursor follower would cover controls or become permanent decoration",
+    mobileTranslation: "Trigger a sparse trail from deliberate drag gestures only.", reducedMotionStrategy: "Show one selected image without a trail.", risk: "medium", ...shared,
+  }),
 ];
 
 export interface ExternalCreativeReference {
-  source: string; sourceType: string; mechanism: string; principleExtracted: string; projectSpecificUse: string; brandSpecificTransformation: string;
-  plannedDifferences: string[]; packages: string[]; license: string; attributionRequired: boolean | null; performanceRisk: string; accessibilityRisk: string; originalityRisk: string;
-  transformations: ("content" | "assets" | "composition" | "section-role" | "motion" | "timing" | "material" | "camera" | "interaction" | "responsive" | "continuity" | "meaning")[];
-  redistributedWithDreative?: boolean;
+  source: string;
+  sourceType: string;
+  principleExtracted: string;
+  adapt: string;
+  deliberatelyDiffer: string[];
+  license: string;
+  attributionRequired: boolean | null;
 }
+
 export function validateExternalReference(reference: ExternalCreativeReference): string[] {
   const errors: string[] = [];
-  for (const key of ["source", "sourceType", "mechanism", "principleExtracted", "projectSpecificUse", "brandSpecificTransformation", "license", "performanceRisk", "accessibilityRisk", "originalityRisk"] as const)
-    if (!reference[key] || String(reference[key]).trim().length < 3) errors.push(`${key} is required`);
+  for (const key of ["source", "sourceType", "principleExtracted", "adapt", "license"] as const)
+    if (!reference[key] || reference[key].trim().length < 3) errors.push(`${key} is required`);
+  if (reference.deliberatelyDiffer.length < 2) errors.push("deliberatelyDiffer must name at least two concrete differences");
   if (reference.attributionRequired === null) errors.push("attributionRequired must be resolved");
-  if (reference.plannedDifferences.length === 0) errors.push("plannedDifferences must explain how the result remains distinct");
-  if (new Set(reference.transformations).size < 3) errors.push("external work must be transformed across at least three dimensions");
-  if (/react[- ]bits/i.test(reference.source) && reference.redistributedWithDreative) errors.push("React Bits source must not be redistributed with Dreative");
   return errors;
 }
 
-export interface CreativeDeliverySummary {
-  ambition: CreativeAmbition; sectionMechanisms: { section: string; mechanisms: string[]; role: "peak" | "transition" | "rest" | "utility" }[];
-  heroSection: string; motionVocabulary: string[]; installedAdvancedPackages: string[]; usedAdvancedPackages: string[]; externalReferences: ExternalCreativeReference[];
+export interface CreativeStackResolution {
+  scrollOwner: "native" | "lenis";
+  timelineEngine: "native" | "motion" | "gsap";
+  packageProfiles: PackageProfile[];
+  installCommands: string[];
+  fallbacks: string[];
+  blockers: string[];
 }
 
-export interface TreatmentHierarchy {
-  continuityOwner: SpecialistSkill | "none";
-  primaryMotionLanguage: string;
-  primaryMaterialLanguage: string;
-  primarySpatialLogic: string;
-  sections: { section: string; role: "preparation" | "peak" | "transition" | "rest" | "resolution"; dominant: SpecialistSkill[]; supporting: SpecialistSkill[] }[];
-  tensionResolutions: string[];
-}
-
-export function allocateTreatmentHierarchy(selected: SpecialistSkill[], sectionNames: string[]): TreatmentHierarchy {
-  const chosen = new Set(selected); const sections = sectionNames.length ? sectionNames : ["opening", "development", "peak", "rest", "resolution"];
-  const pattern: { role: TreatmentHierarchy["sections"][number]["role"]; candidates: SpecialistSkill[] }[] = [
-    { role: "preparation", candidates: ["refined", "media"] }, { role: "transition", candidates: ["motion", "immersive"] },
-    { role: "peak", candidates: ["experimental", "3d"] }, { role: "rest", candidates: ["refined", "ux"] },
-    { role: "resolution", candidates: ["cinematic", "interaction"] },
-  ];
-  const allocated = sections.map((section, index) => {
-    const slot = pattern[index % pattern.length];
-    return { section, role: slot.role, dominant: slot.candidates.filter((item) => chosen.has(item)).slice(0, 2), supporting: [] as SpecialistSkill[] };
-  });
-  for (const treatment of selected) {
-    if (allocated.some((item) => item.dominant.includes(treatment) || item.supporting.includes(treatment))) continue;
-    const target = allocated.find((item) => item.supporting.length < 2) ?? allocated[allocated.length - 1];
-    target.supporting.push(treatment);
-  }
-  return {
-    continuityOwner: chosen.has("immersive") ? "immersive" : chosen.has("cinematic") ? "cinematic" : chosen.has("motion") ? "motion" : "none",
-    primaryMotionLanguage: chosen.has("motion") ? "one normalized structural timeline language" : "native state transitions",
-    primaryMaterialLanguage: chosen.has("media") ? "project-media material transformation" : "refined project surface system",
-    primarySpatialLogic: chosen.has("3d") ? "one bounded depth and occlusion system at selected peaks" : "DOM depth and shared-element continuity",
-    sections: allocated,
-    tensionResolutions: [
-      "Refined disciplines type, spacing and rest states while Experimental is limited to selected peaks.",
-      "3D density yields to measured DPR, object and mobile budgets.",
-      "Immersive continuity preserves fast navigation and readable DOM landmarks.",
-      "Cinematic pacing includes skippable or shortened mobile paths.",
-      "Fine-pointer Interaction receives touch and keyboard translations.",
-      "Media-heavy sections stage loading and use posters, derivatives and low-power fallbacks.",
-      "Lenis remains optional; native accessibility expectations win unless a selected mechanism needs a shared interpolated clock.",
-    ],
-  };
-}
-
-export function validateCreativeDelivery(delivery: CreativeDeliverySummary): string[] {
-  const findings: string[] = delivery.externalReferences.flatMap((item) => validateExternalReference(item).map((error) => `${item.source}: ${error}`));
-  if (["award", "experimental"].includes(delivery.ambition)) {
-    const substantive = delivery.sectionMechanisms.filter((item) => item.role !== "rest" && item.role !== "utility" && item.mechanisms.length);
-    if (!substantive.some((item) => item.section !== delivery.heroSection)) findings.push("hero-only motion is not an Award or Experimental delivery");
-    if (delivery.motionVocabulary.length === 0 || delivery.motionVocabulary.every((item) => /^(fade|fade-up|opacity|translate|slide|scale)$/i.test(item))) findings.push("fade-only motion is not an Award or Experimental delivery");
-    if (delivery.sectionMechanisms.some((item) => item.mechanisms.length > 3)) findings.push("component soup: a section has more than three competing mechanisms");
-  }
-  for (const packageName of delivery.installedAdvancedPackages) if (!delivery.usedAdvancedPackages.includes(packageName)) findings.push(`installed advanced dependency is unused: ${packageName}`);
-  return findings;
-}
-
-export interface CreativeStackResolution { scrollOwner: "native" | "lenis"; timelineEngine: "native" | "gsap"; packageProfiles: PackageProfile[]; installCommands: string[]; fallbacks: string[]; blockers: string[]; }
-export function resolveCreativeStack(mechanismIds: string[], options: { installed?: string[]; installationAllowed?: boolean; capabilities?: string[] } = {}): CreativeStackResolution {
-  const mechanisms = mechanismIds.map((id) => CREATIVE_MECHANISMS.find((item) => item.id === id)).filter((item): item is CreativeMechanism => Boolean(item));
-  const unknown = mechanismIds.filter((id) => !mechanisms.some((item) => item.id === id));
-  const requested = new Set(mechanisms.flatMap((item) => item.packageProfiles));
-  const needsLenis = requested.has("lenis");
-  const needsGsap = [...requested].some((id) => id === "gsap" || id.startsWith("gsap-"));
-  const installed = new Set(options.installed ?? []); const capabilities = new Set(options.capabilities ?? []);
-  const selectedProfiles = PACKAGE_PROFILES.filter((item) => requested.has(item.id));
+export function resolveCreativeStack(
+  systemIds: string[],
+  options: { installed?: string[]; installationAllowed?: boolean; capabilities?: string[] } = {},
+): CreativeStackResolution {
+  const systems = systemIds.map((id) => CREATIVE_MECHANISMS.find((item) => item.id === id)).filter((item): item is GoldenSystem => Boolean(item));
+  const blockers = systemIds.filter((id) => !systems.some((item) => item.id === id)).map((id) => `unknown golden system ${id}`);
+  const requestedIds = new Set(systems.flatMap((item) => item.packageProfiles));
+  const selectedProfiles = PACKAGE_PROFILES.filter((item) => requestedIds.has(item.id));
+  const installed = new Set(options.installed ?? []);
   const missing = selectedProfiles.filter((item) => !installed.has(item.packageName));
-  const blockers = unknown.map((id) => `unknown mechanism ${id}`); const fallbacks: string[] = [];
+  const fallbacks: string[] = [];
   for (const item of missing) {
-    if (["remotion", "remotion-cli"].includes(item.id) && !capabilities.has("remotion-renderer")) {
-      blockers.push(`${item.id} requires a verified Remotion renderer; package presence or permission alone is not capability evidence`);
-      fallbacks.push("Use supplied footage, deterministic Canvas/SVG states, or a confirmed FFmpeg/frame-sequence route.");
-    } else if (options.installationAllowed === false) fallbacks.push(`${item.id}: use the mechanism's approved native, static or pre-rendered fallback and record the failed precondition.`);
+    if (item.id === "ffmpeg" && !(options.capabilities ?? []).includes("ffmpeg-processing"))
+      fallbacks.push("Use supplied poster/stills or a verified external media pipeline.");
+    else if (options.installationAllowed === false)
+      fallbacks.push(`${item.id}: use the golden system's native or static fallback.`);
   }
   return {
-    scrollOwner: needsLenis ? "lenis" : "native", timelineEngine: needsGsap ? "gsap" : "native", packageProfiles: selectedProfiles,
-    installCommands: options.installationAllowed === false ? [] : [...new Set(missing.map((item) => item.install))], fallbacks, blockers,
+    scrollOwner: requestedIds.has("lenis") ? "lenis" : "native",
+    timelineEngine: [...requestedIds].some((id) => id.startsWith("gsap")) ? "gsap" : requestedIds.has("motion") ? "motion" : "native",
+    packageProfiles: selectedProfiles,
+    installCommands: options.installationAllowed === false ? [] : [...new Set(missing.map((item) => `npm install ${item.packageName}`))],
+    fallbacks,
+    blockers,
   };
 }
 
-export function searchCreativeCatalog(query: string): CreativeMechanism[] {
+export function searchCreativeCatalog(query: string): GoldenSystem[] {
   const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
-  return CREATIVE_MECHANISMS.map((item) => ({ item, score: terms.reduce((score, term) => score + [item.id, item.name, ...item.aliases, item.summary, item.visualOutcome].join(" ").toLowerCase().split(term).length - 1, 0) }))
-    .filter(({ score }) => score > 0).sort((a, b) => b.score - a.score || a.item.name.localeCompare(b.item.name)).map(({ item }) => item);
+  return CREATIVE_MECHANISMS
+    .map((item) => ({ item, score: terms.reduce((score, term) => score + [item.id, item.name, ...item.aliases, item.summary, item.useWhen].join(" ").toLowerCase().split(term).length - 1, 0) }))
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score || a.item.name.localeCompare(b.item.name))
+    .map(({ item }) => item);
 }
 
 export function validateCreativeCatalog(): string[] {
-  const errors: string[] = []; const profileIds = new Set(PACKAGE_PROFILES.map((item) => item.id)); const primitiveIds = new Set(CREATIVE_PRIMITIVES.map((item) => item.id)); const exemplarIds = new Set(CREATIVE_EXEMPLARS.map((item) => item.id));
-  if (new Set(CREATIVE_MECHANISMS.map((item) => item.id)).size !== CREATIVE_MECHANISMS.length) errors.push("mechanism IDs must be unique");
+  const errors: string[] = [];
+  const ids = new Set(PACKAGE_PROFILES.map((item) => item.id));
+  if (CREATIVE_MECHANISMS.length < 12 || CREATIVE_MECHANISMS.length > 20) errors.push("golden system count must stay between 12 and 20");
+  if (new Set(CREATIVE_MECHANISMS.map((item) => item.id)).size !== CREATIVE_MECHANISMS.length) errors.push("golden system IDs must be unique");
   for (const item of CREATIVE_MECHANISMS) {
-    for (const id of item.packageProfiles) if (!profileIds.has(id)) errors.push(`${item.id}: unknown package profile ${id}`);
-    if (!primitiveIds.has(item.primitive)) errors.push(`${item.id}: unknown primitive ${item.primitive}`);
-    if (item.exemplar && !exemplarIds.has(item.exemplar)) errors.push(`${item.id}: unknown exemplar ${item.exemplar}`);
-    if (!item.recipe.startsWith("recipes/") || !item.semanticFallback || !item.reducedMotionStrategy || !item.mobileTranslation || !item.requiredEvidence.length) errors.push(`${item.id}: incomplete delivery contract`);
-    if (!item.references.every((ref) => ref.source && ref.license && typeof ref.attributionRequired === "boolean")) errors.push(`${item.id}: incomplete reference licensing`);
-  }
-  for (const item of CREATIVE_PRIMITIVES) for (const id of item.packageProfiles) if (!profileIds.has(id)) errors.push(`${item.id}: unknown package profile ${id}`);
-  for (const item of CREATIVE_EXEMPLARS) {
-    for (const id of item.mechanismIds) if (!CREATIVE_MECHANISMS.some((mechanism) => mechanism.id === id)) errors.push(`${item.id}: unknown mechanism ${id}`);
-    for (const id of item.primitiveIds) if (!primitiveIds.has(id)) errors.push(`${item.id}: unknown primitive ${id}`);
-    for (const id of item.packageProfiles) if (!profileIds.has(id)) errors.push(`${item.id}: unknown package profile ${id}`);
+    for (const id of item.packageProfiles) if (!ids.has(id)) errors.push(`${item.id}: unknown package profile ${id}`);
+    if (!item.implementation || !item.implementationExport || !item.guide || !item.visualExample) errors.push(`${item.id}: missing executable resources`);
+    if (!item.useWhen || !item.rejectWhen || !item.mobileTranslation || !item.reducedMotionStrategy || !item.semanticFallback) errors.push(`${item.id}: incomplete decision contract`);
+    if (!item.cleanup.length || !item.performanceBudget.length || !item.browserTest.length) errors.push(`${item.id}: incomplete lifecycle or verification contract`);
   }
   return errors;
 }
@@ -361,7 +232,17 @@ export function validateCreativeCatalog(): string[] {
 export function renderAgentCatalogue(query?: string): string {
   const entries = query ? searchCreativeCatalog(query) : CREATIVE_MECHANISMS;
   return [
-    "# Dreative creative mechanism catalogue", "", "Search: `dreative catalogue --query \"image tornado\" --json`", "",
-    ...entries.flatMap((item) => [`## ${item.name} (${item.id})`, `Aliases: ${item.aliases.join(", ") || "none"}`, `Purpose: ${item.visualOutcome}`, `Packages: ${item.packageProfiles.join(", ") || "native-first"}`, `Primitive: ${item.primitive}`, `Recipe: ${item.recipe}`, `Fallback: ${item.semanticFallback}`, `Evidence: ${item.requiredEvidence.join(", ")}`, ""]),
+    "# Dreative golden systems", "",
+    ...entries.flatMap((item) => [
+      `## ${item.name} (${item.id})`,
+      `Purpose: ${item.summary}`,
+      `Use when: ${item.useWhen}`,
+      `Reject when: ${item.rejectWhen}`,
+      `Implementation: ${item.implementation}#${item.implementationExport}`,
+      `Guide: ${item.guide}`,
+      `Packages: ${item.packageProfiles.join(", ") || "native"}`,
+      `Fallback: ${item.semanticFallback}`,
+      "",
+    ]),
   ].join("\n");
 }

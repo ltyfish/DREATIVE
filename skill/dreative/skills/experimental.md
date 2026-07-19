@@ -12,5 +12,6 @@ navigation, and multiple unrelated experiments. If removing the novelty makes
 the product clearer without losing meaning, the mechanism has not earned its
 cost.
 
-Read `../recipes/experimental-mechanism-catalog.md` for candidates only after
-the concept identifies a useful peak.
+Use `../systems/GOLDEN_SYSTEMS.md` only after the concept identifies a useful
+peak. If none of the bounded systems fits, build a focused project-native
+prototype instead of searching a larger effect list.

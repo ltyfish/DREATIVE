@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Dreative golden systems fixture</title>
+  <style>
+    :root { color-scheme: dark; font-family: Inter, system-ui, sans-serif; background:#11120f; color:#f3f0e6; }
+    * { box-sizing:border-box; }
+    body { margin:0; overflow-x:hidden; }
+    header { min-height:72vh; display:grid; place-items:end start; padding:8vw; background:radial-gradient(circle at 72% 20%,#58705755,transparent 35%),#11120f; }
+    h1 { margin:0; max-width:11ch; font:500 clamp(3rem,9vw,8rem)/.88 Georgia,serif; letter-spacing:-.06em; }
+    section { min-height:70vh; padding:8vw; border-top:1px solid #ffffff1f; position:relative; }
+    .label { color:#b7c6a8; letter-spacing:.14em; text-transform:uppercase; font-size:.72rem; }
+    [data-state="idle"] { opacity:.62; transform:translateY(24px); }
+    [data-state="visible"] { opacity:1; transform:none; transition:opacity .5s,transform .7s cubic-bezier(.2,.8,.2,1); }
+    #scroll-progress output { font:500 clamp(4rem,14vw,10rem)/1 monospace; }
+    #pinned-chapter { min-height:180vh; }
+    #pinned-chapter .sticky { position:sticky; top:18vh; min-height:55vh; display:grid; place-items:center; background:#d9ddc5; color:#171914; border-radius:2px; }
+    #pinned-chapter .label { color:#5b6553; }
+    #drag-rail .rail { display:flex; gap:1rem; overflow:auto; scroll-snap-type:x mandatory; cursor:grab; scrollbar-width:none; }
+    #drag-rail .rail::-webkit-scrollbar { display:none; }
+    #drag-rail article { min-width:min(70vw,420px); min-height:260px; padding:2rem; background:#25291f; scroll-snap-align:start; }
+    #kinetic-type h2 { font:500 clamp(2.5rem,7vw,7rem)/.95 Georgia,serif; }
+    #kinetic-type h2 span { display:inline-block; transform:translateY(.35em) rotate(2deg); opacity:.15; transition:.7s calc(var(--word-index)*70ms); }
+    #kinetic-type h2[data-state="active"] span { transform:none; opacity:1; }
+    canvas { width:100%; height:320px; display:block; background:#171914; }
+    #persistent-stage .berths { display:grid; grid-template-columns:repeat(3,1fr); gap:10vw; }
+    #persistent-stage .berth { min-height:240px; border:1px dashed #aabd9880; }
+    #persistent-object { position:fixed; width:90px; height:90px; border-radius:50%; background:#c7ff6b; left:var(--stage-x); top:var(--stage-y); transition:.5s; pointer-events:none; z-index:2; }
+    #spatial-gallery .field { min-height:430px; perspective:900px; display:grid; place-items:center; overflow:hidden; }
+    [data-spatial-item] { position:absolute; width:min(56vw,360px); height:260px; border:0; color:inherit; background:#384032; transform:translateX(var(--spatial-x)) translateZ(var(--spatial-z)) rotateY(var(--spatial-r)); transition:.45s; }
+    [data-spatial-item][data-selected="true"] { background:#657856; }
+    button:focus-visible,.rail:focus-visible { outline:3px solid #c7ff6b; outline-offset:4px; }
+    #media-trail { min-height:70vh; overflow:hidden; }
+    .dreative-media-trail { position:fixed; width:80px; height:110px; object-fit:cover; transform:translate(-50%,-50%); pointer-events:none; background:#81906f; animation:trail .7s both; }
+    @keyframes trail { to { opacity:0; transform:translate(-50%,-65%) scale(.8); } }
+    #shared-element-handoff button,#video-handoff button { font:inherit; padding:.8rem 1rem; }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.001ms!important; transition-duration:.001ms!important; } }
+    @media (max-width:640px) { section { padding:18vw 6vw; } #persistent-stage .berths { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <header><div><p class="label">Functional visual fixture</p><h1>Twelve systems. No effect theatre.</h1></div></header>
+  <section id="section-observer"><p class="label">01 / section observer</p><h2 data-observe>Readable first, animated second.</h2></section>
+  <section id="scroll-progress"><p class="label">02 / normalized scroll progress</p><output>0%</output></section>
+  <section id="pinned-chapter"><div class="sticky"><div><p class="label">03 / pinned chapter</p><h2 data-chapter-state>Inspect the subject.</h2><h2 data-chapter-state hidden>Change its state.</h2><h2 data-chapter-state hidden>Release cleanly.</h2></div></div></section>
+  <section id="shared-element-handoff"><p class="label">04 / shared element</p><button>Move the subject</button><div data-shared style="width:120px;height:120px;background:#c7ff6b;margin-top:2rem"></div></section>
+  <section id="frame-sequence"><p class="label">05 / frame sequence</p><canvas aria-label="Frame sequence fallback fixture"></canvas></section>
+  <section id="persistent-stage"><p class="label">06 / persistent stage</p><div class="berths"><div class="berth" id="berth-a"></div><div class="berth" id="berth-b"></div><div class="berth" id="berth-c"></div></div><div id="persistent-object"></div></section>
+  <section id="drag-rail"><p class="label">07 / accessible drag rail</p><div class="rail" tabindex="0"><article>A / Origin</article><article>B / Process</article><article>C / Result</article></div></section>
+  <section id="kinetic-type"><p class="label">08 / kinetic type</p><h2>Language remains the interface</h2></section>
+  <section id="adaptive-canvas"><p class="label">09 / adaptive canvas</p><canvas aria-label="Adaptive canvas visual"></canvas></section>
+  <section id="video-handoff"><p class="label">10 / video handoff</p><video muted playsinline poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450'%3E%3Crect width='100%25' height='100%25' fill='%23384032'/%3E%3C/svg%3E"></video><div data-destination><h2>Footage resolves into readable structure.</h2></div></section>
+  <section id="spatial-gallery"><p class="label">11 / spatial gallery</p><div class="field" role="listbox"><button data-spatial-item>Material</button><button data-spatial-item>Method</button><button data-spatial-item>Meaning</button></div></section>
+  <section id="media-trail"><p class="label">12 / bounded media trail</p><p>Move deliberately across this field.</p></section>
+  <script type="module">
+    import * as systems from "./runtime.js";
+    systems.mountSectionObserver(document.querySelectorAll("[data-observe]"), { reversible:true });
+    systems.mountScrollProgress(document.querySelector("#scroll-progress"), ({progress}) => { document.querySelector("#scroll-progress output").value = `${Math.round(progress*100)}%`; });
+    systems.mountPinnedChapter(document.querySelector("#pinned-chapter"));
+    const frame = (fill) => `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450'%3E%3Crect width='100%25' height='100%25' fill='${encodeURIComponent(fill)}'/%3E%3C/svg%3E`;
+    systems.mountFrameSequence(document.querySelector("#frame-sequence canvas"), { frames:[frame("#384032"),frame("#657856"),frame("#c7ff6b")] });
+    systems.mountDragRail(document.querySelector("#drag-rail .rail"));
+    systems.mountKineticType(document.querySelector("#kinetic-type h2"));
+    systems.mountPersistentStage(document.querySelector("#persistent-object"), document.querySelectorAll(".berth"));
+    systems.mountSpatialGallery(document.querySelector("#spatial-gallery .field"));
+    systems.mountAdaptiveCanvas(document.querySelector("#adaptive-canvas canvas"), (ctx,{width,height,time,reducedMotion}) => {
+      ctx.clearRect(0,0,width,height); const count=12; for(let i=0;i<count;i++){ const phase=reducedMotion?0:time*.0004; ctx.fillStyle=`hsl(${85+i*5} 35% ${38+i}%)`; ctx.beginPath(); ctx.arc((i+.5)*width/count,height/2+Math.sin(i+phase)*55,12+i,0,Math.PI*2); ctx.fill(); }
+    });
+    const shared=document.querySelector("[data-shared]"); document.querySelector("#shared-element-handoff button").onclick=()=>systems.runSharedElementHandoff(()=>{ shared.style.marginLeft=shared.style.marginLeft?"":"55%"; });
+    systems.mountVideoHandoff(document.querySelector("#video-handoff video"), document.querySelector("#video-handoff [data-destination]"));
+    systems.mountMediaTrail(document.querySelector("#media-trail"), [
+      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='110'%3E%3Crect width='100%25' height='100%25' fill='%23657856'/%3E%3C/svg%3E"
+    ]);
+    document.documentElement.dataset.ready="true";
+  </script>
+</body>
+</html>

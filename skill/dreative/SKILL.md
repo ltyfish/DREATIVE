@@ -11,23 +11,19 @@ of the entire rendered experience, not merely code that builds. Improve the
 user's real product. The deliverable is the working frontend, not a Dreative
 artifact or a performance of following instructions.
 
-## Boundary
-
-Never open the optional Dreative editor at `http://localhost:4820` or run
-`dreative start` / `start-editor` unless the user explicitly requests it.
-The default `dreative` command starts no server.
-
 ## Workflow
 
 1. Inspect the real repository: framework, routes, content, behavior, assets,
-   dependencies, audience, visual equity, and defects.
+   dependencies, audience, visual equity, and defects. If
+   `.dreative/context.json` exists, validate and read it as fallible working
+   memory; reconcile stale statements against the current product.
 2. For an open redesign, read `references/CREATIVE_DIRECTION.md`, privately
    synthesize divergent project-native concepts, then use `PLAN.md` to show
    Recommended, Efficient, and Showcase. If the user already chose or delegated
    the decision, choose and continue.
 3. Resolve the compact review, reference, source, package, and prototype
    choices. Treat the user's direction, settings, named treatments, and later
-   corrections as binding; tier defaults fill only unspecified decisions. Never
+   corrections as binding; direction defaults fill only unspecified decisions. Never
    silently downgrade them for convenience, time, tokens, or implementation
    preference. Ask one focused question when uncertainty would materially alter
    a page's intensity, a selected treatment, the signature behavior, or scope.
@@ -39,21 +35,25 @@ The default `dreative` command starts no server.
    behavior, preserved behavior, and chosen resources. Reveal the full brief
    only on request. Do not wait for its reveal or approval; proceed to build.
 5. Read `references/CREATIVE_EXECUTION.md` before adding an advanced runtime.
-   Load only the relevant specialty and one recipe. Prototype only a central,
-   uncertain mechanism whose result could change the build.
+   Load only the relevant specialty and one golden system. Prototype only a
+   central, uncertain mechanism whose result could change the build.
 6. Finish the real route, including post-hero sections and mobile composition.
    Implement every selected treatment in its named section or state and make
    its contribution perceptible. Preserve required behavior and fix scoped
    defects. Before materially changing the brief, ask the user unless they
    explicitly delegated the decision; technical fallbacks must preserve the
-   chosen concept and tier.
-7. Inspect the rendered full page at desktop and mobile, exercise the primary
-   journey, correct visible failures, and repeat a focused pass. Run production
+   chosen concept and delivery direction.
+7. Read `references/VISUAL_REFINEMENT.md`. Inspect screenshots of the rendered
+   full page at desktop and 390px, exercise the primary journey and motion
+   states, correct visible failures, and recapture the affected and full-page
+   views. DOM or accessibility snapshots do not replace pixel inspection. Run production
    build plus existing test/typecheck/lint scripts. Substantial work requires
    `dreative finalize --codex` to print `DREATIVE_FINALIZED`. Compare the final
    product against the current brief and user choices. Claim completion only
    when every promised route, section, treatment, behavior, and review pass is
    implemented and verified; otherwise continue or report the exact blockers.
+   Update `.dreative/context.json` only with durable decisions, real tested
+   states, and unresolved issues; it is memory, never completion evidence.
 
 ## Creative decisions
 
@@ -91,8 +91,8 @@ Choose mechanisms after the concept:
 
 Use specialist systems confidently when they create real value, but make each
 one own a meaningful state change, mobile form, fallback, and cleanup path.
-Showcase integrates all ten treatments through a few complementary systems;
-it does not stack ten effects.
+Showcase has access to every treatment but selects only those that strengthen
+the premise. Creative ambition is not measured by treatment count.
 
 Reject generic machinery: arbitrary particles, floating spheres, default
 smooth scroll, shader wallpaper, permanent cursor followers, telemetry
@@ -132,7 +132,8 @@ rendered interface. `DREATIVE_FINALIZED` certifies commands only, not taste.
 - Open redesign or external reference: `references/CREATIVE_DIRECTION.md`
 - Advanced runtime: `references/CREATIVE_EXECUTION.md`
 - Relevant craft only: `skills/<name>.md`
-- Chosen mechanism only: one matching recipe
+- Rendered correction loop: `references/VISUAL_REFINEMENT.md`
+- Chosen mechanism only: one matching golden system
 - Focused mechanism lookup only: `llms.txt` or `dreative catalogue`
 
 Never browse the catalogue to invent the concept.

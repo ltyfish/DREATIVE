@@ -1,6 +1,9 @@
 node_modules/
 dist/
-.dreative/
+test-results/
+playwright-report/
+.dreative/*
+!.dreative/context.json
 .codex/
 CLAUDE.md
 AGENTS.md

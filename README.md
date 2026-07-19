@@ -6,6 +6,10 @@ it develops a project-native direction, selects useful capabilities such as
 GSAP, Lenis, Canvas, Three.js/OGL, and sourced/generated media, builds in the
 real application, and corrects the complete rendered experience.
 
+Its execution library is intentionally small: twelve executable golden systems
+with source, visual fixtures, mobile/reduced-motion behavior, cleanup,
+performance budgets, and browser tests. It does not expose a long effect menu.
+
 ## Planning flow
 
 1. Direction: Recommended, Efficient, or Showcase.
@@ -16,10 +20,7 @@ real application, and corrects the complete rendered experience.
 
 Recommended is the direction the agent judges best for the inspected product.
 Efficient is the most token- and implementation-efficient direction. Showcase
-is the absolute highest ceiling and integrates all ten treatments.
-
-The optional editor never opens automatically. Frontend work must not visit
-`localhost:4820`.
+is the absolute highest ceiling, with no required treatment count.
 
 ## Quick start
 
@@ -50,6 +51,17 @@ node dist/cli/index.js finalize --codex
 
 Success prints `DREATIVE_FINALIZED`.
 
+Create or validate durable project design memory:
+
+```bash
+node dist/cli/index.js context init
+node dist/cli/index.js context check
+```
+
+`.dreative/context.json` stores only durable product/design decisions, runtime
+owners, important assets, tested states, and unresolved visual issues. It is not
+approval or completion evidence.
+
 ## Commands
 
 - `dreative` or `dreative brief` — adaptive direction step.
@@ -57,10 +69,9 @@ Success prints `DREATIVE_FINALIZED`.
 - `dreative brief --detailed <direction>` — detailed Creative Decision Brief
   structure.
 - `dreative preflight` — framework, scripts, package manager, and capabilities.
-- `dreative catalogue --query "..."` — focused mechanism lookup.
+- `dreative context init|check|show` — minimal durable project memory.
+- `dreative catalogue --query "..."` — focused golden-system lookup.
 - `dreative finalize --codex` — deterministic delivery gate.
-- `dreative start-editor` — explicitly start the optional editor without
-  opening a browser.
 
 ## Design philosophy
 
@@ -69,6 +80,9 @@ Concepts begin with product content, behavior, assets, history, and audience.
 External references are decomposed and synthesized across domains instead of
 being copied as complete visual fingerprints.
 
-Showcase integrates all treatments into a few complementary signatures rather
-than stacking unrelated effects. An effect that competes with content is a
-defect.
+Showcase may use any treatment, but only when it strengthens the creative
+premise. An effect that competes with content is a defect.
+
+Lean and Full Audit run an actual screenshot–critique–repair loop at desktop
+and 390px. DOM snapshots support interaction testing but do not substitute for
+looking at the rendered pixels.

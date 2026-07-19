@@ -80,10 +80,11 @@ test("Codex target installs exact files and one safe AGENTS pointer", () => {
 test("active installation contains only routed skill resources", () => {
   const root = temporary(); const selected = availableSkills(sourceDir);
   const manifest = installSkill({ sourceDir, projectDir: root, packageVersion: version, target: "codex", selected, explicitAll: true });
-  assert.equal(Object.keys(manifest.files).some((file) => file.startsWith("schemas/")), false);
+  assert.equal(Object.keys(manifest.files).some((file) => file.startsWith("schemas/")), true);
+  assert.equal(Object.keys(manifest.files).some((file) => file.startsWith("systems/")), true);
   assert.deepEqual(
     Object.keys(manifest.files).filter((file) => file.startsWith("references/")).sort(),
-    ["references/CREATIVE_DIRECTION.md", "references/CREATIVE_EXECUTION.md", "references/SKILL_CONTRACT.md"],
+    ["references/ASSET_PIPELINES.md", "references/CREATIVE_DIRECTION.md", "references/CREATIVE_EXECUTION.md", "references/SKILL_CONTRACT.md", "references/VISUAL_REFINEMENT.md"],
   );
   for (const active of ["SKILL.md", "PLAN.md", "references/CREATIVE_DIRECTION.md", "references/CREATIVE_EXECUTION.md", "agents/openai.yaml"])
     assert.equal(Object.hasOwn(manifest.files, active), true, active);

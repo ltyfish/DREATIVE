@@ -1,5 +1,32 @@
 # Changelog
 
+## 1.1.0
+
+- Replaced the 128-name effect catalogue and conceptual primitives with twelve
+  executable golden systems, a functional visual fixture, and Playwright
+  desktop/mobile/reduced-motion tests.
+- Added a mandatory screenshot–critique–repair loop that distinguishes pixel
+  inspection from DOM/accessibility inspection.
+- Added minimal validated `.dreative/context.json` project memory without
+  approval, scoring, provenance, or certification fields.
+- Added optional Motion, PixiJS, and Rive capability routing alongside GSAP,
+  Lenis, Three.js/R3F, and OGL.
+- Added bounded Sharp, FFmpeg, and glTF asset-production workflows.
+- Deliberately did not add a benchmark; comparative quality claims remain
+  unproven until controlled evaluation is performed.
+
+## 1.0.2
+
+- Removed the legacy visual editor, preview server, queue commands, and their
+  browser-application dependencies.
+- Removed the deterministic design engine, keyword aesthetics, numeric design
+  dials, and ambition-tier routing that conflicted with agent-owned creative
+  direction.
+- Changed Showcase from mandatory ten-treatment coverage to concept-led
+  selection with no minimum treatment count.
+- Reduced the package to the skill, CLI, preflight, catalogue, installer,
+  documentation validation, and objective finalization checks.
+
 ## Unreleased
 
 - Removed the unused v9 plan, approval, assurance, evidence, critic,
