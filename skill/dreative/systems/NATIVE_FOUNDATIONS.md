@@ -1,6 +1,8 @@
-# Golden creative systems
+# Native creative foundations
 
-These twelve systems replace the former effect catalogue. Start from
+These twelve implementation-neutral foundations replace the former effect
+catalogue. They are bounded production primitives, not finished art direction
+or package-specific showcase builds. Start from
 `runtime.js`, then enhance with the named package only when the native path
 cannot deliver the approved concept. Every mount owns one bounded root and one
 cleanup path. `demo.html` is a functional visual fixture, not a house style.
@@ -46,16 +48,18 @@ cleanup path. `demo.html` is a functional visual fixture, not a house style.
 - Export: `mountFrameSequence`
 - Use: pre-rendered motion is more faithful or efficient than runtime simulation.
 - Reject: a short compressed video or two stills communicate the same result.
-- Mobile/reduced: smaller manifest; resolved informative frame.
+- Mobile/reduced: pass a smaller manifest when mounting; choose a resolved
+  informative frame with `reducedFrame`.
 - Budget/cleanup: capped DPR, bounded manifest/window, clear cached image refs.
-- Browser: missing frame, resize, start/mid/end, poster and reduced-motion frame.
+- Browser: missing callback, resize, start/mid/end and reduced-motion frame.
 
 ## persistent-stage
 
 - Export: `mountPersistentStage`
 - Use: one meaningful subject develops through named section berths.
 - Reject: floating decoration, control coverage, or unclear occlusion ownership.
-- Mobile/reduced: in-flow docks and resolved stills.
+- Mobile/reduced: the runtime disables the floating stage and marks each berth
+  `data-stage-fallback="visible"`; author meaningful in-flow content there.
 - Budget/cleanup: one stage; observe only berths; disconnect and remove resize.
 - Browser: every berth, overlaps, resize, 390px, fallback content.
 
@@ -102,7 +106,8 @@ cleanup path. `demo.html` is a functional visual fixture, not a house style.
 - Use: bounded depth helps users understand or browse relationships; Three.js or
   R3F is the enhanced path when real camera/geometry is necessary.
 - Reject: depth merely adds travel.
-- Mobile/reduced: shallow snap rail using the same selection model.
+- Mobile/reduced: the runtime flattens depth; consumer CSS must turn the same
+  items into a native snap rail when that is the chosen mobile form.
 - Budget/cleanup: finite items, capped DPR in GPU enhancement, full disposal.
 - Browser: click, arrows, focus, bounds, 390px, reduced motion.
 
@@ -112,7 +117,8 @@ cleanup path. `demo.html` is a functional visual fixture, not a house style.
 - Use: deliberate exploration reveals a short-lived trail of project imagery;
   PixiJS is the enhanced path for genuinely high counts.
 - Reject: permanent cursor followers, control coverage, or stock imagery.
-- Mobile/reduced: deliberate drag only; one selected still under reduced motion.
+- Mobile/reduced: deliberate drag only; the runtime creates no trail under
+  reduced motion, so preserve an authored still in the underlying content.
 - Budget/cleanup: six items and 700ms life by default; remove nodes and handler.
 - Browser: density bound, coarse pointer, controls, reduced motion, cleanup.
 

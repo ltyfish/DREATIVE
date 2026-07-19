@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dreative golden systems fixture</title>
+  <title>Dreative native foundations fixture</title>
   <style>
     :root { color-scheme: dark; font-family: Inter, system-ui, sans-serif; background:#11120f; color:#f3f0e6; }
     * { box-sizing:border-box; }
@@ -23,10 +23,12 @@
     #drag-rail article { min-width:min(70vw,420px); min-height:260px; padding:2rem; background:#25291f; scroll-snap-align:start; }
     #kinetic-type h2 { font:500 clamp(2.5rem,7vw,7rem)/.95 Georgia,serif; }
     #kinetic-type h2 span { display:inline-block; transform:translateY(.35em) rotate(2deg); opacity:.15; transition:.7s calc(var(--word-index)*70ms); }
-    #kinetic-type h2[data-state="active"] span { transform:none; opacity:1; }
+    #kinetic-type h2[data-state="active"] span,
+    #kinetic-type h2[data-state="resolved"] span { transform:none; opacity:1; }
     canvas { width:100%; height:320px; display:block; background:#171914; }
     #persistent-stage .berths { display:grid; grid-template-columns:repeat(3,1fr); gap:10vw; }
     #persistent-stage .berth { min-height:240px; border:1px dashed #aabd9880; }
+    #persistent-stage .berth p { padding:1rem; }
     #persistent-object { position:fixed; width:90px; height:90px; border-radius:50%; background:#c7ff6b; left:var(--stage-x); top:var(--stage-y); transition:.5s; pointer-events:none; z-index:2; }
     #spatial-gallery .field { min-height:430px; perspective:900px; display:grid; place-items:center; overflow:hidden; }
     [data-spatial-item] { position:absolute; width:min(56vw,360px); height:260px; border:0; color:inherit; background:#384032; transform:translateX(var(--spatial-x)) translateZ(var(--spatial-z)) rotateY(var(--spatial-r)); transition:.45s; }
@@ -37,17 +39,23 @@
     @keyframes trail { to { opacity:0; transform:translate(-50%,-65%) scale(.8); } }
     #shared-element-handoff button,#video-handoff button { font:inherit; padding:.8rem 1rem; }
     @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.001ms!important; transition-duration:.001ms!important; } }
-    @media (max-width:640px) { section { padding:18vw 6vw; } #persistent-stage .berths { grid-template-columns:1fr; } }
+    @media (max-width:640px) {
+      section { padding:18vw 6vw; }
+      #persistent-stage .berths { grid-template-columns:1fr; }
+      #persistent-stage [data-stage-fallback="visible"] { min-height:180px; background:#25291f; }
+      #spatial-gallery .field { display:flex; place-items:initial; gap:1rem; overflow-x:auto; scroll-snap-type:x mandatory; }
+      #spatial-gallery [data-spatial-item] { position:relative; flex:0 0 82%; transform:none; scroll-snap-align:center; }
+    }
   </style>
 </head>
 <body>
-  <header><div><p class="label">Functional visual fixture</p><h1>Twelve systems. No effect theatre.</h1></div></header>
+  <header><div><p class="label">Functional visual fixture</p><h1>Twelve foundations. No effect theatre.</h1></div></header>
   <section id="section-observer"><p class="label">01 / section observer</p><h2 data-observe>Readable first, animated second.</h2></section>
   <section id="scroll-progress"><p class="label">02 / normalized scroll progress</p><output>0%</output></section>
   <section id="pinned-chapter"><div class="sticky"><div><p class="label">03 / pinned chapter</p><h2 data-chapter-state>Inspect the subject.</h2><h2 data-chapter-state hidden>Change its state.</h2><h2 data-chapter-state hidden>Release cleanly.</h2></div></div></section>
-  <section id="shared-element-handoff"><p class="label">04 / shared element</p><button>Move the subject</button><div data-shared style="width:120px;height:120px;background:#c7ff6b;margin-top:2rem"></div></section>
+  <section id="shared-element-handoff"><p class="label">04 / shared element</p><button>Move the subject</button><div data-shared style="view-transition-name:dreative-subject;width:120px;height:120px;background:#c7ff6b;margin-top:2rem"></div></section>
   <section id="frame-sequence"><p class="label">05 / frame sequence</p><canvas aria-label="Frame sequence fallback fixture"></canvas></section>
-  <section id="persistent-stage"><p class="label">06 / persistent stage</p><div class="berths"><div class="berth" id="berth-a"></div><div class="berth" id="berth-b"></div><div class="berth" id="berth-c"></div></div><div id="persistent-object"></div></section>
+  <section id="persistent-stage"><p class="label">06 / persistent stage</p><div class="berths"><div class="berth" id="berth-a"><p>Origin state</p></div><div class="berth" id="berth-b"><p>Process state</p></div><div class="berth" id="berth-c"><p>Resolved state</p></div></div><div id="persistent-object"></div></section>
   <section id="drag-rail"><p class="label">07 / accessible drag rail</p><div class="rail" tabindex="0"><article>A / Origin</article><article>B / Process</article><article>C / Result</article></div></section>
   <section id="kinetic-type"><p class="label">08 / kinetic type</p><h2>Language remains the interface</h2></section>
   <section id="adaptive-canvas"><p class="label">09 / adaptive canvas</p><canvas aria-label="Adaptive canvas visual"></canvas></section>
@@ -56,23 +64,26 @@
   <section id="media-trail"><p class="label">12 / bounded media trail</p><p>Move deliberately across this field.</p></section>
   <script type="module">
     import * as systems from "./runtime.js";
-    systems.mountSectionObserver(document.querySelectorAll("[data-observe]"), { reversible:true });
-    systems.mountScrollProgress(document.querySelector("#scroll-progress"), ({progress}) => { document.querySelector("#scroll-progress output").value = `${Math.round(progress*100)}%`; });
-    systems.mountPinnedChapter(document.querySelector("#pinned-chapter"));
+    const mounts=[];
+    mounts.push(systems.mountSectionObserver(document.querySelectorAll("[data-observe]"), { reversible:true }));
+    mounts.push(systems.mountScrollProgress(document.querySelector("#scroll-progress"), ({progress}) => { document.querySelector("#scroll-progress output").value = `${Math.round(progress*100)}%`; }));
+    mounts.push(systems.mountPinnedChapter(document.querySelector("#pinned-chapter")));
     const frame = (fill) => `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450'%3E%3Crect width='100%25' height='100%25' fill='${encodeURIComponent(fill)}'/%3E%3C/svg%3E`;
-    systems.mountFrameSequence(document.querySelector("#frame-sequence canvas"), { frames:[frame("#384032"),frame("#657856"),frame("#c7ff6b")] });
-    systems.mountDragRail(document.querySelector("#drag-rail .rail"));
-    systems.mountKineticType(document.querySelector("#kinetic-type h2"));
-    systems.mountPersistentStage(document.querySelector("#persistent-object"), document.querySelectorAll(".berth"));
-    systems.mountSpatialGallery(document.querySelector("#spatial-gallery .field"));
-    systems.mountAdaptiveCanvas(document.querySelector("#adaptive-canvas canvas"), (ctx,{width,height,time,reducedMotion}) => {
+    const sequence=systems.mountFrameSequence(document.querySelector("#frame-sequence canvas"), { frames:[frame("#384032"),frame("#657856"),frame("#c7ff6b")] });
+    mounts.push(sequence.destroy.bind(sequence));
+    mounts.push(systems.mountDragRail(document.querySelector("#drag-rail .rail")));
+    mounts.push(systems.mountKineticType(document.querySelector("#kinetic-type h2")));
+    mounts.push(systems.mountPersistentStage(document.querySelector("#persistent-object"), document.querySelectorAll(".berth")));
+    mounts.push(systems.mountSpatialGallery(document.querySelector("#spatial-gallery .field")));
+    mounts.push(systems.mountAdaptiveCanvas(document.querySelector("#adaptive-canvas canvas"), (ctx,{width,height,time,reducedMotion}) => {
       ctx.clearRect(0,0,width,height); const count=12; for(let i=0;i<count;i++){ const phase=reducedMotion?0:time*.0004; ctx.fillStyle=`hsl(${85+i*5} 35% ${38+i}%)`; ctx.beginPath(); ctx.arc((i+.5)*width/count,height/2+Math.sin(i+phase)*55,12+i,0,Math.PI*2); ctx.fill(); }
-    });
+    }));
     const shared=document.querySelector("[data-shared]"); document.querySelector("#shared-element-handoff button").onclick=()=>systems.runSharedElementHandoff(()=>{ shared.style.marginLeft=shared.style.marginLeft?"":"55%"; });
-    systems.mountVideoHandoff(document.querySelector("#video-handoff video"), document.querySelector("#video-handoff [data-destination]"));
-    systems.mountMediaTrail(document.querySelector("#media-trail"), [
+    mounts.push(systems.mountVideoHandoff(document.querySelector("#video-handoff video"), document.querySelector("#video-handoff [data-destination]")));
+    mounts.push(systems.mountMediaTrail(document.querySelector("#media-trail"), [
       "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='110'%3E%3Crect width='100%25' height='100%25' fill='%23657856'/%3E%3C/svg%3E"
-    ]);
+    ]));
+    globalThis.dreativeFixture={ systems, sequence, destroy(){ mounts.splice(0).reverse().forEach((destroy)=>destroy?.()); } };
     document.documentElement.dataset.ready="true";
   </script>
 </body>

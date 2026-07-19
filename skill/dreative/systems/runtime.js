@@ -52,12 +52,23 @@ export function mountScrollProgress(subject, onFrame, options = {}) {
 export function mountPinnedChapter(root, options = {}) {
   const states = [...root.querySelectorAll("[data-chapter-state]")];
   if (!states.length) return noop;
+  const originalState = root.dataset.activeState;
+  const originals = states.map((state) => ({ hidden: state.hidden, aria: state.getAttribute("aria-hidden") }));
+  const restore = () => {
+    if (originalState === undefined) delete root.dataset.activeState;
+    else root.dataset.activeState = originalState;
+    states.forEach((state, index) => {
+      state.hidden = originals[index].hidden;
+      if (originals[index].aria === null) state.removeAttribute("aria-hidden");
+      else state.setAttribute("aria-hidden", originals[index].aria);
+    });
+  };
   if (reduced()) {
     root.dataset.activeState = "all";
     states.forEach((state) => { state.hidden = false; });
-    return noop;
+    return restore;
   }
-  return mountScrollProgress(root, ({ progress }) => {
+  const destroyProgress = mountScrollProgress(root, ({ progress }) => {
     const index = Math.min(states.length - 1, Math.floor(progress * states.length));
     root.dataset.activeState = String(index);
     states.forEach((state, current) => {
@@ -66,6 +77,7 @@ export function mountPinnedChapter(root, options = {}) {
     });
     options.onState?.(index, progress);
   });
+  return () => { destroyProgress(); restore(); };
 }
 
 export async function runSharedElementHandoff(mutate, options = {}) {
@@ -105,7 +117,13 @@ export function mountFrameSequence(canvas, options) {
   const draw = async (index) => {
     current = clamp(index, 0, options.frames.length - 1);
     const image = await load(current);
-    if (destroyed || !image) return options.onMissing?.(current);
+    if (destroyed) return;
+    canvas.dataset.frame = String(current);
+    if (!image) {
+      canvas.dataset.state = "missing";
+      return options.onMissing?.(current);
+    }
+    canvas.dataset.state = "ready";
     const scale = Math.max(canvas.width / image.width, canvas.height / image.height);
     const width = image.width * scale;
     const height = image.height * scale;
@@ -118,7 +136,7 @@ export function mountFrameSequence(canvas, options) {
   draw(reduced() ? (options.reducedFrame ?? options.frames.length - 1) : 0);
   return {
     setProgress(progress) { draw(Math.round(clamp(progress) * (options.frames.length - 1))); },
-    destroy() { destroyed = true; observer.disconnect(); images.clear(); },
+    destroy() { destroyed = true; observer.disconnect(); images.clear(); delete canvas.dataset.frame; delete canvas.dataset.state; },
   };
 }
 
@@ -129,6 +147,18 @@ export function mountPersistentStage(stage, berths) {
   const originalHidden = stage.hidden;
   const originalBerth = stage.dataset.berth;
   const originalVars = ["--stage-x", "--stage-y", "--stage-w", "--stage-h"].map((name) => [name, stage.style.getPropertyValue(name)]);
+  const originalFallbacks = entries.map((entry) => entry.dataset.stageFallback);
+  if (reduced()) {
+    stage.hidden = true;
+    entries.forEach((entry) => { entry.dataset.stageFallback = "visible"; });
+    return () => {
+      stage.hidden = originalHidden;
+      entries.forEach((entry, index) => {
+        if (originalFallbacks[index] === undefined) delete entry.dataset.stageFallback;
+        else entry.dataset.stageFallback = originalFallbacks[index];
+      });
+    };
+  }
   stage.hidden = true;
   const update = () => {
     const center = innerHeight / 2;
@@ -229,7 +259,8 @@ export function mountAdaptiveCanvas(canvas, draw, options = {}) {
   const context = canvas.getContext("2d", { alpha: true });
   if (!context) return noop;
   let raf = 0;
-  let visible = true;
+  let documentVisible = !document.hidden;
+  let inViewport = true;
   let size = { width: 1, height: 1, dpr: 1 };
   const resize = () => {
     const rect = canvas.getBoundingClientRect();
@@ -240,21 +271,38 @@ export function mountAdaptiveCanvas(canvas, draw, options = {}) {
     context.setTransform(dpr, 0, 0, dpr, 0, 0);
   };
   const frame = (time) => {
-    if (!visible) return;
+    if (!documentVisible || !inViewport) return;
     draw(context, { ...size, time, reducedMotion: reduced() });
     if (!reduced()) raf = requestAnimationFrame(frame);
   };
-  const visibility = () => {
-    visible = !document.hidden;
-    if (visible && !raf) raf = requestAnimationFrame(frame);
-    else if (!visible && raf) { cancelAnimationFrame(raf); raf = 0; }
+  const sync = () => {
+    const shouldRun = documentVisible && inViewport;
+    if (shouldRun && !raf) raf = requestAnimationFrame(frame);
+    else if (!shouldRun && raf) { cancelAnimationFrame(raf); raf = 0; }
+    canvas.dataset.suspended = String(!shouldRun);
   };
-  const observer = new ResizeObserver(resize);
-  observer.observe(canvas);
+  const visibility = () => {
+    documentVisible = !document.hidden;
+    sync();
+  };
+  const resizeObserver = new ResizeObserver(resize);
+  resizeObserver.observe(canvas);
+  const viewportObserver = new IntersectionObserver(([entry]) => {
+    inViewport = entry?.isIntersecting ?? false;
+    sync();
+  }, { rootMargin: options.rootMargin ?? "120px 0px" });
+  viewportObserver.observe(canvas);
   document.addEventListener("visibilitychange", visibility);
   resize();
   raf = requestAnimationFrame(frame);
-  return () => { observer.disconnect(); document.removeEventListener("visibilitychange", visibility); if (raf) cancelAnimationFrame(raf); context.clearRect(0, 0, canvas.width, canvas.height); };
+  return () => {
+    resizeObserver.disconnect();
+    viewportObserver.disconnect();
+    document.removeEventListener("visibilitychange", visibility);
+    if (raf) cancelAnimationFrame(raf);
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    delete canvas.dataset.suspended;
+  };
 }
 
 export function mountVideoHandoff(video, destination, options = {}) {
@@ -274,10 +322,11 @@ export function mountVideoHandoff(video, destination, options = {}) {
     return noop;
   }
   video.addEventListener("timeupdate", update);
+  video.addEventListener("loadeddata", update);
   video.addEventListener("ended", update);
   video.addEventListener("error", fail);
   update();
-  return () => { video.removeEventListener("timeupdate", update); video.removeEventListener("ended", update); video.removeEventListener("error", fail); };
+  return () => { video.removeEventListener("timeupdate", update); video.removeEventListener("loadeddata", update); video.removeEventListener("ended", update); video.removeEventListener("error", fail); };
 }
 
 export function mountSpatialGallery(root, options = {}) {

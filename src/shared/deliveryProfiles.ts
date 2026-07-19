@@ -122,6 +122,7 @@ export function renderDetailedPlanGuide(profileId: DeliveryProfileId): string {
     `5. Treatment guide and section allocation — project-specific use, cost, risk, insufficiency, post-hero peak, and continuity owner. ${profile.treatments}`,
     "6. Build architecture — signature mechanism, runtime ownership, component/asset pipeline, mobile and semantic fallbacks, accessibility, and performance.",
     "7. Observable review, risks, fallbacks, and one editable decision reply.",
+    "Visible execution map — experience arc, section ownership, post-hero peak, continuity owner, and mobile transformation in roughly ten lines.",
     "",
     "The brief must adapt every decision to the inspected project. Do not imitate a named site, emit a generic template, or require another implementation-contract approval.",
   ].join("\n");

@@ -12,7 +12,7 @@ import {
   validateExternalReference,
 } from "./creativeCatalog.js";
 
-test("catalogue is constrained to executable golden systems", () => {
+test("catalogue is constrained to executable native foundations", () => {
   assert.deepEqual(validateCreativeCatalog(), []);
   assert.ok(CREATIVE_MECHANISMS.length >= 12 && CREATIVE_MECHANISMS.length <= 20);
   assert.equal(new Set(CREATIVE_MECHANISMS.map((item) => item.id)).size, CREATIVE_MECHANISMS.length);
@@ -56,9 +56,9 @@ test("external references require an adaptation and deliberate differences", () 
   assert.ok(errors.some((item) => /two concrete differences/.test(item)));
 });
 
-test("every golden system export, guide heading, and visual anchor exists", async () => {
+test("every native foundation export, guide heading, and visual anchor exists", async () => {
   const runtimePath = path.join(process.cwd(), "skill", "dreative", "systems", "runtime.js");
-  const guide = fs.readFileSync(path.join(process.cwd(), "skill", "dreative", "systems", "GOLDEN_SYSTEMS.md"), "utf8");
+  const guide = fs.readFileSync(path.join(process.cwd(), "skill", "dreative", "systems", "NATIVE_FOUNDATIONS.md"), "utf8");
   const demo = fs.readFileSync(path.join(process.cwd(), "skill", "dreative", "systems", "demo.html"), "utf8");
   const runtime = await import(`${new URL(`file:///${runtimePath.replaceAll("\\", "/")}`).href}?test=${Date.now()}`);
   for (const item of CREATIVE_MECHANISMS) {

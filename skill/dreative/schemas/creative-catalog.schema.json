@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://dreative.local/schemas/creative-catalog.schema.json",
-  "title": "Dreative golden system registry",
+  "title": "Dreative native foundation registry",
   "type": "object",
   "additionalProperties": false,
   "required": ["systems", "packageProfiles"],

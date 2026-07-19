@@ -108,9 +108,21 @@ continuity, mobile transformation, runtime ownership, fallbacks, and review.
 Keep it current when repository inspection or prototyping changes a decision.
 
 Do not require the user to read or approve it. By default, show only the short
-build brief required by `SKILL.md`. If the user says `show detailed plan`,
-reveal the current full brief. Do not create a plan file, approval record, or
-other compliance artifact merely to prove that the private brief exists.
+build brief required by `SKILL.md`, including this compact execution map:
+
+```text
+Experience arc: <hero> → <proof> → <transformation> → <decision>
+Section ownership: <section → perceptible treatment or role>
+Post-hero peak: <section and meaningful state change>
+Continuity owner: <device that carries the concept beyond the hero>
+Mobile transformation: <structural changes, not “stack everything”>
+```
+
+Keep it concrete and under roughly ten lines. It exposes the implementation
+shape without turning the private brief into an approval or evidence artifact.
+If the user says `show detailed plan`, reveal the current full brief. Do not
+create a plan file, approval record, or other compliance artifact merely to
+prove that the private brief exists.
 
 Adapt every decision below to the inspected project and selected direction.
 The user's explicit choices and corrections are the source of truth. Use direction

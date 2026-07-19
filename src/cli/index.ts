@@ -3,7 +3,14 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import readline from "node:readline";
-import { detectCodingHost, detectProjectPreflight, resolveRuntimeRequirements } from "../shared/preflight.js";
+import {
+  detectCodingHost,
+  detectProjectPreflight,
+  parseCapabilitiesFile,
+  resolveRuntimeRequirements,
+  type CreativePermissions,
+  validateCreativePermissions,
+} from "../shared/preflight.js";
 import { printDocsCheck, runDocsCheck } from "./docsCheck.js";
 import { runFinalize } from "./finalize.js";
 import { availableSkills, checkSkillInstallation, installSkill, installationDirectory, resolveSkillSelection } from "./installSkill.js";
@@ -35,6 +42,11 @@ const USAGE = `usage: dreative [command]
                    --list | --skills all|a,b | --codex | --check
   preflight        detect the current framework, package manager, scripts and capabilities
                    --mechanisms a,b   resolve mechanism-led package/install requirements
+                   --permissions file-or-json
+                   --generated-images allow|deny  --external-images allow|deny
+                   --generated-video allow|deny   --external-video allow|deny
+                   --three-d-policy not-allowed|supplied-only|external-sourcing-allowed|generation-and-sourcing-allowed
+                   --packages allow|deny  --capabilities file
   context          durable project design memory: init | check | show
   catalogue        search the executable creative catalogue [--query phrase] [--json]
   finalize         run build/test/typecheck/lint/docs checks; prints DREATIVE_FINALIZED on success
@@ -112,7 +124,46 @@ async function main(): Promise<void> {
       return;
     }
     case "preflight": {
-      const preflight = detectProjectPreflight(process.cwd());
+      const valueAfter = (flag: string): string | undefined => {
+        const index = args.indexOf(flag);
+        return index >= 0 ? args[index + 1] : undefined;
+      };
+      const permissionInput = valueAfter("--permissions");
+      let permissions: Partial<CreativePermissions> = {};
+      if (permissionInput) {
+        const raw = fs.existsSync(path.resolve(permissionInput))
+          ? fs.readFileSync(path.resolve(permissionInput), "utf8")
+          : permissionInput;
+        const parsed: unknown = JSON.parse(raw);
+        validateCreativePermissions(parsed);
+        permissions = parsed;
+      }
+      const booleanChoice = (flag: string): boolean | undefined => {
+        const value = valueAfter(flag);
+        if (value === undefined) return undefined;
+        if (value === "allow") return true;
+        if (value === "deny") return false;
+        throw new Error(`${flag} must be allow or deny`);
+      };
+      const choices: [keyof CreativePermissions, boolean | undefined][] = [
+        ["generatedImagesAllowed", booleanChoice("--generated-images")],
+        ["externalImagesAllowed", booleanChoice("--external-images")],
+        ["generatedVideoAllowed", booleanChoice("--generated-video")],
+        ["externalVideoAllowed", booleanChoice("--external-video")],
+        ["packageInstallationAllowed", booleanChoice("--packages")],
+      ];
+      for (const [key, value] of choices) if (value !== undefined) permissions[key] = value as never;
+      const threeDPolicy = valueAfter("--three-d-policy");
+      if (threeDPolicy) {
+        const allowed = ["not-allowed", "supplied-only", "external-sourcing-allowed", "generation-and-sourcing-allowed"];
+        if (!allowed.includes(threeDPolicy)) throw new Error(`invalid --three-d-policy: ${threeDPolicy}`);
+        permissions.threeDPolicy = threeDPolicy as CreativePermissions["threeDPolicy"];
+      }
+      const capabilitiesFile = valueAfter("--capabilities");
+      const preflight = detectProjectPreflight(process.cwd(), {
+        permissions,
+        explicitCapabilities: capabilitiesFile ? parseCapabilitiesFile(path.resolve(capabilitiesFile)) : undefined,
+      });
       const index = args.indexOf("--mechanisms");
       const mechanisms = index >= 0 ? (args[index + 1] ?? "").split(",").map((item) => item.trim()).filter(Boolean) : [];
       console.log(JSON.stringify({ preflight, runtimeRequirements: resolveRuntimeRequirements(mechanisms, preflight) }, null, 2));

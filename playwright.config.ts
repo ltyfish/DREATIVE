@@ -10,7 +10,7 @@ export default defineConfig({
     browserName: "chromium",
   },
   webServer: {
-    command: "node scripts/serve-golden-demo.mjs",
+    command: "node scripts/serve-foundations-demo.mjs",
     port: 4177,
     reuseExistingServer: true,
   },

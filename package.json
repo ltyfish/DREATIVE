@@ -22,6 +22,7 @@
     "test:active": "npm run build:cli && npm run test:unit && npm run test:browser",
     "test:unit": "node --test dist/shared/*.test.js dist/cli/*.test.js",
     "test:browser": "playwright test",
+    "test:browser:install": "playwright install chromium",
     "test:all": "npm run test:active",
     "docs-check": "npm run build:cli && node dist/cli/index.js docs-check",
     "dev": "tsx watch src/cli/index.ts",

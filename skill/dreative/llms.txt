@@ -1,4 +1,4 @@
-# Dreative executable golden systems
+# Dreative executable native foundations
 
 Search the small machine-readable system set after selecting an advanced need:
 
@@ -10,7 +10,7 @@ appropriate and bad uses, mobile/reduced-motion behavior, cleanup, a performance
 budget, and browser checks.
 
 The compiled registry is `dist/shared/creativeCatalog.js`. Source and examples
-are in `systems/runtime.js`, `systems/GOLDEN_SYSTEMS.md`, and
+are in `systems/runtime.js`, `systems/NATIVE_FOUNDATIONS.md`, and
 `systems/demo.html`. Advanced runtime selection is in
 `references/CREATIVE_EXECUTION.md`; build-time media work is in
 `references/ASSET_PIPELINES.md`. The system set is an implementation lookup

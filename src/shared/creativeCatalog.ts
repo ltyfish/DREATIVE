@@ -46,7 +46,7 @@ export const PACKAGE_PROFILES: PackageProfile[] = [
   profile("ffmpeg", "ffmpeg-static", `import ffmpegPath from "ffmpeg-static"`, "existing footage needs compression, posters, transparent fallbacks, or frame extraction", "no verified executable or source footage is available", { buildTimeOnly: true }),
 ];
 
-export interface GoldenSystem {
+export interface NativeFoundation {
   id: string;
   name: string;
   aliases: string[];
@@ -72,11 +72,11 @@ const system = (
   id: string,
   name: string,
   implementationExport: string,
-  options: Omit<GoldenSystem, "id" | "name" | "implementation" | "implementationExport" | "guide" | "visualExample">,
-): GoldenSystem => ({
+  options: Omit<NativeFoundation, "id" | "name" | "implementation" | "implementationExport" | "guide" | "visualExample">,
+): NativeFoundation => ({
   id, name, implementationExport,
   implementation: "systems/runtime.js",
-  guide: `systems/GOLDEN_SYSTEMS.md#${id}`,
+  guide: `systems/NATIVE_FOUNDATIONS.md#${id}`,
   visualExample: `systems/demo.html#${id}`,
   ...options,
 });
@@ -88,7 +88,7 @@ const shared = {
   browserTest: ["verify initial, active, reverse, and resolved states", "verify 390px, reduced motion, keyboard access, and cleanup"],
 };
 
-export const CREATIVE_MECHANISMS: GoldenSystem[] = [
+export const CREATIVE_MECHANISMS: NativeFoundation[] = [
   system("section-observer", "Section observer", "mountSectionObserver", {
     aliases: ["section reveal", "in-view states"], summary: "Publish one-shot or reversible section states without hiding readable content.",
     suitableTreatments: ["refined", "motion"], packageProfiles: [], useWhen: "section state changes need a small native trigger", rejectWhen: "the only result is repeated fade-up animation",
@@ -183,8 +183,8 @@ export function resolveCreativeStack(
   systemIds: string[],
   options: { installed?: string[]; installationAllowed?: boolean; capabilities?: string[] } = {},
 ): CreativeStackResolution {
-  const systems = systemIds.map((id) => CREATIVE_MECHANISMS.find((item) => item.id === id)).filter((item): item is GoldenSystem => Boolean(item));
-  const blockers = systemIds.filter((id) => !systems.some((item) => item.id === id)).map((id) => `unknown golden system ${id}`);
+  const systems = systemIds.map((id) => CREATIVE_MECHANISMS.find((item) => item.id === id)).filter((item): item is NativeFoundation => Boolean(item));
+  const blockers = systemIds.filter((id) => !systems.some((item) => item.id === id)).map((id) => `unknown native foundation ${id}`);
   const requestedIds = new Set(systems.flatMap((item) => item.packageProfiles));
   const selectedProfiles = PACKAGE_PROFILES.filter((item) => requestedIds.has(item.id));
   const installed = new Set(options.installed ?? []);
@@ -194,7 +194,7 @@ export function resolveCreativeStack(
     if (item.id === "ffmpeg" && !(options.capabilities ?? []).includes("ffmpeg-processing"))
       fallbacks.push("Use supplied poster/stills or a verified external media pipeline.");
     else if (options.installationAllowed === false)
-      fallbacks.push(`${item.id}: use the golden system's native or static fallback.`);
+      fallbacks.push(`${item.id}: use the native foundation's static fallback.`);
   }
   return {
     scrollOwner: requestedIds.has("lenis") ? "lenis" : "native",
@@ -206,7 +206,7 @@ export function resolveCreativeStack(
   };
 }
 
-export function searchCreativeCatalog(query: string): GoldenSystem[] {
+export function searchCreativeCatalog(query: string): NativeFoundation[] {
   const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
   return CREATIVE_MECHANISMS
     .map((item) => ({ item, score: terms.reduce((score, term) => score + [item.id, item.name, ...item.aliases, item.summary, item.useWhen].join(" ").toLowerCase().split(term).length - 1, 0) }))
@@ -218,8 +218,8 @@ export function searchCreativeCatalog(query: string): GoldenSystem[] {
 export function validateCreativeCatalog(): string[] {
   const errors: string[] = [];
   const ids = new Set(PACKAGE_PROFILES.map((item) => item.id));
-  if (CREATIVE_MECHANISMS.length < 12 || CREATIVE_MECHANISMS.length > 20) errors.push("golden system count must stay between 12 and 20");
-  if (new Set(CREATIVE_MECHANISMS.map((item) => item.id)).size !== CREATIVE_MECHANISMS.length) errors.push("golden system IDs must be unique");
+  if (CREATIVE_MECHANISMS.length !== 12) errors.push("native foundation count must remain exactly 12");
+  if (new Set(CREATIVE_MECHANISMS.map((item) => item.id)).size !== CREATIVE_MECHANISMS.length) errors.push("native foundation IDs must be unique");
   for (const item of CREATIVE_MECHANISMS) {
     for (const id of item.packageProfiles) if (!ids.has(id)) errors.push(`${item.id}: unknown package profile ${id}`);
     if (!item.implementation || !item.implementationExport || !item.guide || !item.visualExample) errors.push(`${item.id}: missing executable resources`);
@@ -232,7 +232,7 @@ export function validateCreativeCatalog(): string[] {
 export function renderAgentCatalogue(query?: string): string {
   const entries = query ? searchCreativeCatalog(query) : CREATIVE_MECHANISMS;
   return [
-    "# Dreative golden systems", "",
+    "# Dreative native foundations", "",
     ...entries.flatMap((item) => [
       `## ${item.name} (${item.id})`,
       `Purpose: ${item.summary}`,

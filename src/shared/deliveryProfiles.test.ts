@@ -44,5 +44,6 @@ test("detailed planning is an adaptive Creative Decision Brief", () => {
   for (const field of ["Current state", "Selected direction", "Reference synthesis", "Workflow", "Treatment guide", "section allocation", "Build architecture", "Risks"])
     assert.match(detail, new RegExp(field, "i"));
   assert.match(detail, /no minimum count/i);
+  assert.match(detail, /Visible execution map.+experience arc.+mobile transformation/i);
   assert.doesNotMatch(detail, /approval hash|attestation|independent critic|provenance/i);
 });

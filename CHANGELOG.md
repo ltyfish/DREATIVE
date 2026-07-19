@@ -3,7 +3,7 @@
 ## 1.1.0
 
 - Replaced the 128-name effect catalogue and conceptual primitives with twelve
-  executable golden systems, a functional visual fixture, and Playwright
+  executable native foundations, a functional visual fixture, and Playwright
   desktop/mobile/reduced-motion tests.
 - Added a mandatory screenshot–critique–repair loop that distinguishes pixel
   inspection from DOM/accessibility inspection.

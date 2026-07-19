@@ -23,7 +23,7 @@
 - `skill/dreative/references/ASSET_PIPELINES.md` — bounded Sharp, FFmpeg, and
   glTF production workflows.
 - `skill/dreative/systems/runtime.js` and `systems/demo.html` — executable
-  golden systems and their browser fixture.
+  native foundations and their browser fixture.
 - `skill/dreative/llms.txt` and `src/shared/creativeCatalog.ts` — searchable
   twelve-system registry.
 - `src/shared/projectContext.ts` — minimal durable `.dreative/context.json`

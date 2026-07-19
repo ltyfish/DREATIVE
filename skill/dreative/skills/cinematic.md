@@ -11,5 +11,5 @@ scenes, forced waiting, constant motion, and transitions that obscure product
 access.
 
 Read `../references/CREATIVE_EXECUTION.md`, then use only the matching system
-in `../systems/GOLDEN_SYSTEMS.md` or pipeline in
+in `../systems/NATIVE_FOUNDATIONS.md` or pipeline in
 `../references/ASSET_PIPELINES.md`.

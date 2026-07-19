@@ -6,9 +6,10 @@ it develops a project-native direction, selects useful capabilities such as
 GSAP, Lenis, Canvas, Three.js/OGL, and sourced/generated media, builds in the
 real application, and corrects the complete rendered experience.
 
-Its execution library is intentionally small: twelve executable golden systems
-with source, visual fixtures, mobile/reduced-motion behavior, cleanup,
-performance budgets, and browser tests. It does not expose a long effect menu.
+Its execution library is intentionally small: twelve executable native
+foundations with source, a functional fixture, explicit fallback and cleanup
+contracts, and behavioral browser tests. They are primitives to adapt, not
+finished art direction or a long effect menu.
 
 ## Planning flow
 
@@ -51,6 +52,13 @@ node dist/cli/index.js finalize --codex
 
 Success prints `DREATIVE_FINALIZED`.
 
+The browser suite requires a Chromium binary once per environment:
+
+```bash
+npm run test:browser:install
+npm test
+```
+
 Create or validate durable project design memory:
 
 ```bash
@@ -72,6 +80,17 @@ approval or completion evidence.
 - `dreative context init|check|show` — minimal durable project memory.
 - `dreative catalogue --query "..."` — focused golden-system lookup.
 - `dreative finalize --codex` — deterministic delivery gate.
+
+Preflight leaves unspecified sourcing and generation permissions unresolved.
+Pass explicit choices as flags or JSON instead of silently treating them as
+denied:
+
+```bash
+dreative preflight --generated-images allow --external-images deny --three-d-policy supplied-only
+dreative preflight --permissions ./dreative-permissions.json --capabilities ./capabilities.json
+```
+
+Package detection and successful browser launch are reported separately.
 
 ## Design philosophy
 

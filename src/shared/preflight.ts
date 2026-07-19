@@ -81,6 +81,20 @@ export interface CreativePermissions {
   packageInstallationAllowed: boolean;
 }
 
+export function validateCreativePermissions(input: unknown): asserts input is Partial<CreativePermissions> {
+  if (!input || typeof input !== "object" || Array.isArray(input)) throw new Error("permissions must be a JSON object");
+  const values = input as Record<string, unknown>;
+  const booleanKeys = [
+    "generatedImagesAllowed", "externalImagesAllowed", "generatedVideoAllowed",
+    "externalVideoAllowed", "packageInstallationAllowed",
+  ];
+  const allowedKeys = new Set([...booleanKeys, "threeDPolicy"]);
+  for (const key of Object.keys(values)) if (!allowedKeys.has(key)) throw new Error(`unknown permission: ${key}`);
+  for (const key of booleanKeys) if (key in values && typeof values[key] !== "boolean") throw new Error(`${key} must be boolean`);
+  if ("threeDPolicy" in values && !["not-allowed", "supplied-only", "external-sourcing-allowed", "generation-and-sourcing-allowed"].includes(String(values.threeDPolicy)))
+    throw new Error("threeDPolicy is invalid");
+}
+
 export interface ProjectPreflight {
   capturedAt: string;
   identity: string;
@@ -91,7 +105,8 @@ export interface ProjectPreflight {
   sourceLayout: string[];
   installedCapabilities: string[];
   scripts: Record<string, string>;
-  browserVerification: boolean;
+  browserAutomationPackageInstalled: boolean;
+  browserLaunchVerified: boolean;
   reducedMotionInfrastructure: string[];
   scrollOwner: string | null;
   animationTicker: string | null;
@@ -165,8 +180,9 @@ const CATEGORY: Record<CreativeCapabilityId, CapabilityCategory> = {
 const commandAvailable = (command: string): boolean =>
   spawnSync(command, ["-version"], { stdio: "ignore", windowsHide: true }).status === 0;
 
-const permissionFor = (id: CreativeCapabilityId, permissions: CreativePermissions, unresolved = false): PermissionState => {
-  if (unresolved && ["image-generation", "image-editing", "video-generation", "video-editing", "frame-sequence-creation", "audio-generation", "image-search", "font-search", "texture-search", "video-search", "3d-asset-search", "3d-model-generation", "3d-model-editing"].includes(id)) return "unresolved";
+const permissionFor = (id: CreativeCapabilityId, permissions: CreativePermissions, unresolved: boolean | Set<keyof CreativePermissions> = false): PermissionState => {
+  const key = capabilityPermissionKey(id);
+  if ((unresolved === true && key) || (unresolved instanceof Set && key && unresolved.has(key))) return "unresolved";
   if (["image-generation", "image-editing"].includes(id)) return permissions.generatedImagesAllowed ? "allowed" : "denied";
   if (["video-generation", "video-editing", "frame-sequence-creation", "audio-generation"].includes(id)) return permissions.generatedVideoAllowed ? "allowed" : "denied";
   if (id === "image-search" || id === "font-search" || id === "texture-search") return permissions.externalImagesAllowed ? "allowed" : "denied";
@@ -208,7 +224,7 @@ export function parseCapabilitiesFile(file: string): CapabilityInput[] {
 }
 
 export function resolveCreativeCapabilities(installed: string[], permissions: CreativePermissions,
-  explicit: CapabilityInput[] = [], environment: { ffmpeg?: boolean; unresolvedPermissions?: boolean } = {}): CapabilityAssessment[] {
+  explicit: CapabilityInput[] = [], environment: { ffmpeg?: boolean; unresolvedPermissions?: boolean | Set<keyof CreativePermissions> } = {}): CapabilityAssessment[] {
   const errors = validateCapabilityInputs(explicit);
   if (errors.length) throw new Error(errors.join("\n"));
   const overrides = new Map(explicit.map((item) => [item.id, item]));
@@ -352,7 +368,46 @@ export function renderCreativeCapabilityPreflight(preflight: ProjectPreflight): 
   ].join("\n");
 }
 
-export function detectProjectPreflight(projectDir: string, options: { permissions?: Partial<CreativePermissions>; explicitCapabilities?: CapabilityInput[]; permissionsUnresolved?: boolean } = {}): ProjectPreflight {
+type PermissionKey = keyof CreativePermissions;
+
+const capabilityPermissionKey = (id: CreativeCapabilityId): PermissionKey | null => {
+  if (["image-generation", "image-editing"].includes(id)) return "generatedImagesAllowed";
+  if (["video-generation", "video-editing", "frame-sequence-creation", "audio-generation"].includes(id)) return "generatedVideoAllowed";
+  if (["image-search", "font-search", "texture-search"].includes(id)) return "externalImagesAllowed";
+  if (id === "video-search") return "externalVideoAllowed";
+  if (["3d-asset-search", "3d-model-generation", "3d-model-editing"].includes(id)) return "threeDPolicy";
+  return null;
+};
+
+function runtimeSignals(files: string[], deps: Record<string, string>): Pick<ProjectPreflight, "scrollOwner" | "animationTicker" | "reducedMotionInfrastructure"> {
+  const applicationFiles = files.filter((file) =>
+    !/[\\/](?:__tests__|test|tests|fixtures|examples|scripts)[\\/]/i.test(file)
+    && !/[\\/]src[\\/]shared[\\/]preflight\.[jt]s$/i.test(file)
+    && !/\.(?:test|spec)\.[jt]sx?$/i.test(file));
+  const source = applicationFiles.map((file) => fs.readFileSync(file, "utf8")).join("\n");
+  const imports = (packageName: string) =>
+    new RegExp(`(?:from\\s*["']${packageName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:\\/[^"']*)?["']|require\\(\\s*["']${packageName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`).test(source);
+  const lenisActive = Boolean(deps.lenis) && imports("lenis") && /(?:new\s+Lenis\s*\(|<ReactLenis\b)/.test(source);
+  const scrollTriggerActive = Boolean(deps.gsap) && imports("gsap") &&
+    /(?:ScrollTrigger\.create\s*\(|scrollTrigger\s*:|registerPlugin\s*\([^)]*ScrollTrigger)/.test(source);
+  const gsapTickerActive = Boolean(deps.gsap) && imports("gsap") && /gsap\.ticker\.add\s*\(/.test(source);
+  const rafActive = /\brequestAnimationFrame\s*\(\s*(?:[A-Za-z_$][\w$]*|\([^)]*\)\s*=>|function\b)/.test(source);
+  return {
+    reducedMotionInfrastructure: /prefers-reduced-motion|useReducedMotion|reducedMotion/i.test(source) ? ["application-source-detected"] : [],
+    scrollOwner: lenisActive ? "lenis" : scrollTriggerActive ? "gsap-scrolltrigger" : null,
+    animationTicker: gsapTickerActive ? "gsap" : rafActive ? "requestAnimationFrame" : null,
+  };
+}
+
+export interface ProjectPreflightOptions {
+  permissions?: Partial<CreativePermissions>;
+  explicitCapabilities?: CapabilityInput[];
+  permissionsUnresolved?: boolean;
+  browserLaunchVerified?: boolean;
+}
+
+export function detectProjectPreflight(projectDir: string, options: ProjectPreflightOptions = {}): ProjectPreflight {
+  validateCreativePermissions(options.permissions ?? {});
   const packageFile = path.join(projectDir, "package.json");
   const pkg = fs.existsSync(packageFile) ? JSON.parse(fs.readFileSync(packageFile, "utf8")) : {};
   const deps = { ...(pkg.dependencies ?? {}), ...(pkg.devDependencies ?? {}) } as Record<string, string>;
@@ -360,13 +415,18 @@ export function detectProjectPreflight(projectDir: string, options: { permission
   const manager = fs.existsSync(path.join(projectDir, "pnpm-lock.yaml")) ? "pnpm" : fs.existsSync(path.join(projectDir, "yarn.lock")) ? "yarn" : fs.existsSync(path.join(projectDir, "bun.lock")) || fs.existsSync(path.join(projectDir, "bun.lockb")) ? "bun" : "npm";
   const sourceLayout = ["src", "app", "pages", "components", "public", "assets"].filter((name) => fs.existsSync(path.join(projectDir, name)));
   const files = sourceLayout.flatMap((name) => walk(path.join(projectDir, name))).filter((file) => /\.(?:[jt]sx?|vue|svelte|css|scss)$/.test(file) && !/\.(?:test|spec)\.[jt]sx?$/.test(file));
-  const source = files.map((file) => fs.readFileSync(file, "utf8")).join("\n");
+  const signals = runtimeSignals(files, deps);
   const capabilityPackages = ["motion", "framer-motion", "gsap", "@gsap/react", "lenis", "pixi.js", "@rive-app/webgl2", "@rive-app/react-canvas", "three", "@react-three/fiber", "@react-three/drei", "@react-three/postprocessing", "postprocessing", "ogl", "@use-gesture/react", "matter-js", "@react-three/rapier", "sharp", "remotion", "@remotion/cli", "@remotion/player", "playwright", "@playwright/test"];
   const installedCapabilities = capabilityPackages.filter((name) => deps[name]);
   const permissions: CreativePermissions = {
     generatedImagesAllowed: false, externalImagesAllowed: false, generatedVideoAllowed: false, externalVideoAllowed: false,
     threeDPolicy: "not-allowed", packageInstallationAllowed: false, ...options.permissions,
   };
+  const unresolvedPermissionKeys = new Set<PermissionKey>(
+    options.permissionsUnresolved === false
+      ? []
+      : (Object.keys(permissions) as PermissionKey[]).filter((key) => !Object.prototype.hasOwnProperty.call(options.permissions ?? {}, key)),
+  );
   const ffmpeg = commandAvailable("ffmpeg");
   const browserExecutable = [
     process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH, process.env.CHROME_PATH,
@@ -378,12 +438,11 @@ export function detectProjectPreflight(projectDir: string, options: { permission
   const base = {
     capturedAt: new Date().toISOString(), framework: frameworkName ?? "unknown", frameworkVersion: deps[frameworkName ?? ""] ?? "unknown",
     packageManager: manager, lockfile: activeLockfile(projectDir), sourceLayout, installedCapabilities, scripts: pkg.scripts ?? {},
-    browserVerification: Boolean(deps.playwright || deps["@playwright/test"] || /playwright|puppeteer/i.test(source)),
-    reducedMotionInfrastructure: /prefers-reduced-motion|useReducedMotion|reducedMotion/i.test(source) ? ["source-detected"] : [],
-    scrollOwner: /ReactLenis|Lenis/.test(source) ? "lenis" : /ScrollTrigger/.test(source) ? "gsap-scrolltrigger" : null,
-    animationTicker: /gsap\.ticker/.test(source) ? "gsap" : /requestAnimationFrame/.test(source) ? "requestAnimationFrame" : null,
+    browserAutomationPackageInstalled: Boolean(deps.playwright || deps["@playwright/test"]),
+    browserLaunchVerified: options.browserLaunchVerified === true,
+    ...signals,
     assetCapabilities: [deps.sharp && "sharp", ffmpeg && "ffmpeg"].filter(Boolean) as string[],
-    creativeCapabilities: resolveCreativeCapabilities(installedCapabilities, permissions, options.explicitCapabilities, { ffmpeg, unresolvedPermissions: options.permissionsUnresolved }),
+    creativeCapabilities: resolveCreativeCapabilities(installedCapabilities, permissions, options.explicitCapabilities, { ffmpeg, unresolvedPermissions: unresolvedPermissionKeys }),
     codingHost: detectCodingHost(projectDir),
     browserPreflight: {
       status: (browserExecutable ? "available" : permissions.packageInstallationAllowed ? "transactionally-installable" : "blocked") as ProjectPreflight["browserPreflight"]["status"],

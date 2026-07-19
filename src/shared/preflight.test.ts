@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { detectProjectPreflight, resolveCreativeCapabilities, resolveRuntimeRequirements, upgradeBrowserCapabilities, validateCapabilityInputs } from "./preflight.js";
+import { detectProjectPreflight, resolveCreativeCapabilities, resolveRuntimeRequirements, upgradeBrowserCapabilities, validateCapabilityInputs, validateCreativePermissions } from "./preflight.js";
 
 test("project preflight detects framework, manager, scripts and existing capabilities", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-preflight-"));
@@ -19,6 +19,48 @@ test("project preflight detects framework, manager, scripts and existing capabil
   assert.equal(result.creativeCapabilities.find((item) => item.id === "motion-runtime")?.status, "available");
   assert.equal(result.creativeCapabilities.find((item) => item.id === "pixi-runtime")?.status, "available");
   assert.equal(result.creativeCapabilities.find((item) => item.id === "rive-runtime")?.status, "available");
+  assert.equal(result.creativeCapabilities.find((item) => item.id === "image-generation")?.status, "permission-unresolved");
+});
+
+test("runtime ownership requires a dependency, import, and actual initialization", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-runtime-owner-"));
+  fs.mkdirSync(path.join(root, "src"));
+  fs.writeFileSync(path.join(root, "package.json"), JSON.stringify({ dependencies: { lenis: "^1", gsap: "^3", "@playwright/test": "^1" } }));
+  fs.writeFileSync(path.join(root, "src", "notes.ts"), "const docs = 'Lenis ScrollTrigger requestAnimationFrame';");
+  let result = detectProjectPreflight(root);
+  assert.equal(result.scrollOwner, null);
+  assert.equal(result.animationTicker, null);
+  assert.equal(result.browserAutomationPackageInstalled, true);
+  assert.equal(result.browserLaunchVerified, false);
+
+  fs.writeFileSync(path.join(root, "src", "motion.ts"), [
+    'import Lenis from "lenis";',
+    'import gsap from "gsap";',
+    "const lenis = new Lenis();",
+    "const tick = () => requestAnimationFrame(tick);",
+    "gsap.ticker.add(tick);",
+  ].join("\n"));
+  result = detectProjectPreflight(root, { browserLaunchVerified: true });
+  assert.equal(result.scrollOwner, "lenis");
+  assert.equal(result.animationTicker, "gsap");
+  assert.equal(result.browserLaunchVerified, true);
+});
+
+test("explicit permissions override only their own unresolved defaults", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-permissions-"));
+  fs.writeFileSync(path.join(root, "package.json"), "{}");
+  const preflight = detectProjectPreflight(root, { permissions: { generatedImagesAllowed: false, externalImagesAllowed: true } });
+  const capability = (id: string) => preflight.creativeCapabilities.find((item) => item.id === id);
+  assert.equal(capability("image-generation")?.status, "permission-denied");
+  assert.equal(capability("image-search")?.status, "permitted-but-tool-unverified");
+  assert.equal(capability("video-generation")?.status, "permission-unresolved");
+  assert.equal(capability("3d-asset-search")?.status, "permission-unresolved");
+});
+
+test("permission JSON rejects unknown keys and non-boolean choices", () => {
+  assert.throws(() => validateCreativePermissions({ generateImages: true }), /unknown permission/);
+  assert.throws(() => validateCreativePermissions({ generatedImagesAllowed: "yes" }), /must be boolean/);
+  assert.throws(() => validateCreativePermissions({ threeDPolicy: "always" }), /invalid/);
 });
 
 test("runtime resolver installs only packages required by approved mechanisms", () => {

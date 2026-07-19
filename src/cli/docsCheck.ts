@@ -77,7 +77,7 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /VISUAL_REFINEMENT\.md/, "must route completion through the rendered screenshot correction loop");
   requireText(findings, "SKILL.md", skill, /\.dreative\/context\.json/, "must preserve durable project memory");
   requireText(findings, "references/VISUAL_REFINEMENT.md", contents.get("references/VISUAL_REFINEMENT.md") ?? "", /capture full-page screenshots|inspect the pixels/i, "visual refinement must require screenshot inspection");
-  requireText(findings, "systems/GOLDEN_SYSTEMS.md", contents.get("systems/GOLDEN_SYSTEMS.md") ?? "", /twelve systems|twelve golden/i, "must expose a bounded golden-system set");
+  requireText(findings, "systems/NATIVE_FOUNDATIONS.md", contents.get("systems/NATIVE_FOUNDATIONS.md") ?? "", /twelve implementation-neutral foundations/i, "must expose a bounded native-foundation set");
   requireText(findings, "references/CREATIVE_DIRECTION.md", contents.get("references/CREATIVE_DIRECTION.md") ?? "", /independence test/i, "must include a reference-independence test");
 
   for (const choice of ["Recommended", "Efficient", "Showcase"])
