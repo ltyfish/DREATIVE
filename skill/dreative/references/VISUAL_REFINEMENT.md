@@ -6,6 +6,12 @@ adapters; use the capable tools already available in the host. Prefer an
 isolated browser profile. Never require access to a user's authenticated
 personal browser when a clean profile can test the product.
 
+Treat package presence and browser-executable detection as unverified. Before
+claiming this loop is available, verify a real launch and navigation to the
+served preview. With the Dreative CLI, run
+`dreative preflight --probe-browser <preview-url>`. A failed probe blocks this
+loop until repaired or replaced by another confirmed browser adapter.
+
 ## Loop
 
 1. Run the production-equivalent route and exercise the primary journey.

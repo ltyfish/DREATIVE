@@ -3,7 +3,17 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { detectProjectPreflight, resolveCreativeCapabilities, resolveRuntimeRequirements, upgradeBrowserCapabilities, validateCapabilityInputs, validateCreativePermissions } from "./preflight.js";
+import {
+  detectProjectPreflight,
+  inspectBrowserInstallation,
+  resolveCreativeCapabilities,
+  resolveRuntimeRequirements,
+  runBrowserWorkflowProbe,
+  upgradeBrowserCapabilities,
+  validateCapabilityInputs,
+  validateCreativePermissions,
+  type BrowserWorkflowProbeResult,
+} from "./preflight.js";
 
 test("project preflight detects framework, manager, scripts and existing capabilities", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-preflight-"));
@@ -27,10 +37,13 @@ test("runtime ownership requires a dependency, import, and actual initialization
   fs.mkdirSync(path.join(root, "src"));
   fs.writeFileSync(path.join(root, "package.json"), JSON.stringify({ dependencies: { lenis: "^1", gsap: "^3", "@playwright/test": "^1" } }));
   fs.writeFileSync(path.join(root, "src", "notes.ts"), "const docs = 'Lenis ScrollTrigger requestAnimationFrame';");
-  let result = detectProjectPreflight(root);
+  let result = detectProjectPreflight(root, {
+    browserInspection: { packageInstalled: true, packageProvider: "@playwright/test", executable: null },
+  });
   assert.equal(result.scrollOwner, null);
   assert.equal(result.animationTicker, null);
   assert.equal(result.browserAutomationPackageInstalled, true);
+  assert.equal(result.browserExecutableDetected, false);
   assert.equal(result.browserLaunchVerified, false);
 
   fs.writeFileSync(path.join(root, "src", "motion.ts"), [
@@ -40,10 +53,69 @@ test("runtime ownership requires a dependency, import, and actual initialization
     "const tick = () => requestAnimationFrame(tick);",
     "gsap.ticker.add(tick);",
   ].join("\n"));
-  result = detectProjectPreflight(root, { browserLaunchVerified: true });
+  result = detectProjectPreflight(root, {
+    browserInspection: { packageInstalled: true, packageProvider: "@playwright/test", executable: null },
+  });
   assert.equal(result.scrollOwner, "lenis");
   assert.equal(result.animationTicker, "gsap");
-  assert.equal(result.browserLaunchVerified, true);
+  assert.equal(result.browserLaunchVerified, false);
+});
+
+test("browser verification capabilities preserve package, executable, workflow and failure states", () => {
+  const permissions = {
+    generatedImagesAllowed: false, externalImagesAllowed: false, generatedVideoAllowed: false, externalVideoAllowed: false,
+    threeDPolicy: "not-allowed" as const, packageInstallationAllowed: false,
+  };
+  const status = (environment: Parameters<typeof resolveCreativeCapabilities>[3], id = "screenshot-capture") =>
+    resolveCreativeCapabilities(["@playwright/test"], permissions, [], environment).find((item) => item.id === id);
+
+  assert.equal(status({ browserPackageInstalled: true })?.status, "package-installed-unverified");
+  assert.equal(status({ browserPackageInstalled: true, browserExecutableDetected: true })?.status, "browser-executable-detected-unverified");
+  const verified = status({
+    browserPackageInstalled: true, browserExecutableDetected: true, browserWorkflowVerified: true,
+    browserEvidence: ["browser-workflow:test"],
+  });
+  assert.equal(verified?.status, "available");
+  assert.equal(verified?.confidence, "verified");
+  assert.deepEqual(verified?.verificationEvidence, ["browser-workflow:test"]);
+  assert.equal(status({ browserPackageInstalled: true, browserExecutableDetected: true, browserProbeFailed: true })?.status, "runtime-verification-failed");
+});
+
+test("a successful workflow probe is the only automatic browser capability promotion", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-browser-state-"));
+  fs.writeFileSync(path.join(root, "package.json"), "{}");
+  const probe: BrowserWorkflowProbeResult = {
+    attempted: true,
+    previewUrl: "http://127.0.0.1:4173/",
+    packageInstalled: true,
+    packageProvider: "@playwright/test",
+    executable: "C:\\browser\\chromium.exe",
+    launchVerified: true,
+    previewNavigationVerified: true,
+    httpStatus: 200,
+    pageTitle: "Preview",
+    evidenceId: "browser-workflow:test",
+    error: null,
+  };
+  const preflight = detectProjectPreflight(root, { browserProbe: probe });
+  assert.equal(preflight.browserPreflight.status, "workflow-verified");
+  assert.equal(preflight.browserWorkflowVerified, true);
+  assert.equal(preflight.creativeCapabilities.find((item) => item.id === "console-inspection")?.status, "available");
+});
+
+test("bounded probe fails truthfully when Playwright is unavailable", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-browser-probe-"));
+  fs.writeFileSync(path.join(root, "package.json"), "{}");
+  const probe = runBrowserWorkflowProbe(root, "http://127.0.0.1:9", 2_000);
+  assert.equal(probe.attempted, true);
+  assert.equal(probe.previewNavigationVerified, false);
+  assert.match(probe.error ?? "", /Playwright is not resolvable/);
+});
+
+test("installed browser package inspection is based on module resolution", () => {
+  const inspection = inspectBrowserInstallation(process.cwd());
+  assert.equal(inspection.packageInstalled, true);
+  assert.ok(inspection.packageProvider);
 });
 
 test("explicit permissions override only their own unresolved defaults", () => {

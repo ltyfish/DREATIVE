@@ -91,6 +91,18 @@ dreative preflight --permissions ./dreative-permissions.json --capabilities ./ca
 ```
 
 Package detection and successful browser launch are reported separately.
+Neither one makes rendered verification available. Start the real preview and
+run the bounded workflow probe:
+
+```bash
+dreative preflight --probe-browser http://127.0.0.1:4173
+```
+
+Only a successful browser launch plus HTTP preview navigation promotes
+screenshot capture, console inspection, performance collection, mobile
+viewport checks, reduced-motion checks, and related browser capabilities to
+`available`. Package-only and executable-only states remain explicitly
+unverified; a failed probe reports `runtime-verification-failed`.
 
 ## Design philosophy
 

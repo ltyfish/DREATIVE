@@ -57,3 +57,14 @@ test("docs-check rejects named-site imitation in the public workflow", (t) => {
   const report = runDocsCheck(skillDir);
   assert.ok(report.findings.some((finding) => finding.check === "reference-imitation"));
 });
+
+test("docs-check rejects package-only browser verification", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-docs-browser-"));
+  const skillDir = path.join(root, "dreative");
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.cpSync(path.resolve("skill", "dreative"), skillDir, { recursive: true });
+  const file = path.join(skillDir, "SKILL.md");
+  fs.writeFileSync(file, fs.readFileSync(file, "utf8").replace(/preflight --probe-browser/g, "preflight"));
+  const report = runDocsCheck(skillDir);
+  assert.ok(report.findings.some((finding) => finding.check === "delivery-contract"));
+});

@@ -15,6 +15,8 @@ export type CapabilityStatus =
   | "available-through-confirmed-tool"
   | "available-through-supplied-asset"
   | "expected-browser-api-unverified"
+  | "package-installed-unverified"
+  | "browser-executable-detected-unverified"
   | "permitted-but-tool-unverified"
   | "permission-unresolved"
   | "permission-denied"
@@ -41,7 +43,8 @@ export type CreativeCapabilityId = typeof CAPABILITY_IDS[number];
 
 export const CAPABILITY_STATES: CapabilityStatus[] = [
   "available", "available-after-package-install", "available-through-confirmed-tool", "available-through-supplied-asset",
-  "expected-browser-api-unverified", "permitted-but-tool-unverified", "permission-denied", "unavailable",
+  "expected-browser-api-unverified", "package-installed-unverified", "browser-executable-detected-unverified",
+  "permitted-but-tool-unverified", "permission-denied", "unavailable",
   "permission-unresolved", "runtime-verification-failed",
 ];
 
@@ -106,7 +109,10 @@ export interface ProjectPreflight {
   installedCapabilities: string[];
   scripts: Record<string, string>;
   browserAutomationPackageInstalled: boolean;
+  browserExecutableDetected: boolean;
   browserLaunchVerified: boolean;
+  browserPreviewNavigationVerified: boolean;
+  browserWorkflowVerified: boolean;
   reducedMotionInfrastructure: string[];
   scrollOwner: string | null;
   animationTicker: string | null;
@@ -119,12 +125,31 @@ export interface ProjectPreflight {
     expectedSkillTarget: "codex" | "claude" | null;
   };
   browserPreflight: {
-    status: "available" | "transactionally-installable" | "blocked" | "not-required";
+    status: "workflow-verified" | "probe-failed" | "executable-detected" | "package-installed" | "transactionally-installable" | "blocked";
+    packageProvider: "playwright" | "@playwright/test" | null;
     executable: string | null;
+    probe: BrowserWorkflowProbeResult | null;
     productionPreviewCommand: string | null;
     recordingExpected: boolean;
     limitation: string | null;
   };
+}
+
+export interface BrowserInstallationInspection {
+  packageInstalled: boolean;
+  packageProvider: "playwright" | "@playwright/test" | null;
+  executable: string | null;
+}
+
+export interface BrowserWorkflowProbeResult extends BrowserInstallationInspection {
+  attempted: true;
+  previewUrl: string;
+  launchVerified: boolean;
+  previewNavigationVerified: boolean;
+  httpStatus: number | null;
+  pageTitle: string | null;
+  evidenceId: string | null;
+  error: string | null;
 }
 
 export function detectCodingHost(projectDir: string, explicit = process.env.DREATIVE_HOST): ProjectPreflight["codingHost"] {
@@ -180,6 +205,108 @@ const CATEGORY: Record<CreativeCapabilityId, CapabilityCategory> = {
 const commandAvailable = (command: string): boolean =>
   spawnSync(command, ["-version"], { stdio: "ignore", windowsHide: true }).status === 0;
 
+const SYSTEM_BROWSER_CANDIDATES = [
+  process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH, process.env.CHROME_PATH,
+  "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+  "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+  "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
+  "/usr/bin/google-chrome", "/usr/bin/chromium", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+];
+
+const detectedSystemBrowser = (): string | null =>
+  SYSTEM_BROWSER_CANDIDATES.find((item) => Boolean(item && fs.existsSync(item))) ?? null;
+
+export function inspectBrowserInstallation(projectDir: string): BrowserInstallationInspection {
+  const script = String.raw`
+    const fs = require("node:fs");
+    for (const name of ["playwright", "@playwright/test"]) {
+      try {
+        const api = require(name);
+        const candidate = api.chromium?.executablePath?.() ?? null;
+        process.stdout.write(JSON.stringify({ packageInstalled: true, packageProvider: name, executable: candidate && fs.existsSync(candidate) ? candidate : null }));
+        process.exit(0);
+      } catch {}
+    }
+    process.stdout.write(JSON.stringify({ packageInstalled: false, packageProvider: null, executable: null }));
+  `;
+  const result = spawnSync(process.execPath, ["-e", script], {
+    cwd: projectDir, encoding: "utf8", windowsHide: true, timeout: 5_000,
+  });
+  try {
+    const parsed = JSON.parse(result.stdout || "{}") as BrowserInstallationInspection;
+    return {
+      packageInstalled: parsed.packageInstalled === true,
+      packageProvider: parsed.packageProvider === "playwright" || parsed.packageProvider === "@playwright/test" ? parsed.packageProvider : null,
+      executable: parsed.executable && fs.existsSync(parsed.executable) ? parsed.executable : detectedSystemBrowser(),
+    };
+  } catch {
+    return { packageInstalled: false, packageProvider: null, executable: detectedSystemBrowser() };
+  }
+}
+
+export function runBrowserWorkflowProbe(projectDir: string, previewUrl: string, timeoutMs = 15_000): BrowserWorkflowProbeResult {
+  const parsedUrl = new URL(previewUrl);
+  if (!["http:", "https:"].includes(parsedUrl.protocol)) throw new Error("--probe-browser requires an http:// or https:// preview URL");
+  if (!Number.isFinite(timeoutMs) || timeoutMs < 2_000 || timeoutMs > 30_000) throw new Error("browser probe timeout must be between 2000 and 30000ms");
+  const installation = inspectBrowserInstallation(projectDir);
+  const base: BrowserWorkflowProbeResult = {
+    ...installation, attempted: true, previewUrl: parsedUrl.href, launchVerified: false,
+    previewNavigationVerified: false, httpStatus: null, pageTitle: null, evidenceId: null, error: null,
+  };
+  if (!installation.packageInstalled)
+    return { ...base, error: "Playwright is not resolvable from the target project." };
+  if (!installation.executable)
+    return { ...base, error: "Playwright is installed, but no browser executable was detected." };
+
+  const navigationTimeout = Math.max(1_000, Math.min(10_000, timeoutMs - 2_000));
+  const probeScript = String.raw`
+    (async () => {
+      const crypto = require("node:crypto");
+      const result = { launchVerified: false, previewNavigationVerified: false, httpStatus: null, pageTitle: null, evidenceId: null, error: null };
+      let api;
+      for (const name of ["playwright", "@playwright/test"]) { try { api = require(name); break; } catch {} }
+      let browser;
+      try {
+        browser = await api.chromium.launch({ headless: true, executablePath: process.argv[3] });
+        result.launchVerified = true;
+        const page = await browser.newPage();
+        const response = await page.goto(process.argv[1], { waitUntil: "domcontentloaded", timeout: Number(process.argv[2]) });
+        result.httpStatus = response?.status() ?? null;
+        if (!response || !response.ok()) throw new Error("Preview navigation returned HTTP " + (result.httpStatus ?? "no response"));
+        result.pageTitle = await page.title();
+        result.previewNavigationVerified = true;
+        result.evidenceId = "browser-workflow:" + crypto.createHash("sha256").update(process.argv[1] + "|" + result.httpStatus + "|" + result.pageTitle).digest("hex").slice(0, 16);
+      } catch (error) {
+        result.error = error instanceof Error ? error.message : String(error);
+      } finally {
+        if (browser) await browser.close().catch(() => {});
+      }
+      process.stdout.write(JSON.stringify(result));
+    })().catch((error) => { process.stdout.write(JSON.stringify({ error: String(error) })); process.exitCode = 1; });
+  `;
+  const result = spawnSync(process.execPath, ["-e", probeScript, parsedUrl.href, String(navigationTimeout), installation.executable], {
+    cwd: projectDir, encoding: "utf8", windowsHide: true, timeout: timeoutMs,
+  });
+  if (result.error) return { ...base, error: result.error.message };
+  try {
+    const evidence = JSON.parse(result.stdout || "{}") as Partial<BrowserWorkflowProbeResult>;
+    const cleanError = typeof evidence.error === "string"
+      ? evidence.error.replace(/\u001b\[[0-9;]*m/g, "").replace(/\r?\n\s+/g, "\n").trim()
+      : null;
+    return {
+      ...base,
+      launchVerified: evidence.launchVerified === true,
+      previewNavigationVerified: evidence.previewNavigationVerified === true,
+      httpStatus: typeof evidence.httpStatus === "number" ? evidence.httpStatus : null,
+      pageTitle: typeof evidence.pageTitle === "string" ? evidence.pageTitle : null,
+      evidenceId: typeof evidence.evidenceId === "string" ? evidence.evidenceId : null,
+      error: cleanError ?? (result.status === 0 ? null : "Browser probe failed without an error message."),
+    };
+  } catch {
+    return { ...base, error: result.signal ? `Browser probe terminated by ${result.signal}.` : "Browser probe returned invalid output." };
+  }
+}
+
 const permissionFor = (id: CreativeCapabilityId, permissions: CreativePermissions, unresolved: boolean | Set<keyof CreativePermissions> = false): PermissionState => {
   const key = capabilityPermissionKey(id);
   if ((unresolved === true && key) || (unresolved instanceof Set && key && unresolved.has(key))) return "unresolved";
@@ -209,7 +336,7 @@ export function validateCapabilityInputs(inputs: CapabilityInput[]): string[] {
     seen.set(input.id, input);
     if (input.state === "available-through-confirmed-tool" && !input.provider) errors.push(`${input.id}: confirmed tool state requires provider`);
     if (input.state === "available-after-package-install" && !input.package) errors.push(`${input.id}: package-install state requires package`);
-    if (input.verified && ["expected-browser-api-unverified", "permitted-but-tool-unverified"].includes(input.state))
+    if (input.verified && ["expected-browser-api-unverified", "package-installed-unverified", "browser-executable-detected-unverified", "permitted-but-tool-unverified"].includes(input.state))
       errors.push(`${input.id}: an unverified state cannot be marked verified`);
   }
   return errors;
@@ -224,7 +351,15 @@ export function parseCapabilitiesFile(file: string): CapabilityInput[] {
 }
 
 export function resolveCreativeCapabilities(installed: string[], permissions: CreativePermissions,
-  explicit: CapabilityInput[] = [], environment: { ffmpeg?: boolean; unresolvedPermissions?: boolean | Set<keyof CreativePermissions> } = {}): CapabilityAssessment[] {
+  explicit: CapabilityInput[] = [], environment: {
+    ffmpeg?: boolean;
+    unresolvedPermissions?: boolean | Set<keyof CreativePermissions>;
+    browserPackageInstalled?: boolean;
+    browserExecutableDetected?: boolean;
+    browserWorkflowVerified?: boolean;
+    browserProbeFailed?: boolean;
+    browserEvidence?: string[];
+  } = {}): CapabilityAssessment[] {
   const errors = validateCapabilityInputs(explicit);
   if (errors.length) throw new Error(errors.join("\n"));
   const overrides = new Map(explicit.map((item) => [item.id, item]));
@@ -254,6 +389,40 @@ export function resolveCreativeCapabilities(installed: string[], permissions: Cr
     explicitRecord(id) ?? record(id, "not-applicable", "expected-browser-api-unverified", "environment", "expected", limitation, {
       requiredAction: "verify-in-browser", actionOptions: ["run controlled browser verification"],
     });
+  const browserVerification = (id: CreativeCapabilityId, limitation: string) => {
+    const explicitValue = explicitRecord(id);
+    if (explicitValue) return explicitValue;
+    const evidence = environment.browserEvidence ?? [];
+    if (environment.browserWorkflowVerified)
+      return record(id, "not-applicable", "available", "browser-verification", "verified", limitation, {
+        package: "playwright", verificationEvidence: evidence, requiredAction: "none",
+      });
+    if (environment.browserProbeFailed)
+      return record(id, "not-applicable", "runtime-verification-failed", "browser-verification", "verified",
+        "The bounded browser launch and preview-navigation probe failed; do not assume rendered verification is available.", {
+          package: "playwright", verificationEvidence: evidence, requiredAction: "verify-in-browser",
+          actionOptions: ["fix browser installation or preview access, then rerun dreative preflight --probe-browser <url>"],
+        });
+    if (environment.browserPackageInstalled && environment.browserExecutableDetected)
+      return record(id, "not-applicable", "browser-executable-detected-unverified", "package-preflight", "detected",
+        "Playwright and a browser executable were detected, but launch plus preview navigation has not been verified.", {
+          package: "playwright", requiredAction: "verify-in-browser",
+          actionOptions: ["serve the production preview, then run dreative preflight --probe-browser <url>"],
+        });
+    if (environment.browserPackageInstalled)
+      return record(id, "not-applicable", "package-installed-unverified", "package-preflight", "detected",
+        "Playwright is installed, but no usable browser executable was detected.", {
+          package: "playwright", requiredAction: "verify-in-browser",
+          actionOptions: ["install Chromium, serve the production preview, then run dreative preflight --probe-browser <url>"],
+        });
+    return record(id, "not-applicable", permissions.packageInstallationAllowed ? "available-after-package-install" : "unavailable",
+      "package-preflight", "unverified", "Playwright is not resolvable from the target project.", {
+        package: "playwright", requiredAction: permissions.packageInstallationAllowed ? "install-or-select-fallback" : "verify-in-browser",
+        actionOptions: permissions.packageInstallationAllowed
+          ? ["install Playwright and Chromium, serve the preview, then run dreative preflight --probe-browser <url>"]
+          : ["use an already confirmed browser tool or disclose that rendered verification is blocked"],
+      });
+  };
   const mediaProcessing = (id: CreativeCapabilityId, limitation: string) => {
     const explicitValue = explicitRecord(id);
     if (explicitValue) return explicitValue;
@@ -304,13 +473,13 @@ export function resolveCreativeCapabilities(installed: string[], permissions: Cr
     permittedTool("3d-asset-search", "3D sourcing permission does not prove that a model marketplace or search tool exists."),
     permittedTool("font-search", "Font sourcing permission does not prove a rights-safe font search tool exists."),
     permittedTool("texture-search", "Texture sourcing permission does not prove a rights-safe texture tool exists."),
-    runtimePackage("browser-automation", "playwright", has("playwright") || has("@playwright/test"), "Browser automation verifies output; it is not a rendering or authoring package."),
-    runtimePackage("screenshot-capture", "playwright", has("playwright") || has("@playwright/test"), "Screenshots prove observed rendering state only."),
-    runtimePackage("video-recording", "playwright", has("playwright") || has("@playwright/test"), "Recording proves temporal runtime state only."),
-    runtimePackage("console-inspection", "playwright", has("playwright") || has("@playwright/test"), "Console inspection verifies runtime health."),
-    runtimePackage("performance-collection", "playwright", has("playwright") || has("@playwright/test"), "Performance collection verifies runtime cost."),
-    runtimePackage("mobile-viewport-verification", "playwright", has("playwright") || has("@playwright/test"), "Mobile viewport support must be observed."),
-    runtimePackage("reduced-motion-verification", "playwright", has("playwright") || has("@playwright/test"), "Reduced-motion behavior must be observed."),
+    browserVerification("browser-automation", "Browser automation was launch-tested against the current preview."),
+    browserVerification("screenshot-capture", "Screenshot capture is available against the current preview."),
+    browserVerification("video-recording", "Browser recording is available only after the current preview workflow is launch-tested."),
+    browserVerification("console-inspection", "Console inspection is available against the current preview."),
+    browserVerification("performance-collection", "Performance collection is available against the current preview."),
+    browserVerification("mobile-viewport-verification", "Mobile viewport verification is available against the current preview."),
+    browserVerification("reduced-motion-verification", "Reduced-motion verification is available against the current preview."),
   ];
 }
 
@@ -403,7 +572,8 @@ export interface ProjectPreflightOptions {
   permissions?: Partial<CreativePermissions>;
   explicitCapabilities?: CapabilityInput[];
   permissionsUnresolved?: boolean;
-  browserLaunchVerified?: boolean;
+  browserInspection?: BrowserInstallationInspection;
+  browserProbe?: BrowserWorkflowProbeResult;
 }
 
 export function detectProjectPreflight(projectDir: string, options: ProjectPreflightOptions = {}): ProjectPreflight {
@@ -428,28 +598,48 @@ export function detectProjectPreflight(projectDir: string, options: ProjectPrefl
       : (Object.keys(permissions) as PermissionKey[]).filter((key) => !Object.prototype.hasOwnProperty.call(options.permissions ?? {}, key)),
   );
   const ffmpeg = commandAvailable("ffmpeg");
-  const browserExecutable = [
-    process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH, process.env.CHROME_PATH,
-    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-    "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
-    "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
-    "/usr/bin/google-chrome", "/usr/bin/chromium", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-  ].find((item) => Boolean(item && fs.existsSync(item!))) ?? null;
+  const browser = options.browserProbe ?? options.browserInspection ?? inspectBrowserInstallation(projectDir);
+  const browserLaunchVerified = options.browserProbe?.launchVerified === true;
+  const browserPreviewNavigationVerified = options.browserProbe?.previewNavigationVerified === true;
+  const browserWorkflowVerified = browserLaunchVerified && browserPreviewNavigationVerified;
+  const browserEvidence = options.browserProbe?.evidenceId ? [options.browserProbe.evidenceId] : [];
+  const browserProbeFailed = options.browserProbe?.attempted === true && !browserWorkflowVerified;
   const base = {
     capturedAt: new Date().toISOString(), framework: frameworkName ?? "unknown", frameworkVersion: deps[frameworkName ?? ""] ?? "unknown",
     packageManager: manager, lockfile: activeLockfile(projectDir), sourceLayout, installedCapabilities, scripts: pkg.scripts ?? {},
-    browserAutomationPackageInstalled: Boolean(deps.playwright || deps["@playwright/test"]),
-    browserLaunchVerified: options.browserLaunchVerified === true,
+    browserAutomationPackageInstalled: browser.packageInstalled,
+    browserExecutableDetected: Boolean(browser.executable),
+    browserLaunchVerified,
+    browserPreviewNavigationVerified,
+    browserWorkflowVerified,
     ...signals,
     assetCapabilities: [deps.sharp && "sharp", ffmpeg && "ffmpeg"].filter(Boolean) as string[],
-    creativeCapabilities: resolveCreativeCapabilities(installedCapabilities, permissions, options.explicitCapabilities, { ffmpeg, unresolvedPermissions: unresolvedPermissionKeys }),
+    creativeCapabilities: resolveCreativeCapabilities(installedCapabilities, permissions, options.explicitCapabilities, {
+      ffmpeg, unresolvedPermissions: unresolvedPermissionKeys,
+      browserPackageInstalled: browser.packageInstalled,
+      browserExecutableDetected: Boolean(browser.executable),
+      browserWorkflowVerified,
+      browserProbeFailed,
+      browserEvidence,
+    }),
     codingHost: detectCodingHost(projectDir),
     browserPreflight: {
-      status: (browserExecutable ? "available" : permissions.packageInstallationAllowed ? "transactionally-installable" : "blocked") as ProjectPreflight["browserPreflight"]["status"],
-      executable: browserExecutable,
+      status: (browserWorkflowVerified ? "workflow-verified"
+        : browserProbeFailed ? "probe-failed"
+          : browser.packageInstalled && browser.executable ? "executable-detected"
+            : browser.packageInstalled ? "package-installed"
+              : permissions.packageInstallationAllowed ? "transactionally-installable"
+                : "blocked") as ProjectPreflight["browserPreflight"]["status"],
+      packageProvider: browser.packageProvider,
+      executable: browser.executable,
+      probe: options.browserProbe ?? null,
       productionPreviewCommand: pkg.scripts?.preview ? `${manager} run preview` : pkg.scripts?.start ? `${manager} run start` : null,
       recordingExpected: true,
-      limitation: browserExecutable ? null : "No Chromium executable was detected for the integrity-linked runner.",
+      limitation: browserWorkflowVerified ? null
+        : browserProbeFailed ? options.browserProbe?.error ?? "Browser workflow probe failed."
+          : browser.packageInstalled && browser.executable ? "Package and executable detected; launch plus preview navigation remains unverified."
+            : browser.packageInstalled ? "Playwright is installed, but no browser executable was detected."
+              : "Playwright is not resolvable from the target project.",
     },
   };
   return { ...base, identity: capabilityPreflightIdentity(base) };

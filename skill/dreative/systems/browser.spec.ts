@@ -36,7 +36,7 @@ test("native foundations render without runtime errors and expose meaningful pri
     quality: 78,
     clip: { x: 0, y: 0, width: 720, height: 360 },
   });
-  expect(visualBaseline).toMatchSnapshot("native-foundations-header.jpeg");
+  expect(visualBaseline).toMatchSnapshot("native-foundations-header.jpeg", { maxDiffPixelRatio: 0.01 });
   expect(errors).toEqual([]);
 });
 

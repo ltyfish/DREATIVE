@@ -57,6 +57,15 @@ artifact or a performance of following instructions.
    Update `.dreative/context.json` only with durable decisions, real tested
    states, and unresolved issues; it is memory, never completion evidence.
 
+Before relying on the rendered correction loop, distinguish Playwright package
+presence, browser executable detection, and a verified browser workflow. When
+the project CLI is available, serve the real preview and run
+`dreative preflight --probe-browser <preview-url>`. Only successful browser
+launch plus preview navigation proves screenshot, console, performance,
+viewport, or reduced-motion verification is available. If the probe fails,
+repair the environment or report rendered review as blocked; never promote
+package or executable detection into browser evidence.
+
 ## Creative decisions
 
 Begin with product truth: subject verbs, materials, data, history, audience,

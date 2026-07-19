@@ -7,6 +7,7 @@ import {
   detectCodingHost,
   detectProjectPreflight,
   parseCapabilitiesFile,
+  runBrowserWorkflowProbe,
   resolveRuntimeRequirements,
   type CreativePermissions,
   validateCreativePermissions,
@@ -47,6 +48,8 @@ const USAGE = `usage: dreative [command]
                    --generated-video allow|deny   --external-video allow|deny
                    --three-d-policy not-allowed|supplied-only|external-sourcing-allowed|generation-and-sourcing-allowed
                    --packages allow|deny  --capabilities file
+                   --probe-browser http://127.0.0.1:PORT
+                     bounded Chromium launch + preview-navigation verification
   context          durable project design memory: init | check | show
   catalogue        search the executable creative catalogue [--query phrase] [--json]
   finalize         run build/test/typecheck/lint/docs checks; prints DREATIVE_FINALIZED on success
@@ -160,9 +163,14 @@ async function main(): Promise<void> {
         permissions.threeDPolicy = threeDPolicy as CreativePermissions["threeDPolicy"];
       }
       const capabilitiesFile = valueAfter("--capabilities");
+      const probeUrl = valueAfter("--probe-browser");
+      if (args.includes("--probe-browser") && (!probeUrl || probeUrl.startsWith("--")))
+        throw new Error("--probe-browser requires the URL of an already-running preview");
+      const browserProbe = probeUrl ? runBrowserWorkflowProbe(process.cwd(), probeUrl) : undefined;
       const preflight = detectProjectPreflight(process.cwd(), {
         permissions,
         explicitCapabilities: capabilitiesFile ? parseCapabilitiesFile(path.resolve(capabilitiesFile)) : undefined,
+        browserProbe,
       });
       const index = args.indexOf("--mechanisms");
       const mechanisms = index >= 0 ? (args[index + 1] ?? "").split(",").map((item) => item.trim()).filter(Boolean) : [];
