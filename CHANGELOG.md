@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Added opt-in `.dreative/evaluation/` routing for compact, reviewer-facing
+  decision and verification records without exporting private reasoning or
+  generated run debris.
+
 ## 1.1.0
 
 - Replaced the 128-name effect catalogue and conceptual primitives with twelve

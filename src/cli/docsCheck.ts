@@ -77,6 +77,9 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /VISUAL_REFINEMENT\.md/, "must route completion through the rendered screenshot correction loop");
   requireText(findings, "SKILL.md", skill, /preflight --probe-browser.*preview-url/i, "must require launch plus preview-navigation evidence before browser verification");
   requireText(findings, "SKILL.md", skill, /\.dreative\/context\.json/, "must preserve durable project memory");
+  requireText(findings, "SKILL.md", skill, /\.dreative\/evaluation\/README\.md/, "must preserve opt-in evaluator routing");
+  requireText(findings, "SKILL.md", skill, /never hidden chain-of-thought/i, "must keep evaluator records free of hidden reasoning");
+  requireText(findings, "PLAN.md", plan, /explicit request for a compact evaluator handoff/i, "must document the opt-in evaluator handoff");
   requireText(findings, "references/VISUAL_REFINEMENT.md", contents.get("references/VISUAL_REFINEMENT.md") ?? "", /capture full-page screenshots|inspect the pixels/i, "visual refinement must require screenshot inspection");
   const foundations = contents.get("systems/NATIVE_FOUNDATIONS.md") ?? "";
   requireText(findings, "systems/NATIVE_FOUNDATIONS.md", foundations, /twelve implementation-neutral foundations/i, "must expose a bounded native-foundation set");

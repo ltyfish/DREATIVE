@@ -109,6 +109,15 @@ blueprint for section allocation, treatments, assets, signature mechanisms,
 continuity, mobile transformation, runtime ownership, fallbacks, and review.
 Keep it current when repository inspection or prototyping changes a decision.
 
+When `.dreative/evaluation/README.md` exists in the target project, it is an
+explicit request for a compact evaluator handoff. After configuration, write
+the selected direction and a concise, inspectable decision summary to the
+current-run record named by that local contract. Include product observations,
+the alternatives considered at a summary level, selection reasons, promises,
+and material later changes with their triggers. Do not expose chain-of-thought,
+private exploration, raw conversation, or scratch notes. This handoff reports
+decisions; it does not replace the private brief or become an approval gate.
+
 Do not require the user to read or approve it. By default, show only the short
 build brief required by `SKILL.md`, including this compact execution map:
 
@@ -210,3 +219,5 @@ Omit the second line only when no material treatment was considered, promised,
 rejected, downgraded, or replaced. Do not turn these lines into a ledger.
 
 After the reply, implement. Do not generate a second approval or contract gate.
+For an opted-in evaluation package, reconcile the decision record and final
+review with the delivered source and rendered result before completion.

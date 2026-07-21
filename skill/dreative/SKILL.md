@@ -36,6 +36,12 @@ artifact or a performance of following instructions.
    containing the experience arc, section ownership, post-hero visual peak,
    continuity owner, and mobile transformation. Reveal the full brief only on
    request. Do not wait for its reveal or approval; proceed to build.
+   If the project already contains `.dreative/evaluation/README.md`, treat that
+   as an explicit opt-in review contract: read it and update its designated
+   current-run decision record with the prompt, selected direction, concise
+   rationale, implementation promise, and later material decision changes.
+   Record inspectable conclusions, never hidden chain-of-thought, private
+   exploration, raw transcripts, or discarded scratch work.
 5. Read `references/CREATIVE_EXECUTION.md` before adding an advanced runtime.
    Load only the relevant specialty and zero or one relevant native foundation initially. Zero is valid;
    add another only when a separate named mechanism genuinely requires it. Prototype only a
@@ -57,6 +63,12 @@ artifact or a performance of following instructions.
    implemented and verified; otherwise continue or report the exact blockers.
    Update `.dreative/context.json` only with durable decisions, real tested
    states, and unresolved issues; it is memory, never completion evidence.
+   For an opted-in `.dreative/evaluation/` package, also update its designated
+   review record with what actually shipped, observable verification results,
+   corrections, limitations, and current screenshot paths. Follow the local
+   package's size and naming rules. Never create or accumulate evaluation files
+   in projects that did not opt in, and never route prototypes, bundles, caches,
+   traces, browser profiles, or raw evidence into the review package.
 
 For Showcase, the delivered route must be visibly and structurally distinct
 from Recommended. A conventional long page with one isolated spectacle does
@@ -176,6 +188,7 @@ rendered interface. `DREATIVE_FINALIZED` certifies commands only, not taste.
 - Advanced runtime: `references/CREATIVE_EXECUTION.md`
 - Relevant craft only: `skills/<name>.md`
 - Rendered correction loop: `references/VISUAL_REFINEMENT.md`
+- Opted-in evaluator handoff: project-local `.dreative/evaluation/README.md`
 - Chosen mechanism only: zero or one matching native foundation initially
 - Focused mechanism lookup only: `llms.txt` or `dreative catalogue`
 

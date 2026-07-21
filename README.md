@@ -70,6 +70,13 @@ node dist/cli/index.js context check
 owners, important assets, tested states, and unresolved visual issues. It is not
 approval or completion evidence.
 
+Projects may opt into a small evaluator handoff by committing
+`.dreative/evaluation/README.md` with local filenames and size rules. When that
+contract exists, the skill records concise decisions, material changes, shipped
+scope, and observable verification there. It never exports hidden reasoning,
+raw transcripts, traces, prototypes, or build bundles, and it creates no
+evaluation package in projects that did not opt in.
+
 ## Commands
 
 - `dreative` or `dreative brief` — adaptive direction step.
