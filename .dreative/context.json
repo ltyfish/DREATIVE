@@ -12,9 +12,9 @@
   },
   "protectedContracts": [
     "Dreative is a frontend agent skill and CLI, not a visual editor or deterministic design engine.",
-    "DREATIVE_FINALIZED certifies command success only, never taste or visual quality.",
+    "DREATIVE_CHECKS_PASSED certifies command success only, never taste or visual quality.",
     "Rendered pixel inspection at desktop and 390px cannot be replaced by DOM or accessibility snapshots.",
-    "Showcase has no minimum treatment count.",
+    "Showcase has no minimum technology count; it requires verified before, peak, and after experience changes.",
     "Do not add approval hashes, attestations, critic scores, evidence ledgers, or fabricated benchmark claims."
   ],
   "runtimeOwners": {

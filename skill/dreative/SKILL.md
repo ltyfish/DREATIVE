@@ -57,7 +57,10 @@ artifact or a performance of following instructions.
    states, correct visible failures, and recapture the affected and full-page
    views. DOM or accessibility snapshots do not replace pixel inspection. Run production
    build plus existing test/typecheck/lint scripts. Substantial work requires
-   `dreative finalize --codex` to print `DREATIVE_FINALIZED`. Compare the final
+   `dreative finalize --codex --profile <direction> --visual-smoke-url <preview-url>`
+   to print `DREATIVE_CHECKS_PASSED`. Visual smoke is mandatory for every
+   substantial delivery and Showcase additionally requires an executable
+   three-entry mechanism contract. Compare the final
    product against the current brief and user choices. Claim completion only
    when every promised route, section, treatment, behavior, and review pass is
    implemented and verified; otherwise continue or report the exact blockers.
@@ -69,6 +72,8 @@ artifact or a performance of following instructions.
    package's size and naming rules. Never create or accumulate evaluation files
    in projects that did not opt in, and never route prototypes, bundles, caches,
    traces, browser profiles, or raw evidence into the review package.
+   Report builder-observed facts and limitations only; never award the build a
+   reviewer verdict or self-authored Pass.
 
 For Showcase, the delivered route must be visibly and structurally distinct
 from Recommended. A conventional long page with one isolated spectacle does
@@ -78,6 +83,17 @@ distributed experience that actually shipped. Also state `Not pursued:` for
 any materially considered or promised advanced treatment that was rejected,
 downgraded, or replaced, with the product or prototype reason. Do not list
 irrelevant technologies merely to prove they were omitted.
+
+Showcase must include one meaningful mechanism before the central peak, the
+central signature mechanism, and one meaningful mechanism or transformation
+after it. Each must visibly change composition, media, state, or interaction;
+static grids with thematic labels do not count. If a required prototype would
+lower the selected ceiling or abandon promised choreography or media, pause
+and obtain the user's consent before changing the brief.
+Record the three Showcase mechanisms as `before`, `peak`, and `after`, each
+with one real selector and a `scroll`, `click`, `hover`, or `drag` trigger.
+Final visual smoke must exercise each trigger and observe a visible geometry,
+style, media, content, or state change.
 
 Before relying on the rendered correction loop, distinguish Playwright package
 presence, browser executable detection, and a verified browser workflow. When
@@ -180,7 +196,7 @@ does not mean that code was written or the build passed.
 Do not create plan YAML, approval hashes, attestations, provenance, evidence
 ledgers, certification artifacts, or mandatory critic loops. Do not narrate
 checklist compliance as a substitute for editing code or correcting the
-rendered interface. `DREATIVE_FINALIZED` certifies commands only, not taste.
+rendered interface. `DREATIVE_CHECKS_PASSED` certifies commands only, not taste.
 
 ## Resource routing
 

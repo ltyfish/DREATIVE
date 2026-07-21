@@ -42,6 +42,6 @@ active workflow.
 5. `node dist/cli/index.js`
 6. `node dist/cli/index.js docs-check`
 7. `node dist/cli/index.js install-skill --skills all --codex`
-8. `node dist/cli/index.js finalize --codex`
+8. `node dist/cli/index.js finalize --codex --profile <direction> --visual-smoke-url <preview-url>` (plus `--mechanism-contract <file-or-json>` for Showcase)
 
-The final command must print `DREATIVE_FINALIZED`.
+The final command must print `DREATIVE_CHECKS_PASSED`.

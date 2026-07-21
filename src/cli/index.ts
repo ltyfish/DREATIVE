@@ -14,6 +14,7 @@ import {
 } from "../shared/preflight.js";
 import { printDocsCheck, runDocsCheck } from "./docsCheck.js";
 import { runFinalize } from "./finalize.js";
+import { runVisualSmoke, type DeliveryProfile, type MechanismContractEntry } from "./visualSmoke.js";
 import { availableSkills, checkSkillInstallation, installSkill, installationDirectory, resolveSkillSelection } from "./installSkill.js";
 import { renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
 import { renderConfigurationChoices, renderDeliveryBrief, renderDetailedPlanGuide, type DeliveryProfileId } from "../shared/deliveryProfiles.js";
@@ -52,8 +53,10 @@ const USAGE = `usage: dreative [command]
                      bounded Chromium launch + preview-navigation verification
   context          durable project design memory: init | check | show
   catalogue        search the executable creative catalogue [--query phrase] [--json]
-  finalize         run build/test/typecheck/lint/docs checks; prints DREATIVE_FINALIZED on success
-                   --codex
+  visual-smoke     production-equivalent browser smoke audit --url URL --profile efficient|recommended|showcase
+                   Showcase also requires --mechanism-contract file-or-json
+  finalize         run deterministic checks; always requires --visual-smoke-url URL and --profile
+                   --codex --visual-smoke-url URL --profile efficient|recommended|showcase
   docs-check       validate packaged documentation consistency [--json]`;
 
 async function installCommand(): Promise<void> {
@@ -115,6 +118,26 @@ async function main(): Promise<void> {
     }
     case "install-skill": await installCommand(); return;
     case "finalize": {
+      const valueAfter = (flag: string): string | undefined => { const index = args.indexOf(flag); return index >= 0 ? args[index + 1] : undefined; };
+      const smokeIndex = args.indexOf("--visual-smoke-url");
+      const smokeUrl = smokeIndex >= 0 ? args[smokeIndex + 1] : undefined;
+      const profile = valueAfter("--profile") as DeliveryProfile | undefined;
+      if (!smokeUrl || !profile || !["efficient", "recommended", "showcase"].includes(profile)) {
+        console.error("BLOCKER finalize requires --visual-smoke-url and --profile efficient|recommended|showcase.");
+        process.exitCode = 1;
+        return;
+      }
+      const contractInput = valueAfter("--mechanism-contract");
+      const mechanisms = contractInput ? JSON.parse(fs.existsSync(path.resolve(contractInput)) ? fs.readFileSync(path.resolve(contractInput), "utf8") : contractInput) as MechanismContractEntry[] : undefined;
+      {
+        const smoke = await runVisualSmoke(smokeUrl, { profile, mechanisms });
+        smoke.checks.forEach((item) => console.log(`PASS visual-smoke ${item}`));
+        if (!smoke.ok) {
+          smoke.blockers.forEach((item) => console.error(`BLOCKER visual-smoke: ${item}`));
+          process.exitCode = 1;
+          return;
+        }
+      }
       const result = runFinalize(process.cwd(), { target: hostTarget(), sourceDir: packagedSkillDir, packageVersion });
       for (const item of result.commands) console.log(`${item.exitCode === 0 ? "PASS" : "FAIL"} ${item.command}`);
       if (!result.ok) {
@@ -123,7 +146,21 @@ async function main(): Promise<void> {
         process.exitCode = 1;
         return;
       }
-      console.log("DREATIVE_FINALIZED");
+      console.log("DREATIVE_CHECKS_PASSED");
+      console.log("Visual quality is not certified by this command.");
+      return;
+    }
+    case "visual-smoke": {
+      const valueAfter = (flag: string): string | undefined => { const index = args.indexOf(flag); return index >= 0 ? args[index + 1] : undefined; };
+      const url = valueAfter("--url");
+      const profile = valueAfter("--profile") as DeliveryProfile | undefined;
+      if (!url || !profile || !["efficient", "recommended", "showcase"].includes(profile)) throw new Error("visual-smoke requires --url and --profile efficient|recommended|showcase");
+      const contractInput = valueAfter("--mechanism-contract");
+      const mechanisms = contractInput ? JSON.parse(fs.existsSync(path.resolve(contractInput)) ? fs.readFileSync(path.resolve(contractInput), "utf8") : contractInput) as MechanismContractEntry[] : undefined;
+      const result = await runVisualSmoke(url, { profile, mechanisms });
+      result.checks.forEach((item) => console.log(`PASS ${item}`));
+      result.blockers.forEach((item) => console.error(`BLOCKER ${item}`));
+      if (!result.ok) process.exitCode = 1;
       return;
     }
     case "preflight": {

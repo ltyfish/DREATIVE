@@ -47,10 +47,10 @@ node dist/cli/index.js install-skill --skills all --codex
 Run deterministic completion checks:
 
 ```bash
-node dist/cli/index.js finalize --codex
+node dist/cli/index.js finalize --codex --profile recommended --visual-smoke-url http://127.0.0.1:4173
 ```
 
-Success prints `DREATIVE_FINALIZED`.
+Success prints `DREATIVE_CHECKS_PASSED` followed by an explicit notice that visual quality is not certified.
 
 The browser suite requires a Chromium binary once per environment:
 
@@ -86,7 +86,12 @@ evaluation package in projects that did not opt in.
 - `dreative preflight` — framework, scripts, package manager, and capabilities.
 - `dreative context init|check|show` — minimal durable project memory.
 - `dreative catalogue --query "..."` — focused golden-system lookup.
-- `dreative finalize --codex` — deterministic delivery gate.
+- `dreative visual-smoke --url <preview-url> --profile <direction>` — ephemeral desktop, mobile, reduced-motion, route, runtime, and asset smoke gate.
+- `dreative finalize --codex --profile <direction> --visual-smoke-url <preview-url>` — deterministic delivery gate; smoke is mandatory for every substantial delivery.
+
+Showcase also passes `--mechanism-contract <file-or-json>`. The JSON array must
+name `before`, `peak`, and `after`, with a real selector and one of `scroll`,
+`click`, `hover`, or `drag` for each.
 
 Preflight leaves unspecified sourcing and generation permissions unresolved.
 Pass explicit choices as flags or JSON instead of silently treating them as

@@ -180,10 +180,17 @@ For each relevant treatment, state the project-specific use, selected/declined
 decision, cost, risk, and insufficient version. Then map the selected treatments
 to route sections, including a meaningful post-hero peak and the continuity
 owner. User-selected treatment names or counts override direction defaults. UX and
-Mobile always apply. Showcase may use any treatment but has no minimum treatment
-count. Selection is a delivery promise, not checkbox coverage: every
+Mobile always apply. Showcase may use any treatment but has no minimum technology
+count. It does require a meaningful pre-peak mechanism, central signature mechanism,
+and post-peak mechanism or transformation; each must visibly change composition,
+media, state, or interaction. Static grids with thematic labels do not count.
+Selection is a delivery promise, not checkbox coverage: every
 selected treatment needs a named owner and perceptible contribution, although
 one coherent mechanism may serve several treatments.
+
+For Showcase, write a compact JSON mechanism contract containing exactly the
+real `before`, `peak`, and `after` selectors and their `scroll`, `click`,
+`hover`, or `drag` triggers. It is executable input, not design evidence.
 
 ### 6. Build architecture
 

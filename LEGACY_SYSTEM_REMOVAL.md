@@ -65,7 +65,7 @@ Dreative keeps safeguards that check real or useful outcomes:
 - deterministic exact-copy verification for installed skill files;
 - honest incomplete status when promised work or objective checks remain.
 
-`DREATIVE_FINALIZED` certifies command success only. It does not certify taste,
+`DREATIVE_CHECKS_PASSED` certifies command success only. It does not certify taste,
 creative quality, or truthfulness of model-authored claims.
 
 ## Why some deterministic hashes remain

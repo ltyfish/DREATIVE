@@ -73,7 +73,9 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /1440|desktop/i, "must require a desktop browser review");
   requireText(findings, "SKILL.md", skill, /390px/i, "must require an authored mobile browser review");
   requireText(findings, "SKILL.md", skill, /encoding|mojibake|broken glyphs/i, "must check visible text integrity");
-  requireText(findings, "SKILL.md", skill, /DREATIVE_FINALIZED/, "must retain fail-closed finalization");
+  requireText(findings, "SKILL.md", skill, /DREATIVE_CHECKS_PASSED/, "must retain fail-closed deterministic checks");
+  requireText(findings, "SKILL.md", skill, /visual smoke is mandatory for every/i, "must make visual smoke mandatory for substantial delivery");
+  requireText(findings, "SKILL.md", skill, /before.*peak.*after[\s\S]*selector[\s\S]*(scroll|click|hover|drag)/i, "must retain the executable Showcase mechanism contract");
   requireText(findings, "SKILL.md", skill, /VISUAL_REFINEMENT\.md/, "must route completion through the rendered screenshot correction loop");
   requireText(findings, "SKILL.md", skill, /preflight --probe-browser.*preview-url/i, "must require launch plus preview-navigation evidence before browser verification");
   requireText(findings, "SKILL.md", skill, /\.dreative\/context\.json/, "must preserve durable project memory");
@@ -95,7 +97,8 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "PLAN.md", plan, /second approval/i, "must avoid a second approval gate");
   for (const choice of ["References", "Treatments", "Sourced images", "Generated images", "Packages", "Prototype", "Review depth", "Fast", "Lean", "Full Audit"])
     requireText(findings, "PLAN.md", plan, new RegExp(`\\b${choice}\\b`, "i"), `detailed planning is missing ${choice}`);
-  requireText(findings, "PLAN.md", plan, /no minimum treatment|select only those/i, "Showcase must select treatments by concept fit rather than count");
+  requireText(findings, "PLAN.md", plan, /no minimum technology\s+count/i, "Showcase must not use a technology-count proxy");
+  requireText(findings, "PLAN.md", plan, /pre-peak mechanism[\s\S]*central signature mechanism[\s\S]*post-peak mechanism/i, "Showcase must distribute meaningful mechanisms around the central peak");
   requireText(findings, "PLAN.md", plan, /visibly and structurally distinct from Recommended/i, "Showcase must remain visibly distinct from Recommended");
   requireText(findings, "PLAN.md", plan, /Showcase ceiling delivered:/i, "Showcase must disclose the delivered ceiling in the final response");
   requireText(findings, "PLAN.md", plan, /Not pursued:/i, "Showcase must disclose material rejected or replaced treatments");

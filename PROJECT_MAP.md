@@ -11,6 +11,11 @@
 - `src/cli/index.ts` — brief, installation, preflight, catalogue, and
   finalization commands.
 - `src/cli/finalize.ts` — deterministic build/test/docs finalization.
+- `src/cli/visualSmoke.ts` — executable desktop/mobile/reduced-motion, route,
+  runtime, asset, sticky, blank-region, and Showcase-mechanism smoke gate.
+- `src/cli/visualSmoke.browser.spec.ts` and
+  `scripts/serve-visual-smoke-fixtures.mjs` — healthy and failing regression
+  fixtures for the smoke gate itself.
 - `src/cli/docsCheck.ts` — guards the streamlined public contract.
 
 ## Progressive design knowledge
