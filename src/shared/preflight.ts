@@ -518,15 +518,14 @@ export function resolveRuntimeRequirements(mechanisms: string[], preflight: Proj
   const prefix = preflight.packageManager === "npm" ? "npm install" : preflight.packageManager === "yarn" ? "yarn add" : preflight.packageManager === "bun" ? "bun add" : "pnpm add";
   return mechanisms.map((mechanism) => {
     const catalogueEntry = CREATIVE_MECHANISMS.find((item) => item.id === mechanism);
-    const cataloguePackages = catalogueEntry?.packageProfiles.flatMap((id) => {
-      const found = PACKAGE_PROFILES.find((item) => item.id === id);
-      return found ? [{ name: found.packageName, compatibleVersion: "resolve-current-compatible" }] : [];
-    }) ?? [];
+    const enhancement = PACKAGE_PROFILES.find((item) => item.id === mechanism);
     const packages = catalogueEntry
-      ? [...new Map(cataloguePackages.map((item) => [item.name, item])).values()]
-      : RUNTIME_RULES.find((rule) => rule.pattern.test(mechanism))?.packages ?? [];
-    const installPackages = catalogueEntry ? packages.map((item) => item.name) : packages.map((item) => `${item.name}@${item.compatibleVersion}`);
-    return { mechanism, packages, packageManager: preflight.packageManager, installCommand: packages.length ? `${prefix} ${installPackages.join(" ")}` : "not required (native CSS/SVG/Canvas)" };
+      ? []
+      : enhancement
+        ? [{ name: enhancement.packageName, compatibleVersion: "resolve-current-compatible" }]
+        : RUNTIME_RULES.find((rule) => rule.pattern.test(mechanism))?.packages ?? [];
+    const installPackages = enhancement ? packages.map((item) => item.name) : packages.map((item) => `${item.name}@${item.compatibleVersion}`);
+    return { mechanism, packages, packageManager: preflight.packageManager, installCommand: packages.length ? `${prefix} ${installPackages.join(" ")}` : "No package required" };
   });
 }
 

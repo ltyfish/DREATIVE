@@ -153,10 +153,16 @@ test("permission JSON rejects unknown keys and non-boolean choices", () => {
 
 test("runtime resolver installs only packages required by approved mechanisms", () => {
   const preflight = { packageManager: "npm" } as any;
-  const result = resolveRuntimeRequirements(["CSS SVG structural mask", "GSAP pinned narrative", "Three.js stage"], preflight);
+  const result = resolveRuntimeRequirements(["pinned-chapter", "shared-element-handoff", "spatial-gallery", "gsap-scrolltrigger", "CSS SVG structural mask", "GSAP pinned narrative", "Three.js stage"], preflight);
   assert.equal(result[0].packages.length, 0);
-  assert.deepEqual(result[1].packages.map((item) => item.name), ["gsap"]);
-  assert.deepEqual(result[2].packages.map((item) => item.name), ["three"]);
+  assert.equal(result[0].installCommand, "No package required");
+  assert.equal(result[1].packages.length, 0);
+  assert.equal(result[2].packages.length, 0);
+  assert.deepEqual(result[3].packages.map((item) => item.name), ["gsap"]);
+  assert.equal(result[3].installCommand, "npm install gsap");
+  assert.equal(result[4].packages.length, 0);
+  assert.deepEqual(result[5].packages.map((item) => item.name), ["gsap"]);
+  assert.deepEqual(result[6].packages.map((item) => item.name), ["three"]);
 });
 
 test("packages do not imply creative authoring capabilities", () => {

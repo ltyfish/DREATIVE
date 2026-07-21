@@ -92,7 +92,7 @@ export async function runSharedElementHandoff(mutate, options = {}) {
 
 export function mountFrameSequence(canvas, options) {
   const context = canvas.getContext("2d");
-  if (!context || !options.frames?.length) return noop;
+  if (!context || !options.frames?.length) return { setProgress: noop, destroy: noop };
   const images = new Map();
   let destroyed = false;
   let current = -1;
@@ -261,9 +261,11 @@ export function mountKineticType(element, options = {}) {
     span.style.setProperty("--word-index", String(index));
     return index < words.length - 1 ? [span, document.createTextNode(" ")] : [span];
   }));
+  let raf = 0;
   if (reduced()) element.dataset.state = "resolved";
-  else requestAnimationFrame(() => { element.dataset.state = options.initialState ?? "active"; });
+  else raf = requestAnimationFrame(() => { element.dataset.state = options.initialState ?? "active"; });
   return () => {
+    if (raf) cancelAnimationFrame(raf);
     element.replaceChildren(...originalNodes);
     if (originalAria === null) element.removeAttribute("aria-label");
     else element.setAttribute("aria-label", originalAria);

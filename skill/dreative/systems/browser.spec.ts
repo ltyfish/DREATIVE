@@ -143,6 +143,7 @@ test("foundation cleanup restores pre-existing DOM state and stale frame loads c
     const kineticMarkup = kinetic.innerHTML;
     const destroyKinetic = systems.mountKineticType(kinetic);
     destroyKinetic();
+    await new Promise((resolve) => requestAnimationFrame(resolve));
 
     const gallery = document.createElement("div");
     gallery.innerHTML = '<button data-spatial-item style="color:red" tabindex="4" data-selected="prior">A</button><button data-spatial-item>B</button>';
@@ -176,17 +177,27 @@ test("foundation cleanup restores pre-existing DOM state and stale frame loads c
     const frame = canvas.dataset.frame;
     sequence.destroy();
 
+    const unavailableCanvas = document.createElement("canvas");
+    unavailableCanvas.getContext = () => null;
+    const unavailableSequence = systems.mountFrameSequence(unavailableCanvas, { frames: ["frame"] });
+    unavailableSequence.setProgress(1);
+    unavailableSequence.destroy();
+    const emptySequence = systems.mountFrameSequence(canvas, { frames: [] });
+    emptySequence.setProgress(1);
+    emptySequence.destroy();
+
     return {
       kineticMarkup: kinetic.innerHTML, expectedMarkup: kineticMarkup,
       kineticAria: kinetic.getAttribute("aria-label"), kineticState: kinetic.dataset.state,
       galleryStyle: first.getAttribute("style"), galleryTabindex: first.getAttribute("tabindex"), gallerySelected: first.dataset.selected,
       railDragging: rail.dataset.dragging, frame,
+      fallbackControllers: [unavailableSequence, emptySequence].every((controller) => typeof controller.setProgress === "function" && typeof controller.destroy === "function"),
     };
   });
   expect(result).toEqual({
     kineticMarkup: result.expectedMarkup, expectedMarkup: result.expectedMarkup,
     kineticAria: "original label", kineticState: "original",
     galleryStyle: "color:red", galleryTabindex: "4", gallerySelected: "prior",
-    railDragging: "prior", frame: "1",
+    railDragging: "prior", frame: "1", fallbackControllers: true,
   });
 });
