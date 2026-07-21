@@ -29,6 +29,11 @@ loop until repaired or replaced by another confirmed browser adapter.
    findings are cleared and the correction does not damage another viewport.
 
 At least one before/after correction cycle is required for Lean and Full Audit.
+The pair must show a perceptible rendered change and the final response must
+name the correction. Byte-identical or visibly duplicate captures do not count.
+When sticky or pinned scenes create blank, repeated, clipped, or misleading
+full-page captures, add sectional or stitched captures that truthfully show the
+composition and handoffs; do not accept the broken capture as visual evidence.
 If the first inspection finds nothing, deliberately test a different route,
 viewport, content state, or interaction before accepting that result. A
 structured snapshot cannot establish that typography, cropping, spacing, or

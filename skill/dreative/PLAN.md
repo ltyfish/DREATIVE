@@ -24,7 +24,9 @@ Show exactly:
 
 3. **Showcase — <flagship concept>**
    The highest creative and technical ceiling. Any treatment is available, but
-   select only those that materially strengthen the premise.
+   select only those that materially strengthen the premise. Its delivered
+   route must be visibly and structurally distinct from Recommended; a long
+   conventional page with one isolated spectacle is insufficient.
 
 Each option must name its premise, composition, material/type voice, meaningful
 media or interaction, and product fit. Do not mention reference brands as the
@@ -116,6 +118,7 @@ Section ownership: <section → perceptible treatment or role>
 Post-hero peak: <section and meaningful state change>
 Continuity owner: <device that carries the concept beyond the hero>
 Mobile transformation: <structural changes, not “stack everything”>
+Showcase ceiling: <highest coherent mechanism/media decision and prototype result>
 ```
 
 Keep it concrete and under roughly ten lines. It exposes the implementation
@@ -192,5 +195,18 @@ mobile transformation, preserved behavior, fallback, and chosen review pass.
 Do not call the work complete while an item is absent, imperceptible, replaced
 by a weaker substitute, or unverified. Continue correcting it or report the
 specific blocker and remaining scope.
+
+For Showcase, perform a below-hero comparison: inspect the route after its
+first major peak and reject completion if those sections could plausibly be the
+Efficient or ordinary Recommended direction. In the final response include two
+short disclosures:
+
+```text
+Showcase ceiling delivered: <what visibly shipped>
+Not pursued: <material advanced treatment rejected or replaced, and why>
+```
+
+Omit the second line only when no material treatment was considered, promised,
+rejected, downgraded, or replaced. Do not turn these lines into a ledger.
 
 After the reply, implement. Do not generate a second approval or contract gate.

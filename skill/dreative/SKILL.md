@@ -58,6 +58,15 @@ artifact or a performance of following instructions.
    Update `.dreative/context.json` only with durable decisions, real tested
    states, and unresolved issues; it is memory, never completion evidence.
 
+For Showcase, the delivered route must be visibly and structurally distinct
+from Recommended. A conventional long page with one isolated spectacle does
+not fulfill the highest-ceiling promise. In the final response state
+`Showcase ceiling delivered:` followed by the concrete mechanisms, media, and
+distributed experience that actually shipped. Also state `Not pursued:` for
+any materially considered or promised advanced treatment that was rejected,
+downgraded, or replaced, with the product or prototype reason. Do not list
+irrelevant technologies merely to prove they were omitted.
+
 Before relying on the rendered correction loop, distinguish Playwright package
 presence, browser executable detection, and a verified browser workflow. When
 the project CLI is available, serve the real preview and run
@@ -121,7 +130,10 @@ overlays, endless fade-ups, and 3D that behaves like a flat image.
 ## Quality floor
 
 Every section needs a job, readable hierarchy, intentional spacing, and an
-authored handoff. Alternate intensity and rest. Keep the primary task obvious.
+authored handoff. Alternate intensity and rest. A rest may be still, but must
+retain a concept-bearing relationship through continuity, an evolving visual
+variable, meaningful tactile state, media treatment, or authored handoff;
+default layout is not authored rest. Keep the primary task obvious.
 
 Reject polished-hero/weak-body delivery, generic card repetition, illegible
 microtype, empty viewport gaps, content-covering canvases, clipped controls,

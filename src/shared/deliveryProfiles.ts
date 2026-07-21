@@ -43,8 +43,8 @@ export const DELIVERY_PROFILES: readonly DeliveryProfile[] = [
   {
     id: "showcase",
     label: "Showcase",
-    promise: "The absolute highest creative and technical ceiling.",
-    scope: "A flagship experience using the strongest coherent combination of media, motion, interaction, spatial depth, and responsive craft.",
+    promise: "The absolute highest coherent creative and technical ceiling, visibly distinct from Recommended.",
+    scope: "A flagship experience whose ambition is distributed beyond one isolated spectacle, using the strongest coherent combination of media, motion, interaction, spatial depth, and responsive craft.",
     treatments: "UX and Mobile always apply; every other treatment is selected only when it strengthens the premise. There is no minimum count.",
     review: "full-audit",
     prototype: "required",
@@ -123,6 +123,8 @@ export function renderDetailedPlanGuide(profileId: DeliveryProfileId): string {
     "6. Build architecture — signature mechanism, runtime ownership, component/asset pipeline, mobile and semantic fallbacks, accessibility, and performance.",
     "7. Observable review, risks, fallbacks, and one editable decision reply.",
     "Visible execution map — experience arc, section ownership, post-hero peak, continuity owner, and mobile transformation in roughly ten lines.",
+    "Showcase ceiling — the highest coherent mechanism/media decision, prototype result, and why the delivered route is visibly beyond Recommended.",
+    "Showcase final response — state `Showcase ceiling delivered:` and disclose materially rejected or replaced advanced treatments under `Not pursued:` with the reason.",
     "",
     "The brief must adapt every decision to the inspected project. Do not imitate a named site, emit a generic template, or require another implementation-contract approval.",
   ].join("\n");

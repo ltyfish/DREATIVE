@@ -20,6 +20,8 @@ test("direction meanings and adaptive defaults are fixed", () => {
   assert.match(deliveryProfile("recommended").promise, /specific product/);
   assert.match(deliveryProfile("efficient").promise, /token-efficient/);
   assert.match(deliveryProfile("showcase").treatments, /no minimum count/i);
+  assert.match(deliveryProfile("showcase").promise, /visibly distinct from Recommended/i);
+  assert.match(deliveryProfile("showcase").scope, /beyond one isolated spectacle/i);
   assert.deepEqual(
     DELIVERY_PROFILES.map(({ id, prototype, review }) => ({ id, prototype, review })),
     [
@@ -45,5 +47,7 @@ test("detailed planning is an adaptive Creative Decision Brief", () => {
     assert.match(detail, new RegExp(field, "i"));
   assert.match(detail, /no minimum count/i);
   assert.match(detail, /Visible execution map.+experience arc.+mobile transformation/i);
+  assert.match(detail, /Showcase ceiling delivered:/);
+  assert.match(detail, /Not pursued:/);
   assert.doesNotMatch(detail, /approval hash|attestation|independent critic|provenance/i);
 });

@@ -91,6 +91,9 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   for (const choice of ["References", "Treatments", "Sourced images", "Generated images", "Packages", "Prototype", "Review depth", "Fast", "Lean", "Full Audit"])
     requireText(findings, "PLAN.md", plan, new RegExp(`\\b${choice}\\b`, "i"), `detailed planning is missing ${choice}`);
   requireText(findings, "PLAN.md", plan, /no minimum treatment|select only those/i, "Showcase must select treatments by concept fit rather than count");
+  requireText(findings, "PLAN.md", plan, /visibly and structurally distinct from Recommended/i, "Showcase must remain visibly distinct from Recommended");
+  requireText(findings, "PLAN.md", plan, /Showcase ceiling delivered:/i, "Showcase must disclose the delivered ceiling in the final response");
+  requireText(findings, "PLAN.md", plan, /Not pursued:/i, "Showcase must disclose material rejected or replaced treatments");
   requireText(findings, "PLAN.md", plan, /token-.+efficient|least tokens/i, "Efficient must optimize token use");
 
   const publicContract = `${skill}\n${plan}`;

@@ -92,8 +92,17 @@ transform, prove, rest, decide, or resolve. Design at least one post-hero peak.
 Use a small transition vocabulary derived from the concept so the route feels
 connected without repeating the same reveal.
 
+Define rests as deliberately lower-intensity authored states, not untreated
+layout. A rest must preserve at least one concept-bearing relationship:
+continuity device, evolving visual variable, meaningful tactile state, media
+treatment, or authored handoff. Stillness can improve pacing; default grids do
+not become intentional merely by being labelled calm.
+
 The hero-removed test is mandatory: without the first viewport, the remaining
-route must still express the selected concept.
+route must still express the selected concept. For Showcase, also inspect the
+route below its first major peak and compare it with the lower delivery levels.
+If it could plausibly be the Efficient or ordinary Recommended direction, the
+Showcase allocation is incomplete.
 
 ## 7. Match resources after concept
 
