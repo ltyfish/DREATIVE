@@ -81,3 +81,17 @@ test("docs-check rejects convenience-first Native Foundation routing", (t) => {
   const report = runDocsCheck(skillDir);
   assert.ok(report.findings.some((finding) => finding.check === "delivery-contract"));
 });
+
+test("docs-check preserves prominent-element purpose and repeated-media transformation guards", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-docs-media-guards-"));
+  const skillDir = path.join(root, "dreative");
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.cpSync(path.resolve("skill", "dreative"), skillDir, { recursive: true });
+  const file = path.join(skillDir, "SKILL.md");
+  const content = fs.readFileSync(file, "utf8")
+    .replace("Every prominent decorative line", "Every decorative detail")
+    .replace("visibly evolve in crop, state", "change a little in presentation");
+  fs.writeFileSync(file, content);
+  const report = runDocsCheck(skillDir);
+  assert.ok(report.findings.filter((finding) => finding.check === "delivery-contract").length >= 2);
+});

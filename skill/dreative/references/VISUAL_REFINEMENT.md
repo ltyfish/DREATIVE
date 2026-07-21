@@ -21,6 +21,12 @@ loop until repaired or replaced by another confirmed browser adapter.
    findings tied to a route, viewport, section, and visible symptom:
    hierarchy, rhythm, type, crop, composition, contrast, repetition, overflow,
    controls, loading, and section handoffs.
+   For every prominent decorative line, grid, overlay, shape, persistent
+   element, or motif, name its concrete role in product meaning, hierarchy,
+   interaction, or continuity; remove or redesign it when the rendered
+   experience does not make that role perceptible. Compare hero-grade media
+   reused across major sections and require visible evolution in crop, state,
+   material, meaning, or interaction unless a distinct composition is used.
 4. Exercise motion at entry, midpoint, reversal, and release. Inspect reduced
    motion separately. Use console, network, and performance traces to explain
    defects, not to substitute for visual judgment.

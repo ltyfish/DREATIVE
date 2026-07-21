@@ -135,6 +135,17 @@ retain a concept-bearing relationship through continuity, an evolving visual
 variable, meaningful tactile state, media treatment, or authored handoff;
 default layout is not authored rest. Keep the primary task obvious.
 
+Every prominent decorative line, grid, overlay, shape, persistent element, or
+visual motif must have a perceptible role in product meaning, hierarchy,
+interaction, or continuity. If its role cannot be explained in one concrete
+sentence from the rendered experience, remove or redesign it.
+
+Do not reuse the same hero-grade image, wallpaper, render, or visual
+composition across major sections unless the repetition expresses intentional
+continuity or transformation. Reused media must visibly evolve in crop, state,
+material, meaning, or interaction; otherwise use a distinct asset or
+composition.
+
 Reject polished-hero/weak-body delivery, generic card repetition, illegible
 microtype, empty viewport gaps, content-covering canvases, clipped controls,
 broken sticky releases, accidental overflow, repeated/placeholder assets,

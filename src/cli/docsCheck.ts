@@ -82,6 +82,8 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "systems/NATIVE_FOUNDATIONS.md", foundations, /twelve implementation-neutral foundations/i, "must expose a bounded native-foundation set");
   requireText(findings, "systems/NATIVE_FOUNDATIONS.md", foundations, /not preferred substitutes[\s\S]+Do not select a Native Foundation merely because it is[\s\S]+available or easier/i, "must prevent convenience-driven Native Foundation selection");
   requireText(findings, "SKILL.md", skill, /Native Foundations as baseline implementation skeletons[\s\S]+Do not select a foundation merely because it is[\s\S]+available[\s\S]+easier/i, "must choose foundations or mature runtimes by required outcome rather than convenience");
+  requireText(findings, "SKILL.md", skill, /prominent decorative line[\s\S]+perceptible role[\s\S]+remove or redesign/i, "prominent decorative elements must have a perceptible product or continuity role");
+  requireText(findings, "SKILL.md", skill, /reuse the same hero-grade image[\s\S]+visibly evolve in crop, state,[\s\S]+material, meaning, or interaction/i, "repeated hero-grade media must visibly transform or use a distinct composition");
   requireText(findings, "references/CREATIVE_DIRECTION.md", contents.get("references/CREATIVE_DIRECTION.md") ?? "", /independence test/i, "must include a reference-independence test");
 
   for (const choice of ["Recommended", "Efficient", "Showcase"])
