@@ -96,6 +96,7 @@ export function mountFrameSequence(canvas, options) {
   const images = new Map();
   let destroyed = false;
   let current = -1;
+  let requestVersion = 0;
   const resize = () => {
     const rect = canvas.getBoundingClientRect();
     const dpr = Math.min(devicePixelRatio || 1, options.maxDpr ?? 1.5);
@@ -116,12 +117,14 @@ export function mountFrameSequence(canvas, options) {
   };
   const draw = async (index) => {
     current = clamp(index, 0, options.frames.length - 1);
-    const image = await load(current);
-    if (destroyed) return;
-    canvas.dataset.frame = String(current);
+    const requested = current;
+    const version = ++requestVersion;
+    const image = await load(requested);
+    if (destroyed || version !== requestVersion || requested !== current) return;
+    canvas.dataset.frame = String(requested);
     if (!image) {
       canvas.dataset.state = "missing";
-      return options.onMissing?.(current);
+      return options.onMissing?.(requested);
     }
     canvas.dataset.state = "ready";
     const scale = Math.max(canvas.width / image.width, canvas.height / image.height);
@@ -199,6 +202,7 @@ export function mountPersistentStage(stage, berths) {
 }
 
 export function mountDragRail(rail, options = {}) {
+  const originalDragging = rail.dataset.dragging;
   let pointer = null;
   let startX = 0;
   let startScroll = 0;
@@ -231,16 +235,23 @@ export function mountDragRail(rail, options = {}) {
   rail.addEventListener("pointercancel", up);
   rail.addEventListener("keydown", key);
   return () => {
+    if (pointer !== null && rail.hasPointerCapture?.(pointer)) rail.releasePointerCapture(pointer);
+    pointer = null;
     rail.removeEventListener("pointerdown", down);
     rail.removeEventListener("pointermove", move);
     rail.removeEventListener("pointerup", up);
     rail.removeEventListener("pointercancel", up);
     rail.removeEventListener("keydown", key);
+    if (originalDragging === undefined) delete rail.dataset.dragging;
+    else rail.dataset.dragging = originalDragging;
   };
 }
 
 export function mountKineticType(element, options = {}) {
   const text = element.textContent ?? "";
+  const originalNodes = [...element.childNodes];
+  const originalAria = element.getAttribute("aria-label");
+  const originalState = element.dataset.state;
   element.setAttribute("aria-label", text);
   const words = text.trim().split(/\s+/);
   element.replaceChildren(...words.flatMap((word, index) => {
@@ -252,7 +263,13 @@ export function mountKineticType(element, options = {}) {
   }));
   if (reduced()) element.dataset.state = "resolved";
   else requestAnimationFrame(() => { element.dataset.state = options.initialState ?? "active"; });
-  return () => { element.textContent = text; element.removeAttribute("aria-label"); delete element.dataset.state; };
+  return () => {
+    element.replaceChildren(...originalNodes);
+    if (originalAria === null) element.removeAttribute("aria-label");
+    else element.setAttribute("aria-label", originalAria);
+    if (originalState === undefined) delete element.dataset.state;
+    else element.dataset.state = originalState;
+  };
 }
 
 export function mountAdaptiveCanvas(canvas, draw, options = {}) {
@@ -306,6 +323,16 @@ export function mountAdaptiveCanvas(canvas, draw, options = {}) {
 }
 
 export function mountVideoHandoff(video, destination, options = {}) {
+  const originalVideoState = video.dataset.state;
+  const originalDestinationState = destination.dataset.state;
+  const wasPaused = video.paused;
+  const restore = () => {
+    if (originalVideoState === undefined) delete video.dataset.state;
+    else video.dataset.state = originalVideoState;
+    if (originalDestinationState === undefined) delete destination.dataset.state;
+    else destination.dataset.state = originalDestinationState;
+    if (!wasPaused) void video.play().catch(() => {});
+  };
   const update = () => {
     const threshold = options.at ?? Math.max(0, video.duration - 0.35);
     const resolved = Number.isFinite(threshold) && video.currentTime >= threshold;
@@ -319,18 +346,19 @@ export function mountVideoHandoff(video, destination, options = {}) {
   if (reduced()) {
     video.pause();
     destination.dataset.state = "visible";
-    return noop;
+    return restore;
   }
   video.addEventListener("timeupdate", update);
   video.addEventListener("loadeddata", update);
   video.addEventListener("ended", update);
   video.addEventListener("error", fail);
   update();
-  return () => { video.removeEventListener("timeupdate", update); video.removeEventListener("loadeddata", update); video.removeEventListener("ended", update); video.removeEventListener("error", fail); };
+  return () => { video.removeEventListener("timeupdate", update); video.removeEventListener("loadeddata", update); video.removeEventListener("ended", update); video.removeEventListener("error", fail); restore(); };
 }
 
 export function mountSpatialGallery(root, options = {}) {
   const items = [...root.querySelectorAll("[data-spatial-item]")];
+  const originals = items.map((item) => ({ style: item.getAttribute("style"), tabindex: item.getAttribute("tabindex"), selected: item.dataset.selected }));
   const clicks = new Map();
   let selected = 0;
   const render = () => {
@@ -366,10 +394,14 @@ export function mountSpatialGallery(root, options = {}) {
   return () => {
     root.removeEventListener("keydown", key);
     removeEventListener("resize", render);
-    items.forEach((item) => {
+    items.forEach((item, index) => {
       item.removeEventListener("click", clicks.get(item));
-      item.removeAttribute("style");
-      item.tabIndex = 0;
+      if (originals[index].style === null) item.removeAttribute("style");
+      else item.setAttribute("style", originals[index].style);
+      if (originals[index].tabindex === null) item.removeAttribute("tabindex");
+      else item.setAttribute("tabindex", originals[index].tabindex);
+      if (originals[index].selected === undefined) delete item.dataset.selected;
+      else item.dataset.selected = originals[index].selected;
     });
   };
 }

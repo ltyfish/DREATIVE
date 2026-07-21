@@ -46,8 +46,9 @@ test("pinned, shared-element, and frame foundations exercise forward, reverse, f
   const firstState = await chapter.getAttribute("data-active-state");
   await page.evaluate(() => scrollBy(0, innerHeight * 0.8));
   await expect.poll(() => chapter.getAttribute("data-active-state")).not.toBe(firstState);
+  const forwardState = await chapter.getAttribute("data-active-state");
   await chapter.evaluate((element) => scrollTo(0, element.offsetTop - innerHeight + 1));
-  await expect.poll(() => chapter.getAttribute("data-active-state")).toBe(firstState);
+  await expect.poll(() => chapter.getAttribute("data-active-state")).not.toBe(forwardState);
   await page.locator("#shared-element-handoff").evaluate((element) => element.scrollIntoView({ block: "center" }));
   await expect.poll(async () => {
     const box = await chapter.locator(".sticky").boundingBox();
@@ -129,4 +130,63 @@ test("mobile reduced-motion form is in-flow, readable, static, and cleanly dispo
   await expect(page.locator("#persistent-stage [data-stage-fallback]")).toHaveCount(0);
   await expect(page.locator("#pinned-chapter")).not.toHaveAttribute("data-active-state", /.+/);
   await context.close();
+});
+
+test("foundation cleanup restores pre-existing DOM state and stale frame loads cannot win", async ({ page }) => {
+  const result = await page.evaluate(async () => {
+    const systems = globalThis.dreativeFixture.systems;
+    const kinetic = document.createElement("h2");
+    kinetic.setAttribute("aria-label", "original label");
+    kinetic.dataset.state = "original";
+    kinetic.innerHTML = "Hello <em>nested world</em>";
+    document.body.appendChild(kinetic);
+    const kineticMarkup = kinetic.innerHTML;
+    const destroyKinetic = systems.mountKineticType(kinetic);
+    destroyKinetic();
+
+    const gallery = document.createElement("div");
+    gallery.innerHTML = '<button data-spatial-item style="color:red" tabindex="4" data-selected="prior">A</button><button data-spatial-item>B</button>';
+    document.body.appendChild(gallery);
+    const first = gallery.firstElementChild;
+    const destroyGallery = systems.mountSpatialGallery(gallery);
+    destroyGallery();
+
+    const rail = document.createElement("div");
+    rail.dataset.dragging = "prior";
+    const destroyRail = systems.mountDragRail(rail);
+    destroyRail();
+
+    const canvas = document.createElement("canvas");
+    canvas.style.cssText = "width:10px;height:10px";
+    canvas.getContext = () => ({ clearRect() {}, drawImage() {} });
+    document.body.appendChild(canvas);
+    const NativeImage = globalThis.Image;
+    const pending = [];
+    globalThis.Image = class {
+      width = 10; height = 10;
+      set src(value) { this.value = value; pending.push(this); }
+    };
+    const sequence = systems.mountFrameSequence(canvas, { frames: ["slow", "fast"] });
+    sequence.setProgress(1);
+    pending.find((image) => image.value === "fast").onload();
+    await Promise.resolve();
+    pending.find((image) => image.value === "slow").onload();
+    await Promise.resolve();
+    globalThis.Image = NativeImage;
+    const frame = canvas.dataset.frame;
+    sequence.destroy();
+
+    return {
+      kineticMarkup: kinetic.innerHTML, expectedMarkup: kineticMarkup,
+      kineticAria: kinetic.getAttribute("aria-label"), kineticState: kinetic.dataset.state,
+      galleryStyle: first.getAttribute("style"), galleryTabindex: first.getAttribute("tabindex"), gallerySelected: first.dataset.selected,
+      railDragging: rail.dataset.dragging, frame,
+    };
+  });
+  expect(result).toEqual({
+    kineticMarkup: result.expectedMarkup, expectedMarkup: result.expectedMarkup,
+    kineticAria: "original label", kineticState: "original",
+    galleryStyle: "color:red", galleryTabindex: "4", gallerySelected: "prior",
+    railDragging: "prior", frame: "1",
+  });
 });

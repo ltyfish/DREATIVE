@@ -37,7 +37,8 @@ artifact or a performance of following instructions.
    continuity owner, and mobile transformation. Reveal the full brief only on
    request. Do not wait for its reveal or approval; proceed to build.
 5. Read `references/CREATIVE_EXECUTION.md` before adding an advanced runtime.
-   Load only the relevant specialty and one native foundation. Prototype only a
+   Load only the relevant specialty and zero or one relevant native foundation initially. Zero is valid;
+   add another only when a separate named mechanism genuinely requires it. Prototype only a
    central, uncertain mechanism whose result could change the build.
 6. Finish the real route, including post-hero sections and mobile composition.
    Implement every selected treatment in its named section or state and make
@@ -152,7 +153,7 @@ rendered interface. `DREATIVE_FINALIZED` certifies commands only, not taste.
 - Advanced runtime: `references/CREATIVE_EXECUTION.md`
 - Relevant craft only: `skills/<name>.md`
 - Rendered correction loop: `references/VISUAL_REFINEMENT.md`
-- Chosen mechanism only: one matching native foundation
+- Chosen mechanism only: zero or one matching native foundation initially
 - Focused mechanism lookup only: `llms.txt` or `dreative catalogue`
 
 Never browse the catalogue to invent the concept.

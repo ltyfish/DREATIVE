@@ -19,6 +19,12 @@ test("project preflight detects framework, manager, scripts and existing capabil
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-preflight-"));
   fs.mkdirSync(path.join(root, "src"));
   fs.writeFileSync(path.join(root, "package.json"), JSON.stringify({ dependencies: { react: "^18", vite: "^6", gsap: "^3", motion: "^12", "pixi.js": "^8", "@rive-app/webgl2": "^2" }, scripts: { build: "vite build" } }));
+  for (const name of ["gsap", "motion", "pixi.js", "@rive-app/webgl2"]) {
+    const directory = path.join(root, "node_modules", name);
+    fs.mkdirSync(directory, { recursive: true });
+    fs.writeFileSync(path.join(directory, "package.json"), JSON.stringify({ name, main: "index.js" }));
+    fs.writeFileSync(path.join(directory, "index.js"), "module.exports = {};");
+  }
   fs.writeFileSync(path.join(root, "package-lock.json"), "{}");
   fs.writeFileSync(path.join(root, "src", "App.tsx"), "const reduced = matchMedia('(prefers-reduced-motion: reduce)')");
   const result = detectProjectPreflight(root);
@@ -30,6 +36,16 @@ test("project preflight detects framework, manager, scripts and existing capabil
   assert.equal(result.creativeCapabilities.find((item) => item.id === "pixi-runtime")?.status, "available");
   assert.equal(result.creativeCapabilities.find((item) => item.id === "rive-runtime")?.status, "available");
   assert.equal(result.creativeCapabilities.find((item) => item.id === "image-generation")?.status, "permission-unresolved");
+});
+
+test("declared but unresolvable packages are not reported as available", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-declared-only-"));
+  fs.writeFileSync(path.join(root, "package.json"), JSON.stringify({ dependencies: { gsap: "^3", three: "^0.1" } }));
+  const result = detectProjectPreflight(root, { permissions: { packageInstallationAllowed: false } });
+  assert.deepEqual(result.declaredCapabilities.sort(), ["gsap", "three"]);
+  assert.deepEqual(result.installedCapabilities, []);
+  assert.equal(result.creativeCapabilities.find((item) => item.id === "gsap-runtime")?.status, "package-declared-unverified");
+  assert.equal(result.creativeCapabilities.find((item) => item.id === "threejs-runtime")?.status, "package-declared-unverified");
 });
 
 test("runtime ownership requires a dependency, import, and actual initialization", () => {

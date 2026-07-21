@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { checkSkillInstallation } from "./installSkill.js";
 import { spawnSync } from "node:child_process";
 import { runDocsCheck } from "./docsCheck.js";
 
@@ -36,6 +37,13 @@ export function runFinalize(
   if (!fs.existsSync(packageFile)) {
     return { ok: false, commands, blockers: ["package.json is missing; deterministic project checks cannot run"] };
   }
+
+  blockers.push(...checkSkillInstallation({
+    sourceDir: options.sourceDir,
+    projectDir,
+    packageVersion: options.packageVersion,
+    target: options.target,
+  }).map((message) => `skill installation: ${message}`));
 
   const pkg = JSON.parse(fs.readFileSync(packageFile, "utf8"));
   const scripts = ["build", "test", "typecheck", "lint"].filter((script) => Boolean(pkg.scripts?.[script]));

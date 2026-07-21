@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
 import { CREATIVE_MECHANISMS, PACKAGE_PROFILES } from "./creativeCatalog.js";
 
 function activeLockfile(projectDir: string): string | null {
@@ -16,6 +17,7 @@ export type CapabilityStatus =
   | "available-through-supplied-asset"
   | "expected-browser-api-unverified"
   | "package-installed-unverified"
+  | "package-declared-unverified"
   | "browser-executable-detected-unverified"
   | "permitted-but-tool-unverified"
   | "permission-unresolved"
@@ -44,6 +46,7 @@ export type CreativeCapabilityId = typeof CAPABILITY_IDS[number];
 export const CAPABILITY_STATES: CapabilityStatus[] = [
   "available", "available-after-package-install", "available-through-confirmed-tool", "available-through-supplied-asset",
   "expected-browser-api-unverified", "package-installed-unverified", "browser-executable-detected-unverified",
+  "package-declared-unverified",
   "permitted-but-tool-unverified", "permission-denied", "unavailable",
   "permission-unresolved", "runtime-verification-failed",
 ];
@@ -107,6 +110,7 @@ export interface ProjectPreflight {
   lockfile: string | null;
   sourceLayout: string[];
   installedCapabilities: string[];
+  declaredCapabilities: string[];
   scripts: Record<string, string>;
   browserAutomationPackageInstalled: boolean;
   browserExecutableDetected: boolean;
@@ -359,6 +363,7 @@ export function resolveCreativeCapabilities(installed: string[], permissions: Cr
     browserWorkflowVerified?: boolean;
     browserProbeFailed?: boolean;
     browserEvidence?: string[];
+    declaredPackages?: string[];
   } = {}): CapabilityAssessment[] {
   const errors = validateCapabilityInputs(explicit);
   if (errors.length) throw new Error(errors.join("\n"));
@@ -376,9 +381,14 @@ export function resolveCreativeCapabilities(installed: string[], permissions: Cr
         permittedSubstitutes: input.substitutes ?? [],
       });
   };
-  const runtimePackage = (id: CreativeCapabilityId, packageName: string, present: boolean, limitation: string) =>
-    explicitRecord(id) ?? record(id, "not-applicable", present ? "available" : permissions.packageInstallationAllowed ? "available-after-package-install" : "unavailable",
-      present ? "environment" : "package-preflight", present ? "detected" : "unverified", limitation, { package: packageName });
+  const runtimePackage = (id: CreativeCapabilityId, packageName: string, present: boolean, limitation: string) => {
+    const declared = environment.declaredPackages?.includes(packageName) === true;
+    return explicitRecord(id) ?? record(id, "not-applicable",
+      present ? "available" : declared ? "package-declared-unverified" : permissions.packageInstallationAllowed ? "available-after-package-install" : "unavailable",
+      present ? "environment" : "package-preflight", present ? "detected" : "unverified",
+      declared ? `${packageName} is declared in package.json but is not resolvable from the project.` : limitation,
+      { package: packageName });
+  };
   const permittedTool = (id: CreativeCapabilityId, limitation: string, substitutes: string[] = []) => {
     const permission = permissionFor(id, permissions, environment.unresolvedPermissions);
     if (permission === "denied") return record(id, permission, "permission-denied", "user-permission", "verified", "The user denied this operation.", { permittedSubstitutes: substitutes });
@@ -587,7 +597,11 @@ export function detectProjectPreflight(projectDir: string, options: ProjectPrefl
   const files = sourceLayout.flatMap((name) => walk(path.join(projectDir, name))).filter((file) => /\.(?:[jt]sx?|vue|svelte|css|scss)$/.test(file) && !/\.(?:test|spec)\.[jt]sx?$/.test(file));
   const signals = runtimeSignals(files, deps);
   const capabilityPackages = ["motion", "framer-motion", "gsap", "@gsap/react", "lenis", "pixi.js", "@rive-app/webgl2", "@rive-app/react-canvas", "three", "@react-three/fiber", "@react-three/drei", "@react-three/postprocessing", "postprocessing", "ogl", "@use-gesture/react", "matter-js", "@react-three/rapier", "sharp", "remotion", "@remotion/cli", "@remotion/player", "playwright", "@playwright/test"];
-  const installedCapabilities = capabilityPackages.filter((name) => deps[name]);
+  const declaredCapabilities = capabilityPackages.filter((name) => deps[name]);
+  const projectRequire = createRequire(packageFile);
+  const installedCapabilities = declaredCapabilities.filter((name) => {
+    try { projectRequire.resolve(name); return true; } catch { return false; }
+  });
   const permissions: CreativePermissions = {
     generatedImagesAllowed: false, externalImagesAllowed: false, generatedVideoAllowed: false, externalVideoAllowed: false,
     threeDPolicy: "not-allowed", packageInstallationAllowed: false, ...options.permissions,
@@ -606,7 +620,7 @@ export function detectProjectPreflight(projectDir: string, options: ProjectPrefl
   const browserProbeFailed = options.browserProbe?.attempted === true && !browserWorkflowVerified;
   const base = {
     capturedAt: new Date().toISOString(), framework: frameworkName ?? "unknown", frameworkVersion: deps[frameworkName ?? ""] ?? "unknown",
-    packageManager: manager, lockfile: activeLockfile(projectDir), sourceLayout, installedCapabilities, scripts: pkg.scripts ?? {},
+    packageManager: manager, lockfile: activeLockfile(projectDir), sourceLayout, declaredCapabilities, installedCapabilities, scripts: pkg.scripts ?? {},
     browserAutomationPackageInstalled: browser.packageInstalled,
     browserExecutableDetected: Boolean(browser.executable),
     browserLaunchVerified,
@@ -616,6 +630,7 @@ export function detectProjectPreflight(projectDir: string, options: ProjectPrefl
     assetCapabilities: [deps.sharp && "sharp", ffmpeg && "ffmpeg"].filter(Boolean) as string[],
     creativeCapabilities: resolveCreativeCapabilities(installedCapabilities, permissions, options.explicitCapabilities, {
       ffmpeg, unresolvedPermissions: unresolvedPermissionKeys,
+      declaredPackages: declaredCapabilities,
       browserPackageInstalled: browser.packageInstalled,
       browserExecutableDetected: Boolean(browser.executable),
       browserWorkflowVerified,

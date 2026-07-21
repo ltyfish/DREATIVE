@@ -31,14 +31,20 @@ test("natural-language lookup routes to a small system rather than an effect nam
   assert.equal(searchCreativeCatalog("image tornado").some((item) => item.id === "image-tornado"), false);
 });
 
-test("package routing distinguishes Motion, GSAP, PixiJS, Rive, and Three", () => {
+test("native foundations install nothing unless one compatible enhancement is selected", () => {
   assert.ok(PACKAGE_PROFILES.some((item) => item.id === "motion"));
   assert.ok(PACKAGE_PROFILES.some((item) => item.id === "pixi"));
   assert.ok(PACKAGE_PROFILES.some((item) => item.id === "rive"));
   const drag = resolveCreativeStack(["drag-rail"], { installationAllowed: true });
-  assert.equal(drag.timelineEngine, "motion");
-  const pinned = resolveCreativeStack(["pinned-chapter"], { installationAllowed: true });
+  assert.equal(drag.timelineEngine, "native");
+  assert.deepEqual(drag.installCommands, []);
+  const pinned = resolveCreativeStack(["pinned-chapter"], { installationAllowed: true, enhancement: "gsap-scrolltrigger" });
   assert.equal(pinned.timelineEngine, "gsap");
+  assert.deepEqual(pinned.installCommands, ["npm install gsap"]);
+  const spatial = resolveCreativeStack(["spatial-gallery"], { installationAllowed: true, enhancement: "react-three-fiber", framework: "react" });
+  assert.deepEqual(spatial.installCommands, ["npm install @react-three/fiber"]);
+  assert.match(resolveCreativeStack(["spatial-gallery"], { enhancement: "react-three-fiber", framework: "vue" }).blockers[0], /React framework/);
+  assert.equal(resolveCreativeStack(["drag-rail"], { enhancement: "three" }).blockers.length, 1);
   const native = resolveCreativeStack(["section-observer"], { installationAllowed: true });
   assert.equal(native.timelineEngine, "native");
 });

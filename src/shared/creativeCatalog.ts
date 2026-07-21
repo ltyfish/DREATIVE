@@ -52,6 +52,7 @@ export interface NativeFoundation {
   aliases: string[];
   summary: string;
   suitableTreatments: SpecialistSkill[];
+  /** Optional alternatives to the native implementation; never installed implicitly. */
   packageProfiles: string[];
   implementation: string;
   implementationExport: string;
@@ -181,12 +182,19 @@ export interface CreativeStackResolution {
 
 export function resolveCreativeStack(
   systemIds: string[],
-  options: { installed?: string[]; installationAllowed?: boolean; capabilities?: string[] } = {},
+  options: { installed?: string[]; installationAllowed?: boolean; capabilities?: string[]; enhancement?: string; framework?: string } = {},
 ): CreativeStackResolution {
   const systems = systemIds.map((id) => CREATIVE_MECHANISMS.find((item) => item.id === id)).filter((item): item is NativeFoundation => Boolean(item));
   const blockers = systemIds.filter((id) => !systems.some((item) => item.id === id)).map((id) => `unknown native foundation ${id}`);
-  const requestedIds = new Set(systems.flatMap((item) => item.packageProfiles));
-  const selectedProfiles = PACKAGE_PROFILES.filter((item) => requestedIds.has(item.id));
+  const requestedIds = new Set<string>();
+  if (options.enhancement) {
+    const profile = PACKAGE_PROFILES.find((item) => item.id === options.enhancement);
+    if (!profile) blockers.push(`unknown enhancement ${options.enhancement}`);
+    else if (!systems.some((item) => item.packageProfiles.includes(profile.id))) blockers.push(`${profile.id} is not an enhancement for the selected foundations`);
+    else if (["react-three-fiber", "gsap-react"].includes(profile.id) && !/^(react|next)$/i.test(options.framework ?? "")) blockers.push(`${profile.id} requires a confirmed React framework`);
+    else requestedIds.add(profile.id);
+  }
+  const selectedProfiles = blockers.length ? [] : PACKAGE_PROFILES.filter((item) => requestedIds.has(item.id));
   const installed = new Set(options.installed ?? []);
   const missing = selectedProfiles.filter((item) => !installed.has(item.packageName));
   const fallbacks: string[] = [];
