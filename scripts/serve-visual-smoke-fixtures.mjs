@@ -5,6 +5,7 @@ const shell = (body, script = "", links = "") => `<!doctype html><html><head><ti
 const mechanisms = `<section id="before"><button>Before</button><div class="box"></div></section><section id="peak"><button>Peak</button><svg viewBox="0 0 120 120" width="120" height="120"><rect class="box" width="120" height="120" fill="#f60"/></svg></section><section id="after"><button>After</button><div class="box"></div><div class="box"></div></section>`;
 const healthy = shell(mechanisms, `for(const section of document.querySelectorAll('section'))section.onclick=()=>section.classList.toggle('changed')`, `<a href="/about">About</a>`);
 const scrollMechanism = shell(`<section id="before"><button>Before</button><div class="box"></div></section><section id="scroll-story" style="height:320vh"><h1 style="position:sticky;top:32px">Scroll story</h1><div class="box" style="position:sticky;top:100px"></div></section><section id="after"><button>After</button><div class="box"></div><div class="box"></div></section>`, `for(const section of document.querySelectorAll('#before,#after'))section.onclick=()=>section.classList.toggle('changed');addEventListener('scroll',()=>{const scene=document.querySelector('#scroll-story');const box=scene.querySelector('.box');const progress=Math.max(0,Math.min(1,(scrollY-scene.offsetTop)/(scene.offsetHeight-innerHeight)));const stage=Math.min(3,Math.floor(progress*4));box.dataset.stage=stage;box.style.transform='translateX('+(stage*50)+'px)'})`);
+const staticScrollMechanism = shell(`<section id="before"><button>Before</button><div class="box"></div></section><section id="scroll-story" style="height:320vh"><h1>Static scroll story</h1><div class="box"></div></section><section id="after"><button>After</button><div class="box"></div><div class="box"></div></section>`, `for(const section of document.querySelectorAll('#before,#after'))section.onclick=()=>section.classList.toggle('changed')`);
 const lyingMedia = shell(`<section id="before"><button>Before</button><div class="box"></div></section><section id="lying-peak"><button>Peak</button><div class="box"></div></section><section id="after"><button>After</button><div class="box"></div><div class="box"></div></section>`, `for(const section of document.querySelectorAll('section'))section.onclick=()=>section.classList.toggle('changed')`);
 const pages = {
   "/": healthy,
@@ -16,6 +17,7 @@ const pages = {
   "/ghost": shell(`<section><h1>Fallback home</h1><p>Same page for every route.</p></section>`, "", `<a href="/ghost">Ghost</a>`),
   "/no-id-transform": shell(`<section class="scroll-scene" style="height:300vh"><div class="box" style="position:sticky;top:100px"></div><h1>Transform scene</h1></section>`, `addEventListener('scroll',()=>document.querySelector('.box').style.transform='translateX('+Math.round(scrollY/8)+'px)')`),
   "/scroll-mechanism": scrollMechanism,
+  "/static-scroll-mechanism": staticScrollMechanism,
   "/lying-media": lyingMedia,
   "/console": shell(`<section><h1>Runtime failure</h1></section>`, `console.error('fixture exploded')`),
   "/asset": shell(`<section><h1>Missing asset</h1><img src="/missing.png" alt="missing"></section>`),

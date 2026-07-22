@@ -86,6 +86,7 @@ async function verifyDeclaredMedia(page: Page, entry: MechanismContractEntry): P
 
 async function declaredMediaFingerprint(page: Page, entry: MechanismContractEntry): Promise<string> {
   return page.locator(entry.selector).evaluate((root, mediaMode) => {
+    const rootRect = root.getBoundingClientRect();
     const all = [root, ...Array.from(root.querySelectorAll("*"))] as HTMLElement[];
     const selector = mediaMode === "svg" ? "svg,svg *" : mediaMode === "image" ? "img,picture" : mediaMode === "video" ? "video" : mediaMode === "canvas" ? "canvas" : mediaMode === "3d" ? "canvas,[data-dreative-3d]" : mediaMode === "typography" ? "h1,h2,h3,h4,h5,h6,p,span,strong,em" : "*";
     const nodes = mediaMode === "dom-state" ? all : all.filter((element) => element !== root && element.matches(selector));
@@ -96,7 +97,7 @@ async function declaredMediaFingerprint(page: Page, entry: MechanismContractEntr
       const source = element instanceof HTMLImageElement ? element.currentSrc : "";
       let canvas = "";
       if (element instanceof HTMLCanvasElement) try { canvas = element.toDataURL().slice(-160); } catch { canvas = "unreadable"; }
-      return [element.tagName, element.className, element.textContent?.trim().slice(0, 120), Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height), style.transform, style.opacity, style.filter, style.clipPath, style.fontSize, style.fontWeight, source, media, canvas];
+      return [element.tagName, element.className, element.textContent?.trim().slice(0, 120), Math.round(rect.x - rootRect.x), Math.round(rect.y - rootRect.y), Math.round(rect.width), Math.round(rect.height), style.transform, style.opacity, style.filter, style.clipPath, style.fontSize, style.fontWeight, source, media, canvas];
     }));
   }, entry.mediaMode);
 }
