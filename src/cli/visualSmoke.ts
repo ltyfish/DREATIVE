@@ -93,11 +93,14 @@ async function declaredMediaFingerprint(page: Page, entry: MechanismContractEntr
     return JSON.stringify(nodes.slice(0, 60).map((element) => {
       const rect = element.getBoundingClientRect();
       const style = getComputedStyle(element);
+      const viewportPinned = style.position === "sticky" || style.position === "fixed";
+      const relativeX = viewportPinned ? null : Math.round(rect.x - rootRect.x);
+      const relativeY = viewportPinned ? null : Math.round(rect.y - rootRect.y);
       const media = element instanceof HTMLMediaElement ? [element.currentTime.toFixed(2), element.paused, element.readyState] : [];
       const source = element instanceof HTMLImageElement ? element.currentSrc : "";
       let canvas = "";
       if (element instanceof HTMLCanvasElement) try { canvas = element.toDataURL().slice(-160); } catch { canvas = "unreadable"; }
-      return [element.tagName, element.className, element.textContent?.trim().slice(0, 120), Math.round(rect.x - rootRect.x), Math.round(rect.y - rootRect.y), Math.round(rect.width), Math.round(rect.height), style.transform, style.opacity, style.filter, style.clipPath, style.fontSize, style.fontWeight, source, media, canvas];
+      return [element.tagName, element.className, element.textContent?.trim().slice(0, 120), relativeX, relativeY, Math.round(rect.width), Math.round(rect.height), style.transform, style.opacity, style.filter, style.clipPath, style.fontSize, style.fontWeight, source, media, canvas];
     }));
   }, entry.mediaMode);
 }

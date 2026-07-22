@@ -55,6 +55,16 @@ test("a tall static section cannot impersonate scroll-authored choreography", as
   expect(result.blockers).toContain("peak scroll mechanism #scroll-story produced fewer than three distinct states across five sampled positions");
 });
 
+test("static sticky elements cannot impersonate scroll-authored choreography", async () => {
+  const journey = {
+    ...contract,
+    experienceType: "journey" as const,
+    mechanisms: contract.mechanisms.map((item) => item.name === "peak" ? { ...item, selector: "#scroll-story", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
+  };
+  const result = await runVisualSmoke(`${base}/static-sticky-scroll-mechanism`, { profile: "showcase", showcase: journey });
+  expect(result.blockers).toContain("peak scroll mechanism #scroll-story produced fewer than three distinct states across five sampled positions");
+});
+
 test("mechanism contract is structural and mandatory for Showcase", () => {
   expect(validateMechanisms("showcase", contract)).toEqual([]);
   expect(validateMechanisms("showcase", { ...contract, mechanisms: contract.mechanisms.slice(0, 2) })).toContain("Showcase mechanism contract is missing after");
