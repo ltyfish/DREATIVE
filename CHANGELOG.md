@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.2.1
+
+- Verify that declared Showcase media exists and that the declared medium—not
+  an unrelated descendant—visibly changes.
+- Require scroll-authored mechanisms to expose at least three distinct states
+  across five region-relative samples, and correct long-region sample
+  coordinates after prior page scrolling.
+
+## 1.2.0
+
+- Added a versioned Showcase contract that binds the Recommended baseline,
+  perceptible deltas, product-native media decisions, prototype comparison,
+  and distributed before/peak/after mechanisms.
+- Added minimum anti-abuse text-size checks.
+- Hardened opted-in evaluator guidance against stale artifacts and incorrect
+  branch or commit handoffs.
+
 ## Unreleased
 
 - Added opt-in `.dreative/evaluation/` routing for compact, reviewer-facing

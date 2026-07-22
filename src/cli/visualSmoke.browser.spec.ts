@@ -29,6 +29,22 @@ test("healthy responsive fixture and three real mechanisms pass", async () => {
   expect(result.blockers).toEqual([]);
 });
 
+test("declared media must exist in the mechanism region", async () => {
+  const dishonest = { ...contract, mechanisms: contract.mechanisms.map((item) => item.name === "peak" ? { ...item, selector: "#lying-peak" } : item) };
+  const result = await runVisualSmoke(`${base}/lying-media`, { profile: "showcase", showcase: dishonest });
+  expect(result.blockers).toContain("peak mechanism declares svg but its region contains no matching visible medium");
+});
+
+test("scroll-authored mechanisms must expose at least three sampled states", async () => {
+  const journey = {
+    ...contract,
+    experienceType: "journey" as const,
+    mechanisms: contract.mechanisms.map((item) => item.name === "peak" ? { ...item, selector: "#scroll-story", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
+  };
+  const result = await runVisualSmoke(`${base}/scroll-mechanism`, { profile: "showcase", showcase: journey });
+  expect(result.blockers).toEqual([]);
+});
+
 test("mechanism contract is structural and mandatory for Showcase", () => {
   expect(validateMechanisms("showcase", contract)).toEqual([]);
   expect(validateMechanisms("showcase", { ...contract, mechanisms: contract.mechanisms.slice(0, 2) })).toContain("Showcase mechanism contract is missing after");

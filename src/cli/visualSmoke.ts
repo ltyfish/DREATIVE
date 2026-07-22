@@ -62,6 +62,69 @@ async function visibleFingerprint(page: Page, selector: string): Promise<string>
   });
 }
 
+async function verifyDeclaredMedia(page: Page, entry: MechanismContractEntry): Promise<string | null> {
+  if (entry.mediaMode === "dom-state") return null;
+  const observation = await page.locator(entry.selector).evaluate((root, mediaMode) => {
+    const elements = [root, ...Array.from(root.querySelectorAll("*"))] as HTMLElement[];
+    const visible = (element: Element): boolean => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return rect.width >= 8 && rect.height >= 8 && style.display !== "none" && style.visibility !== "hidden" && Number(style.opacity) > .02;
+    };
+    const count = (selector: string): number => elements.filter((element) => element.matches(selector) && visible(element)).length;
+    if (mediaMode === "svg") return count("svg") > 0;
+    if (mediaMode === "image") return count("img,picture") > 0;
+    if (mediaMode === "video") return count("video") > 0;
+    if (mediaMode === "canvas") return count("canvas") > 0;
+    if (mediaMode === "3d") return count("canvas,[data-dreative-3d]") > 0;
+    if (mediaMode === "typography") return elements.some((element) => visible(element) && Boolean(element.textContent?.trim()));
+    if (mediaMode === "spatial-layout") return elements.filter((element) => element !== root && visible(element)).length >= 2;
+    return false;
+  }, entry.mediaMode);
+  return observation ? null : `${entry.name} mechanism declares ${entry.mediaMode} but its region contains no matching visible medium`;
+}
+
+async function declaredMediaFingerprint(page: Page, entry: MechanismContractEntry): Promise<string> {
+  return page.locator(entry.selector).evaluate((root, mediaMode) => {
+    const all = [root, ...Array.from(root.querySelectorAll("*"))] as HTMLElement[];
+    const selector = mediaMode === "svg" ? "svg,svg *" : mediaMode === "image" ? "img,picture" : mediaMode === "video" ? "video" : mediaMode === "canvas" ? "canvas" : mediaMode === "3d" ? "canvas,[data-dreative-3d]" : mediaMode === "typography" ? "h1,h2,h3,h4,h5,h6,p,span,strong,em" : "*";
+    const nodes = mediaMode === "dom-state" ? all : all.filter((element) => element !== root && element.matches(selector));
+    return JSON.stringify(nodes.slice(0, 60).map((element) => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      const media = element instanceof HTMLMediaElement ? [element.currentTime.toFixed(2), element.paused, element.readyState] : [];
+      const source = element instanceof HTMLImageElement ? element.currentSrc : "";
+      let canvas = "";
+      if (element instanceof HTMLCanvasElement) try { canvas = element.toDataURL().slice(-160); } catch { canvas = "unreadable"; }
+      return [element.tagName, element.className, element.textContent?.trim().slice(0, 120), Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height), style.transform, style.opacity, style.filter, style.clipPath, style.fontSize, style.fontWeight, source, media, canvas];
+    }));
+  }, entry.mediaMode);
+}
+
+async function spatialGeometry(page: Page, entry: MechanismContractEntry): Promise<string[]> {
+  return page.locator(entry.selector).evaluate((root) => Array.from(root.querySelectorAll<HTMLElement>("*")).slice(0, 60).map((element) => {
+    const rect = element.getBoundingClientRect();
+    return `${Math.round(rect.x)}:${Math.round(rect.y)}:${Math.round(rect.width)}:${Math.round(rect.height)}:${getComputedStyle(element).transform}`;
+  }));
+}
+
+async function exerciseScrollChoreography(page: Page, entry: MechanismContractEntry): Promise<string | null> {
+  const region = await page.locator(entry.selector).evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return { top: rect.top + scrollY, height: rect.height, viewport: innerHeight, pageHeight: document.documentElement.scrollHeight };
+  });
+  if (region.height < region.viewport * 1.5)
+    return `${entry.name} scroll mechanism ${entry.selector} is too short to demonstrate multi-stage choreography`;
+  const signatures = new Set<string>();
+  for (const fraction of [.1, .3, .5, .7, .9]) {
+    const y = Math.max(0, Math.min(region.pageHeight - region.viewport, region.top + region.height * fraction - region.viewport / 2));
+    await page.evaluate((scrollY) => scrollTo(0, scrollY), y);
+    await twoFrames(page);
+    signatures.add(await declaredMediaFingerprint(page, entry));
+  }
+  return signatures.size >= 3 ? null : `${entry.name} scroll mechanism ${entry.selector} produced fewer than three distinct states across five sampled positions`;
+}
+
 async function exerciseMechanism(page: Page, entry: MechanismContractEntry): Promise<string | null> {
   const locator = page.locator(entry.selector);
   if (await locator.count() !== 1) return `${entry.name} selector ${entry.selector} must resolve to exactly one element`;
@@ -69,14 +132,22 @@ async function exerciseMechanism(page: Page, entry: MechanismContractEntry): Pro
   if (!box || box.width < 8 || box.height < 8) return `${entry.name} selector ${entry.selector} is hidden or zero-sized`;
   await locator.scrollIntoViewIfNeeded();
   await twoFrames(page);
-  const before = await visibleFingerprint(page, entry.selector);
-  if (entry.trigger === "scroll") await page.evaluate((y) => scrollBy(0, y), Math.max(160, Math.min(innerHeight * .7, box.height * .55)));
-  else if (entry.trigger === "click") await locator.click();
+  const mediaFailure = await verifyDeclaredMedia(page, entry);
+  if (mediaFailure) return mediaFailure;
+  if (entry.trigger === "scroll") return exerciseScrollChoreography(page, entry);
+  const before = await declaredMediaFingerprint(page, entry);
+  const spatialBefore = entry.mediaMode === "spatial-layout" ? await spatialGeometry(page, entry) : [];
+  if (entry.trigger === "click") await locator.click();
   else if (entry.trigger === "hover") await locator.hover();
   else { await page.mouse.move(box.x + box.width * .2, box.y + box.height / 2); await page.mouse.down(); await page.mouse.move(box.x + box.width * .8, box.y + box.height / 2, { steps: 8 }); await page.mouse.up(); }
   await twoFrames(page);
-  const after = await visibleFingerprint(page, entry.selector);
-  return before === after ? `${entry.name} mechanism ${entry.selector} did not produce a visible state/composition change after ${entry.trigger}` : null;
+  const after = await declaredMediaFingerprint(page, entry);
+  if (entry.mediaMode === "spatial-layout") {
+    const spatialAfter = await spatialGeometry(page, entry);
+    const changed = spatialAfter.filter((value, index) => value !== spatialBefore[index]).length;
+    if (changed < 2) return `${entry.name} spatial-layout mechanism changed fewer than two element geometries`;
+  }
+  return before === after ? `${entry.name} mechanism ${entry.selector} did not visibly change its declared ${entry.mediaMode} medium after ${entry.trigger}` : null;
 }
 
 async function inspectContext(browser: Browser, url: string, config: typeof contexts[number], mechanisms: MechanismContractEntry[]): Promise<VisualSmokeResult> {
@@ -139,9 +210,10 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
 
   for (const region of audit.longRegions) {
     const selector = `[data-dreative-audit-id=${JSON.stringify(region.auditId)}]`;
-    const locator = page.locator(selector); const box = await locator.boundingBox(); if (!box) continue;
+    const locator = page.locator(selector);
+    const regionTop = await locator.evaluate((element) => element.getBoundingClientRect().top + scrollY);
     const signatures = new Set<string>();
-    for (const fraction of [.15, .5, .85]) { await page.evaluate((y) => scrollTo(0, y), Math.max(0, box.y + box.height * fraction - audit.viewportHeight / 2)); await twoFrames(page); signatures.add(await visibleFingerprint(page, selector)); }
+    for (const fraction of [.15, .5, .85]) { await page.evaluate((y) => scrollTo(0, y), Math.max(0, regionTop + region.height * fraction - audit.viewportHeight / 2)); await twoFrames(page); signatures.add(await visibleFingerprint(page, selector)); }
     if (signatures.size === 1) blockers.push(`${config.label}: long region ${region.name} (${region.height}px) showed no observable state change`);
   }
 
