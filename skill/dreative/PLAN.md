@@ -117,6 +117,11 @@ the alternatives considered at a summary level, selection reasons, promises,
 and material later changes with their triggers. Do not expose chain-of-thought,
 private exploration, raw conversation, or scratch notes. This handoff reports
 decisions; it does not replace the private brief or become an approval gate.
+Record the exact branch and commit, updating `uncommitted` after the final
+commit. Only paths named by the local evaluation README belong to the handoff;
+remove stale untracked legacy critic, verification, certification, trace, and
+evidence artifacts rather than allowing an evaluator to confuse them with the
+current build.
 
 Do not require the user to read or approve it. By default, show only the short
 build brief required by `SKILL.md`, including this compact execution map:
@@ -188,9 +193,19 @@ Selection is a delivery promise, not checkbox coverage: every
 selected treatment needs a named owner and perceptible contribution, although
 one coherent mechanism may serve several treatments.
 
-For Showcase, write a compact JSON mechanism contract containing exactly the
-real `before`, `peak`, and `after` selectors and their `scroll`, `click`,
-`hover`, or `drag` triggers. It is executable input, not design evidence.
+For Showcase, write the compact JSON contract defined by
+`schemas/showcase-mechanism.schema.json`. Bind the Recommended baseline, at
+least two perceptible Showcase-only differences, two concrete product-native
+media opportunities and their use/reject reasons, and an observed comparison
+between one bounded prototype and one higher-ceiling media/spatial approach.
+Then define exactly the real `before`, `peak`, and `after` selectors and their
+triggers, experience roles, ceiling contributions, media modes, continuity
+connections, mobile transformations, and differences from Recommended. The
+mechanisms must span at least two perceptibly different media modes. If the
+concept is a journey, process, or transformation, at least one mechanism must
+be scroll-authored and visibly transform content across stages; smooth scroll
+alone does not qualify. It is executable input and an accountability contract,
+not proof that the visual result is good.
 
 ### 6. Build architecture
 

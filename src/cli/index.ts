@@ -14,7 +14,7 @@ import {
 } from "../shared/preflight.js";
 import { printDocsCheck, runDocsCheck } from "./docsCheck.js";
 import { runFinalize } from "./finalize.js";
-import { runVisualSmoke, type DeliveryProfile, type MechanismContractEntry } from "./visualSmoke.js";
+import { runVisualSmoke, type DeliveryProfile, type ShowcaseMechanismContract } from "./visualSmoke.js";
 import { availableSkills, checkSkillInstallation, installSkill, installationDirectory, resolveSkillSelection } from "./installSkill.js";
 import { renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
 import { renderConfigurationChoices, renderDeliveryBrief, renderDetailedPlanGuide, type DeliveryProfileId } from "../shared/deliveryProfiles.js";
@@ -128,9 +128,9 @@ async function main(): Promise<void> {
         return;
       }
       const contractInput = valueAfter("--mechanism-contract");
-      const mechanisms = contractInput ? JSON.parse(fs.existsSync(path.resolve(contractInput)) ? fs.readFileSync(path.resolve(contractInput), "utf8") : contractInput) as MechanismContractEntry[] : undefined;
+      const showcase = contractInput ? JSON.parse(fs.existsSync(path.resolve(contractInput)) ? fs.readFileSync(path.resolve(contractInput), "utf8") : contractInput) as ShowcaseMechanismContract : undefined;
       {
-        const smoke = await runVisualSmoke(smokeUrl, { profile, mechanisms });
+        const smoke = await runVisualSmoke(smokeUrl, { profile, showcase });
         smoke.checks.forEach((item) => console.log(`PASS visual-smoke ${item}`));
         if (!smoke.ok) {
           smoke.blockers.forEach((item) => console.error(`BLOCKER visual-smoke: ${item}`));
@@ -156,8 +156,8 @@ async function main(): Promise<void> {
       const profile = valueAfter("--profile") as DeliveryProfile | undefined;
       if (!url || !profile || !["efficient", "recommended", "showcase"].includes(profile)) throw new Error("visual-smoke requires --url and --profile efficient|recommended|showcase");
       const contractInput = valueAfter("--mechanism-contract");
-      const mechanisms = contractInput ? JSON.parse(fs.existsSync(path.resolve(contractInput)) ? fs.readFileSync(path.resolve(contractInput), "utf8") : contractInput) as MechanismContractEntry[] : undefined;
-      const result = await runVisualSmoke(url, { profile, mechanisms });
+      const showcase = contractInput ? JSON.parse(fs.existsSync(path.resolve(contractInput)) ? fs.readFileSync(path.resolve(contractInput), "utf8") : contractInput) as ShowcaseMechanismContract : undefined;
+      const result = await runVisualSmoke(url, { profile, showcase });
       result.checks.forEach((item) => console.log(`PASS ${item}`));
       result.blockers.forEach((item) => console.error(`BLOCKER ${item}`));
       if (!result.ok) process.exitCode = 1;

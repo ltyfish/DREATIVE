@@ -2,8 +2,33 @@ import { chromium, type Browser, type Page } from "@playwright/test";
 
 export type DeliveryProfile = "efficient" | "recommended" | "showcase";
 export type MechanismTrigger = "scroll" | "click" | "hover" | "drag";
-export interface MechanismContractEntry { name: "before" | "peak" | "after"; selector: string; trigger: MechanismTrigger }
-export interface VisualSmokeOptions { profile: DeliveryProfile; mechanisms?: MechanismContractEntry[] }
+export type ShowcaseMediaMode = "dom-state" | "typography" | "image" | "video" | "svg" | "canvas" | "spatial-layout" | "3d";
+export interface MechanismContractEntry {
+  name: "before" | "peak" | "after";
+  selector: string;
+  trigger: MechanismTrigger;
+  experienceRole: string;
+  ceilingContribution: string;
+  mediaMode: ShowcaseMediaMode;
+  continuityConnection: string;
+  mobileTransformation: string;
+  recommendedDifference: string;
+}
+export interface ShowcaseMechanismContract {
+  version: 1;
+  experienceType: "journey" | "interface";
+  recommendedBaseline: string;
+  showcaseDelta: string[];
+  mediaOpportunities: { opportunity: string; decision: "use" | "reject"; rationale: string }[];
+  prototypeComparison: {
+    boundedApproach: string;
+    higherCeilingApproach: string;
+    selectedApproach: string;
+    observedDecision: string;
+  };
+  mechanisms: MechanismContractEntry[];
+}
+export interface VisualSmokeOptions { profile: DeliveryProfile; showcase?: ShowcaseMechanismContract }
 export interface VisualSmokeResult { ok: boolean; blockers: string[]; checks: string[] }
 
 const contexts = [
@@ -86,11 +111,22 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
     const links = Array.from(document.querySelectorAll<HTMLAnchorElement>("a[href]"))
       .map((link) => link.href).filter((href) => href.startsWith(location.origin) && !new URL(href).hash && new URL(href).pathname !== location.pathname)
       .filter((href, index, all) => all.indexOf(href) === index);
-    return { documentWidth: document.documentElement.scrollWidth, viewportWidth: innerWidth, documentHeight: document.documentElement.scrollHeight, viewportHeight: innerHeight, stickyRisks, longRegions, links, title: document.title };
+    const tinyMeaningfulText = Array.from(document.querySelectorAll<HTMLElement>("button,a,label,input,textarea,select,[role=button],[role=tab],main p,main li,main dt,main dd"))
+      .filter((element) => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        const hasMeaning = Boolean(element.textContent?.trim() || (element as HTMLInputElement).placeholder || element.getAttribute("aria-label"));
+        const floor = element.matches("button,a,label,input,textarea,select,[role=button],[role=tab]") ? 11 : 10;
+        return hasMeaning && rect.width > 2 && rect.height > 2 && style.display !== "none" && style.visibility !== "hidden" && Number.parseFloat(style.fontSize) < floor;
+      })
+      .slice(0, 8)
+      .map((element) => `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ""} (${getComputedStyle(element).fontSize})`);
+    return { documentWidth: document.documentElement.scrollWidth, viewportWidth: innerWidth, documentHeight: document.documentElement.scrollHeight, viewportHeight: innerHeight, stickyRisks, longRegions, links, title: document.title, tinyMeaningfulText };
   });
 
   if (audit.documentWidth > audit.viewportWidth + 2) blockers.push(`${config.label}: document is ${audit.documentWidth - audit.viewportWidth}px wider than its viewport`);
   blockers.push(...audit.stickyRisks.map((risk) => `${config.label}: sticky clipping risk: ${risk}`));
+  if (audit.tinyMeaningfulText.length) blockers.push(`${config.label}: meaningful text is below the readability floor: ${audit.tinyMeaningfulText.join(", ")}`);
   const sampleCount = Math.min(config.samples, Math.max(3, Math.ceil(audit.documentHeight / audit.viewportHeight)));
   const sparse: number[] = [];
   for (let index = 0; index < sampleCount; index += 1) {
@@ -136,28 +172,44 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
   return { ok: blockers.length === 0, blockers, checks };
 }
 
-export function validateMechanisms(profile: DeliveryProfile, mechanisms: MechanismContractEntry[] = []): string[] {
+export function validateMechanisms(profile: DeliveryProfile, contract?: ShowcaseMechanismContract): string[] {
   if (profile !== "showcase") return [];
   const errors: string[] = [];
+  if (!contract || Array.isArray(contract) || contract.version !== 1) return ["Showcase requires a version 1 mechanism contract object"];
+  if (!['journey', 'interface'].includes(contract.experienceType)) errors.push("Showcase experienceType must be journey or interface");
+  if (!contract.recommendedBaseline?.trim()) errors.push("Showcase contract requires the Recommended baseline");
+  if (!Array.isArray(contract.showcaseDelta) || contract.showcaseDelta.filter((item) => typeof item === "string" && item.trim()).length < 2) errors.push("Showcase contract requires at least two perceptible differences from Recommended");
+  if (!Array.isArray(contract.mediaOpportunities) || contract.mediaOpportunities.length < 2) errors.push("Showcase contract requires at least two product-native media opportunities");
+  for (const [index, item] of (contract.mediaOpportunities ?? []).entries()) {
+    if (typeof item?.opportunity !== "string" || !item.opportunity.trim() || !["use", "reject"].includes(item.decision) || typeof item.rationale !== "string" || !item.rationale.trim()) errors.push(`media opportunity ${index + 1} requires an opportunity, use|reject decision, and rationale`);
+  }
+  const prototype = contract.prototypeComparison;
+  if (!prototype || [prototype.boundedApproach, prototype.higherCeilingApproach, prototype.selectedApproach, prototype.observedDecision].some((item) => typeof item !== "string" || !item.trim())) errors.push("Showcase contract requires an observed comparison between bounded and higher-ceiling prototypes");
+  const mechanisms = Array.isArray(contract.mechanisms) ? contract.mechanisms.filter((item) => item && typeof item === "object") : [];
   if (mechanisms.length !== 3) errors.push("Showcase mechanism contract must contain exactly three entries");
   const names = mechanisms.map((item) => item.name);
   errors.push(...["before", "peak", "after"].filter((name) => !names.includes(name as MechanismContractEntry["name"])).map((name) => `Showcase mechanism contract is missing ${name}`));
   if (new Set(names).size !== names.length) errors.push("Showcase mechanism names must be unique");
   if (new Set(mechanisms.map((item) => item.selector)).size !== mechanisms.length) errors.push("Showcase mechanism selectors must be unique");
+  if (new Set(mechanisms.map((item) => item.mediaMode)).size < 2) errors.push("Showcase mechanisms must use at least two perceptibly different media modes");
+  if (contract.experienceType === "journey" && !mechanisms.some((item) => item.trigger === "scroll")) errors.push("A Showcase journey requires at least one substantial scroll-authored mechanism");
   for (const item of mechanisms) {
     if (!item.selector?.trim()) errors.push(`${item.name} mechanism requires a selector`);
     if (!["scroll", "click", "hover", "drag"].includes(item.trigger)) errors.push(`${item.name} mechanism has an invalid trigger`);
+    for (const key of ["experienceRole", "ceilingContribution", "continuityConnection", "mobileTransformation", "recommendedDifference"] as const)
+      if (!item[key]?.trim()) errors.push(`${item.name} mechanism requires ${key}`);
+    if (!["dom-state", "typography", "image", "video", "svg", "canvas", "spatial-layout", "3d"].includes(item.mediaMode)) errors.push(`${item.name} mechanism has an invalid mediaMode`);
   }
   return [...new Set(errors)];
 }
 
 export async function runVisualSmoke(url: string, options: VisualSmokeOptions): Promise<VisualSmokeResult> {
-  const contractErrors = validateMechanisms(options.profile, options.mechanisms);
+  const contractErrors = validateMechanisms(options.profile, options.showcase);
   if (contractErrors.length) return { ok: false, blockers: contractErrors, checks: [] };
   const browser = await chromium.launch({ headless: true });
   try {
     const results = [];
-    for (const config of contexts) results.push(await inspectContext(browser, url, config, options.mechanisms ?? []));
+    for (const config of contexts) results.push(await inspectContext(browser, url, config, options.showcase?.mechanisms ?? []));
     const blockers = [...new Set(results.flatMap((result) => result.blockers))];
     return { ok: blockers.length === 0, blockers, checks: results.flatMap((result) => result.checks) };
   } finally { await browser.close(); }

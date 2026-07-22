@@ -48,6 +48,8 @@ test("detailed planning is an adaptive Creative Decision Brief", () => {
   assert.match(detail, /no minimum count/i);
   assert.match(detail, /Visible execution map.+experience arc.+mobile transformation/i);
   assert.match(detail, /Showcase ceiling delivered:/);
+  assert.match(detail, /Recommended baseline/);
+  assert.match(detail, /media opportunities/);
   assert.match(detail, /Not pursued:/);
   assert.doesNotMatch(detail, /approval hash|attestation|independent critic|provenance/i);
 });

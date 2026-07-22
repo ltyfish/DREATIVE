@@ -76,12 +76,15 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /DREATIVE_CHECKS_PASSED/, "must retain fail-closed deterministic checks");
   requireText(findings, "SKILL.md", skill, /visual smoke is mandatory for every/i, "must make visual smoke mandatory for substantial delivery");
   requireText(findings, "SKILL.md", skill, /before.*peak.*after[\s\S]*selector[\s\S]*(scroll|click|hover|drag)/i, "must retain the executable Showcase mechanism contract");
+  requireText(findings, "SKILL.md", skill, /Recommended baseline[\s\S]*two perceptible[\s\S]*media opportunities/i, "Showcase must bind its delta and product-native media decision");
+  requireText(findings, "SKILL.md", skill, /journey[\s\S]*scroll-authored[\s\S]*Smooth scrolling alone does not qualify/i, "journey-style Showcase must require substantive scroll choreography");
   requireText(findings, "SKILL.md", skill, /VISUAL_REFINEMENT\.md/, "must route completion through the rendered screenshot correction loop");
   requireText(findings, "SKILL.md", skill, /preflight --probe-browser.*preview-url/i, "must require launch plus preview-navigation evidence before browser verification");
   requireText(findings, "SKILL.md", skill, /\.dreative\/context\.json/, "must preserve durable project memory");
   requireText(findings, "SKILL.md", skill, /\.dreative\/evaluation\/README\.md/, "must preserve opt-in evaluator routing");
   requireText(findings, "SKILL.md", skill, /never hidden chain-of-thought/i, "must keep evaluator records free of hidden reasoning");
   requireText(findings, "PLAN.md", plan, /explicit request for a compact evaluator handoff/i, "must document the opt-in evaluator handoff");
+  requireText(findings, "PLAN.md", plan, /exact branch and commit[\s\S]*stale untracked legacy/i, "evaluator handoff must identify source and reject stale legacy evidence");
   requireText(findings, "references/VISUAL_REFINEMENT.md", contents.get("references/VISUAL_REFINEMENT.md") ?? "", /capture full-page screenshots|inspect the pixels/i, "visual refinement must require screenshot inspection");
   const foundations = contents.get("systems/NATIVE_FOUNDATIONS.md") ?? "";
   requireText(findings, "systems/NATIVE_FOUNDATIONS.md", foundations, /twelve implementation-neutral foundations/i, "must expose a bounded native-foundation set");
@@ -102,6 +105,7 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "PLAN.md", plan, /visibly and structurally distinct from Recommended/i, "Showcase must remain visibly distinct from Recommended");
   requireText(findings, "PLAN.md", plan, /Showcase ceiling delivered:/i, "Showcase must disclose the delivered ceiling in the final response");
   requireText(findings, "PLAN.md", plan, /Not pursued:/i, "Showcase must disclose material rejected or replaced treatments");
+  requireText(findings, "PLAN.md", plan, /bounded prototype[\s\S]*higher-ceiling/i, "Showcase prototypes must compare a bounded and higher-ceiling approach");
   requireText(findings, "PLAN.md", plan, /token-.+efficient|least tokens/i, "Efficient must optimize token use");
 
   const publicContract = `${skill}\n${plan}`;

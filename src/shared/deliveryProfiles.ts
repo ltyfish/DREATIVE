@@ -123,7 +123,7 @@ export function renderDetailedPlanGuide(profileId: DeliveryProfileId): string {
     "6. Build architecture — signature mechanism, runtime ownership, component/asset pipeline, mobile and semantic fallbacks, accessibility, and performance.",
     "7. Observable review, risks, fallbacks, and one editable decision reply.",
     "Visible execution map — experience arc, section ownership, post-hero peak, continuity owner, and mobile transformation in roughly ten lines.",
-    "Showcase ceiling — the highest coherent mechanism/media decision, prototype result, and why the delivered route is visibly beyond Recommended.",
+    "Showcase ceiling — bind the Recommended baseline, two perceptible Showcase-only qualities, two product-native media opportunities, the bounded-versus-higher-ceiling prototype result, and why the delivered route is visibly beyond Recommended.",
     "Showcase final response — state `Showcase ceiling delivered:` and disclose materially rejected or replaced advanced treatments under `Not pursued:` with the reason.",
     "",
     "The brief must adapt every decision to the inspected project. Do not imitate a named site, emit a generic template, or require another implementation-contract approval.",

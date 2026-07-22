@@ -40,6 +40,12 @@ artifact or a performance of following instructions.
    as an explicit opt-in review contract: read it and update its designated
    current-run decision record with the prompt, selected direction, concise
    rationale, implementation promise, and later material decision changes.
+   Identify the exact current branch and commit (or explicitly say `uncommitted`
+   until one exists), and update them after the final commit. Treat only files
+   designated by that README as evaluator input. Legacy `.dreative` critic,
+   verify, certification, trace, or evidence files are not current evidence;
+   remove stale untracked copies before handoff so they cannot be mistaken for
+   the submitted build.
    Record inspectable conclusions, never hidden chain-of-thought, private
    exploration, raw transcripts, or discarded scratch work.
 5. Read `references/CREATIVE_EXECUTION.md` before adding an advanced runtime.
@@ -90,10 +96,24 @@ after it. Each must visibly change composition, media, state, or interaction;
 static grids with thematic labels do not count. If a required prototype would
 lower the selected ceiling or abandon promised choreography or media, pause
 and obtain the user's consent before changing the brief.
-Record the three Showcase mechanisms as `before`, `peak`, and `after`, each
-with one real selector and a `scroll`, `click`, `hover`, or `drag` trigger.
-Final visual smoke must exercise each trigger and observe a visible geometry,
-style, media, content, or state change.
+Before implementation, bind the difference from Recommended: state the
+Recommended baseline, at least two perceptible Showcase-only qualities, two
+product-native media opportunities with use/reject reasons, and the observed
+result of comparing a bounded prototype with a higher-ceiling alternative.
+"It works" is not proof that the bounded version reaches the stronger ceiling.
+
+Record the executable contract using `schemas/showcase-mechanism.schema.json`.
+Its `before`, `peak`, and `after` entries each need one real selector, a
+`scroll`, `click`, `hover`, or `drag` trigger, experience role, ceiling
+contribution, media mode, continuity connection, mobile transformation, and
+specific difference from Recommended. The three entries must span at least two
+perceptibly different media modes; three isolated local-state widgets do not
+define Showcase. When the premise is a journey, process, or transformation,
+declare it as `journey` and include a substantial scroll-authored mechanism.
+Smooth scrolling alone does not qualify. Interface-style products may declare
+`interface` and use a different continuous interaction structure. Final visual
+smoke exercises each trigger and observes a visible geometry, style, media,
+content, or state change.
 
 Before relying on the rendered correction loop, distinguish Playwright package
 presence, browser executable detection, and a verified browser workflow. When

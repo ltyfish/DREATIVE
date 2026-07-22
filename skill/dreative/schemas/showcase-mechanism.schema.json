@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dreative.dev/schemas/showcase-mechanism.schema.json",
+  "title": "Dreative Showcase mechanism contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "experienceType", "recommendedBaseline", "showcaseDelta", "mediaOpportunities", "prototypeComparison", "mechanisms"],
+  "properties": {
+    "version": { "const": 1 },
+    "experienceType": { "enum": ["journey", "interface"] },
+    "recommendedBaseline": { "type": "string", "minLength": 1 },
+    "showcaseDelta": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 1 } },
+    "mediaOpportunities": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["opportunity", "decision", "rationale"],
+        "properties": {
+          "opportunity": { "type": "string", "minLength": 1 },
+          "decision": { "enum": ["use", "reject"] },
+          "rationale": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "prototypeComparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["boundedApproach", "higherCeilingApproach", "selectedApproach", "observedDecision"],
+      "properties": {
+        "boundedApproach": { "type": "string", "minLength": 1 },
+        "higherCeilingApproach": { "type": "string", "minLength": 1 },
+        "selectedApproach": { "type": "string", "minLength": 1 },
+        "observedDecision": { "type": "string", "minLength": 1 }
+      }
+    },
+    "mechanisms": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "selector", "trigger", "experienceRole", "ceilingContribution", "mediaMode", "continuityConnection", "mobileTransformation", "recommendedDifference"],
+        "properties": {
+          "name": { "enum": ["before", "peak", "after"] },
+          "selector": { "type": "string", "minLength": 1 },
+          "trigger": { "enum": ["scroll", "click", "hover", "drag"] },
+          "experienceRole": { "type": "string", "minLength": 1 },
+          "ceilingContribution": { "type": "string", "minLength": 1 },
+          "mediaMode": { "enum": ["dom-state", "typography", "image", "video", "svg", "canvas", "spatial-layout", "3d"] },
+          "continuityConnection": { "type": "string", "minLength": 1 },
+          "mobileTransformation": { "type": "string", "minLength": 1 },
+          "recommendedDifference": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}
