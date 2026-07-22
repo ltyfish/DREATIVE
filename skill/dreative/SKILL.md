@@ -17,17 +17,25 @@ artifact or a performance of following instructions.
    dependencies, audience, visual equity, and defects. If
    `.dreative/context.json` exists, validate and read it as fallible working
    memory; reconcile stale statements against the current product.
-2. For an open redesign, read `references/CREATIVE_DIRECTION.md`, privately
-   synthesize divergent project-native concepts, then use `PLAN.md` to show
-   Recommended, Efficient, and Showcase. If the user already chose or delegated
-   the decision, choose and continue.
-3. Resolve the compact review, reference, source, package, and prototype
-   choices. Treat the user's direction, settings, named treatments, and later
+2. For every open design or redesign, run the planning protocol in `PLAN.md`
+   before implementation: read `references/CREATIVE_DIRECTION.md`, privately
+   synthesize divergent project-native concepts, then show Recommended,
+   Efficient, and Showcase. Explicitly ask the user to choose. Do not infer a
+   choice from tone, prior defaults, schedule pressure, or a request to proceed;
+   do not auto-select Recommended. Only skip the direction question when the
+   user's current request explicitly names Efficient, Recommended, or Showcase.
+3. After direction selection, show the compact review, reference, source,
+   package, and prototype choices and explicitly ask the user to confirm the
+   recommended settings or list changes. This is a blocking gate before code
+   edits. In particular, never mark Prototype as Auto, Required, completed, or
+   skipped without showing that choice to the user first. Treat the user's
+   direction, settings, named treatments, and later
    corrections as binding; direction defaults fill only unspecified decisions. Never
    silently downgrade them for convenience, time, tokens, or implementation
    preference. Ask one focused question when uncertainty would materially alter
    a page's intensity, a selected treatment, the signature behavior, or scope.
-4. After direction and configuration are resolved, privately complete the full
+4. Only after the user has explicitly resolved both direction and configuration,
+   privately complete the full
    project-specific Creative Decision Brief defined in `PLAN.md`. Always create
    and use this working blueprint even when the user does not ask to see it;
    update it when repository or prototype evidence changes. State only a short

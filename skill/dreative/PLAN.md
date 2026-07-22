@@ -1,9 +1,10 @@
 # Planning protocol
 
-Planning has two required user-facing stages—direction and compact
+Planning has two required, blocking user-facing stages—direction and compact
 configuration—plus an optional reveal of the detailed Creative Decision Brief.
 The reveal is optional; creating and using the complete private brief is not.
-Keep private exploration private.
+Keep private exploration private. Do not edit implementation files until both
+stages have an explicit user response. Never silently apply recommended settings.
 
 ## Stage 1: direction
 
@@ -41,6 +42,10 @@ End with:
 > **show detailed plan**.
 
 If the user asks for detail before choosing, expand Recommended by default.
+This expands information only; it does not select Recommended. Wait for the
+user's explicit direction choice. A general instruction such as "go ahead,"
+"redesign it," or "use your judgment" is not a direction choice unless it
+explicitly authorizes choosing among the three options.
 
 ## Stage 2: compact configuration
 
@@ -49,6 +54,12 @@ recommendations. End with:
 
 > Reply **use recommended settings** or list any changes. Say **show detailed
 > plan** for the full project-specific Creative Decision Brief.
+
+Wait for the reply. Do not treat the displayed recommendations as accepted
+until the user says `use recommended settings` or explicitly supplies their
+choices. The prototype choice must always appear and be confirmed; for
+Showcase, clearly state that `Required` means prototyping the riskiest signature
+mechanism before integrating the route.
 
 ### Review depth
 
@@ -240,6 +251,7 @@ Not pursued: <material advanced treatment rejected or replaced, and why>
 Omit the second line only when no material treatment was considered, promised,
 rejected, downgraded, or replaced. Do not turn these lines into a ledger.
 
-After the reply, implement. Do not generate a second approval or contract gate.
+After the explicit configuration reply, implement. Do not generate a second approval
+or contract gate.
 For an opted-in evaluation package, reconcile the decision record and final
 review with the delivered source and rendered result before completion.
