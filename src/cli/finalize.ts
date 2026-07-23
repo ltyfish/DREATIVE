@@ -27,11 +27,24 @@ function checkEvaluationHandoff(projectDir: string): string[] {
   const blockers: string[] = [];
   if (/##\s+Reviewer verdict[\s\S]*?\b(?:Result|Verdict)\s*:\s*pass\b/i.test(text))
     blockers.push("evaluation handoff contains a self-authored reviewer pass");
-  const revision = text.match(/\b[0-9a-f]{7,40}\b/i)?.[0];
-  const git = spawnSync("git", ["rev-parse", "HEAD"], { cwd: projectDir, encoding: "utf8", windowsHide: true });
-  const head = git.status === 0 ? git.stdout.trim() : "";
-  if (revision && head && !head.startsWith(revision) && !revision.startsWith(head))
-    blockers.push(`evaluation handoff revision ${revision} does not match current HEAD ${head}`);
+  const git = spawnSync("git", ["rev-parse", "--is-inside-work-tree"], { cwd: projectDir, encoding: "utf8", windowsHide: true });
+  if (git.status !== 0 || git.stdout.trim() !== "true") return blockers;
+
+  const revisionFields = text.split(/\r?\n/).filter((line) => /^\s*-\s*Commit(?:\s+or\s+branch)?\s*:/i.test(line));
+  const revisions = revisionFields.flatMap((line) => line.match(/\b[0-9a-f]{7,40}\b/gi) ?? []);
+  if (revisionFields.length !== 1 || revisions.length !== 1) {
+    blockers.push('evaluation handoff requires exactly one explicit Commit or "Commit or branch" entry containing one Git revision');
+  } else {
+    const headResult = spawnSync("git", ["rev-parse", "HEAD"], { cwd: projectDir, encoding: "utf8", windowsHide: true });
+    const head = headResult.status === 0 ? headResult.stdout.trim() : "";
+    const revision = revisions[0];
+    if (!head || (!head.startsWith(revision) && !revision.startsWith(head)))
+      blockers.push(`evaluation handoff revision ${revision} does not match current HEAD ${head || "unavailable"}`);
+  }
+
+  const status = spawnSync("git", ["status", "--porcelain", "--untracked-files=no"], { cwd: projectDir, encoding: "utf8", windowsHide: true });
+  if (status.status !== 0) blockers.push("evaluation handoff could not verify the tracked working tree");
+  else if (status.stdout.trim()) blockers.push("evaluation handoff requires all tracked implementation changes to be committed");
   return blockers;
 }
 

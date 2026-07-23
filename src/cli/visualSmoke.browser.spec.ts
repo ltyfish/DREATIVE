@@ -90,6 +90,19 @@ test("Showcase requires depth beyond three binary effects", () => {
   expect(validateMechanisms("showcase", shallow)).toContain("Showcase requires at least two multi-stage or directly manipulated mechanisms");
 });
 
+test("Northwind-style scroll peak plus hover ending fails both depth guards", () => {
+  const northwind = {
+    ...contract,
+    experienceType: "journey" as const,
+    mechanisms: contract.mechanisms.map((item) => item.name === "peak"
+      ? { ...item, trigger: "scroll" as const, stateCount: 3 }
+      : { ...item, trigger: "hover" as const, stateCount: 2 }),
+  };
+  const blockers = validateMechanisms("showcase", northwind);
+  expect(blockers).toContain("A Showcase journey cannot use hover alone as its post-peak mechanism");
+  expect(blockers).toContain("Showcase requires at least two multi-stage or directly manipulated mechanisms");
+});
+
 test("malformed contract content fails closed instead of throwing", () => {
   const malformed = { ...contract, showcaseDelta: [1, null], mechanisms: [null] } as unknown as ShowcaseMechanismContract;
   expect(validateMechanisms("showcase", malformed)).toContain("Showcase contract requires at least two perceptible differences from Recommended");
