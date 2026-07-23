@@ -212,7 +212,10 @@ between one bounded prototype and one higher-ceiling media/spatial approach.
 Then define exactly the real `before`, `peak`, and `after` selectors and their
 triggers, experience roles, ceiling contributions, media modes, continuity
 connections, mobile transformations, and differences from Recommended. The
-mechanisms must span at least two perceptibly different media modes. If the
+contract also names each mechanism's observable state count and its meaningful
+product, composition, media, or decision outcome. At least two mechanisms must
+expose three meaningful states or direct manipulation; hover cannot own a
+journey's peak or post-peak transformation. The mechanisms must span at least two perceptibly different media modes. If the
 concept is a journey, process, or transformation, at least one mechanism must
 be scroll-authored and visibly transform content across stages; smooth scroll
 alone does not qualify. It is executable input and an accountability contract,

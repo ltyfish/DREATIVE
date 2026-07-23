@@ -114,9 +114,13 @@ Record the executable contract using `schemas/showcase-mechanism.schema.json`.
 Its `before`, `peak`, and `after` entries each need one real selector, a
 `scroll`, `click`, `hover`, or `drag` trigger, experience role, ceiling
 contribution, media mode, continuity connection, mobile transformation, and
-specific difference from Recommended. The three entries must span at least two
+specific difference from Recommended. Each also declares an observable state
+count and the product meaning, composition, media, or decision outcome that
+changes. The three entries must span at least two
 perceptibly different media modes; three isolated local-state widgets do not
-define Showcase. When the premise is a journey, process, or transformation,
+define Showcase. At least two mechanisms must expose three meaningful states
+or use direct manipulation. Hover is a supporting state: it cannot own the peak
+or the post-peak mechanism in a journey. When the premise is a journey, process, or transformation,
 declare it as `journey` and include a substantial scroll-authored mechanism.
 Smooth scrolling alone does not qualify. Interface-style products may declare
 `interface` and use a different continuous interaction structure. Final visual

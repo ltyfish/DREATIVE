@@ -13,6 +13,8 @@ export interface MechanismContractEntry {
   continuityConnection: string;
   mobileTransformation: string;
   recommendedDifference: string;
+  meaningfulOutcome: string;
+  stateCount: number;
 }
 export interface ShowcaseMechanismContract {
   version: 1;
@@ -126,7 +128,8 @@ async function exerciseScrollChoreography(page: Page, entry: MechanismContractEn
     await twoFrames(page);
     signatures.add(await declaredMediaFingerprint(page, entry));
   }
-  return signatures.size >= 3 ? null : `${entry.name} scroll mechanism ${entry.selector} produced fewer than three distinct states across five sampled positions`;
+  const required = Math.min(5, entry.stateCount);
+  return signatures.size >= required ? null : `${entry.name} scroll mechanism ${entry.selector} produced ${signatures.size} distinct states; ${required} are declared`;
 }
 
 async function exerciseMechanism(page: Page, entry: MechanismContractEntry): Promise<string | null> {
@@ -141,16 +144,25 @@ async function exerciseMechanism(page: Page, entry: MechanismContractEntry): Pro
   if (entry.trigger === "scroll") return exerciseScrollChoreography(page, entry);
   const before = await declaredMediaFingerprint(page, entry);
   const spatialBefore = entry.mediaMode === "spatial-layout" ? await spatialGeometry(page, entry) : [];
-  if (entry.trigger === "click") await locator.click();
+  const signatures = new Set<string>([before]);
+  if (entry.trigger === "click") {
+    for (let index = 1; index < entry.stateCount; index += 1) {
+      await locator.click();
+      await twoFrames(page);
+      signatures.add(await declaredMediaFingerprint(page, entry));
+    }
+  }
   else if (entry.trigger === "hover") await locator.hover();
   else { await page.mouse.move(box.x + box.width * .2, box.y + box.height / 2); await page.mouse.down(); await page.mouse.move(box.x + box.width * .8, box.y + box.height / 2, { steps: 8 }); await page.mouse.up(); }
   await twoFrames(page);
   const after = await declaredMediaFingerprint(page, entry);
+  signatures.add(after);
   if (entry.mediaMode === "spatial-layout") {
     const spatialAfter = await spatialGeometry(page, entry);
     const changed = spatialAfter.filter((value, index) => value !== spatialBefore[index]).length;
     if (changed < 2) return `${entry.name} spatial-layout mechanism changed fewer than two element geometries`;
   }
+  if (signatures.size < entry.stateCount) return `${entry.name} mechanism ${entry.selector} produced ${signatures.size} distinct states; ${entry.stateCount} are declared`;
   return before === after ? `${entry.name} mechanism ${entry.selector} did not visibly change its declared ${entry.mediaMode} medium after ${entry.trigger}` : null;
 }
 
@@ -269,11 +281,19 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
   if (new Set(mechanisms.map((item) => item.selector)).size !== mechanisms.length) errors.push("Showcase mechanism selectors must be unique");
   if (new Set(mechanisms.map((item) => item.mediaMode)).size < 2) errors.push("Showcase mechanisms must use at least two perceptibly different media modes");
   if (contract.experienceType === "journey" && !mechanisms.some((item) => item.trigger === "scroll")) errors.push("A Showcase journey requires at least one substantial scroll-authored mechanism");
+  if (contract.experienceType === "journey" && mechanisms.some((item) => item.name === "after" && item.trigger === "hover")) errors.push("A Showcase journey cannot use hover alone as its post-peak mechanism");
+  if (mechanisms.some((item) => item.name === "peak" && item.trigger === "hover")) errors.push("A Showcase peak cannot be hover-only");
+  const deepMechanisms = mechanisms.filter((item) => Number.isInteger(item.stateCount) && (item.stateCount >= 3 || item.trigger === "drag"));
+  if (deepMechanisms.length < 2) errors.push("Showcase requires at least two multi-stage or directly manipulated mechanisms");
   for (const item of mechanisms) {
     if (!item.selector?.trim()) errors.push(`${item.name} mechanism requires a selector`);
     if (!["scroll", "click", "hover", "drag"].includes(item.trigger)) errors.push(`${item.name} mechanism has an invalid trigger`);
     for (const key of ["experienceRole", "ceilingContribution", "continuityConnection", "mobileTransformation", "recommendedDifference"] as const)
       if (!item[key]?.trim()) errors.push(`${item.name} mechanism requires ${key}`);
+    if (!item.meaningfulOutcome?.trim()) errors.push(`${item.name} mechanism requires meaningfulOutcome`);
+    if (!Number.isInteger(item.stateCount) || item.stateCount < 2 || item.stateCount > 5) errors.push(`${item.name} mechanism stateCount must be an integer from 2 to 5`);
+    if (item.trigger === "hover" && item.stateCount !== 2) errors.push(`${item.name} hover mechanism must declare exactly two states`);
+    if (item.trigger === "scroll" && item.stateCount < 3) errors.push(`${item.name} scroll mechanism must declare at least three states`);
     if (!["dom-state", "typography", "image", "video", "svg", "canvas", "spatial-layout", "3d"].includes(item.mediaMode)) errors.push(`${item.name} mechanism has an invalid mediaMode`);
   }
   return [...new Set(errors)];

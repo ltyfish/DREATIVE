@@ -20,6 +20,21 @@ function runNpmScript(projectDir: string, script: string): { command: string; ex
   return { command, exitCode: result.status ?? 1 };
 }
 
+function checkEvaluationHandoff(projectDir: string): string[] {
+  const record = path.join(projectDir, ".dreative", "evaluation", "current-run.md");
+  if (!fs.existsSync(record)) return [];
+  const text = fs.readFileSync(record, "utf8");
+  const blockers: string[] = [];
+  if (/##\s+Reviewer verdict[\s\S]*?\b(?:Result|Verdict)\s*:\s*pass\b/i.test(text))
+    blockers.push("evaluation handoff contains a self-authored reviewer pass");
+  const revision = text.match(/\b[0-9a-f]{7,40}\b/i)?.[0];
+  const git = spawnSync("git", ["rev-parse", "HEAD"], { cwd: projectDir, encoding: "utf8", windowsHide: true });
+  const head = git.status === 0 ? git.stdout.trim() : "";
+  if (revision && head && !head.startsWith(revision) && !revision.startsWith(head))
+    blockers.push(`evaluation handoff revision ${revision} does not match current HEAD ${head}`);
+  return blockers;
+}
+
 /**
  * Finalization deliberately certifies only facts the CLI can determine.
  * Visual quality remains a browser-inspection responsibility in the skill;
@@ -44,6 +59,7 @@ export function runFinalize(
     packageVersion: options.packageVersion,
     target: options.target,
   }).map((message) => `skill installation: ${message}`));
+  blockers.push(...checkEvaluationHandoff(projectDir));
 
   const pkg = JSON.parse(fs.readFileSync(packageFile, "utf8"));
   const scripts = ["build", "test", "typecheck", "lint"].filter((script) => Boolean(pkg.scripts?.[script]));

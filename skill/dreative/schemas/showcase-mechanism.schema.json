@@ -42,7 +42,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["name", "selector", "trigger", "experienceRole", "ceilingContribution", "mediaMode", "continuityConnection", "mobileTransformation", "recommendedDifference"],
+        "required": ["name", "selector", "trigger", "experienceRole", "ceilingContribution", "mediaMode", "continuityConnection", "mobileTransformation", "recommendedDifference", "meaningfulOutcome", "stateCount"],
         "properties": {
           "name": { "enum": ["before", "peak", "after"] },
           "selector": { "type": "string", "minLength": 1 },
@@ -52,7 +52,9 @@
           "mediaMode": { "enum": ["dom-state", "typography", "image", "video", "svg", "canvas", "spatial-layout", "3d"] },
           "continuityConnection": { "type": "string", "minLength": 1 },
           "mobileTransformation": { "type": "string", "minLength": 1 },
-          "recommendedDifference": { "type": "string", "minLength": 1 }
+          "recommendedDifference": { "type": "string", "minLength": 1 },
+          "meaningfulOutcome": { "type": "string", "minLength": 1 },
+          "stateCount": { "type": "integer", "minimum": 2, "maximum": 5 }
         }
       }
     }
