@@ -74,7 +74,7 @@ test("finalize rejects a stale evaluation revision", () => {
   fs.mkdirSync(evaluation, { recursive: true });
   fs.writeFileSync(path.join(evaluation, "current-run.md"), "- Commit: `deadbee`\n");
   const result = runFinalize(root, { target: "codex", sourceDir, packageVersion });
-  assert.ok(result.blockers.some((item) => item.includes("does not match current HEAD")));
+  assert.ok(result.blockers.some((item) => item.includes("not an implementation commit reachable")));
 });
 
 test("finalize reads only the explicit revision field", () => {
@@ -84,7 +84,7 @@ test("finalize reads only the explicit revision field", () => {
   fs.mkdirSync(evaluation, { recursive: true });
   fs.writeFileSync(path.join(evaluation, "current-run.md"), `Current checksum: ${head}\n\n- Commit: \`deadbee\`\n`);
   const result = runFinalize(root, { target: "codex", sourceDir, packageVersion });
-  assert.ok(result.blockers.some((item) => item.includes("revision deadbee does not match current HEAD")));
+  assert.ok(result.blockers.some((item) => item.includes("revision deadbee is not an implementation commit reachable")));
 });
 
 test("finalize rejects tracked changes even when the evaluation cites HEAD", () => {
@@ -95,7 +95,7 @@ test("finalize rejects tracked changes even when the evaluation cites HEAD", () 
   fs.writeFileSync(path.join(evaluation, "current-run.md"), `- Commit or branch: \`fixture\` at \`${head}\`\n`);
   fs.appendFileSync(path.join(root, "package.json"), "\n");
   const result = runFinalize(root, { target: "codex", sourceDir, packageVersion });
-  assert.ok(result.blockers.some((item) => item.includes("tracked implementation changes")));
+  assert.ok(result.blockers.some((item) => item.includes("tracked changes")));
 });
 
 test("finalize requires an explicit revision field in Git-backed evaluations", () => {
@@ -106,4 +106,44 @@ test("finalize requires an explicit revision field in Git-backed evaluations", (
   fs.writeFileSync(path.join(evaluation, "current-run.md"), "Current checksum: deadbee\n");
   const result = runFinalize(root, { target: "codex", sourceDir, packageVersion });
   assert.ok(result.blockers.some((item) => item.includes("requires exactly one explicit")));
+});
+
+test("finalize accepts a tracked handoff commit after the implementation revision", () => {
+  const root = fixture();
+  const implementation = initializeGit(root);
+  const evaluation = path.join(root, ".dreative", "evaluation");
+  fs.mkdirSync(evaluation, { recursive: true });
+  fs.writeFileSync(path.join(evaluation, "current-run.md"), `- Commit or branch: \`fixture\` at \`${implementation}\`\n`);
+  spawnSync("git", ["add", ".dreative/evaluation/current-run.md"], { cwd: root, windowsHide: true });
+  spawnSync("git", ["commit", "-m", "Add evaluation handoff"], { cwd: root, windowsHide: true });
+  const result = runFinalize(root, { target: "codex", sourceDir, packageVersion });
+  assert.equal(result.ok, true, result.blockers.join("\n"));
+});
+
+test("finalize rejects implementation changes committed after the evaluated revision", () => {
+  const root = fixture();
+  const implementation = initializeGit(root);
+  const evaluation = path.join(root, ".dreative", "evaluation");
+  fs.mkdirSync(evaluation, { recursive: true });
+  fs.writeFileSync(path.join(evaluation, "current-run.md"), `- Commit: \`${implementation}\`\n`);
+  fs.appendFileSync(path.join(root, "package.json"), "\n");
+  spawnSync("git", ["add", ".dreative/evaluation/current-run.md", "package.json"], { cwd: root, windowsHide: true });
+  spawnSync("git", ["commit", "-m", "Change implementation after evaluation"], { cwd: root, windowsHide: true });
+  const result = runFinalize(root, { target: "codex", sourceDir, packageVersion });
+  assert.ok(result.blockers.some((item) => item.includes("implementation files changed after")));
+});
+
+test("finalize rejects an unexpected untracked source file", () => {
+  const root = fixture();
+  const implementation = initializeGit(root);
+  const evaluation = path.join(root, ".dreative", "evaluation");
+  fs.mkdirSync(evaluation, { recursive: true });
+  fs.writeFileSync(path.join(evaluation, "current-run.md"), `- Commit: \`${implementation}\`\n`);
+  spawnSync("git", ["add", ".dreative/evaluation/current-run.md"], { cwd: root, windowsHide: true });
+  spawnSync("git", ["commit", "-m", "Add evaluation handoff"], { cwd: root, windowsHide: true });
+  const source = path.join(root, "src");
+  fs.mkdirSync(source, { recursive: true });
+  fs.writeFileSync(path.join(source, "new-route.ts"), "export const route = true;\n");
+  const result = runFinalize(root, { target: "codex", sourceDir, packageVersion });
+  assert.ok(result.blockers.some((item) => item.includes("unexpected untracked files: src/new-route.ts")));
 });
