@@ -1,4 +1,6 @@
 import { chromium, type Browser, type Page } from "@playwright/test";
+import fs from "node:fs";
+import path from "node:path";
 
 export type DeliveryProfile = "efficient" | "recommended" | "showcase";
 export type MechanismTrigger = "scroll" | "click" | "hover" | "drag";
@@ -22,7 +24,6 @@ export interface ShowcaseMechanismContract {
   experienceType: "journey" | "interface";
   classification: {
     implementation: "attempted";
-    independentVisualVerdict: "pending" | "downgraded";
   };
   recommendedBaseline: string;
   showcaseDelta: string[];
@@ -33,13 +34,15 @@ export interface ShowcaseMechanismContract {
     selectedApproach: string;
     boundedArtifact: string;
     higherCeilingArtifact: string;
-    boundedCaptures: string[];
-    higherCeilingCaptures: string[];
+    boundedCaptures: { desktop: string; mobile: string };
+    higherCeilingCaptures: { desktop: string; mobile: string };
     builderSelectionRationale: string;
   };
   continuity: {
     stateKey: string;
     sourceSelector: string;
+    sourceTrigger: "click" | "drag";
+    stateCount: number;
     affectedRegions: {
       selector: string;
       stage: "before" | "peak" | "after";
@@ -80,6 +83,16 @@ async function visibleFingerprint(page: Page, selector: string): Promise<string>
     }).filter(Boolean);
     return JSON.stringify(output);
   });
+}
+
+async function continuityFingerprint(page: Page, selector: string): Promise<string> {
+  return page.locator(selector).evaluate((root) => JSON.stringify([root, ...Array.from(root.querySelectorAll("*"))].slice(0, 60).map((node) => {
+    const element = node as HTMLElement;
+    const rect = element.getBoundingClientRect();
+    const style = getComputedStyle(element);
+    const data = Array.from(element.attributes).filter((attribute) => attribute.name.startsWith("data-")).map((attribute) => `${attribute.name}=${attribute.value}`).join(";");
+    return [element.tagName, element.className, data, element.textContent?.trim().slice(0, 120), Math.round(rect.width), Math.round(rect.height), style.transform, style.opacity, style.filter, style.clipPath, style.backgroundImage];
+  })));
 }
 
 async function verifyDeclaredMedia(page: Page, entry: MechanismContractEntry): Promise<string | null> {
@@ -184,7 +197,91 @@ async function exerciseMechanism(page: Page, entry: MechanismContractEntry): Pro
   return before === after ? `${entry.name} mechanism ${entry.selector} did not visibly change its declared ${entry.mediaMode} medium after ${entry.trigger}` : null;
 }
 
-async function inspectContext(browser: Browser, url: string, config: typeof contexts[number], mechanisms: MechanismContractEntry[]): Promise<VisualSmokeResult> {
+async function verifyContinuity(page: Page, contract: ShowcaseMechanismContract): Promise<string[]> {
+  const errors: string[] = [];
+  const source = page.locator(contract.continuity.sourceSelector);
+  if (await source.count() !== 1) return [`Showcase continuity source ${contract.continuity.sourceSelector} must resolve to exactly one element`];
+  const sourceBox = await source.boundingBox();
+  if (!sourceBox || sourceBox.width < 8 || sourceBox.height < 8) return [`Showcase continuity source ${contract.continuity.sourceSelector} is hidden or zero-sized`];
+  const regions = contract.continuity.affectedRegions;
+  const locators = regions.map((region) => page.locator(region.selector));
+  for (let index = 0; index < locators.length; index += 1) {
+    if (await locators[index].count() !== 1) errors.push(`continuity region ${regions[index].selector} must resolve to exactly one element`);
+    else {
+      const box = await locators[index].boundingBox();
+      if (!box || box.width < 8 || box.height < 8) errors.push(`continuity region ${regions[index].selector} is hidden or zero-sized`);
+    }
+  }
+  if (errors.length) return errors;
+  const ordered: { stage: "before" | "peak" | "after"; y: number }[] = [];
+  for (let index = 0; index < locators.length; index += 1) {
+    const box = await locators[index].boundingBox();
+    ordered.push({ stage: regions[index].stage, y: box?.y ?? 0 });
+  }
+  const stageY = ["before", "peak", "after"].map((stage) => Math.min(...ordered.filter((item) => item.stage === stage).map((item) => item.y)));
+  if (!(stageY[0] < stageY[1] && stageY[1] < stageY[2])) errors.push("Showcase continuity regions must appear in before, peak, after document order");
+  const signatures = regions.map(() => new Set<string>());
+  for (let state = 0; state < contract.continuity.stateCount; state += 1) {
+    for (let index = 0; index < regions.length; index += 1) signatures[index].add(await continuityFingerprint(page, regions[index].selector));
+    if (state === contract.continuity.stateCount - 1) break;
+    await source.scrollIntoViewIfNeeded();
+    if (contract.continuity.sourceTrigger === "click") await source.click();
+    else {
+      const box = await source.boundingBox();
+      if (box) {
+        await page.mouse.move(box.x + box.width * .2, box.y + box.height / 2);
+        await page.mouse.down();
+        await page.mouse.move(box.x + box.width * .8, box.y + box.height / 2, { steps: 8 });
+        await page.mouse.up();
+      }
+    }
+    await twoFrames(page);
+  }
+  for (const stage of ["before", "peak", "after"] as const) {
+    const stageIndexes = regions.map((region, index) => region.stage === stage ? index : -1).filter((index) => index >= 0);
+    if (!stageIndexes.some((index) => signatures[index].size >= contract.continuity.stateCount))
+      errors.push(`Showcase shared state ${contract.continuity.stateKey} did not propagate through ${stage} regions from ${contract.continuity.sourceSelector}`);
+  }
+  return errors;
+}
+
+function isValidImageFile(file: string): boolean {
+  if (!fs.existsSync(file) || !fs.statSync(file).isFile() || fs.statSync(file).size < 12) return false;
+  const header = fs.readFileSync(file).subarray(0, 12);
+  return header.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
+    || header.subarray(0, 3).equals(Buffer.from([255, 216, 255]))
+    || header.subarray(0, 4).toString("ascii") === "RIFF";
+}
+
+async function verifyPrototypeEvidence(context: Awaited<ReturnType<Browser["newContext"]>>, url: string, contract: ShowcaseMechanismContract): Promise<string[]> {
+  const errors: string[] = [];
+  const artifactFingerprints: string[] = [];
+  for (const [label, artifact] of [["bounded", contract.prototypeEvidence.boundedArtifact], ["higher-ceiling", contract.prototypeEvidence.higherCeilingArtifact]] as const) {
+    const page = await context.newPage();
+    const target = new URL(artifact, url).href;
+    const response = await page.goto(target, { waitUntil: "domcontentloaded" });
+    if (!response || response.status() >= 400) errors.push(`${label} prototype artifact did not load successfully: ${target}`);
+    else artifactFingerprints.push(await visibleFingerprint(page, "body"));
+    await page.close();
+  }
+  if (artifactFingerprints.length === 2 && artifactFingerprints[0] === artifactFingerprints[1]) errors.push("bounded and higher-ceiling prototype artifacts are indistinguishable");
+  for (const [label, captures] of [["bounded", contract.prototypeEvidence.boundedCaptures], ["higher-ceiling", contract.prototypeEvidence.higherCeilingCaptures]] as const) {
+    for (const viewport of ["desktop", "mobile"] as const) {
+      const capture = captures?.[viewport];
+      if (!capture?.trim()) { errors.push(`${label} prototype requires a ${viewport} capture`); continue; }
+      if (/^https?:\/\//i.test(capture)) {
+        const response = await context.request.get(capture);
+        if (!response.ok() || !/^image\//i.test(response.headers()["content-type"] ?? "")) errors.push(`${label} ${viewport} capture is not a loadable image: ${capture}`);
+      } else {
+        const file = path.resolve(capture);
+        if (!isValidImageFile(file)) errors.push(`${label} ${viewport} capture is not a valid local PNG, JPEG, or WebP file: ${file}`);
+      }
+    }
+  }
+  return errors;
+}
+
+async function inspectContext(browser: Browser, url: string, config: typeof contexts[number], contract?: ShowcaseMechanismContract): Promise<VisualSmokeResult> {
   const blockers: string[] = [];
   const checks: string[] = [];
   const context = await browser.newContext({ viewport: { width: config.width, height: config.height }, reducedMotion: config.reducedMotion ? "reduce" : "no-preference" });
@@ -252,6 +349,11 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
   }
 
   if (config.label === "desktop") {
+    if (contract) {
+      blockers.push(...await verifyPrototypeEvidence(context, url, contract));
+      await page.goto(url, { waitUntil: "domcontentloaded" }); await twoFrames(page);
+      blockers.push(...await verifyContinuity(page, contract));
+    }
     await page.evaluate(() => scrollTo(0, 0)); await twoFrames(page);
     const rootFingerprint = await visibleFingerprint(page, "main");
     for (const href of audit.links) {
@@ -265,6 +367,7 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
       }
       await routePage.close();
     }
+    const mechanisms = contract?.mechanisms ?? [];
     if (mechanisms.length) {
       const positions: number[] = [];
       for (const mechanism of mechanisms) { const box = await page.locator(mechanism.selector).boundingBox(); if (box) positions.push(box.y); }
@@ -283,7 +386,6 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
   const errors: string[] = [];
   if (!contract || Array.isArray(contract) || contract.version !== 2) return ["Showcase requires a version 2 connected-experience contract; legacy three-widget contracts are rejected"];
   if (contract.classification?.implementation !== "attempted") errors.push("Showcase must be reported as an implementation attempt, not self-certified delivery");
-  if (!["pending", "downgraded"].includes(contract.classification?.independentVisualVerdict)) errors.push("Showcase independent visual verdict must remain pending or downgraded in builder-authored evidence");
   if (!['journey', 'interface'].includes(contract.experienceType)) errors.push("Showcase experienceType must be journey or interface");
   if (!contract.recommendedBaseline?.trim()) errors.push("Showcase contract requires the Recommended baseline");
   if (!Array.isArray(contract.showcaseDelta) || contract.showcaseDelta.filter((item) => typeof item === "string" && item.trim()).length < 2) errors.push("Showcase contract requires at least two perceptible differences from Recommended");
@@ -293,12 +395,13 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
   }
   const prototype = contract.prototypeEvidence;
   if (!prototype || [prototype.boundedApproach, prototype.higherCeilingApproach, prototype.selectedApproach, prototype.boundedArtifact, prototype.higherCeilingArtifact, prototype.builderSelectionRationale].some((item) => typeof item !== "string" || !item.trim())
-    || !Array.isArray(prototype.boundedCaptures) || prototype.boundedCaptures.length < 1
-    || !Array.isArray(prototype.higherCeilingCaptures) || prototype.higherCeilingCaptures.length < 1)
-    errors.push("Showcase requires artifact-backed bounded and higher-ceiling prototype evidence with captures");
+    || [prototype?.boundedCaptures?.desktop, prototype?.boundedCaptures?.mobile, prototype?.higherCeilingCaptures?.desktop, prototype?.higherCeilingCaptures?.mobile].some((item) => typeof item !== "string" || !item.trim()))
+    errors.push("Showcase requires artifact-backed bounded and higher-ceiling prototypes with desktop and mobile captures");
   const continuity = contract.continuity;
   const affectedRegions = Array.isArray(continuity?.affectedRegions) ? continuity.affectedRegions : [];
   if (!continuity?.stateKey?.trim() || !continuity?.sourceSelector?.trim()) errors.push("Showcase requires a named shared state and source selector");
+  if (!["click", "drag"].includes(continuity?.sourceTrigger)) errors.push("Showcase continuity sourceTrigger must be click or drag");
+  if (!Number.isInteger(continuity?.stateCount) || continuity.stateCount < 2 || continuity.stateCount > 5) errors.push("Showcase continuity stateCount must be an integer from 2 to 5");
   if (affectedRegions.length < 3) errors.push("Showcase requires one meaningful state to affect at least three non-adjacent regions");
   const continuityStages = new Set(affectedRegions.map((region) => region?.stage));
   for (const stage of ["before", "peak", "after"]) if (!continuityStages.has(stage as "before" | "peak" | "after")) errors.push(`Showcase continuity is missing a ${stage} region`);
@@ -336,7 +439,7 @@ export async function runVisualSmoke(url: string, options: VisualSmokeOptions): 
   const browser = await chromium.launch({ headless: true });
   try {
     const results = [];
-    for (const config of contexts) results.push(await inspectContext(browser, url, config, options.showcase?.mechanisms ?? []));
+    for (const config of contexts) results.push(await inspectContext(browser, url, config, options.showcase));
     const blockers = [...new Set(results.flatMap((result) => result.blockers))];
     return { ok: blockers.length === 0, blockers, checks: results.flatMap((result) => result.checks) };
   } finally { await browser.close(); }

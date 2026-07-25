@@ -103,7 +103,7 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "PLAN.md", plan, /no minimum technology\s+count/i, "Showcase must not use a technology-count proxy");
   requireText(findings, "PLAN.md", plan, /connected experience system[\s\S]*non-adjacent regions[\s\S]*pre-peak[\s\S]*central peak[\s\S]*post-peak/i, "Showcase must require shared continuity around the central peak");
   requireText(findings, "PLAN.md", plan, /visibly and structurally distinct from Recommended/i, "Showcase must remain visibly distinct from Recommended");
-  requireText(findings, "PLAN.md", plan, /Showcase implementation attempted:[\s\S]*Independent visual verdict:\s*pending/i, "Showcase must not self-certify visual quality");
+  requireText(findings, "PLAN.md", plan, /Showcase implementation attempted:[\s\S]*Independent visual verdict:\s*awaiting user review[\s\S]*ask the user/i, "Showcase must reserve the visual verdict for the user");
   requireText(findings, "PLAN.md", plan, /Not pursued:/i, "Showcase must disclose material rejected or replaced treatments");
   requireText(findings, "PLAN.md", plan, /bounded prototype[\s\S]*higher-ceiling/i, "Showcase prototypes must compare a bounded and higher-ceiling approach");
   requireText(findings, "PLAN.md", plan, /token-.+efficient|least tokens/i, "Efficient must optimize token use");

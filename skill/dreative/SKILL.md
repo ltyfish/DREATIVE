@@ -94,8 +94,11 @@ from Recommended. A conventional long page with one isolated spectacle does
 not fulfill the highest-ceiling promise. In the final response state
 `Showcase implementation attempted:` followed by the concrete mechanisms,
 media, and distributed experience actually shipped, plus
-`Independent visual verdict: pending` unless a separate reviewer supplied a
-verdict. A builder must never award its own Showcase pass. Also state `Not pursued:` for
+`Independent visual verdict: awaiting user review`. Always ask the user to
+inspect the supplied desktop, mobile, and motion views and provide the verdict.
+The builder contract has no verdict field: Codex must never generate, infer,
+persist, or promote this verdict, even when it believes the result passes.
+Also state `Not pursued:` for
 any materially considered or promised advanced treatment that was rejected,
 downgraded, or replaced, with the product or prototype reason. Do not list
 irrelevant technologies merely to prove they were omitted.

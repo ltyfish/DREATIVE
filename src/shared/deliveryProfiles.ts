@@ -124,7 +124,7 @@ export function renderDetailedPlanGuide(profileId: DeliveryProfileId): string {
     "7. Observable review, risks, fallbacks, and one editable decision reply.",
     "Visible execution map — experience arc, section ownership, post-hero peak, continuity owner, and mobile transformation in roughly ten lines.",
     "Showcase ceiling — bind the Recommended baseline, two perceptible Showcase-only qualities, two product-native media opportunities, the bounded-versus-higher-ceiling prototype result, and why the delivered route is visibly beyond Recommended.",
-    "Showcase final response — state `Showcase implementation attempted:` and `Independent visual verdict: pending`; disclose materially rejected or replaced advanced treatments under `Not pursued:` with the reason.",
+    "Showcase final response — state `Showcase implementation attempted:` and `Independent visual verdict: awaiting user review`, then ask the user for that verdict; disclose materially rejected or replaced advanced treatments under `Not pursued:` with the reason.",
     "",
     "The brief must adapt every decision to the inspected project. Do not imitate a named site, emit a generic template, or require another implementation-contract approval.",
   ].join("\n");

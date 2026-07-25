@@ -5,7 +5,7 @@ const base = "http://127.0.0.1:4181";
 const contract: ShowcaseMechanismContract = {
   version: 2,
   experienceType: "interface",
-  classification: { implementation: "attempted", independentVisualVerdict: "pending" },
+  classification: { implementation: "attempted" },
   recommendedBaseline: "Three direct state controls in an otherwise conventional page.",
   showcaseDelta: ["The controls form one continuous instrument.", "The peak changes the spatial composition."],
   mediaOpportunities: [
@@ -18,13 +18,15 @@ const contract: ShowcaseMechanismContract = {
     selectedApproach: "Connected SVG and spatial state system.",
     boundedArtifact: "/prototype/bounded",
     higherCeilingArtifact: "/prototype/high-ceiling",
-    boundedCaptures: ["/prototype/bounded.webp"],
-    higherCeilingCaptures: ["/prototype/high-ceiling.webp"],
+    boundedCaptures: { desktop: `${base}/capture/bounded-desktop.svg`, mobile: `${base}/capture/bounded-mobile.svg` },
+    higherCeilingCaptures: { desktop: `${base}/capture/high-ceiling-desktop.svg`, mobile: `${base}/capture/high-ceiling-mobile.svg` },
     builderSelectionRationale: "The connected system made the state transition visibly legible; this is a builder assertion, not an independent verdict.",
   },
   continuity: {
     stateKey: "readiness",
     sourceSelector: "#before",
+    sourceTrigger: "click",
+    stateCount: 3,
     affectedRegions: [
       { selector: "#before", stage: "before", effect: "sets readiness" },
       { selector: "#peak", stage: "peak", effect: "transforms the instrument" },
@@ -53,6 +55,7 @@ test("scroll-authored mechanisms must expose at least three sampled states", asy
   const journey = {
     ...contract,
     experienceType: "journey" as const,
+    continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.map((region) => region.stage === "peak" ? { ...region, selector: "#scroll-story" } : region) },
     mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
   };
   const result = await runVisualSmoke(`${base}/scroll-mechanism`, { profile: "showcase", showcase: journey });
@@ -63,6 +66,7 @@ test("a tall static section cannot impersonate scroll-authored choreography", as
   const journey = {
     ...contract,
     experienceType: "journey" as const,
+    continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.map((region) => region.stage === "peak" ? { ...region, selector: "#scroll-story" } : region) },
     mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
   };
   const result = await runVisualSmoke(`${base}/static-scroll-mechanism`, { profile: "showcase", showcase: journey });
@@ -73,6 +77,7 @@ test("static sticky elements cannot impersonate scroll-authored choreography", a
   const journey = {
     ...contract,
     experienceType: "journey" as const,
+    continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.map((region) => region.stage === "peak" ? { ...region, selector: "#scroll-story" } : region) },
     mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
   };
   const result = await runVisualSmoke(`${base}/static-sticky-scroll-mechanism`, { profile: "showcase", showcase: journey });
@@ -85,9 +90,8 @@ test("connected-experience contract is structural and mandatory for Showcase", (
   expect(validateMechanisms("recommended")).toEqual([]);
 });
 
-test("builder cannot self-certify an independent visual pass", () => {
-  const selfCertified = { ...contract, classification: { implementation: "attempted" as const, independentVisualVerdict: "passed" as never } };
-  expect(validateMechanisms("showcase", selfCertified)).toContain("Showcase independent visual verdict must remain pending or downgraded in builder-authored evidence");
+test("builder contract has no field for an independent visual verdict", () => {
+  expect("independentVisualVerdict" in contract.classification).toBe(false);
 });
 
 test("a journey requires scroll-authored choreography", () => {
@@ -102,6 +106,24 @@ test("a journey cannot use lightweight hover as its post-peak mechanism", () => 
 test("Northwind v1 isolated-widget contract is rejected as an adversarial regression", () => {
   const northwind = { ...contract, version: 1 } as unknown as ShowcaseMechanismContract;
   expect(validateMechanisms("showcase", northwind)).toContain("Showcase requires a version 2 connected-experience contract; legacy three-widget contracts are rejected");
+});
+
+test("valid v2 claims cannot hide Northwind-style isolated widgets", async () => {
+  const result = await runVisualSmoke(`${base}/isolated-widgets`, { profile: "showcase", showcase: contract });
+  expect(result.blockers).toContain("Showcase shared state readiness did not propagate through peak regions from #before");
+  expect(result.blockers).toContain("Showcase shared state readiness did not propagate through after regions from #before");
+});
+
+test("nonexistent continuity selectors and prototype evidence fail browser verification", async () => {
+  const dishonest = {
+    ...contract,
+    prototypeEvidence: { ...contract.prototypeEvidence, boundedArtifact: "/missing-prototype", boundedCaptures: { ...contract.prototypeEvidence.boundedCaptures, desktop: `${base}/missing-capture.webp` } },
+    continuity: { ...contract.continuity, sourceSelector: "#missing-source", affectedRegions: contract.continuity.affectedRegions.map((region) => ({ ...region, selector: `${region.selector}-missing` })) },
+  };
+  const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: dishonest });
+  expect(result.blockers.join("\n")).toContain("prototype artifact did not load successfully");
+  expect(result.blockers.join("\n")).toContain("capture is not a loadable image");
+  expect(result.blockers.join("\n")).toContain("continuity source #missing-source must resolve to exactly one element");
 });
 
 test("malformed contract content fails closed instead of throwing", () => {

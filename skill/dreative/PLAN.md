@@ -250,12 +250,14 @@ short disclosures:
 
 ```text
 Showcase implementation attempted: <what visibly shipped>
-Independent visual verdict: pending
+Independent visual verdict: awaiting user review
 Not pursued: <material advanced treatment rejected or replaced, and why>
 ```
 
 Omit the second line only when no material treatment was considered, promised,
 rejected, downgraded, or replaced. Do not turn these lines into a ledger.
+Always ask the user to inspect the supplied rendered views and provide the
+independent visual verdict. Codex must not author, infer, store, or promote it.
 
 After the explicit configuration reply, implement. Do not generate a second approval
 or contract gate.
