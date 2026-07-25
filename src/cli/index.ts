@@ -148,6 +148,14 @@ async function main(): Promise<void> {
       }
       console.log("DREATIVE_CHECKS_PASSED");
       console.log("Visual quality is not certified by this command.");
+      if (profile === "showcase") {
+        console.log("");
+        console.log("Showcase implementation attempted: <describe only what visibly shipped>");
+        console.log("Independent visual verdict: awaiting user review.");
+        console.log("");
+        console.log("Please inspect the supplied desktop, mobile, and motion views.");
+        console.log("Classify the result as Showcase, Recommended, Efficient, or Needs revision.");
+      }
       return;
     }
     case "visual-smoke": {

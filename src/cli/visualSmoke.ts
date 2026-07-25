@@ -1,6 +1,7 @@
 import { chromium, type Browser, type Page } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
+import { createHash } from "node:crypto";
 
 export type DeliveryProfile = "efficient" | "recommended" | "showcase";
 export type MechanismTrigger = "scroll" | "click" | "hover" | "drag";
@@ -90,9 +91,13 @@ async function continuityFingerprint(page: Page, selector: string): Promise<stri
     const element = node as HTMLElement;
     const rect = element.getBoundingClientRect();
     const style = getComputedStyle(element);
-    const data = Array.from(element.attributes).filter((attribute) => attribute.name.startsWith("data-")).map((attribute) => `${attribute.name}=${attribute.value}`).join(";");
-    return [element.tagName, element.className, data, element.textContent?.trim().slice(0, 120), Math.round(rect.width), Math.round(rect.height), style.transform, style.opacity, style.filter, style.clipPath, style.backgroundImage];
-  })));
+    if (rect.width < 2 || rect.height < 2 || style.display === "none" || style.visibility === "hidden" || Number(style.opacity) <= .02) return null;
+    const source = element instanceof HTMLImageElement ? element.currentSrc : "";
+    const media = element instanceof HTMLMediaElement ? `${element.currentTime.toFixed(2)}:${element.paused}` : "";
+    let canvas = "";
+    if (element instanceof HTMLCanvasElement) try { canvas = element.toDataURL().slice(-160); } catch { canvas = "unreadable"; }
+    return [element.tagName, element.textContent?.trim().slice(0, 120), Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height), style.transform, style.opacity, style.color, style.backgroundColor, style.filter, style.clipPath, style.backgroundImage, source, media, canvas];
+  }).filter(Boolean)));
 }
 
 async function verifyDeclaredMedia(page: Page, entry: MechanismContractEntry): Promise<string | null> {
@@ -220,6 +225,8 @@ async function verifyContinuity(page: Page, contract: ShowcaseMechanismContract)
   }
   const stageY = ["before", "peak", "after"].map((stage) => Math.min(...ordered.filter((item) => item.stage === stage).map((item) => item.y)));
   if (!(stageY[0] < stageY[1] && stageY[1] < stageY[2])) errors.push("Showcase continuity regions must appear in before, peak, after document order");
+  const viewportHeight = await page.evaluate(() => innerHeight);
+  if (stageY[1] - stageY[0] < viewportHeight * .5 || stageY[2] - stageY[1] < viewportHeight * .5) errors.push("Showcase continuity stages must occupy meaningfully separated page regions");
   const signatures = regions.map(() => new Set<string>());
   for (let state = 0; state < contract.continuity.stateCount; state += 1) {
     for (let index = 0; index < regions.length; index += 1) signatures[index].add(await continuityFingerprint(page, regions[index].selector));
@@ -245,12 +252,36 @@ async function verifyContinuity(page: Page, contract: ShowcaseMechanismContract)
   return errors;
 }
 
-function isValidImageFile(file: string): boolean {
-  if (!fs.existsSync(file) || !fs.statSync(file).isFile() || fs.statSync(file).size < 12) return false;
-  const header = fs.readFileSync(file).subarray(0, 12);
-  return header.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
-    || header.subarray(0, 3).equals(Buffer.from([255, 216, 255]))
-    || header.subarray(0, 4).toString("ascii") === "RIFF";
+function imageDimensions(bytes: Buffer, contentType = ""): { width: number; height: number } | null {
+  if (bytes.length >= 24 && bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])))
+    return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
+  if (bytes.length >= 30 && bytes.subarray(0, 4).toString("ascii") === "RIFF" && bytes.subarray(8, 12).toString("ascii") === "WEBP" && bytes.subarray(12, 16).toString("ascii") === "VP8X")
+    return { width: 1 + bytes.readUIntLE(24, 3), height: 1 + bytes.readUIntLE(27, 3) };
+  if (bytes.length >= 4 && bytes[0] === 255 && bytes[1] === 216) {
+    let offset = 2;
+    while (offset + 9 < bytes.length) {
+      if (bytes[offset] !== 255) { offset += 1; continue; }
+      const marker = bytes[offset + 1];
+      const length = bytes.readUInt16BE(offset + 2);
+      if (marker >= 192 && marker <= 195) return { height: bytes.readUInt16BE(offset + 5), width: bytes.readUInt16BE(offset + 7) };
+      offset += Math.max(2, length + 2);
+    }
+  }
+  if (/svg/i.test(contentType) || bytes.subarray(0, 256).toString("utf8").includes("<svg")) {
+    const source = bytes.toString("utf8", 0, Math.min(bytes.length, 2048));
+    const width = Number(source.match(/\bwidth=["']([\d.]+)/i)?.[1]);
+    const height = Number(source.match(/\bheight=["']([\d.]+)/i)?.[1]);
+    if (width > 0 && height > 0) return { width, height };
+  }
+  return null;
+}
+
+function captureProblem(bytes: Buffer, contentType: string, viewport: "desktop" | "mobile"): string | null {
+  const dimensions = imageDimensions(bytes, contentType);
+  if (!dimensions) return "is not a decodable PNG, JPEG, WebP, or dimensioned SVG";
+  if (viewport === "desktop" && (dimensions.width < 1024 || dimensions.height < 600 || dimensions.width <= dimensions.height)) return `must be a desktop-like image of at least 1024×600; received ${dimensions.width}×${dimensions.height}`;
+  if (viewport === "mobile" && (dimensions.width < 320 || dimensions.width > 600 || dimensions.height < 600 || dimensions.height <= dimensions.width)) return `must be a mobile-like image between 320–600px wide and at least 600px tall; received ${dimensions.width}×${dimensions.height}`;
+  return null;
 }
 
 async function verifyPrototypeEvidence(context: Awaited<ReturnType<Browser["newContext"]>>, url: string, contract: ShowcaseMechanismContract): Promise<string[]> {
@@ -266,17 +297,32 @@ async function verifyPrototypeEvidence(context: Awaited<ReturnType<Browser["newC
   }
   if (artifactFingerprints.length === 2 && artifactFingerprints[0] === artifactFingerprints[1]) errors.push("bounded and higher-ceiling prototype artifacts are indistinguishable");
   for (const [label, captures] of [["bounded", contract.prototypeEvidence.boundedCaptures], ["higher-ceiling", contract.prototypeEvidence.higherCeilingCaptures]] as const) {
+    const captureHashes: string[] = [];
     for (const viewport of ["desktop", "mobile"] as const) {
       const capture = captures?.[viewport];
       if (!capture?.trim()) { errors.push(`${label} prototype requires a ${viewport} capture`); continue; }
       if (/^https?:\/\//i.test(capture)) {
         const response = await context.request.get(capture);
-        if (!response.ok() || !/^image\//i.test(response.headers()["content-type"] ?? "")) errors.push(`${label} ${viewport} capture is not a loadable image: ${capture}`);
+        const contentType = response.headers()["content-type"] ?? "";
+        if (!response.ok() || !/^image\//i.test(contentType)) errors.push(`${label} ${viewport} capture is not a loadable image: ${capture}`);
+        else {
+          const bytes = Buffer.from(await response.body());
+          const problem = captureProblem(bytes, contentType, viewport);
+          if (problem) errors.push(`${label} ${viewport} capture ${problem}: ${capture}`);
+          captureHashes.push(createHash("sha256").update(bytes).digest("hex"));
+        }
       } else {
         const file = path.resolve(capture);
-        if (!isValidImageFile(file)) errors.push(`${label} ${viewport} capture is not a valid local PNG, JPEG, or WebP file: ${file}`);
+        if (!fs.existsSync(file) || !fs.statSync(file).isFile()) errors.push(`${label} ${viewport} capture does not exist: ${file}`);
+        else {
+          const bytes = fs.readFileSync(file);
+          const problem = captureProblem(bytes, path.extname(file), viewport);
+          if (problem) errors.push(`${label} ${viewport} capture ${problem}: ${file}`);
+          captureHashes.push(createHash("sha256").update(bytes).digest("hex"));
+        }
       }
     }
+    if (captureHashes.length === 2 && captureHashes[0] === captureHashes[1]) errors.push(`${label} desktop and mobile captures must be different images`);
   }
   return errors;
 }

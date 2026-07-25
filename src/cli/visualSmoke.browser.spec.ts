@@ -114,6 +114,20 @@ test("valid v2 claims cannot hide Northwind-style isolated widgets", async () =>
   expect(result.blockers).toContain("Showcase shared state readiness did not propagate through after regions from #before");
 });
 
+test("invisible data attributes cannot impersonate visible continuity", async () => {
+  const result = await runVisualSmoke(`${base}/data-only-continuity`, { profile: "showcase", showcase: contract });
+  expect(result.blockers).toContain("Showcase shared state readiness did not propagate through before regions from #before");
+  expect(result.blockers).toContain("Showcase shared state readiness did not propagate through peak regions from #before");
+  expect(result.blockers).toContain("Showcase shared state readiness did not propagate through after regions from #before");
+});
+
+test("tiny or viewport-inappropriate captures are rejected", async () => {
+  const captures = { desktop: `${base}/capture/tiny-desktop.svg`, mobile: `${base}/capture/tiny-mobile.svg` };
+  const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: { ...contract, prototypeEvidence: { ...contract.prototypeEvidence, boundedCaptures: captures } } });
+  expect(result.blockers.join("\n")).toContain("must be a desktop-like image");
+  expect(result.blockers.join("\n")).toContain("must be a mobile-like image");
+});
+
 test("nonexistent continuity selectors and prototype evidence fail browser verification", async () => {
   const dishonest = {
     ...contract,

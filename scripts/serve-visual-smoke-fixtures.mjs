@@ -10,6 +10,7 @@ const staticScrollMechanism = shell(`<section id="before"><button>Before</button
 const staticStickyScrollMechanism = shell(`<section id="before"><button>Before</button><div class="box"></div></section><section id="scroll-story" style="height:320vh"><h1 style="position:sticky;top:32px">Static sticky story</h1><div class="box" style="position:sticky;top:100px"></div></section><section id="after"><button>After</button><div class="box"></div><div class="box"></div></section>`, `for(const section of document.querySelectorAll('#before,#after'))section.onclick=()=>section.classList.toggle('changed')`);
 const lyingMedia = shell(`<section id="before"><button>Before</button><div class="box"></div></section><section id="lying-peak"><button>Peak</button><div class="box"></div></section><section id="after"><button>After</button><div class="box"></div><div class="box"></div></section>`, `for(const section of document.querySelectorAll('section'))section.onclick=()=>section.classList.toggle('changed')`);
 const isolatedWidgets = shell(mechanisms, `for(const section of document.querySelectorAll('section'))section.onclick=()=>{const stage=(Number(section.dataset.stage||0)+1)%3;section.dataset.stage=stage;for(const box of section.querySelectorAll('.box'))box.style.transform='translateX('+(stage*40)+'px)'}`);
+const dataOnlyContinuity = shell(mechanisms, `document.querySelector('#before').onclick=()=>{const stage=(Number(document.body.dataset.stage||0)+1)%3;document.body.dataset.stage=stage;for(const section of document.querySelectorAll('section'))section.dataset.sharedStage=stage}`);
 const prototypeBounded = shell(`<section><h1>Bounded prototype</h1><div class="box"></div></section>`);
 const prototypeHighCeiling = shell(`<section><h1>Higher-ceiling prototype</h1><svg viewBox="0 0 200 100"><circle cx="50" cy="50" r="40"/></svg></section>`);
 const pages = {
@@ -26,6 +27,7 @@ const pages = {
   "/static-sticky-scroll-mechanism": staticStickyScrollMechanism,
   "/lying-media": lyingMedia,
   "/isolated-widgets": isolatedWidgets,
+  "/data-only-continuity": dataOnlyContinuity,
   "/prototype/bounded": prototypeBounded,
   "/prototype/high-ceiling": prototypeHighCeiling,
   "/console": shell(`<section><h1>Runtime failure</h1></section>`, `console.error('fixture exploded')`),
@@ -33,7 +35,15 @@ const pages = {
   "/reduced-overflow": `<!doctype html><html><head><title>Smoke fixture</title><style>main{min-height:100vh}@media(prefers-reduced-motion:reduce){.wide{width:700px}}</style></head><body><main><h1>Reduced motion</h1><div class="wide">fallback</div></main></body></html>`,
 };
 http.createServer((request, response) => {
-  if (request.url?.startsWith("/capture/")) { response.writeHead(200, { "content-type": "image/svg+xml" }); response.end(`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><rect width="20" height="20" fill="${request.url.includes("high-ceiling") ? "blue" : "orange"}"/></svg>`); return; }
+  if (request.url?.startsWith("/capture/")) {
+    if (request.url.includes("tiny")) { response.writeHead(200, { "content-type": "image/svg+xml" }); response.end(`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><rect width="20" height="20"/></svg>`); return; }
+    const mobile = request.url.includes("mobile");
+    const width = mobile ? 390 : 1440;
+    const height = mobile ? 844 : 900;
+    response.writeHead(200, { "content-type": "image/svg+xml" });
+    response.end(`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"><rect width="${width}" height="${height}" fill="${request.url.includes("high-ceiling") ? "blue" : "orange"}"/><text x="20" y="40">${request.url}</text></svg>`);
+    return;
+  }
   if (request.url === "/missing" || request.url === "/missing.png" || request.url === "/missing-prototype" || request.url === "/missing-capture.webp") { response.writeHead(404, { "content-type": "text/html" }); response.end("missing"); return; }
   const page = pages[request.url] ?? pages["/"];
   response.writeHead(200, { "content-type": "text/html" }); response.end(page);
