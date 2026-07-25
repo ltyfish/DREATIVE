@@ -75,7 +75,7 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /encoding|mojibake|broken glyphs/i, "must check visible text integrity");
   requireText(findings, "SKILL.md", skill, /DREATIVE_CHECKS_PASSED/, "must retain fail-closed deterministic checks");
   requireText(findings, "SKILL.md", skill, /visual smoke is mandatory for every/i, "must make visual smoke mandatory for substantial delivery");
-  requireText(findings, "SKILL.md", skill, /before.*peak.*after[\s\S]*selector[\s\S]*(scroll|click|hover|drag)/i, "must retain the executable Showcase mechanism contract");
+  requireText(findings, "SKILL.md", skill, /shared state[\s\S]*source selector[\s\S]*affected region/i, "must require a connected Showcase state-continuity contract");
   requireText(findings, "SKILL.md", skill, /Recommended baseline[\s\S]*two perceptible[\s\S]*media opportunities/i, "Showcase must bind its delta and product-native media decision");
   requireText(findings, "SKILL.md", skill, /journey[\s\S]*scroll-authored[\s\S]*Smooth scrolling alone does not qualify/i, "journey-style Showcase must require substantive scroll choreography");
   requireText(findings, "SKILL.md", skill, /VISUAL_REFINEMENT\.md/, "must route completion through the rendered screenshot correction loop");
@@ -101,9 +101,9 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   for (const choice of ["References", "Treatments", "Sourced images", "Generated images", "Packages", "Prototype", "Review depth", "Fast", "Lean", "Full Audit"])
     requireText(findings, "PLAN.md", plan, new RegExp(`\\b${choice}\\b`, "i"), `detailed planning is missing ${choice}`);
   requireText(findings, "PLAN.md", plan, /no minimum technology\s+count/i, "Showcase must not use a technology-count proxy");
-  requireText(findings, "PLAN.md", plan, /pre-peak mechanism[\s\S]*central signature mechanism[\s\S]*post-peak mechanism/i, "Showcase must distribute meaningful mechanisms around the central peak");
+  requireText(findings, "PLAN.md", plan, /connected experience system[\s\S]*non-adjacent regions[\s\S]*pre-peak[\s\S]*central peak[\s\S]*post-peak/i, "Showcase must require shared continuity around the central peak");
   requireText(findings, "PLAN.md", plan, /visibly and structurally distinct from Recommended/i, "Showcase must remain visibly distinct from Recommended");
-  requireText(findings, "PLAN.md", plan, /Showcase ceiling delivered:/i, "Showcase must disclose the delivered ceiling in the final response");
+  requireText(findings, "PLAN.md", plan, /Showcase implementation attempted:[\s\S]*Independent visual verdict:\s*pending/i, "Showcase must not self-certify visual quality");
   requireText(findings, "PLAN.md", plan, /Not pursued:/i, "Showcase must disclose material rejected or replaced treatments");
   requireText(findings, "PLAN.md", plan, /bounded prototype[\s\S]*higher-ceiling/i, "Showcase prototypes must compare a bounded and higher-ceiling approach");
   requireText(findings, "PLAN.md", plan, /token-.+efficient|least tokens/i, "Efficient must optimize token use");

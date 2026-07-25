@@ -4,10 +4,19 @@
   "title": "Dreative Showcase mechanism contract",
   "type": "object",
   "additionalProperties": false,
-  "required": ["version", "experienceType", "recommendedBaseline", "showcaseDelta", "mediaOpportunities", "prototypeComparison", "mechanisms"],
+  "required": ["version", "experienceType", "classification", "recommendedBaseline", "showcaseDelta", "mediaOpportunities", "prototypeEvidence", "continuity", "mechanisms"],
   "properties": {
-    "version": { "const": 1 },
+    "version": { "const": 2 },
     "experienceType": { "enum": ["journey", "interface"] },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["implementation", "independentVisualVerdict"],
+      "properties": {
+        "implementation": { "const": "attempted" },
+        "independentVisualVerdict": { "enum": ["pending", "downgraded"] }
+      }
+    },
     "recommendedBaseline": { "type": "string", "minLength": 1 },
     "showcaseDelta": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 1 } },
     "mediaOpportunities": {
@@ -24,27 +33,54 @@
         }
       }
     },
-    "prototypeComparison": {
+    "prototypeEvidence": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["boundedApproach", "higherCeilingApproach", "selectedApproach", "observedDecision"],
+      "required": ["boundedApproach", "higherCeilingApproach", "selectedApproach", "boundedArtifact", "higherCeilingArtifact", "boundedCaptures", "higherCeilingCaptures", "builderSelectionRationale"],
       "properties": {
         "boundedApproach": { "type": "string", "minLength": 1 },
         "higherCeilingApproach": { "type": "string", "minLength": 1 },
         "selectedApproach": { "type": "string", "minLength": 1 },
-        "observedDecision": { "type": "string", "minLength": 1 }
+        "boundedArtifact": { "type": "string", "minLength": 1 },
+        "higherCeilingArtifact": { "type": "string", "minLength": 1 },
+        "boundedCaptures": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "higherCeilingCaptures": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "builderSelectionRationale": { "type": "string", "minLength": 1 }
+      }
+    },
+    "continuity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stateKey", "sourceSelector", "affectedRegions"],
+      "properties": {
+        "stateKey": { "type": "string", "minLength": 1 },
+        "sourceSelector": { "type": "string", "minLength": 1 },
+        "affectedRegions": {
+          "type": "array",
+          "minItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["selector", "stage", "effect"],
+            "properties": {
+              "selector": { "type": "string", "minLength": 1 },
+              "stage": { "enum": ["before", "peak", "after"] },
+              "effect": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
       }
     },
     "mechanisms": {
       "type": "array",
-      "minItems": 3,
-      "maxItems": 3,
+      "minItems": 1,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["name", "selector", "trigger", "experienceRole", "ceilingContribution", "mediaMode", "continuityConnection", "mobileTransformation", "recommendedDifference", "meaningfulOutcome", "stateCount"],
+        "required": ["name", "stage", "selector", "trigger", "experienceRole", "ceilingContribution", "mediaMode", "continuityConnection", "mobileTransformation", "recommendedDifference", "meaningfulOutcome", "stateCount"],
         "properties": {
-          "name": { "enum": ["before", "peak", "after"] },
+          "name": { "type": "string", "minLength": 1 },
+          "stage": { "enum": ["before", "peak", "after"] },
           "selector": { "type": "string", "minLength": 1 },
           "trigger": { "enum": ["scroll", "click", "hover", "drag"] },
           "experienceRole": { "type": "string", "minLength": 1 },

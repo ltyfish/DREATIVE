@@ -197,9 +197,10 @@ decision, cost, risk, and insufficient version. Then map the selected treatments
 to route sections, including a meaningful post-hero peak and the continuity
 owner. User-selected treatment names or counts override direction defaults. UX and
 Mobile always apply. Showcase may use any treatment but has no minimum technology
-count. It does require a meaningful pre-peak mechanism, central signature mechanism,
-and post-peak mechanism or transformation; each must visibly change composition,
-media, state, or interaction. Static grids with thematic labels do not count.
+count. It requires one connected experience system: a meaningful choice or
+transformation must propagate through at least three non-adjacent regions across
+the pre-peak, central peak, and post-peak experience. Static grids, isolated
+widgets, and thematic labels do not count.
 Selection is a delivery promise, not checkbox coverage: every
 selected treatment needs a named owner and perceptible contribution, although
 one coherent mechanism may serve several treatments.
@@ -209,13 +210,14 @@ For Showcase, write the compact JSON contract defined by
 least two perceptible Showcase-only differences, two concrete product-native
 media opportunities and their use/reject reasons, and an observed comparison
 between one bounded prototype and one higher-ceiling media/spatial approach.
-Then define exactly the real `before`, `peak`, and `after` selectors and their
-triggers, experience roles, ceiling contributions, media modes, continuity
-connections, mobile transformations, and differences from Recommended. The
-contract also names each mechanism's observable state count and its meaningful
-product, composition, media, or decision outcome. At least two mechanisms must
-expose three meaningful states or direct manipulation; hover cannot own a
-journey's peak or post-peak transformation. The mechanisms must span at least two perceptibly different media modes. If the
+Reference actual prototype routes or files and desktop/mobile captures for both;
+self-authored prose is not evidence. Record any selection explanation only as a
+non-authoritative `builderSelectionRationale`; never call it a reviewer decision.
+Name one shared state, its source selector,
+and at least three affected selectors across `before`, `peak`, and `after`, with
+the concrete downstream effect in each. Then list only the real executable
+signature mechanisms. Hover cannot own a journey's peak or post-peak
+transformation. If the
 concept is a journey, process, or transformation, at least one mechanism must
 be scroll-authored and visibly transform content across stages; smooth scroll
 alone does not qualify. It is executable input and an accountability contract,
@@ -247,7 +249,8 @@ Efficient or ordinary Recommended direction. In the final response include two
 short disclosures:
 
 ```text
-Showcase ceiling delivered: <what visibly shipped>
+Showcase implementation attempted: <what visibly shipped>
+Independent visual verdict: pending
 Not pursued: <material advanced treatment rejected or replaced, and why>
 ```
 

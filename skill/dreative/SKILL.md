@@ -74,7 +74,7 @@ artifact or a performance of following instructions.
    `dreative finalize --codex --profile <direction> --visual-smoke-url <preview-url>`
    to print `DREATIVE_CHECKS_PASSED`. Visual smoke is mandatory for every
    substantial delivery and Showcase additionally requires an executable
-   three-entry mechanism contract. Compare the final
+   connected-experience contract with artifact-backed prototype evidence. Compare the final
    product against the current brief and user choices. Claim completion only
    when every promised route, section, treatment, behavior, and review pass is
    implemented and verified; otherwise continue or report the exact blockers.
@@ -92,37 +92,41 @@ artifact or a performance of following instructions.
 For Showcase, the delivered route must be visibly and structurally distinct
 from Recommended. A conventional long page with one isolated spectacle does
 not fulfill the highest-ceiling promise. In the final response state
-`Showcase ceiling delivered:` followed by the concrete mechanisms, media, and
-distributed experience that actually shipped. Also state `Not pursued:` for
+`Showcase implementation attempted:` followed by the concrete mechanisms,
+media, and distributed experience actually shipped, plus
+`Independent visual verdict: pending` unless a separate reviewer supplied a
+verdict. A builder must never award its own Showcase pass. Also state `Not pursued:` for
 any materially considered or promised advanced treatment that was rejected,
 downgraded, or replaced, with the product or prototype reason. Do not list
 irrelevant technologies merely to prove they were omitted.
 
-Showcase must include one meaningful mechanism before the central peak, the
-central signature mechanism, and one meaningful mechanism or transformation
-after it. Each must visibly change composition, media, state, or interaction;
-static grids with thematic labels do not count. If a required prototype would
+Showcase must implement one connected experience system. At least one meaningful
+choice or transformation must propagate through three non-adjacent regions
+spanning before the central peak, the peak, and after it. Independent widgets
+arranged in sequence do not establish continuity. If a required prototype would
 lower the selected ceiling or abandon promised choreography or media, pause
 and obtain the user's consent before changing the brief.
 Before implementation, bind the difference from Recommended: state the
 Recommended baseline, at least two perceptible Showcase-only qualities, two
 product-native media opportunities with use/reject reasons, and the observed
 result of comparing a bounded prototype with a higher-ceiling alternative.
+Both alternatives require inspectable routes or files plus desktop and mobile
+captures; prose written by the builder is not prototype evidence.
+The builder may record only a `builderSelectionRationale`, which is an
+inspectable assertion and never an independent review or quality verdict.
 "It works" is not proof that the bounded version reaches the stronger ceiling.
 
 Record the executable contract using `schemas/showcase-mechanism.schema.json`.
-Its `before`, `peak`, and `after` entries each need one real selector, a
-`scroll`, `click`, `hover`, or `drag` trigger, experience role, ceiling
-contribution, media mode, continuity connection, mobile transformation, and
-specific difference from Recommended. Each also declares an observable state
-count and the product meaning, composition, media, or decision outcome that
-changes. The three entries must span at least two
-perceptibly different media modes; three isolated local-state widgets do not
-define Showcase. At least two mechanisms must expose three meaningful states
-or use direct manipulation. Hover is a supporting state: it cannot own the peak
-or the post-peak mechanism in a journey. When the premise is a journey, process, or transformation,
+Name the shared state, its source selector, and at least three affected region
+selectors across `before`, `peak`, and `after`, with the concrete effect in each.
+Also record each real signature mechanism with its stage, selector, trigger,
+experience role, media mode, mobile transformation, and meaningful outcome.
+The mechanism list is evidence routing, not a required widget count. Hover is a
+supporting state: it cannot own the peak or post-peak mechanism in a journey.
+When the premise is a journey, process, or transformation,
 declare it as `journey` and include a substantial scroll-authored mechanism.
-Smooth scrolling alone does not qualify. Interface-style products may declare
+Smooth scrolling alone does not qualify. Bucketed text/class replacement alone
+is not a flagship transformation. Interface-style products may declare
 `interface` and use a different continuous interaction structure. Final visual
 smoke exercises each trigger and observes a visible geometry, style, media,
 content, or state change.

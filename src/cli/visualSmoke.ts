@@ -4,7 +4,8 @@ export type DeliveryProfile = "efficient" | "recommended" | "showcase";
 export type MechanismTrigger = "scroll" | "click" | "hover" | "drag";
 export type ShowcaseMediaMode = "dom-state" | "typography" | "image" | "video" | "svg" | "canvas" | "spatial-layout" | "3d";
 export interface MechanismContractEntry {
-  name: "before" | "peak" | "after";
+  name: string;
+  stage: "before" | "peak" | "after";
   selector: string;
   trigger: MechanismTrigger;
   experienceRole: string;
@@ -17,16 +18,33 @@ export interface MechanismContractEntry {
   stateCount: number;
 }
 export interface ShowcaseMechanismContract {
-  version: 1;
+  version: 2;
   experienceType: "journey" | "interface";
+  classification: {
+    implementation: "attempted";
+    independentVisualVerdict: "pending" | "downgraded";
+  };
   recommendedBaseline: string;
   showcaseDelta: string[];
   mediaOpportunities: { opportunity: string; decision: "use" | "reject"; rationale: string }[];
-  prototypeComparison: {
+  prototypeEvidence: {
     boundedApproach: string;
     higherCeilingApproach: string;
     selectedApproach: string;
-    observedDecision: string;
+    boundedArtifact: string;
+    higherCeilingArtifact: string;
+    boundedCaptures: string[];
+    higherCeilingCaptures: string[];
+    builderSelectionRationale: string;
+  };
+  continuity: {
+    stateKey: string;
+    sourceSelector: string;
+    affectedRegions: {
+      selector: string;
+      stage: "before" | "peak" | "after";
+      effect: string;
+    }[];
   };
   mechanisms: MechanismContractEntry[];
 }
@@ -250,7 +268,7 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
     if (mechanisms.length) {
       const positions: number[] = [];
       for (const mechanism of mechanisms) { const box = await page.locator(mechanism.selector).boundingBox(); if (box) positions.push(box.y); }
-      if (positions.length === 3 && !(positions[0] < positions[1] && positions[1] < positions[2])) blockers.push("Showcase mechanisms must be distributed in before, peak, after document order");
+      if (positions.length >= 3 && positions.some((position, index) => index > 0 && position <= positions[index - 1])) blockers.push("Showcase mechanisms must follow their declared experience order");
     }
     for (const mechanism of mechanisms) { await page.goto(url, { waitUntil: "domcontentloaded" }); await twoFrames(page); const failure = await exerciseMechanism(page, mechanism); if (failure) blockers.push(failure); }
   }
@@ -263,7 +281,9 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
 export function validateMechanisms(profile: DeliveryProfile, contract?: ShowcaseMechanismContract): string[] {
   if (profile !== "showcase") return [];
   const errors: string[] = [];
-  if (!contract || Array.isArray(contract) || contract.version !== 1) return ["Showcase requires a version 1 mechanism contract object"];
+  if (!contract || Array.isArray(contract) || contract.version !== 2) return ["Showcase requires a version 2 connected-experience contract; legacy three-widget contracts are rejected"];
+  if (contract.classification?.implementation !== "attempted") errors.push("Showcase must be reported as an implementation attempt, not self-certified delivery");
+  if (!["pending", "downgraded"].includes(contract.classification?.independentVisualVerdict)) errors.push("Showcase independent visual verdict must remain pending or downgraded in builder-authored evidence");
   if (!['journey', 'interface'].includes(contract.experienceType)) errors.push("Showcase experienceType must be journey or interface");
   if (!contract.recommendedBaseline?.trim()) errors.push("Showcase contract requires the Recommended baseline");
   if (!Array.isArray(contract.showcaseDelta) || contract.showcaseDelta.filter((item) => typeof item === "string" && item.trim()).length < 2) errors.push("Showcase contract requires at least two perceptible differences from Recommended");
@@ -271,21 +291,32 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
   for (const [index, item] of (contract.mediaOpportunities ?? []).entries()) {
     if (typeof item?.opportunity !== "string" || !item.opportunity.trim() || !["use", "reject"].includes(item.decision) || typeof item.rationale !== "string" || !item.rationale.trim()) errors.push(`media opportunity ${index + 1} requires an opportunity, use|reject decision, and rationale`);
   }
-  const prototype = contract.prototypeComparison;
-  if (!prototype || [prototype.boundedApproach, prototype.higherCeilingApproach, prototype.selectedApproach, prototype.observedDecision].some((item) => typeof item !== "string" || !item.trim())) errors.push("Showcase contract requires an observed comparison between bounded and higher-ceiling prototypes");
+  const prototype = contract.prototypeEvidence;
+  if (!prototype || [prototype.boundedApproach, prototype.higherCeilingApproach, prototype.selectedApproach, prototype.boundedArtifact, prototype.higherCeilingArtifact, prototype.builderSelectionRationale].some((item) => typeof item !== "string" || !item.trim())
+    || !Array.isArray(prototype.boundedCaptures) || prototype.boundedCaptures.length < 1
+    || !Array.isArray(prototype.higherCeilingCaptures) || prototype.higherCeilingCaptures.length < 1)
+    errors.push("Showcase requires artifact-backed bounded and higher-ceiling prototype evidence with captures");
+  const continuity = contract.continuity;
+  const affectedRegions = Array.isArray(continuity?.affectedRegions) ? continuity.affectedRegions : [];
+  if (!continuity?.stateKey?.trim() || !continuity?.sourceSelector?.trim()) errors.push("Showcase requires a named shared state and source selector");
+  if (affectedRegions.length < 3) errors.push("Showcase requires one meaningful state to affect at least three non-adjacent regions");
+  const continuityStages = new Set(affectedRegions.map((region) => region?.stage));
+  for (const stage of ["before", "peak", "after"]) if (!continuityStages.has(stage as "before" | "peak" | "after")) errors.push(`Showcase continuity is missing a ${stage} region`);
+  if (new Set(affectedRegions.map((region) => region?.selector)).size !== affectedRegions.length) errors.push("Showcase continuity selectors must be unique");
+  for (const [index, region] of affectedRegions.entries()) {
+    if (!region?.selector?.trim() || !region?.effect?.trim() || !["before", "peak", "after"].includes(region?.stage)) errors.push(`continuity region ${index + 1} requires selector, stage, and concrete effect`);
+  }
   const mechanisms = Array.isArray(contract.mechanisms) ? contract.mechanisms.filter((item) => item && typeof item === "object") : [];
-  if (mechanisms.length !== 3) errors.push("Showcase mechanism contract must contain exactly three entries");
+  if (mechanisms.length < 1) errors.push("Showcase requires at least one executable signature mechanism");
   const names = mechanisms.map((item) => item.name);
-  errors.push(...["before", "peak", "after"].filter((name) => !names.includes(name as MechanismContractEntry["name"])).map((name) => `Showcase mechanism contract is missing ${name}`));
   if (new Set(names).size !== names.length) errors.push("Showcase mechanism names must be unique");
   if (new Set(mechanisms.map((item) => item.selector)).size !== mechanisms.length) errors.push("Showcase mechanism selectors must be unique");
-  if (new Set(mechanisms.map((item) => item.mediaMode)).size < 2) errors.push("Showcase mechanisms must use at least two perceptibly different media modes");
   if (contract.experienceType === "journey" && !mechanisms.some((item) => item.trigger === "scroll")) errors.push("A Showcase journey requires at least one substantial scroll-authored mechanism");
-  if (contract.experienceType === "journey" && mechanisms.some((item) => item.name === "after" && item.trigger === "hover")) errors.push("A Showcase journey cannot use hover alone as its post-peak mechanism");
-  if (mechanisms.some((item) => item.name === "peak" && item.trigger === "hover")) errors.push("A Showcase peak cannot be hover-only");
-  const deepMechanisms = mechanisms.filter((item) => Number.isInteger(item.stateCount) && (item.stateCount >= 3 || item.trigger === "drag"));
-  if (deepMechanisms.length < 2) errors.push("Showcase requires at least two multi-stage or directly manipulated mechanisms");
+  if (contract.experienceType === "journey" && mechanisms.some((item) => item.stage === "after" && item.trigger === "hover")) errors.push("A Showcase journey cannot use hover alone as its post-peak mechanism");
+  if (mechanisms.some((item) => item.stage === "peak" && item.trigger === "hover")) errors.push("A Showcase peak cannot be hover-only");
   for (const item of mechanisms) {
+    if (!item.name?.trim()) errors.push("Showcase mechanism requires a name");
+    if (!["before", "peak", "after"].includes(item.stage)) errors.push(`${item.name} mechanism requires a valid stage`);
     if (!item.selector?.trim()) errors.push(`${item.name} mechanism requires a selector`);
     if (!["scroll", "click", "hover", "drag"].includes(item.trigger)) errors.push(`${item.name} mechanism has an invalid trigger`);
     for (const key of ["experienceRole", "ceilingContribution", "continuityConnection", "mobileTransformation", "recommendedDifference"] as const)
