@@ -88,15 +88,16 @@ async function visibleFingerprint(page: Page, selector: string): Promise<string>
 
 async function continuityFingerprint(page: Page, selector: string): Promise<string> {
   return page.locator(selector).evaluate((root) => JSON.stringify([root, ...Array.from(root.querySelectorAll("*"))].slice(0, 60).map((node) => {
-    const element = node as HTMLElement;
+    const element = node as Element;
     const rect = element.getBoundingClientRect();
     const style = getComputedStyle(element);
     if (rect.width < 2 || rect.height < 2 || style.display === "none" || style.visibility === "hidden" || Number(style.opacity) <= .02) return null;
+    const renderedText = element instanceof HTMLElement ? element.innerText : element.textContent;
     const source = element instanceof HTMLImageElement ? element.currentSrc : "";
     const media = element instanceof HTMLMediaElement ? `${element.currentTime.toFixed(2)}:${element.paused}` : "";
     let canvas = "";
     if (element instanceof HTMLCanvasElement) try { canvas = element.toDataURL().slice(-160); } catch { canvas = "unreadable"; }
-    return [element.tagName, element.textContent?.trim().slice(0, 120), Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height), style.transform, style.opacity, style.color, style.backgroundColor, style.filter, style.clipPath, style.backgroundImage, source, media, canvas];
+    return [element.tagName, renderedText?.trim().slice(0, 120), Math.round(rect.x + scrollX), Math.round(rect.y + scrollY), Math.round(rect.width), Math.round(rect.height), style.transform, style.opacity, style.color, style.backgroundColor, style.filter, style.clipPath, style.backgroundImage, source, media, canvas];
   }).filter(Boolean)));
 }
 
@@ -206,6 +207,8 @@ async function verifyContinuity(page: Page, contract: ShowcaseMechanismContract)
   const errors: string[] = [];
   const source = page.locator(contract.continuity.sourceSelector);
   if (await source.count() !== 1) return [`Showcase continuity source ${contract.continuity.sourceSelector} must resolve to exactly one element`];
+  await source.scrollIntoViewIfNeeded();
+  await twoFrames(page);
   const sourceBox = await source.boundingBox();
   if (!sourceBox || sourceBox.width < 8 || sourceBox.height < 8) return [`Showcase continuity source ${contract.continuity.sourceSelector} is hidden or zero-sized`];
   const regions = contract.continuity.affectedRegions;
@@ -231,7 +234,6 @@ async function verifyContinuity(page: Page, contract: ShowcaseMechanismContract)
   for (let state = 0; state < contract.continuity.stateCount; state += 1) {
     for (let index = 0; index < regions.length; index += 1) signatures[index].add(await continuityFingerprint(page, regions[index].selector));
     if (state === contract.continuity.stateCount - 1) break;
-    await source.scrollIntoViewIfNeeded();
     if (contract.continuity.sourceTrigger === "click") await source.click();
     else {
       const box = await source.boundingBox();

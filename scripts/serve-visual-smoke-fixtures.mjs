@@ -11,6 +11,8 @@ const staticStickyScrollMechanism = shell(`<section id="before"><button>Before</
 const lyingMedia = shell(`<section id="before"><button>Before</button><div class="box"></div></section><section id="lying-peak"><button>Peak</button><div class="box"></div></section><section id="after"><button>After</button><div class="box"></div><div class="box"></div></section>`, `for(const section of document.querySelectorAll('section'))section.onclick=()=>section.classList.toggle('changed')`);
 const isolatedWidgets = shell(mechanisms, `for(const section of document.querySelectorAll('section'))section.onclick=()=>{const stage=(Number(section.dataset.stage||0)+1)%3;section.dataset.stage=stage;for(const box of section.querySelectorAll('.box'))box.style.transform='translateX('+(stage*40)+'px)'}`);
 const dataOnlyContinuity = shell(mechanisms, `document.querySelector('#before').onclick=()=>{const stage=(Number(document.body.dataset.stage||0)+1)%3;document.body.dataset.stage=stage;for(const section of document.querySelectorAll('section'))section.dataset.sharedStage=stage}`);
+const scrollOnlyContinuity = shell(`<div style="height:120vh"><h1>Intro spacer</h1></div>${mechanisms}`);
+const hiddenTextContinuity = shell(`<section id="before"><button>Before</button><div class="box"></div><span hidden>state 0</span></section><section id="peak"><button>Peak</button><svg viewBox="0 0 120 120" width="120" height="120"><rect class="box" width="120" height="120" fill="#f60"/></svg><span hidden>state 0</span></section><section id="after"><button>After</button><div class="box"></div><div class="box"></div><span hidden>state 0</span></section>`, `document.querySelector('#before').onclick=()=>{const stage=(Number(document.body.dataset.stage||0)+1)%3;document.body.dataset.stage=stage;for(const hidden of document.querySelectorAll('span[hidden]'))hidden.textContent='state '+stage}`);
 const prototypeBounded = shell(`<section><h1>Bounded prototype</h1><div class="box"></div></section>`);
 const prototypeHighCeiling = shell(`<section><h1>Higher-ceiling prototype</h1><svg viewBox="0 0 200 100"><circle cx="50" cy="50" r="40"/></svg></section>`);
 const pages = {
@@ -28,6 +30,8 @@ const pages = {
   "/lying-media": lyingMedia,
   "/isolated-widgets": isolatedWidgets,
   "/data-only-continuity": dataOnlyContinuity,
+  "/scroll-only-continuity": scrollOnlyContinuity,
+  "/hidden-text-continuity": hiddenTextContinuity,
   "/prototype/bounded": prototypeBounded,
   "/prototype/high-ceiling": prototypeHighCeiling,
   "/console": shell(`<section><h1>Runtime failure</h1></section>`, `console.error('fixture exploded')`),
