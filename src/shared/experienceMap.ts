@@ -105,6 +105,17 @@ export function readExperienceMap(file: string): ExperienceMap {
   return parsed as ExperienceMap;
 }
 
+export function validateShowcaseExperienceMap(map: ExperienceMap): string[] {
+  const errors: string[] = [];
+  if (map.direction !== "showcase") errors.push("Showcase finalization requires an Experience Map with direction showcase");
+  const peak = map.sections.find((section) => section.id === map.primaryPeak);
+  if (!peak) errors.push("Showcase Experience Map primaryPeak must resolve to a section");
+  else if (peak.intensity !== 5) errors.push("Showcase Experience Map primary peak must have intensity 5");
+  if (!map.sections.some((section) => section.intensity === 5))
+    errors.push("Showcase Experience Map requires at least one intensity-5 section");
+  return errors;
+}
+
 export function renderExperienceMap(map: ExperienceMap): string {
   const width = Math.max(7, ...map.sections.map((section) => section.title.length));
   const rows = map.sections.map((section) => {

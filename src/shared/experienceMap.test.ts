@@ -4,6 +4,7 @@ import {
   journeyBalanceAdvisories,
   renderExperienceMap,
   renderImplementationObligations,
+  validateShowcaseExperienceMap,
   validateExperienceMap,
   type ExperienceMap,
 } from "./experienceMap.js";
@@ -99,4 +100,14 @@ test("experience maps reject duplicate selector/property ownership", () => {
     ],
   };
   assert.match(validateExperienceMap(conflict).join("\n"), /conflicts with scroll timeline ownership of #roast transform/);
+});
+
+test("Showcase maps require Showcase direction and an intensity-5 primary peak", () => {
+  assert.deepEqual(validateShowcaseExperienceMap(map), []);
+  const recommended = { ...map, direction: "recommended" as const };
+  assert.match(validateShowcaseExperienceMap(recommended).join("\n"), /direction showcase/);
+  const weakPeak = { ...map, sections: map.sections.map((section) => section.id === "roast" ? { ...section, intensity: 4 as const } : section) };
+  const errors = validateShowcaseExperienceMap(weakPeak).join("\n");
+  assert.match(errors, /primary peak must have intensity 5/);
+  assert.match(errors, /at least one intensity-5 section/);
 });

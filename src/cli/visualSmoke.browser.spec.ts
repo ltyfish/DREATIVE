@@ -158,6 +158,18 @@ test("prototype fidelity and animation ownership are mandatory contract fields",
   expect(validateMechanisms("showcase", missingOwner).join("\n")).toContain("requires one animationOwner");
 });
 
+test("Showcase rejects a Recommended map and unbound intensity-5 peak", async () => {
+  const recommended = { ...experienceMap, direction: "recommended" as const };
+  const direction = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: contract, experienceMap: recommended });
+  expect(direction.blockers.join("\n")).toContain("direction showcase");
+  const unbound = {
+    ...experienceMap,
+    sections: experienceMap.sections.map((section) => section.id === "peak" ? { ...section, selector: "#not-a-mechanism" } : section),
+  };
+  const binding = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: contract, experienceMap: unbound });
+  expect(binding.blockers.join("\n")).toContain("is not bound to a verified Showcase mechanism");
+});
+
 test("a journey requires scroll-authored choreography", () => {
   expect(validateMechanisms("showcase", { ...contract, experienceType: "journey" })).toContain("A Showcase journey requires at least one substantial scroll-authored mechanism");
 });

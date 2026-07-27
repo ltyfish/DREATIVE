@@ -2,7 +2,7 @@ import { chromium, type Browser, type Page } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
-import type { ExperienceMap } from "../shared/experienceMap.js";
+import { validateShowcaseExperienceMap, type ExperienceMap } from "../shared/experienceMap.js";
 
 export type DeliveryProfile = "efficient" | "recommended" | "showcase";
 export type MechanismTrigger = "scroll" | "click" | "hover" | "drag";
@@ -698,6 +698,7 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
 
 export async function runVisualSmoke(url: string, options: VisualSmokeOptions): Promise<VisualSmokeResult> {
   const contractErrors = validateMechanisms(options.profile, options.showcase);
+  if (options.profile === "showcase" && options.experienceMap) contractErrors.push(...validateShowcaseExperienceMap(options.experienceMap));
   if (contractErrors.length) return { ok: false, blockers: contractErrors, checks: [] };
   const browser = await chromium.launch({ headless: true });
   try {

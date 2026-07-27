@@ -75,8 +75,8 @@ export function localShowcaseArtifacts(contract: {
   const files: string[] = [];
   const blockers: string[] = [];
   for (const value of values) {
-    if (/^https?:\/\//i.test(value) || value.startsWith("/")) continue;
-    if (path.isAbsolute(value)) blockers.push(`Showcase evidence must not use an absolute machine path: ${value}`);
+    if (/^https?:\/\//i.test(value)) continue;
+    if (path.win32.isAbsolute(value) || path.posix.isAbsolute(value)) blockers.push(`Showcase evidence must not use an absolute machine path: ${value}`);
     else files.push(value);
   }
   return { files: [...new Set(files)], blockers };

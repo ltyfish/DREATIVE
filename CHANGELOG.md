@@ -14,6 +14,9 @@
   at both 390px and 320px.
 - Add bounded adoption guidance for full-site research, product flows,
   component sources, specialist tools, and mutually exclusive animation owners.
+- Reject Windows and POSIX absolute evidence paths on every host, ignore only
+  local Claude settings, and require Showcase direction with an intensity-5
+  primary peak bound to an executable mechanism.
 
 ## 1.3.0
 

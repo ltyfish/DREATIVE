@@ -19,7 +19,7 @@ import { availableSkills, checkSkillInstallation, installSkill, installationDire
 import { renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
 import { renderConfigurationChoices, renderDeliveryBrief, renderDetailedPlanGuide, type DeliveryProfileId } from "../shared/deliveryProfiles.js";
 import { initializeProjectContext, readProjectContext } from "../shared/projectContext.js";
-import { journeyBalanceAdvisories, readExperienceMap, renderExperienceMap, renderImplementationObligations } from "../shared/experienceMap.js";
+import { journeyBalanceAdvisories, readExperienceMap, renderExperienceMap, renderImplementationObligations, validateShowcaseExperienceMap } from "../shared/experienceMap.js";
 
 const args = process.argv.slice(2);
 const cmd = args[0] && !args[0].startsWith("-") ? args[0] : "brief";
@@ -152,6 +152,14 @@ async function main(): Promise<void> {
       }
       const showcase = contractInput ? JSON.parse(fs.existsSync(path.resolve(contractInput)) ? fs.readFileSync(path.resolve(contractInput), "utf8") : contractInput) as ShowcaseMechanismContract : undefined;
       const experienceMap = experienceMapInput ? readExperienceMap(path.resolve(experienceMapInput)) : undefined;
+      if (profile === "showcase" && experienceMap) {
+        const mapBlockers = validateShowcaseExperienceMap(experienceMap);
+        if (mapBlockers.length) {
+          mapBlockers.forEach((item) => console.error(`BLOCKER ${item}`));
+          process.exitCode = 1;
+          return;
+        }
+      }
       if (showcase) {
         const nested = localShowcaseArtifacts(showcase);
         const nestedBlockers = [...nested.blockers, ...checkPortableArtifacts(process.cwd(), nested.files)];

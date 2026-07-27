@@ -171,7 +171,9 @@ test("nested Showcase evidence rejects absolute paths and returns local portable
     },
   });
   assert.deepEqual(result.files, ["evidence/desktop.png", "evidence/desktop.webm"]);
-  assert.match(result.blockers.join("\n"), /absolute machine path/);
+  assert.equal(result.blockers.length, 2);
+  assert.match(result.blockers.join("\n"), /C:\\private\\desktop\.png/);
+  assert.match(result.blockers.join("\n"), /\/capture\/mobile/);
 });
 
 test("clean-worktree verification refuses a dirty HEAD", () => {
