@@ -16,10 +16,13 @@ const contract: ShowcaseMechanismContract = {
     boundedApproach: "Independent DOM controls.",
     higherCeilingApproach: "Connected SVG and spatial state system.",
     selectedApproach: "Connected SVG and spatial state system.",
+    selectedBy: "user",
     boundedArtifact: "/prototype/bounded",
     higherCeilingArtifact: "/prototype/high-ceiling",
     boundedCaptures: { desktop: `${base}/capture/bounded-desktop.svg`, mobile: `${base}/capture/bounded-mobile.svg` },
     higherCeilingCaptures: { desktop: `${base}/capture/high-ceiling-desktop.svg`, mobile: `${base}/capture/high-ceiling-mobile.svg` },
+    boundedRecordings: { desktop: `${base}/recording/bounded-desktop.mp4`, mobile: `${base}/recording/bounded-mobile.mp4` },
+    higherCeilingRecordings: { desktop: `${base}/recording/high-ceiling-desktop.mp4`, mobile: `${base}/recording/high-ceiling-mobile.mp4` },
     builderSelectionRationale: "The connected system made the state transition visibly legible; this is a builder assertion, not an independent verdict.",
   },
   continuity: {
@@ -34,9 +37,9 @@ const contract: ShowcaseMechanismContract = {
     ],
   },
   mechanisms: [
-    { name: "readiness-control", stage: "before", selector: "#before", trigger: "click", experienceRole: "opens", ceilingContribution: "introduces tactile state", mediaMode: "dom-state", continuityConnection: "shared control state", mobileTransformation: "direct tap", recommendedDifference: "begins the connected instrument", meaningfulOutcome: "reveals increasing product readiness", stateCount: 3 },
-    { name: "instrument-peak", stage: "peak", selector: "#peak", trigger: "click", experienceRole: "transforms", ceilingContribution: "changes visual medium", mediaMode: "svg", continuityConnection: "shared control state", mobileTransformation: "bounded SVG", recommendedDifference: "creates the central visual transformation", meaningfulOutcome: "moves the product through three visible process stages", stateCount: 3 },
-    { name: "decision-resolution", stage: "after", selector: "#after", trigger: "click", experienceRole: "resolves", ceilingContribution: "closes the state arc", mediaMode: "spatial-layout", continuityConnection: "shared control state", mobileTransformation: "stacked resolution", recommendedDifference: "resolves the connected instrument", meaningfulOutcome: "recomposes the result into three decision states", stateCount: 3 },
+    { name: "readiness-control", stage: "before", selector: "#before", primarySelector: ".box", primarySubject: "readiness indicator", trigger: "click", experienceRole: "opens", ceilingContribution: "introduces tactile state", mediaMode: "dom-state", continuityConnection: "shared control state", mobileTransformation: "direct tap", recommendedDifference: "begins the connected instrument", meaningfulOutcome: "reveals increasing product readiness", stateCount: 3 },
+    { name: "instrument-peak", stage: "peak", selector: "#peak", primarySelector: "svg", primarySubject: "process instrument", trigger: "click", experienceRole: "transforms", ceilingContribution: "changes visual medium", mediaMode: "svg", continuityConnection: "shared control state", mobileTransformation: "bounded SVG", recommendedDifference: "creates the central visual transformation", meaningfulOutcome: "moves the product through three visible process stages", stateCount: 3 },
+    { name: "decision-resolution", stage: "after", selector: "#after", primarySelector: ".box:first-of-type", primarySubject: "decision layout", trigger: "click", experienceRole: "resolves", ceilingContribution: "closes the state arc", mediaMode: "spatial-layout", continuityConnection: "shared control state", mobileTransformation: "stacked resolution", recommendedDifference: "resolves the connected instrument", meaningfulOutcome: "recomposes the result into three decision states", stateCount: 3 },
   ],
 };
 
@@ -48,7 +51,7 @@ test("healthy responsive fixture and three real mechanisms pass", async () => {
 test("declared media must exist in the mechanism region", async () => {
   const dishonest = { ...contract, mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#lying-peak" } : item) };
   const result = await runVisualSmoke(`${base}/lying-media`, { profile: "showcase", showcase: dishonest });
-  expect(result.blockers).toContain("instrument-peak mechanism declares svg but its region contains no matching visible medium");
+  expect(result.blockers).toContain("instrument-peak primary selector svg must resolve to exactly one element inside #lying-peak");
 });
 
 test("scroll-authored mechanisms must expose at least three sampled states", async () => {
@@ -56,7 +59,7 @@ test("scroll-authored mechanisms must expose at least three sampled states", asy
     ...contract,
     experienceType: "journey" as const,
     continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.map((region) => region.stage === "peak" ? { ...region, selector: "#scroll-story" } : region) },
-    mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
+    mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", primarySelector: ".box", primarySubject: "scrolling process block", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
   };
   const result = await runVisualSmoke(`${base}/scroll-mechanism`, { profile: "showcase", showcase: journey });
   expect(result.blockers).toEqual([]);
@@ -67,7 +70,7 @@ test("a tall static section cannot impersonate scroll-authored choreography", as
     ...contract,
     experienceType: "journey" as const,
     continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.map((region) => region.stage === "peak" ? { ...region, selector: "#scroll-story" } : region) },
-    mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
+    mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", primarySelector: ".box", primarySubject: "scrolling process block", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
   };
   const result = await runVisualSmoke(`${base}/static-scroll-mechanism`, { profile: "showcase", showcase: journey });
   expect(result.blockers).toContain("instrument-peak scroll mechanism #scroll-story produced 1 distinct states; 3 are declared");
@@ -78,7 +81,7 @@ test("static sticky elements cannot impersonate scroll-authored choreography", a
     ...contract,
     experienceType: "journey" as const,
     continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.map((region) => region.stage === "peak" ? { ...region, selector: "#scroll-story" } : region) },
-    mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
+    mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", primarySelector: ".box", primarySubject: "scrolling process block", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
   };
   const result = await runVisualSmoke(`${base}/static-sticky-scroll-mechanism`, { profile: "showcase", showcase: journey });
   expect(result.blockers).toContain("instrument-peak scroll mechanism #scroll-story produced 1 distinct states; 3 are declared");
@@ -89,7 +92,7 @@ test("opacity and uniform scale cannot impersonate a Showcase transformation", a
     ...contract,
     experienceType: "journey" as const,
     continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.map((region) => region.stage === "peak" ? { ...region, selector: "#scroll-story" } : region) },
-    mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
+    mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", primarySelector: ".box", primarySubject: "scrolling process block", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
   };
   const result = await runVisualSmoke(`${base}/scale-only-scroll-mechanism`, { profile: "showcase", showcase: journey });
   expect(result.blockers.join("\n")).toContain("changes only text, opacity, color, filter, or uniform scale");
@@ -100,7 +103,7 @@ test("desktop-only choreography fails the mobile Showcase equivalent", async () 
     ...contract,
     experienceType: "journey" as const,
     continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.map((region) => region.stage === "peak" ? { ...region, selector: "#scroll-story" } : region) },
-    mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
+    mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", primarySelector: ".box", primarySubject: "scrolling process block", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
   };
   const result = await runVisualSmoke(`${base}/desktop-only-scroll-mechanism`, { profile: "showcase", showcase: journey });
   expect(result.blockers.join("\n")).toContain("mobile Showcase equivalent missing");
@@ -168,6 +171,23 @@ test("tiny or viewport-inappropriate captures are rejected", async () => {
   const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: { ...contract, prototypeEvidence: { ...contract.prototypeEvidence, boundedCaptures: captures } } });
   expect(result.blockers.join("\n")).toContain("must be a desktop-like image");
   expect(result.blockers.join("\n")).toContain("must be a mobile-like image");
+});
+
+test("prototype motion recordings are executable required evidence", async () => {
+  const missing = { ...contract, prototypeEvidence: { ...contract.prototypeEvidence, boundedRecordings: { desktop: "", mobile: `${base}/missing-recording.mp4` } } };
+  const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: missing });
+  expect(result.blockers.join("\n")).toContain("desktop/mobile captures and motion recordings");
+});
+
+test("desktop and mobile prototype recordings must be distinct", async () => {
+  const same = `${base}/recording/bounded-desktop.mp4`;
+  const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: { ...contract, prototypeEvidence: { ...contract.prototypeEvidence, boundedRecordings: { desktop: same, mobile: same } } } });
+  expect(result.blockers.join("\n")).toContain("bounded desktop and mobile recordings must be different files");
+});
+
+test("aria-hidden decoration cannot satisfy primary transformation salience", async () => {
+  const result = await runVisualSmoke(`${base}/decorative-primary`, { profile: "showcase", showcase: contract });
+  expect(result.blockers.join("\n")).toContain("primary subject process instrument is aria-hidden decoration");
 });
 
 test("nonexistent continuity selectors and prototype evidence fail browser verification", async () => {

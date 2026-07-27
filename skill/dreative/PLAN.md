@@ -1,7 +1,8 @@
 # Planning protocol
 
 Planning has two required, blocking user-facing stages—direction and compact
-configuration—plus an optional reveal of the detailed Creative Decision Brief.
+configuration—plus a blocking prototype review whenever Prototype is selected
+and produced, and an optional reveal of the detailed Creative Decision Brief.
 The reveal is optional; creating and using the complete private brief is not.
 Keep private exploration private. Do not edit implementation files until both
 stages have an explicit user response. Never silently apply recommended settings.
@@ -112,6 +113,12 @@ capabilities are necessary for the selected experience.
 
 Defaults: Efficient=Skip, Recommended=Auto, Showcase=Required.
 
+If Auto results in a prototype, or Required is selected, implementation pauses
+after both alternatives and their desktop/mobile captures and recordings exist.
+Show them together and ask the user to select the bounded or higher-ceiling
+approach. Do not integrate, self-select, or treat silence/general permission as
+a choice. Record the resulting selection as `selectedBy: "user"`.
+
 ## Stage 3: private Creative Decision Brief and optional reveal
 
 After direction and configuration are resolved, always complete this entire
@@ -217,7 +224,9 @@ non-authoritative `builderSelectionRationale`; never call it a reviewer decision
 Name one shared state, its source selector,
 and at least three affected selectors across `before`, `peak`, and `after`, with
 the concrete downstream effect in each. Then list only the real executable
-signature mechanisms. Hover cannot own a journey's peak or post-peak
+signature mechanisms. Each mechanism must identify its primary product subject
+and selector; a decorative orbit, particle, label, or `aria-hidden` element
+cannot satisfy primary transformation salience. Hover cannot own a journey's peak or post-peak
 transformation. If the
 concept is a journey, process, or transformation, at least one mechanism must
 be scroll-authored and visibly transform content across stages; smooth scroll
@@ -261,6 +270,17 @@ Always ask the user to inspect the supplied rendered views and provide the
 independent visual verdict. Codex must not author, infer, store, or promote it.
 
 After the explicit configuration reply, implement. Do not generate a second approval
-or contract gate.
+or contract gate. The prototype-review pause above is the sole
+exception because it occurs only when the user selected a prototype workflow.
+
+Every substantial final handoff ends with:
+
+```text
+Implementation complete; human taste verdict: awaiting user review
+```
+
+This applies to Efficient, Recommended, and Showcase. Technical completion is
+not human acceptance. Supply the rendered views, ask for the verdict, and do
+not call the design finished or taste-approved before the user replies.
 For an opted-in evaluation package, reconcile the decision record and final
 review with the delivered source and rendered result before completion.

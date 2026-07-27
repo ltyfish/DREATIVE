@@ -108,6 +108,8 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "PLAN.md", plan, /Showcase implementation attempted:[\s\S]*Independent visual verdict:\s*awaiting user review[\s\S]*ask the user/i, "Showcase must reserve the visual verdict for the user");
   requireText(findings, "PLAN.md", plan, /Not pursued:/i, "Showcase must disclose material rejected or replaced treatments");
   requireText(findings, "PLAN.md", plan, /bounded prototype[\s\S]*higher-ceiling/i, "Showcase prototypes must compare a bounded and higher-ceiling approach");
+  requireText(findings, "PLAN.md", plan, /blocking prototype review[\s\S]*selectedBy:\s*"user"/i, "selected prototypes must pause for explicit user selection");
+  requireText(findings, "PLAN.md", plan, /Every substantial final handoff[\s\S]*human taste verdict:\s*awaiting user review/i, "substantial design work must reserve taste acceptance for the user");
   requireText(findings, "PLAN.md", plan, /token-.+efficient|least tokens/i, "Efficient must optimize token use");
 
   const publicContract = `${skill}\n${plan}`;

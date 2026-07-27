@@ -10,6 +10,8 @@ export interface MechanismContractEntry {
   name: string;
   stage: "before" | "peak" | "after";
   selector: string;
+  primarySelector: string;
+  primarySubject: string;
   trigger: MechanismTrigger;
   experienceRole: string;
   ceilingContribution: string;
@@ -37,6 +39,9 @@ export interface ShowcaseMechanismContract {
     higherCeilingArtifact: string;
     boundedCaptures: { desktop: string; mobile: string };
     higherCeilingCaptures: { desktop: string; mobile: string };
+    boundedRecordings: { desktop: string; mobile: string };
+    higherCeilingRecordings: { desktop: string; mobile: string };
+    selectedBy: "user";
     builderSelectionRationale: string;
   };
   continuity: {
@@ -145,9 +150,12 @@ async function declaredMediaFingerprint(page: Page, entry: MechanismContractEntr
 }
 
 async function structuralMediaFingerprint(page: Page, entry: MechanismContractEntry): Promise<string> {
-  return page.locator(entry.selector).evaluate((root, mediaMode) => {
-    const rootRect = root.getBoundingClientRect();
-    const all = [root, ...Array.from(root.querySelectorAll("*"))] as HTMLElement[];
+  return page.locator(entry.selector).evaluate((root, input) => {
+    const primary = root.querySelector(input.primarySelector);
+    if (!(primary instanceof HTMLElement || primary instanceof SVGElement)) return "missing-primary";
+    const rootRect = primary.getBoundingClientRect();
+    const all = [primary, ...Array.from(primary.querySelectorAll("*"))] as HTMLElement[];
+    const mediaMode = input.mediaMode;
     const selector = mediaMode === "svg" ? "svg,svg *" : mediaMode === "image" ? "img,picture" : mediaMode === "video" ? "video" : mediaMode === "canvas" ? "canvas" : mediaMode === "3d" ? "canvas,[data-dreative-3d]" : "*";
     const nodes = mediaMode === "dom-state" || mediaMode === "typography" || mediaMode === "spatial-layout" ? all : all.filter((element) => element !== root && element.matches(selector));
     const meaningfulTransform = (value: string): string => {
@@ -170,7 +178,7 @@ async function structuralMediaFingerprint(page: Page, entry: MechanismContractEn
       if (element instanceof HTMLCanvasElement) try { canvas = element.toDataURL().slice(-160); } catch { canvas = "unreadable"; }
       return [element.tagName, viewportPinned ? null : Math.round(rect.x - rootRect.x), viewportPinned ? null : Math.round(rect.y - rootRect.y), layoutWidth, layoutHeight, meaningfulTransform(style.transform), style.clipPath, style.backgroundImage, source, media, canvas];
     }));
-  }, entry.mediaMode);
+  }, { mediaMode: entry.mediaMode, primarySelector: entry.primarySelector });
 }
 
 async function spatialGeometry(page: Page, entry: MechanismContractEntry): Promise<string[]> {
@@ -206,6 +214,17 @@ async function exerciseMechanism(page: Page, entry: MechanismContractEntry): Pro
   if (await locator.count() !== 1) return `${entry.name} selector ${entry.selector} must resolve to exactly one element`;
   const box = await locator.boundingBox();
   if (!box || box.width < 8 || box.height < 8) return `${entry.name} selector ${entry.selector} is hidden or zero-sized`;
+  const primary = locator.locator(entry.primarySelector);
+  if (await primary.count() !== 1) return `${entry.name} primary selector ${entry.primarySelector} must resolve to exactly one element inside ${entry.selector}`;
+  const primaryProblem = await primary.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    const style = getComputedStyle(element);
+    if (element.getAttribute("aria-hidden") === "true") return "is aria-hidden decoration";
+    if (rect.width < 24 || rect.height < 24 || rect.width * rect.height < innerWidth * innerHeight * .01) return "occupies less than 1% of the viewport";
+    if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) <= .02) return "is not visibly rendered";
+    return null;
+  });
+  if (primaryProblem) return `${entry.name} primary subject ${entry.primarySubject} ${primaryProblem}`;
   await locator.scrollIntoViewIfNeeded();
   await twoFrames(page);
   const mediaFailure = await verifyDeclaredMedia(page, entry);
@@ -318,6 +337,14 @@ function captureProblem(bytes: Buffer, contentType: string, viewport: "desktop" 
   return null;
 }
 
+function recordingProblem(bytes: Buffer, contentType: string, source: string): string | null {
+  if (bytes.length < 1024) return "is too small to be a usable motion recording";
+  const mp4 = bytes.length >= 12 && bytes.subarray(4, 8).toString("ascii") === "ftyp";
+  const webm = bytes.length >= 4 && bytes.subarray(0, 4).equals(Buffer.from([0x1a, 0x45, 0xdf, 0xa3]));
+  if (!mp4 && !webm && !/video\/(mp4|webm)/i.test(contentType)) return `is not a recognized MP4 or WebM recording: ${source}`;
+  return null;
+}
+
 async function verifyPrototypeEvidence(context: Awaited<ReturnType<Browser["newContext"]>>, url: string, contract: ShowcaseMechanismContract): Promise<string[]> {
   const errors: string[] = [];
   const artifactFingerprints: string[] = [];
@@ -357,6 +384,31 @@ async function verifyPrototypeEvidence(context: Awaited<ReturnType<Browser["newC
       }
     }
     if (captureHashes.length === 2 && captureHashes[0] === captureHashes[1]) errors.push(`${label} desktop and mobile captures must be different images`);
+  }
+  for (const [label, recordings] of [["bounded", contract.prototypeEvidence.boundedRecordings], ["higher-ceiling", contract.prototypeEvidence.higherCeilingRecordings]] as const) {
+    const hashes: string[] = [];
+    for (const viewport of ["desktop", "mobile"] as const) {
+      const recording = recordings?.[viewport];
+      if (!recording?.trim()) { errors.push(`${label} prototype requires a ${viewport} motion recording`); continue; }
+      let bytes: Buffer | null = null;
+      let contentType = "";
+      if (/^https?:\/\//i.test(recording)) {
+        const response = await context.request.get(recording);
+        contentType = response.headers()["content-type"] ?? "";
+        if (!response.ok()) errors.push(`${label} ${viewport} recording is not loadable: ${recording}`);
+        else bytes = Buffer.from(await response.body());
+      } else {
+        const file = path.resolve(recording);
+        if (!fs.existsSync(file) || !fs.statSync(file).isFile()) errors.push(`${label} ${viewport} recording does not exist: ${file}`);
+        else { bytes = fs.readFileSync(file); contentType = path.extname(file); }
+      }
+      if (bytes) {
+        const problem = recordingProblem(bytes, contentType, recording);
+        if (problem) errors.push(`${label} ${viewport} recording ${problem}`);
+        hashes.push(createHash("sha256").update(bytes).digest("hex"));
+      }
+    }
+    if (hashes.length === 2 && hashes[0] === hashes[1]) errors.push(`${label} desktop and mobile recordings must be different files`);
   }
   return errors;
 }
@@ -505,8 +557,9 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
   }
   const prototype = contract.prototypeEvidence;
   if (!prototype || [prototype.boundedApproach, prototype.higherCeilingApproach, prototype.selectedApproach, prototype.boundedArtifact, prototype.higherCeilingArtifact, prototype.builderSelectionRationale].some((item) => typeof item !== "string" || !item.trim())
-    || [prototype?.boundedCaptures?.desktop, prototype?.boundedCaptures?.mobile, prototype?.higherCeilingCaptures?.desktop, prototype?.higherCeilingCaptures?.mobile].some((item) => typeof item !== "string" || !item.trim()))
-    errors.push("Showcase requires artifact-backed bounded and higher-ceiling prototypes with desktop and mobile captures");
+    || [prototype?.boundedCaptures?.desktop, prototype?.boundedCaptures?.mobile, prototype?.higherCeilingCaptures?.desktop, prototype?.higherCeilingCaptures?.mobile, prototype?.boundedRecordings?.desktop, prototype?.boundedRecordings?.mobile, prototype?.higherCeilingRecordings?.desktop, prototype?.higherCeilingRecordings?.mobile].some((item) => typeof item !== "string" || !item.trim()))
+    errors.push("Showcase requires artifact-backed bounded and higher-ceiling prototypes with desktop/mobile captures and motion recordings");
+  if (prototype?.selectedBy !== "user") errors.push("Showcase prototype selection must come from the user before full integration");
   const continuity = contract.continuity;
   const affectedRegions = Array.isArray(continuity?.affectedRegions) ? continuity.affectedRegions : [];
   if (!continuity?.stateKey?.trim() || !continuity?.sourceSelector?.trim()) errors.push("Showcase requires a named shared state and source selector");
@@ -531,6 +584,7 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     if (!item.name?.trim()) errors.push("Showcase mechanism requires a name");
     if (!["before", "peak", "after"].includes(item.stage)) errors.push(`${item.name} mechanism requires a valid stage`);
     if (!item.selector?.trim()) errors.push(`${item.name} mechanism requires a selector`);
+    if (!item.primarySelector?.trim() || !item.primarySubject?.trim()) errors.push(`${item.name} mechanism requires a primarySelector and product-native primarySubject`);
     if (!["scroll", "click", "hover", "drag"].includes(item.trigger)) errors.push(`${item.name} mechanism has an invalid trigger`);
     for (const key of ["experienceRole", "ceilingContribution", "continuityConnection", "mobileTransformation", "recommendedDifference"] as const)
       if (!item[key]?.trim()) errors.push(`${item.name} mechanism requires ${key}`);

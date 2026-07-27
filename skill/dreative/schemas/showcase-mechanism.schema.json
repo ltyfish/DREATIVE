@@ -35,15 +35,18 @@
     "prototypeEvidence": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["boundedApproach", "higherCeilingApproach", "selectedApproach", "boundedArtifact", "higherCeilingArtifact", "boundedCaptures", "higherCeilingCaptures", "builderSelectionRationale"],
+      "required": ["boundedApproach", "higherCeilingApproach", "selectedApproach", "selectedBy", "boundedArtifact", "higherCeilingArtifact", "boundedCaptures", "higherCeilingCaptures", "boundedRecordings", "higherCeilingRecordings", "builderSelectionRationale"],
       "properties": {
         "boundedApproach": { "type": "string", "minLength": 1 },
         "higherCeilingApproach": { "type": "string", "minLength": 1 },
         "selectedApproach": { "type": "string", "minLength": 1 },
+        "selectedBy": { "const": "user" },
         "boundedArtifact": { "type": "string", "minLength": 1 },
         "higherCeilingArtifact": { "type": "string", "minLength": 1 },
         "boundedCaptures": { "$ref": "#/$defs/responsiveCaptures" },
         "higherCeilingCaptures": { "$ref": "#/$defs/responsiveCaptures" },
+        "boundedRecordings": { "$ref": "#/$defs/responsiveRecordings" },
+        "higherCeilingRecordings": { "$ref": "#/$defs/responsiveRecordings" },
         "builderSelectionRationale": { "type": "string", "minLength": 1 }
       }
     },
@@ -78,11 +81,13 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["name", "stage", "selector", "trigger", "experienceRole", "ceilingContribution", "mediaMode", "continuityConnection", "mobileTransformation", "recommendedDifference", "meaningfulOutcome", "stateCount"],
+        "required": ["name", "stage", "selector", "primarySelector", "primarySubject", "trigger", "experienceRole", "ceilingContribution", "mediaMode", "continuityConnection", "mobileTransformation", "recommendedDifference", "meaningfulOutcome", "stateCount"],
         "properties": {
           "name": { "type": "string", "minLength": 1 },
           "stage": { "enum": ["before", "peak", "after"] },
           "selector": { "type": "string", "minLength": 1 },
+          "primarySelector": { "type": "string", "minLength": 1 },
+          "primarySubject": { "type": "string", "minLength": 1 },
           "trigger": { "enum": ["scroll", "click", "hover", "drag"] },
           "experienceRole": { "type": "string", "minLength": 1 },
           "ceilingContribution": { "type": "string", "minLength": 1 },
@@ -93,6 +98,15 @@
           "meaningfulOutcome": { "type": "string", "minLength": 1 },
           "stateCount": { "type": "integer", "minimum": 2, "maximum": 5 }
         }
+      }
+    },
+    "responsiveRecordings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["desktop", "mobile"],
+      "properties": {
+        "desktop": { "type": "string", "minLength": 1 },
+        "mobile": { "type": "string", "minLength": 1 }
       }
     }
   },

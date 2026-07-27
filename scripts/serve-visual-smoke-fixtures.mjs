@@ -11,6 +11,7 @@ const staticStickyScrollMechanism = shell(`<section id="before"><button>Before</
 const scaleOnlyScrollMechanism = shell(`<section id="before"><button>Before</button><div class="box"></div></section><section id="scroll-story" style="height:320vh"><h1 style="position:sticky;top:32px">Scale-only story</h1><div class="box" style="position:sticky;top:100px"></div></section><section id="after"><button>After</button><div class="box"></div><div class="box"></div></section>`, `${sharedStateScript};addEventListener('scroll',()=>{const scene=document.querySelector('#scroll-story');const box=scene.querySelector('.box');const progress=Math.max(0,Math.min(1,(scrollY-scene.offsetTop)/(scene.offsetHeight-innerHeight)));const stage=Math.min(3,Math.floor(progress*4));box.dataset.scrollStage=stage;box.style.transform='scale('+(1+stage*.04)+')';box.style.opacity=String(1-stage*.1)})`);
 const desktopOnlyScrollMechanism = `<!doctype html><html><head><title>Smoke fixture</title><style>html,body{margin:0}main>section{min-height:70vh;padding:32px}.box{width:120px;height:120px;background:#f60}@media(max-width:600px){#scroll-story{height:80vh!important}#scroll-story .box{position:static!important}}</style></head><body><main><section id="before"><button>Before</button><div class="box"></div></section><section id="scroll-story" style="height:320vh"><h1 style="position:sticky;top:32px">Desktop-only story</h1><div class="box" style="position:sticky;top:100px"></div></section><section id="after"><button>After</button><div class="box"></div><div class="box"></div></section></main><script>${sharedStateScript};addEventListener('scroll',()=>{const scene=document.querySelector('#scroll-story');const box=scene.querySelector('.box');const progress=Math.max(0,Math.min(1,(scrollY-scene.offsetTop)/(scene.offsetHeight-innerHeight)));const stage=Math.min(3,Math.floor(progress*4));box.dataset.scrollStage=stage;box.style.transform='translateX('+(stage*50)+'px)'})</script></body></html>`;
 const collision = shell(`<section style="position:relative"><h1 style="position:absolute;top:40px;left:40px">Overlapping title</h1><p style="position:absolute;top:40px;left:40px">Overlapping paragraph</p></section>`);
+const decorativePrimary = shell(`<section id="before"><button>Before</button><div class="box"></div></section><section id="peak"><button>Peak</button><svg aria-hidden="true" viewBox="0 0 120 120" width="120" height="120"><rect class="box" width="120" height="120" fill="#f60"/></svg></section><section id="after"><button>After</button><div class="box"></div><div class="box"></div></section>`, sharedStateScript);
 const lyingMedia = shell(`<section id="before"><button>Before</button><div class="box"></div></section><section id="lying-peak"><button>Peak</button><div class="box"></div></section><section id="after"><button>After</button><div class="box"></div><div class="box"></div></section>`, `for(const section of document.querySelectorAll('section'))section.onclick=()=>section.classList.toggle('changed')`);
 const isolatedWidgets = shell(mechanisms, `for(const section of document.querySelectorAll('section'))section.onclick=()=>{const stage=(Number(section.dataset.stage||0)+1)%3;section.dataset.stage=stage;for(const box of section.querySelectorAll('.box'))box.style.transform='translateX('+(stage*40)+'px)'}`);
 const dataOnlyContinuity = shell(mechanisms, `document.querySelector('#before').onclick=()=>{const stage=(Number(document.body.dataset.stage||0)+1)%3;document.body.dataset.stage=stage;for(const section of document.querySelectorAll('section'))section.dataset.sharedStage=stage}`);
@@ -33,6 +34,7 @@ const pages = {
   "/scale-only-scroll-mechanism": scaleOnlyScrollMechanism,
   "/desktop-only-scroll-mechanism": desktopOnlyScrollMechanism,
   "/collision": collision,
+  "/decorative-primary": decorativePrimary,
   "/lying-media": lyingMedia,
   "/isolated-widgets": isolatedWidgets,
   "/data-only-continuity": dataOnlyContinuity,
@@ -45,6 +47,15 @@ const pages = {
   "/reduced-overflow": `<!doctype html><html><head><title>Smoke fixture</title><style>main{min-height:100vh}@media(prefers-reduced-motion:reduce){.wide{width:700px}}</style></head><body><main><h1>Reduced motion</h1><div class="wide">fallback</div></main></body></html>`,
 };
 http.createServer((request, response) => {
+  if (request.url?.startsWith("/recording/")) {
+    const marker = request.url.includes("high-ceiling") ? 2 : 1;
+    const device = request.url.includes("mobile") ? 4 : 3;
+    const bytes = Buffer.alloc(2048, marker + device);
+    bytes.writeUInt32BE(24, 0);
+    bytes.write("ftyp", 4, "ascii");
+    bytes.write("isom", 8, "ascii");
+    response.writeHead(200, { "content-type": "video/mp4" }); response.end(bytes); return;
+  }
   if (request.url?.startsWith("/capture/")) {
     if (request.url.includes("tiny")) { response.writeHead(200, { "content-type": "image/svg+xml" }); response.end(`<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><rect width="20" height="20"/></svg>`); return; }
     const mobile = request.url.includes("mobile");

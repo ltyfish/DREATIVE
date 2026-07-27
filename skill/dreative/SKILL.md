@@ -34,6 +34,12 @@ artifact or a performance of following instructions.
    silently downgrade them for convenience, time, tokens, or implementation
    preference. Ask one focused question when uncertainty would materially alter
    a page's intensity, a selected treatment, the signature behavior, or scope.
+   When Prototype is selected and a prototype is actually produced, it creates
+   a third blocking gate: build both promised alternatives, capture the required
+   desktop/mobile stills and recordings, show them to the user, and stop. Do not
+   integrate either approach until the user explicitly selects one. The builder
+   cannot select for the user, and a general instruction to continue is not a
+   prototype choice.
 4. Only after the user has explicitly resolved both direction and configuration,
    privately complete the full
    project-specific Creative Decision Brief defined in `PLAN.md`. Always create
@@ -87,7 +93,12 @@ artifact or a performance of following instructions.
    in projects that did not opt in, and never route prototypes, bundles, caches,
    traces, browser profiles, or raw evidence into the review package.
    Report builder-observed facts and limitations only; never award the build a
-   reviewer verdict or self-authored Pass.
+   reviewer verdict or self-authored Pass. Every substantial design delivery,
+   regardless of direction, ends as `Implementation complete; human taste
+   verdict: awaiting user review`. Ask the user to inspect the rendered desktop,
+   mobile, and relevant motion views. Do not call the product accepted,
+   finished, Showcase-quality, or taste-approved until the user replies with
+   that verdict; technical checks may be complete while taste acceptance is not.
 
 For Showcase, the delivered route must be visibly and structurally distinct
 from Recommended. A conventional long page with one isolated spectacle does
@@ -122,10 +133,13 @@ inspectable assertion and never an independent review or quality verdict.
 "It works" is not proof that the bounded version reaches the stronger ceiling.
 
 Record the executable contract using `schemas/showcase-mechanism.schema.json`.
+Prototype evidence records `selectedBy: "user"`; builder selection is invalid.
 Name the shared state, its source selector, and at least three affected region
 selectors across `before`, `peak`, and `after`, with the concrete effect in each.
-Also record each real signature mechanism with its stage, selector, trigger,
-experience role, media mode, mobile transformation, and meaningful outcome.
+Also record each real signature mechanism with its stage, selector, primary
+product subject and selector, trigger, experience role, media mode, mobile
+transformation, and meaningful outcome. Decorative or `aria-hidden` elements
+cannot be named as the primary subject.
 The mechanism list is evidence routing, not a required widget count. Hover is a
 supporting state: it cannot own the peak or post-peak mechanism in a journey.
 When the premise is a journey, process, or transformation,
