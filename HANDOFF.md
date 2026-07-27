@@ -2,12 +2,14 @@
 
 ## Current architecture
 
-Dreative 1.2 is a frontend design-builder skill. It separates observable
+Dreative 1.3 is a frontend design-builder skill. It separates observable
 product quality from unverifiable local ceremony.
 
 The default CLI command is `brief`; it prints Recommended, Efficient, and
 Showcase. `brief --configure <direction>` prints compact review, reference,
-source, package, and prototype choices. `brief --detailed <direction>` prints
+source, package, and prototype choices. The Experience Map then exposes
+section roles, intensity, and handoffs before compiling them into implementation
+obligations. `brief --detailed <direction>` prints
 the adaptive Creative Decision Brief structure. Dreative is a skill and CLI;
 the legacy visual editor and its server have been removed.
 

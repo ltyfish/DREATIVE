@@ -48,3 +48,20 @@ test("invalid maps fail on missing peak and incomplete obligations", () => {
   const errors = validateExperienceMap(invalid).join("\n");
   assert.match(errors, /at least two/);
 });
+
+test("keep-static rejects high intensity and active motion mechanisms", () => {
+  const staticContradiction = {
+    ...map,
+    sections: map.sections.map((section) => section.id === "hero" ? {
+      ...section,
+      intensity: 5 as const,
+      override: "keep-static" as const,
+      mechanismOwner: "scroll timeline",
+      mobile: "animated card transition",
+    } : section),
+  };
+  const errors = validateExperienceMap(staticContradiction).join("\n");
+  assert.match(errors, /keep-static requires intensity 1 or 2/);
+  assert.match(errors, /mechanismOwner contradicts keep-static/);
+  assert.match(errors, /mobile contradicts keep-static/);
+});

@@ -34,7 +34,23 @@
           "evidenceTarget": { "type": "string", "minLength": 1 },
           "override": { "enum": ["recommended", "more-animated", "calmer", "change-layout", "change-interaction", "keep-static"] },
           "instruction": { "type": "string" }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": { "override": { "const": "keep-static" } },
+              "required": ["override"]
+            },
+            "then": {
+              "properties": {
+                "intensity": { "maximum": 2 },
+                "mechanismOwner": { "not": { "pattern": "\\b(animat(e|ed|ion)|motion|transition|timeline|scroll(-linked|-driven)?|scrub|pinn?ed|parallax|morph|transform|sequence|gesture|drag)\\b" } },
+                "desktop": { "not": { "pattern": "\\b(animat(e|ed|ion)|motion|transition|timeline|scroll(-linked|-driven)?|scrub|pinn?ed|parallax|morph|transform|sequence|gesture|drag)\\b" } },
+                "mobile": { "not": { "pattern": "\\b(animat(e|ed|ion)|motion|transition|timeline|scroll(-linked|-driven)?|scrub|pinn?ed|parallax|morph|transform|sequence|gesture|drag)\\b" } }
+              }
+            }
+          }
+        ]
       }
     }
   }

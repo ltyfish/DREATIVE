@@ -34,6 +34,7 @@ export interface ExperienceMap {
 const text = (value: unknown): value is string => typeof value === "string" && value.trim().length > 0;
 const DIRECTIONS = new Set(["efficient", "recommended", "showcase"]);
 const OVERRIDES = new Set(["recommended", "more-animated", "calmer", "change-layout", "change-interaction", "keep-static"]);
+const ACTIVE_MECHANISM = /\b(?:animat(?:e|ed|ion)|motion|transition|timeline|scroll(?:-linked|-driven)?|scrub|pinn?ed|parallax|morph|transform|sequence|gesture|drag)\b/i;
 
 export function validateExperienceMap(value: unknown): string[] {
   if (!value || typeof value !== "object" || Array.isArray(value)) return ["experience map must be a JSON object"];
@@ -66,6 +67,13 @@ export function validateExperienceMap(value: unknown): string[] {
     }
     if (section.override !== undefined && !OVERRIDES.has(String(section.override))) errors.push(`${prefix}.override is invalid`);
     if (section.instruction !== undefined && typeof section.instruction !== "string") errors.push(`${prefix}.instruction must be a string`);
+    if (section.override === "keep-static") {
+      if (Number(section.intensity) > 2) errors.push(`${prefix}.keep-static requires intensity 1 or 2`);
+      for (const key of ["mechanismOwner", "desktop", "mobile"] as const) {
+        if (text(section[key]) && ACTIVE_MECHANISM.test(section[key]))
+          errors.push(`${prefix}.${key} contradicts keep-static with an active motion mechanism`);
+      }
+    }
   }
   if (text(map.primaryPeak) && !ids.has(map.primaryPeak)) errors.push("primaryPeak must match a section id");
   return errors;
