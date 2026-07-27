@@ -1,0 +1,50 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {
+  journeyBalanceAdvisories,
+  renderExperienceMap,
+  renderImplementationObligations,
+  validateExperienceMap,
+  type ExperienceMap,
+} from "./experienceMap.js";
+
+const map: ExperienceMap = {
+  version: 1,
+  direction: "showcase",
+  route: "/",
+  concept: "Origin becomes roast, product, and allocation",
+  primaryPeak: "roast",
+  recommendations: ["Let Roast own the peak; strengthen Beans and Subscribe instead of adding competing hero motion."],
+  sections: [
+    { id: "hero", title: "Hero", role: "establish origin", intensity: 3, inputState: "default origin", startState: "unselected origin", endState: "selected origin", mechanismOwner: "origin selector", connection: "sends origin to Roast", desktop: "split composition", mobile: "direct tap rail", reducedMotion: "instant selected state", evidenceTarget: "desktop/mobile selected-state capture" },
+    { id: "roast", title: "Roast", role: "primary transformation", intensity: 5, inputState: "selected green bean", startState: "green bean", endState: "roasted bean", mechanismOwner: "scroll timeline", connection: "produces Beans input", desktop: "pinned sequence", mobile: "bounded staged sequence", reducedMotion: "four-step static diagram", evidenceTarget: "entry/midpoint/release captures" },
+    { id: "beans", title: "Beans", role: "resolve into product", intensity: 3, inputState: "roasted bean", startState: "roast output", endState: "selected product", mechanismOwner: "shared layout transition", connection: "hands selection to Subscribe", desktop: "spatial product resolution", mobile: "single-card resolution", reducedMotion: "instant product state", evidenceTarget: "before/after product capture" },
+  ],
+};
+
+test("experience maps validate and render user-facing choices", () => {
+  assert.deepEqual(validateExperienceMap(map), []);
+  const rendered = renderExperienceMap(map);
+  assert.match(rendered, /use Dreative’s recommended approach/);
+  assert.match(rendered, /more animated.+calmer.+change layout/i);
+  assert.match(rendered, /Roast\s+5\/5/);
+});
+
+test("experience rows compile into implementation obligations", () => {
+  const compiled = renderImplementationObligations(map);
+  assert.match(compiled, /Visible change: green bean → roasted bean/);
+  assert.match(compiled, /Desktop\/mobile\/reduced/);
+  assert.match(compiled, /Evidence:/);
+});
+
+test("journey balance is advisory, not a fake taste verdict", () => {
+  assert.deepEqual(journeyBalanceAdvisories(map), []);
+  const lopsided = { ...map, sections: map.sections.map((section) => section.id === "beans" ? { ...section, intensity: 1 as const } : section) };
+  assert.match(journeyBalanceAdvisories(lopsided).join("\n"), /experiential weight|after the primary peak/i);
+});
+
+test("invalid maps fail on missing peak and incomplete obligations", () => {
+  const invalid = { ...map, primaryPeak: "missing", sections: [{ id: "hero" }] };
+  const errors = validateExperienceMap(invalid).join("\n");
+  assert.match(errors, /at least two/);
+});

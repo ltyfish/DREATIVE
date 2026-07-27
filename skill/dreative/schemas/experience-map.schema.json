@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Dreative Experience Map",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "direction", "route", "concept", "primaryPeak", "recommendations", "sections"],
+  "properties": {
+    "version": { "const": 1 },
+    "direction": { "enum": ["efficient", "recommended", "showcase"] },
+    "route": { "type": "string", "minLength": 1 },
+    "concept": { "type": "string", "minLength": 1 },
+    "primaryPeak": { "type": "string", "minLength": 1 },
+    "recommendations": { "type": "array", "minItems": 1, "maxItems": 3, "items": { "type": "string", "minLength": 1 } },
+    "sections": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "role", "intensity", "inputState", "startState", "endState", "mechanismOwner", "connection", "desktop", "mobile", "reducedMotion", "evidenceTarget"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "title": { "type": "string", "minLength": 1 },
+          "role": { "type": "string", "minLength": 1 },
+          "intensity": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "inputState": { "type": "string", "minLength": 1 },
+          "startState": { "type": "string", "minLength": 1 },
+          "endState": { "type": "string", "minLength": 1 },
+          "mechanismOwner": { "type": "string", "minLength": 1 },
+          "connection": { "type": "string", "minLength": 1 },
+          "desktop": { "type": "string", "minLength": 1 },
+          "mobile": { "type": "string", "minLength": 1 },
+          "reducedMotion": { "type": "string", "minLength": 1 },
+          "evidenceTarget": { "type": "string", "minLength": 1 },
+          "override": { "enum": ["recommended", "more-animated", "calmer", "change-layout", "change-interaction", "keep-static"] },
+          "instruction": { "type": "string" }
+        }
+      }
+    }
+  }
+}

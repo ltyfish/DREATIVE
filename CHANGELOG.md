@@ -160,3 +160,10 @@
 
 - Added plan v6 and verification v4 runtime, source identity, specialist
   coverage, foundation, temporal evidence and finalization guarantees.
+# 1.3.0
+
+- Add an editable, section-level Experience Map between configuration and implementation.
+- Compile accepted section recommendations into typed desktop, mobile, reduced-motion, ownership, handoff, and evidence obligations.
+- Add advisory journey-balance analysis without treating intensity arithmetic as a taste verdict.
+- Add a focused mid-build peak-to-consequence checkpoint and explicit optical typography/rhythm review.
+- Clarify resource routing: references, accessible primitives, motion recipes, and runtime engines remain ingredients selected after the concept.

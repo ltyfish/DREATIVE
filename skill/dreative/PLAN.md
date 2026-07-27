@@ -1,11 +1,11 @@
 # Planning protocol
 
-Planning has two required, blocking user-facing stages—direction and compact
-configuration—plus a blocking prototype review whenever Prototype is selected
+Planning has three required, blocking user-facing stages—direction, compact
+configuration, and the Experience Map—plus a blocking prototype review whenever Prototype is selected
 and produced, and an optional reveal of the detailed Creative Decision Brief.
 The reveal is optional; creating and using the complete private brief is not.
-Keep private exploration private. Do not edit implementation files until both
-stages have an explicit user response. Never silently apply recommended settings.
+Keep private exploration private. Do not edit implementation files until all
+three stages have an explicit user response. Never silently apply recommended settings.
 
 ## Stage 1: direction
 
@@ -119,9 +119,32 @@ Show them together and ask the user to select the bounded or higher-ceiling
 approach. Do not integrate, self-select, or treat silence/general permission as
 a choice. Record the resulting selection as `selectedBy: "user"`.
 
-## Stage 3: private Creative Decision Brief and optional reveal
+## Stage 3: editable Experience Map
 
-After direction and configuration are resolved, always complete this entire
+After configuration, turn the recommended concept into a short section-level
+proposal the user can understand without design or animation terminology.
+Include every major page or section, Dreative's recommended role, intensity
+from 1–5, and its connection to the surrounding journey. Add one to three
+targeted recommendations explaining where stronger treatment will help and
+where it would create competition.
+
+End with:
+
+> Reply **use Dreative's recommended approach** or name section changes:
+> **more animated**, **calmer**, **change layout**, **change interaction**,
+> **keep static**, or add an instruction.
+
+Wait for the reply. After acceptance, privately compile every row into
+`schemas/experience-map.schema.json`: role, input state, visible start and end
+states, mechanism owner, connection, desktop, mobile, reduced-motion, and
+evidence target. This working map is a promise-to-implementation bridge, not an
+approval receipt or a claim of visual quality. Journey-balance arithmetic is
+advisory and must lead to screenshot comparison, not a taste score.
+This is the user's concrete design decision, not a second approval artifact.
+
+## Stage 4: private Creative Decision Brief and optional reveal
+
+After direction, configuration, and the Experience Map are resolved, always complete this entire
 project-specific brief privately before implementation. It is the working
 blueprint for section allocation, treatments, assets, signature mechanisms,
 continuity, mobile transformation, runtime ownership, fallbacks, and review.
@@ -212,6 +235,10 @@ Selection is a delivery promise, not checkbox coverage: every
 selected treatment needs a named owner and perceptible contribution, although
 one coherent mechanism may serve several treatments.
 
+Start from the accepted Experience Map. Preserve every row's role and intensity
+intent while privately adding executable states, owners, handoffs, responsive
+forms, fallbacks, and evidence targets. Do not force a generic architecture.
+
 For Showcase, write the compact JSON contract defined by
 `schemas/showcase-mechanism.schema.json`. Bind the Recommended baseline, at
 least two perceptible Showcase-only differences, two concrete product-native
@@ -269,9 +296,14 @@ rejected, downgraded, or replaced. Do not turn these lines into a ledger.
 Always ask the user to inspect the supplied rendered views and provide the
 independent visual verdict. Codex must not author, infer, store, or promote it.
 
-After the explicit configuration reply, implement. Do not generate a second approval
-or contract gate. The prototype-review pause above is the sole
-exception because it occurs only when the user selected a prototype workflow.
+After the explicit Experience Map reply, implement. Do not generate another
+approval or contract gate. The prototype-review pause above and a small
+integrated experience checkpoint are the only exceptions.
+
+For Showcase and experience-led Recommended work, the integrated checkpoint
+shows only the primary peak, its most important downstream development or
+consequence, and their handoff at desktop and mobile. Ask whether their
+relative weight matches the accepted map before polishing the entire route.
 
 Every substantial final handoff ends with:
 

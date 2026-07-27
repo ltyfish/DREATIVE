@@ -16,8 +16,12 @@ finished art direction or a long effect menu.
 1. Direction: Recommended, Efficient, or Showcase.
 2. Compact configuration: Fast/Lean/Full Audit, references, sources, packages,
    and prototype policy.
-3. Private implementation blueprint: always created and used after the choices
-   are resolved; the full Creative Decision Brief is shown only on request.
+3. Editable Experience Map: Dreative shows recommended section roles,
+   intensity, and handoffs; the user accepts the defaults or changes individual
+   sections in plain language.
+4. Private implementation blueprint: each accepted row compiles into visible
+   start/end, ownership, responsive, fallback, and review obligations; the full
+   Creative Decision Brief is shown only on request.
 
 Recommended is the direction the agent judges best for the inspected product.
 Efficient is the most token- and implementation-efficient direction. Showcase
@@ -36,6 +40,8 @@ The default command prints the direction step. Additional planning surfaces:
 ```bash
 node dist/cli/index.js brief --configure recommended
 node dist/cli/index.js brief --detailed recommended
+node dist/cli/index.js experience-map --file .dreative/experience-map.json
+node dist/cli/index.js experience-map --file .dreative/experience-map.json --obligations
 ```
 
 Install the skill into the current project:
@@ -85,6 +91,8 @@ evaluation package in projects that did not opt in.
   structure.
 - `dreative preflight` — framework, scripts, package manager, and capabilities.
 - `dreative context init|check|show` — minimal durable project memory.
+- `dreative experience-map --file map.json [--check|--obligations]` — render,
+  validate, or compile the accepted section journey.
 - `dreative catalogue --query "..."` — focused golden-system lookup.
 - `dreative visual-smoke --url <preview-url> --profile <direction>` — ephemeral desktop, mobile, reduced-motion, route, runtime, and asset smoke gate.
 - `dreative finalize --codex --profile <direction> --visual-smoke-url <preview-url>` — deterministic delivery gate; smoke is mandatory for every substantial delivery.

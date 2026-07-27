@@ -19,6 +19,7 @@ import { availableSkills, checkSkillInstallation, installSkill, installationDire
 import { renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
 import { renderConfigurationChoices, renderDeliveryBrief, renderDetailedPlanGuide, type DeliveryProfileId } from "../shared/deliveryProfiles.js";
 import { initializeProjectContext, readProjectContext } from "../shared/projectContext.js";
+import { journeyBalanceAdvisories, readExperienceMap, renderExperienceMap, renderImplementationObligations } from "../shared/experienceMap.js";
 
 const args = process.argv.slice(2);
 const cmd = args[0] && !args[0].startsWith("-") ? args[0] : "brief";
@@ -52,6 +53,8 @@ const USAGE = `usage: dreative [command]
                    --probe-browser http://127.0.0.1:PORT
                      bounded Chromium launch + preview-navigation verification
   context          durable project design memory: init | check | show
+  experience-map   render or validate a project Experience Map --file map.json
+                   --check | --obligations
   catalogue        search the executable creative catalogue [--query phrase] [--json]
   visual-smoke     production-equivalent browser smoke audit --url URL --profile efficient|recommended|showcase
                    Showcase also requires --mechanism-contract file-or-json
@@ -243,6 +246,22 @@ async function main(): Promise<void> {
       if (action === "show") console.log(JSON.stringify(result.context, null, 2));
       else if (action === "check") console.log(`valid ${result.file} (${result.context.status})`);
       else throw new Error("usage: dreative context init|check|show");
+      return;
+    }
+    case "experience-map": {
+      const index = args.indexOf("--file");
+      const file = index >= 0 ? args[index + 1] : undefined;
+      if (!file) throw new Error("experience-map requires --file map.json");
+      const map = readExperienceMap(path.resolve(file));
+      if (args.includes("--check")) {
+        console.log(`valid ${path.resolve(file)} (${map.sections.length} sections)`);
+        const advisories = journeyBalanceAdvisories(map);
+        advisories.forEach((item) => console.log(`ADVISORY ${item}`));
+      } else if (args.includes("--obligations")) {
+        console.log(renderImplementationObligations(map));
+      } else {
+        console.log(renderExperienceMap(map));
+      }
       return;
     }
     case "catalogue": {

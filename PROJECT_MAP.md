@@ -8,6 +8,9 @@
 - `skill/dreative/references/CREATIVE_DIRECTION.md` — product-native concept
   synthesis and reference-independence method.
 - `src/shared/deliveryProfiles.ts` — CLI representation of those approaches.
+- `src/shared/experienceMap.ts` and `schemas/experience-map.schema.json` —
+  user-readable section recommendations compiled into implementation and
+  review obligations, with advisory journey-balance findings.
 - `src/cli/index.ts` — brief, installation, preflight, catalogue, and
   finalization commands.
 - `src/cli/finalize.ts` — deterministic build/test/docs finalization.

@@ -40,7 +40,25 @@ artifact or a performance of following instructions.
    integrate either approach until the user explicitly selects one. The builder
    cannot select for the user, and a general instruction to continue is not a
    prototype choice.
-4. Only after the user has explicitly resolved both direction and configuration,
+4. After configuration, present a compact, project-specific **Experience Map**
+   before editing code. Show every major page or section with Dreative's
+   recommended role, intensity from 1–5, and connection to the surrounding
+   journey. Lead with `Use Dreative's recommended approach`; let the user change
+   a row with `more animated`, `calmer`, `change layout`, `change interaction`,
+   `keep static`, or a plain-language instruction. Add one to three targeted
+   recommendations about where more motion would strengthen the journey and
+   where it would create competition. Ask the user to confirm the recommended
+   map or list changes. This is the concrete design proposal, not another set of
+   abstract global dials.
+5. Compile the accepted map into the obligations defined by
+   `schemas/experience-map.schema.json`: section role, input state, visible
+   start and end states, mechanism owner, connection, desktop behavior, mobile
+   behavior, reduced-motion behavior, and evidence target. The schema makes
+   promises traceable; it is not an approval artifact and does not prove taste.
+   Let architecture fit the promised complexity; do not impose a generic scene
+   registry, timeline controller, or folder structure.
+6. Only after the user has explicitly resolved direction, configuration, and
+   Experience Map,
    privately complete the full
    project-specific Creative Decision Brief defined in `PLAN.md`. Always create
    and use this working blueprint even when the user does not ask to see it;
@@ -62,17 +80,22 @@ artifact or a performance of following instructions.
    the submitted build.
    Record inspectable conclusions, never hidden chain-of-thought, private
    exploration, raw transcripts, or discarded scratch work.
-5. Read `references/CREATIVE_EXECUTION.md` before adding an advanced runtime.
+7. Read `references/CREATIVE_EXECUTION.md` before adding an advanced runtime.
    Load only the relevant specialty and zero or one relevant native foundation initially. Zero is valid;
    add another only when a separate named mechanism genuinely requires it. Prototype only a
    central, uncertain mechanism whose result could change the build.
-6. Finish the real route, including post-hero sections and mobile composition.
+8. Finish the real route, including post-hero sections and mobile composition.
    Implement every selected treatment in its named section or state and make
    its contribution perceptible. Preserve required behavior and fix scoped
    defects. Before materially changing the brief, ask the user unless they
    explicitly delegated the decision; technical fallbacks must preserve the
    chosen concept and delivery direction.
-7. Read `references/VISUAL_REFINEMENT.md`. Inspect screenshots of the rendered
+9. For Showcase and other experience-led builds, pause after the primary peak,
+   its most important downstream development, and their connecting handoff work
+   at desktop and mobile. Show this small integrated checkpoint to the user and
+   ask whether the experiential distribution matches the accepted map before
+   polishing the full route.
+10. Read `references/VISUAL_REFINEMENT.md`. Inspect screenshots of the rendered
    full page at desktop and 390px, exercise the primary journey and motion
    states, correct visible failures, and recapture the affected and full-page
    views. DOM or accessibility snapshots do not replace pixel inspection. Run production
@@ -214,6 +237,12 @@ Reject generic machinery: arbitrary particles, floating spheres, default
 smooth scroll, shader wallpaper, permanent cursor followers, telemetry
 overlays, endless fade-ups, and 3D that behaves like a flat image.
 
+Use external systems in four roles only: reference sources, accessible
+primitives, motion-recipe candidates, and runtime engines. For copied or
+installed code, record source, license, dependencies, bundle cost,
+accessibility status, intended section, required customization, and concept
+fit. A component or library never qualifies as the concept.
+
 ## Quality floor
 
 Every section needs a job, readable hierarchy, intentional spacing, and an
@@ -221,6 +250,13 @@ authored handoff. Alternate intensity and rest. A rest may be still, but must
 retain a concept-bearing relationship through continuity, an evolving visual
 variable, meaningful tactile state, media treatment, or authored handoff;
 default layout is not authored rest. Keep the primary task obvious.
+
+Do not concentrate nearly all experiential weight in one isolated set-piece.
+Inspect the route as a sequence and require a meaningful development,
+consequence, or resolution outside the primary peak when the page length and
+concept warrant it. Automated intensity counts may flag a lopsided map, but
+they are advisory: captured states, visual inspection, user feedback, and a
+real refinement decide whether the journey feels balanced.
 
 Every prominent decorative line, grid, overlay, shape, persistent element, or
 visual motif must have a perceptible role in product meaning, hierarchy,

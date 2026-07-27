@@ -105,6 +105,7 @@ export function renderConfigurationChoices(profileId: DeliveryProfileId): string
     `   Auto — only genuinely uncertain signature mechanisms${mark(profile.prototype === "auto")}`,
     `   Required — prototype the riskiest signature mechanism${mark(profile.prototype === "required")}`,
     "",
+    "Next, Dreative will show a section-level Experience Map with recommended roles, intensity, and handoffs.",
     "Reply “use recommended settings” or list any changes. Say “show detailed plan” for the full project-specific Creative Decision Brief.",
   ].join("\n");
 }
@@ -123,6 +124,8 @@ export function renderDetailedPlanGuide(profileId: DeliveryProfileId): string {
     "6. Build architecture — signature mechanism, runtime ownership, component/asset pipeline, mobile and semantic fallbacks, accessibility, and performance.",
     "7. Observable review, risks, fallbacks, and one editable decision reply.",
     "Visible execution map — experience arc, section ownership, post-hero peak, continuity owner, and mobile transformation in roughly ten lines.",
+    "Editable Experience Map — recommended section roles, 1–5 intensity, connections, targeted suggestions, and plain-language per-section overrides.",
+    "Compiled obligations — each accepted row gets input, visible start/end, mechanism owner, desktop/mobile/reduced-motion behavior, and evidence target.",
     "Showcase ceiling — bind the Recommended baseline, two perceptible Showcase-only qualities, two product-native media opportunities, the bounded-versus-higher-ceiling prototype result, and why the delivered route is visibly beyond Recommended.",
     "Showcase final response — state `Showcase implementation attempted:` and `Independent visual verdict: awaiting user review`, then ask the user for that verdict; disclose materially rejected or replaced advanced treatments under `Not pursued:` with the reason.",
     "",

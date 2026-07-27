@@ -85,6 +85,9 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /\.dreative\/context\.json/, "must preserve durable project memory");
   requireText(findings, "SKILL.md", skill, /\.dreative\/evaluation\/README\.md/, "must preserve opt-in evaluator routing");
   requireText(findings, "SKILL.md", skill, /never hidden chain-of-thought/i, "must keep evaluator records free of hidden reasoning");
+  requireText(findings, "SKILL.md", skill, /Experience Map[\s\S]*more animated[\s\S]*change layout[\s\S]*keep static/i, "must expose plain-language section-level Experience Map controls");
+  requireText(findings, "SKILL.md", skill, /input state[\s\S]*start and end states[\s\S]*mechanism owner[\s\S]*evidence target/i, "must compile Experience Map rows into implementation obligations");
+  requireText(findings, "SKILL.md", skill, /experiential weight[\s\S]*advisory[\s\S]*visual inspection/i, "journey balance must prompt perceptual review without pretending to certify taste");
   requireText(findings, "PLAN.md", plan, /explicit request for a compact evaluator handoff/i, "must document the opt-in evaluator handoff");
   requireText(findings, "PLAN.md", plan, /exact branch and commit[\s\S]*stale untracked legacy/i, "evaluator handoff must identify source and reject stale legacy evidence");
   requireText(findings, "references/VISUAL_REFINEMENT.md", contents.get("references/VISUAL_REFINEMENT.md") ?? "", /capture full-page screenshots|inspect the pixels/i, "visual refinement must require screenshot inspection");
@@ -99,6 +102,7 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   for (const choice of ["Recommended", "Efficient", "Showcase"])
     requireText(findings, "PLAN.md", plan, new RegExp(`\\b${choice}\\b`, "i"), `missing concise ${choice} approach`);
   requireText(findings, "PLAN.md", plan, /show detailed plan/i, "must offer detail on request");
+  requireText(findings, "PLAN.md", plan, /editable Experience Map[\s\S]*use Dreative's recommended approach/i, "must present and confirm the recommended section journey");
   requireText(findings, "PLAN.md", plan, /second approval/i, "must avoid a second approval gate");
   for (const choice of ["References", "Treatments", "Sourced images", "Generated images", "Packages", "Prototype", "Review depth", "Fast", "Lean", "Full Audit"])
     requireText(findings, "PLAN.md", plan, new RegExp(`\\b${choice}\\b`, "i"), `detailed planning is missing ${choice}`);
