@@ -2,6 +2,7 @@ import { chromium, type Browser, type Page } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
+import type { ExperienceMap } from "../shared/experienceMap.js";
 
 export type DeliveryProfile = "efficient" | "recommended" | "showcase";
 export type MechanismTrigger = "scroll" | "click" | "hover" | "drag";
@@ -20,6 +21,8 @@ export interface MechanismContractEntry {
   mobileTransformation: string;
   recommendedDifference: string;
   meaningfulOutcome: string;
+  animationOwner: "css" | "gsap" | "motion" | "anime" | "react-state" | "native-js" | "other";
+  ownedProperties: string[];
   stateCount: number;
 }
 export interface ShowcaseMechanismContract {
@@ -44,6 +47,17 @@ export interface ShowcaseMechanismContract {
     selectedBy: "user";
     builderSelectionRationale: string;
   };
+  prototypeFidelity: {
+    selectedArtifact: string;
+    prototypeSubjectSelector: string;
+    integratedSubjectSelector: string;
+    focalObject: string;
+    copyBalance: string;
+    controlPlacement: string;
+    materialLighting: string;
+    desktopFraming: string;
+    mobileFraming: string;
+  };
   continuity: {
     stateKey: string;
     sourceSelector: string;
@@ -57,7 +71,7 @@ export interface ShowcaseMechanismContract {
   };
   mechanisms: MechanismContractEntry[];
 }
-export interface VisualSmokeOptions { profile: DeliveryProfile; showcase?: ShowcaseMechanismContract }
+export interface VisualSmokeOptions { profile: DeliveryProfile; showcase?: ShowcaseMechanismContract; experienceMap?: ExperienceMap }
 export interface VisualSmokeResult { ok: boolean; blockers: string[]; checks: string[] }
 
 const contexts = [
@@ -439,7 +453,52 @@ async function verifyPrototypeEvidence(context: Awaited<ReturnType<Browser["newC
   return errors;
 }
 
-async function inspectContext(browser: Browser, url: string, config: typeof contexts[number], contract?: ShowcaseMechanismContract): Promise<VisualSmokeResult> {
+async function verifyPrototypeFidelity(page: Page, context: Awaited<ReturnType<Browser["newContext"]>>, url: string, contract: ShowcaseMechanismContract): Promise<string[]> {
+  const fidelity = contract.prototypeFidelity;
+  if (!fidelity) return ["Showcase requires a prototype-to-product fidelity contract"];
+  const target = new URL(fidelity.selectedArtifact, url).href;
+  const prototypePage = await context.newPage();
+  const response = await prototypePage.goto(target, { waitUntil: "domcontentloaded" });
+  await twoFrames(prototypePage);
+  const errors: string[] = [];
+  if (!response || response.status() >= 400) errors.push(`selected prototype artifact did not load successfully: ${target}`);
+  const measure = async (targetPage: Page, selector: string) => {
+    const locator = targetPage.locator(selector);
+    if (await locator.count() !== 1) return null;
+    await locator.scrollIntoViewIfNeeded();
+    await twoFrames(targetPage);
+    return locator.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return { area: rect.width * rect.height / Math.max(1, innerWidth * innerHeight), visible: rect.bottom > 0 && rect.top < innerHeight && rect.right > 0 && rect.left < innerWidth };
+    });
+  };
+  const prototype = await measure(prototypePage, fidelity.prototypeSubjectSelector);
+  const integrated = await measure(page, fidelity.integratedSubjectSelector);
+  if (!prototype) errors.push(`prototype subject ${fidelity.prototypeSubjectSelector} must resolve exactly once`);
+  if (!integrated) errors.push(`integrated subject ${fidelity.integratedSubjectSelector} must resolve exactly once`);
+  if (prototype && integrated) {
+    const ratio = integrated.area / Math.max(.0001, prototype.area);
+    if (ratio < .04 || ratio > 25)
+      errors.push(`selected prototype focal scale was not preserved by ${fidelity.integratedSubjectSelector} (viewport-area ratio ${ratio.toFixed(2)})`);
+  }
+  await prototypePage.close();
+  return errors;
+}
+
+async function verifyExperienceMapBindings(page: Page, map: ExperienceMap, contract: ShowcaseMechanismContract): Promise<string[]> {
+  const errors: string[] = [];
+  for (const section of map.sections.filter((item) => item.intensity === 5)) {
+    const mechanism = contract.mechanisms.find((item) => item.selector === section.selector);
+    if (!mechanism) { errors.push(`Experience Map intensity-5 section ${section.id} is not bound to a verified Showcase mechanism at ${section.selector}`); continue; }
+    if (mechanism.trigger !== section.trigger) errors.push(`Experience Map section ${section.id} trigger ${section.trigger} does not match mechanism trigger ${mechanism.trigger}`);
+    const missing = (section.ownedProperties ?? []).filter((property) => !mechanism.ownedProperties.includes(property));
+    if (missing.length) errors.push(`Experience Map section ${section.id} owns properties not declared by its mechanism: ${missing.join(", ")}`);
+    if (await page.locator(section.selector ?? "").count() !== 1) errors.push(`Experience Map section ${section.id} selector ${section.selector} must resolve exactly once`);
+  }
+  return errors;
+}
+
+async function inspectContext(browser: Browser, url: string, config: typeof contexts[number], contract?: ShowcaseMechanismContract, experienceMap?: ExperienceMap): Promise<VisualSmokeResult> {
   const blockers: string[] = [];
   const checks: string[] = [];
   const context = await browser.newContext({ viewport: { width: config.width, height: config.height }, reducedMotion: config.reducedMotion ? "reduce" : "no-preference" });
@@ -534,7 +593,9 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
     if (contract) {
       blockers.push(...await verifyPrototypeEvidence(context, url, contract));
       await page.goto(url, { waitUntil: "domcontentloaded" }); await twoFrames(page);
+      blockers.push(...await verifyPrototypeFidelity(page, context, url, contract));
       blockers.push(...await verifyContinuity(page, contract));
+      if (experienceMap) blockers.push(...await verifyExperienceMapBindings(page, experienceMap, contract));
     }
     await page.evaluate(() => scrollTo(0, 0)); await twoFrames(page);
     const rootIdentity = await stableRouteIdentity(page);
@@ -556,7 +617,7 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
       if (positions.length >= 3 && positions.some((position, index) => index > 0 && position <= positions[index - 1])) blockers.push("Showcase mechanisms must follow their declared experience order");
     }
     for (const mechanism of mechanisms) { await page.goto(url, { waitUntil: "domcontentloaded" }); await twoFrames(page); const failure = await exerciseMechanism(page, mechanism); if (failure) blockers.push(failure); }
-  } else if (config.label === "mobile-390" && contract) {
+  } else if ((config.label === "mobile-390" || config.label === "mobile-320") && contract) {
     for (const mechanism of contract.mechanisms) {
       await page.goto(url, { waitUntil: "domcontentloaded" }); await twoFrames(page);
       const failure = await exerciseMechanism(page, mechanism);
@@ -586,6 +647,9 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     || [prototype?.boundedCaptures?.desktop, prototype?.boundedCaptures?.mobile, prototype?.higherCeilingCaptures?.desktop, prototype?.higherCeilingCaptures?.mobile, prototype?.boundedRecordings?.desktop, prototype?.boundedRecordings?.mobile, prototype?.higherCeilingRecordings?.desktop, prototype?.higherCeilingRecordings?.mobile].some((item) => typeof item !== "string" || !item.trim()))
     errors.push("Showcase requires artifact-backed bounded and higher-ceiling prototypes with desktop/mobile captures and motion recordings");
   if (prototype?.selectedBy !== "user") errors.push("Showcase prototype selection must come from the user before full integration");
+  const fidelity = contract.prototypeFidelity;
+  if (!fidelity || [fidelity.selectedArtifact, fidelity.prototypeSubjectSelector, fidelity.integratedSubjectSelector, fidelity.focalObject, fidelity.copyBalance, fidelity.controlPlacement, fidelity.materialLighting, fidelity.desktopFraming, fidelity.mobileFraming].some((item) => typeof item !== "string" || !item.trim()))
+    errors.push("Showcase requires a complete prototype-to-product fidelity contract");
   const continuity = contract.continuity;
   const affectedRegions = Array.isArray(continuity?.affectedRegions) ? continuity.affectedRegions : [];
   if (!continuity?.stateKey?.trim() || !continuity?.sourceSelector?.trim()) errors.push("Showcase requires a named shared state and source selector");
@@ -615,10 +679,19 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     for (const key of ["experienceRole", "ceilingContribution", "continuityConnection", "mobileTransformation", "recommendedDifference"] as const)
       if (!item[key]?.trim()) errors.push(`${item.name} mechanism requires ${key}`);
     if (!item.meaningfulOutcome?.trim()) errors.push(`${item.name} mechanism requires meaningfulOutcome`);
+    if (!["css", "gsap", "motion", "anime", "react-state", "native-js", "other"].includes(item.animationOwner)) errors.push(`${item.name} mechanism requires one animationOwner`);
+    if (!Array.isArray(item.ownedProperties) || item.ownedProperties.length < 1 || item.ownedProperties.some((property) => typeof property !== "string" || !property.trim())) errors.push(`${item.name} mechanism requires ownedProperties`);
     if (!Number.isInteger(item.stateCount) || item.stateCount < 2 || item.stateCount > 5) errors.push(`${item.name} mechanism stateCount must be an integer from 2 to 5`);
     if (item.trigger === "hover" && item.stateCount !== 2) errors.push(`${item.name} hover mechanism must declare exactly two states`);
     if (item.trigger === "scroll" && item.stateCount < 3) errors.push(`${item.name} scroll mechanism must declare at least three states`);
     if (!["dom-state", "typography", "image", "video", "svg", "canvas", "spatial-layout", "3d"].includes(item.mediaMode)) errors.push(`${item.name} mechanism has an invalid mediaMode`);
+  }
+  const ownership = new Map<string, string>();
+  for (const item of mechanisms) for (const property of item.ownedProperties ?? []) {
+    const key = `${item.selector}::${property.trim().toLowerCase()}`;
+    const existing = ownership.get(key);
+    if (existing && existing !== item.animationOwner) errors.push(`animation ownership conflict for ${item.selector} ${property}: ${existing} and ${item.animationOwner}`);
+    ownership.set(key, item.animationOwner);
   }
   return [...new Set(errors)];
 }
@@ -629,7 +702,7 @@ export async function runVisualSmoke(url: string, options: VisualSmokeOptions): 
   const browser = await chromium.launch({ headless: true });
   try {
     const results = [];
-    for (const config of contexts) results.push(await inspectContext(browser, url, config, options.showcase));
+    for (const config of contexts) results.push(await inspectContext(browser, url, config, options.showcase, options.experienceMap));
     const blockers = [...new Set(results.flatMap((result) => result.blockers))];
     return { ok: blockers.length === 0, blockers, checks: results.flatMap((result) => result.checks) };
   } finally { await browser.close(); }

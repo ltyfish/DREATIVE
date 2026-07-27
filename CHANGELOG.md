@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.3.1
+
+- Warn when maximum intensity flattens an Experience Map and require executable
+  selector, trigger, property ownership, and outcome obligations for 5/5 rows.
+- Require tracked, portable Showcase contracts, Experience Maps, and local
+  prototype captures and recordings; reject inline-only and absolute-path
+  evidence during finalization.
+- Bind intensity-5 map rows to browser-verified mechanisms and reject declared
+  selector/property ownership collisions.
+- Verify stable route identity without canvas or animation noise, preserve
+  selected-prototype focal scale structurally, and exercise flagship mechanisms
+  at both 390px and 320px.
+- Add bounded adoption guidance for full-site research, product flows,
+  component sources, specialist tools, and mutually exclusive animation owners.
+
 ## 1.3.0
 
 - Add an editable, section-level Experience Map between configuration and implementation.

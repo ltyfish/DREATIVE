@@ -5,7 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { checkPortableArtifacts, runFinalize } from "./finalize.js";
+import { checkPortableArtifacts, localShowcaseArtifacts, runFinalize } from "./finalize.js";
 import { availableSkills, installSkill } from "./installSkill.js";
 
 const packageRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -160,4 +160,35 @@ test("Showcase artifacts must exist inside the repository and be tracked", () =>
   assert.deepEqual(checkPortableArtifacts(root, [contract]), []);
   assert.match(checkPortableArtifacts(root, [path.join(root, "missing.json")]).join("\n"), /missing/);
   assert.match(checkPortableArtifacts(root, [path.join(os.tmpdir(), "outside.json")]).join("\n"), /outside the repository/);
+});
+
+test("nested Showcase evidence rejects absolute paths and returns local portable files", () => {
+  const result = localShowcaseArtifacts({
+    prototypeEvidence: {
+      boundedCaptures: { desktop: "evidence/desktop.png", mobile: "https://example.com/mobile.png" },
+      higherCeilingCaptures: { desktop: "C:\\private\\desktop.png", mobile: "/capture/mobile" },
+      boundedRecordings: { desktop: "evidence/desktop.webm" },
+    },
+  });
+  assert.deepEqual(result.files, ["evidence/desktop.png", "evidence/desktop.webm"]);
+  assert.match(result.blockers.join("\n"), /absolute machine path/);
+});
+
+test("clean-worktree verification refuses a dirty HEAD", () => {
+  const root = fixture();
+  initializeGit(root);
+  fs.writeFileSync(path.join(root, "dirty.txt"), "not committed");
+  const result = runFinalize(root, { target: "codex", sourceDir, packageVersion, cleanWorktree: true });
+  assert.ok(result.blockers.some((item) => item.includes("clean committed HEAD")));
+  assert.ok(!result.commands.some((item) => item.command.startsWith("clean-worktree:")));
+});
+
+test("clean-worktree verification installs and builds the committed snapshot", () => {
+  const root = fixture();
+  spawnSync(process.platform === "win32" ? "npm.cmd" : "npm", ["install", "--package-lock-only", "--ignore-scripts"], { cwd: root, windowsHide: true });
+  initializeGit(root);
+  const result = runFinalize(root, { target: "codex", sourceDir, packageVersion, cleanWorktree: true });
+  assert.equal(result.ok, true, result.blockers.join("\n"));
+  assert.ok(result.commands.some((item) => /^clean-worktree: npm (?:ci|install) --ignore-scripts$/.test(item.command) && item.exitCode === 0));
+  assert.ok(result.commands.some((item) => item.command === "clean-worktree: npm run build" && item.exitCode === 0));
 });

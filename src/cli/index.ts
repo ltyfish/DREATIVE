@@ -13,7 +13,7 @@ import {
   validateCreativePermissions,
 } from "../shared/preflight.js";
 import { printDocsCheck, runDocsCheck } from "./docsCheck.js";
-import { checkPortableArtifacts, runFinalize } from "./finalize.js";
+import { checkPortableArtifacts, localShowcaseArtifacts, runFinalize } from "./finalize.js";
 import { runVisualSmoke, type DeliveryProfile, type ShowcaseMechanismContract } from "./visualSmoke.js";
 import { availableSkills, checkSkillInstallation, installSkill, installationDirectory, resolveSkillSelection } from "./installSkill.js";
 import { renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
@@ -57,7 +57,7 @@ const USAGE = `usage: dreative [command]
                    --check | --obligations
   catalogue        search the executable creative catalogue [--query phrase] [--json]
   visual-smoke     production-equivalent browser smoke audit --url URL --profile efficient|recommended|showcase
-                   Showcase also requires --mechanism-contract file-or-json
+                   Showcase requires tracked --mechanism-contract and --experience-map files
   finalize         run deterministic checks; always requires --visual-smoke-url URL and --profile
                    --codex --visual-smoke-url URL --profile efficient|recommended|showcase
   docs-check       validate packaged documentation consistency [--json]`;
@@ -131,13 +131,19 @@ async function main(): Promise<void> {
         return;
       }
       const contractInput = valueAfter("--mechanism-contract");
+      const experienceMapInput = valueAfter("--experience-map");
       if (profile === "showcase") {
         if (!contractInput || contractInput.trim().startsWith("{")) {
           console.error("BLOCKER Showcase finalization requires --mechanism-contract to reference a tracked, portable JSON file.");
           process.exitCode = 1;
           return;
         }
-        const portability = checkPortableArtifacts(process.cwd(), [contractInput]);
+        if (!experienceMapInput || experienceMapInput.trim().startsWith("{")) {
+          console.error("BLOCKER Showcase finalization requires --experience-map to reference a tracked, portable JSON file.");
+          process.exitCode = 1;
+          return;
+        }
+        const portability = checkPortableArtifacts(process.cwd(), [contractInput, experienceMapInput]);
         if (portability.length) {
           portability.forEach((item) => console.error(`BLOCKER ${item}`));
           process.exitCode = 1;
@@ -145,8 +151,18 @@ async function main(): Promise<void> {
         }
       }
       const showcase = contractInput ? JSON.parse(fs.existsSync(path.resolve(contractInput)) ? fs.readFileSync(path.resolve(contractInput), "utf8") : contractInput) as ShowcaseMechanismContract : undefined;
+      const experienceMap = experienceMapInput ? readExperienceMap(path.resolve(experienceMapInput)) : undefined;
+      if (showcase) {
+        const nested = localShowcaseArtifacts(showcase);
+        const nestedBlockers = [...nested.blockers, ...checkPortableArtifacts(process.cwd(), nested.files)];
+        if (nestedBlockers.length) {
+          nestedBlockers.forEach((item) => console.error(`BLOCKER ${item}`));
+          process.exitCode = 1;
+          return;
+        }
+      }
       {
-        const smoke = await runVisualSmoke(smokeUrl, { profile, showcase });
+        const smoke = await runVisualSmoke(smokeUrl, { profile, showcase, experienceMap });
         smoke.checks.forEach((item) => console.log(`PASS visual-smoke ${item}`));
         if (!smoke.ok) {
           smoke.blockers.forEach((item) => console.error(`BLOCKER visual-smoke: ${item}`));
@@ -154,10 +170,8 @@ async function main(): Promise<void> {
           return;
         }
       }
-      const portableArtifacts = profile === "showcase" && contractInput ? [contractInput] : [];
-      const experienceMap = path.join(process.cwd(), ".dreative", "experience-map.json");
-      if (profile === "showcase" && fs.existsSync(experienceMap)) portableArtifacts.push(experienceMap);
-      const result = runFinalize(process.cwd(), { target: hostTarget(), sourceDir: packagedSkillDir, packageVersion, portableArtifacts });
+      const portableArtifacts = profile === "showcase" && contractInput && experienceMapInput ? [contractInput, experienceMapInput, ...localShowcaseArtifacts(showcase ?? {}).files] : [];
+      const result = runFinalize(process.cwd(), { target: hostTarget(), sourceDir: packagedSkillDir, packageVersion, portableArtifacts, cleanWorktree: profile === "showcase" });
       for (const item of result.commands) console.log(`${item.exitCode === 0 ? "PASS" : "FAIL"} ${item.command}`);
       if (!result.ok) {
         result.blockers.forEach((item) => console.error(`BLOCKER ${item}`));
@@ -183,8 +197,10 @@ async function main(): Promise<void> {
       const profile = valueAfter("--profile") as DeliveryProfile | undefined;
       if (!url || !profile || !["efficient", "recommended", "showcase"].includes(profile)) throw new Error("visual-smoke requires --url and --profile efficient|recommended|showcase");
       const contractInput = valueAfter("--mechanism-contract");
+      const experienceMapInput = valueAfter("--experience-map");
       const showcase = contractInput ? JSON.parse(fs.existsSync(path.resolve(contractInput)) ? fs.readFileSync(path.resolve(contractInput), "utf8") : contractInput) as ShowcaseMechanismContract : undefined;
-      const result = await runVisualSmoke(url, { profile, showcase });
+      const experienceMap = experienceMapInput ? readExperienceMap(path.resolve(experienceMapInput)) : undefined;
+      const result = await runVisualSmoke(url, { profile, showcase, experienceMap });
       result.checks.forEach((item) => console.log(`PASS ${item}`));
       result.blockers.forEach((item) => console.error(`BLOCKER ${item}`));
       if (!result.ok) process.exitCode = 1;

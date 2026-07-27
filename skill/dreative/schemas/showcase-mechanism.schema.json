@@ -4,7 +4,7 @@
   "title": "Dreative Showcase mechanism contract",
   "type": "object",
   "additionalProperties": false,
-  "required": ["version", "experienceType", "classification", "recommendedBaseline", "showcaseDelta", "mediaOpportunities", "prototypeEvidence", "continuity", "mechanisms"],
+  "required": ["version", "experienceType", "classification", "recommendedBaseline", "showcaseDelta", "mediaOpportunities", "prototypeEvidence", "prototypeFidelity", "continuity", "mechanisms"],
   "properties": {
     "version": { "const": 2 },
     "experienceType": { "enum": ["journey", "interface"] },
@@ -50,6 +50,22 @@
         "builderSelectionRationale": { "type": "string", "minLength": 1 }
       }
     },
+    "prototypeFidelity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selectedArtifact", "prototypeSubjectSelector", "integratedSubjectSelector", "focalObject", "copyBalance", "controlPlacement", "materialLighting", "desktopFraming", "mobileFraming"],
+      "properties": {
+        "selectedArtifact": { "type": "string", "minLength": 1 },
+        "prototypeSubjectSelector": { "type": "string", "minLength": 1 },
+        "integratedSubjectSelector": { "type": "string", "minLength": 1 },
+        "focalObject": { "type": "string", "minLength": 1 },
+        "copyBalance": { "type": "string", "minLength": 1 },
+        "controlPlacement": { "type": "string", "minLength": 1 },
+        "materialLighting": { "type": "string", "minLength": 1 },
+        "desktopFraming": { "type": "string", "minLength": 1 },
+        "mobileFraming": { "type": "string", "minLength": 1 }
+      }
+    },
     "continuity": {
       "type": "object",
       "additionalProperties": false,
@@ -81,7 +97,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["name", "stage", "selector", "primarySelector", "primarySubject", "trigger", "experienceRole", "ceilingContribution", "mediaMode", "continuityConnection", "mobileTransformation", "recommendedDifference", "meaningfulOutcome", "stateCount"],
+        "required": ["name", "stage", "selector", "primarySelector", "primarySubject", "trigger", "experienceRole", "ceilingContribution", "mediaMode", "continuityConnection", "mobileTransformation", "recommendedDifference", "meaningfulOutcome", "animationOwner", "ownedProperties", "stateCount"],
         "properties": {
           "name": { "type": "string", "minLength": 1 },
           "stage": { "enum": ["before", "peak", "after"] },
@@ -96,6 +112,8 @@
           "mobileTransformation": { "type": "string", "minLength": 1 },
           "recommendedDifference": { "type": "string", "minLength": 1 },
           "meaningfulOutcome": { "type": "string", "minLength": 1 },
+          "animationOwner": { "enum": ["css", "gsap", "motion", "anime", "react-state", "native-js", "other"] },
+          "ownedProperties": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
           "stateCount": { "type": "integer", "minimum": 2, "maximum": 5 }
         }
       }

@@ -97,9 +97,16 @@ evaluation package in projects that did not opt in.
 - `dreative visual-smoke --url <preview-url> --profile <direction>` — ephemeral desktop, mobile, reduced-motion, route, runtime, and asset smoke gate.
 - `dreative finalize --codex --profile <direction> --visual-smoke-url <preview-url>` — deterministic delivery gate; smoke is mandatory for every substantial delivery.
 
-Showcase also passes `--mechanism-contract <file-or-json>`. The JSON array must
-name `before`, `peak`, and `after`, with a real selector and one of `scroll`,
-`click`, `hover`, or `drag` for each.
+Showcase also passes tracked, repository-local
+`--mechanism-contract .dreative/showcase-mechanism.json` and
+`--experience-map .dreative/experience-map.json` files. The versioned contract
+object binds prototype fidelity, shared continuity, animation ownership, and
+real `before`, `peak`, and `after` mechanisms. Local captures and recordings
+referenced by the contract must also be tracked and portable; inline JSON and
+absolute machine paths are rejected during finalization.
+Showcase deterministic scripts are replayed from a temporary clean worktree at
+the committed `HEAD`; browser smoke still targets the explicitly supplied
+production-equivalent preview URL.
 
 Preflight leaves unspecified sourcing and generation permissions unresolved.
 Pass explicit choices as flags or JSON instead of silently treating them as

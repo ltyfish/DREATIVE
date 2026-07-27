@@ -105,8 +105,8 @@ artifact or a performance of following instructions.
    views. DOM or accessibility snapshots do not replace pixel inspection. Run production
    build plus existing test/typecheck/lint scripts. Substantial work requires
    `dreative finalize --codex --profile <direction> --visual-smoke-url <preview-url>`
-   to print `DREATIVE_CHECKS_PASSED`. Showcase contracts and any project-local
-   Experience Map used by finalization must be portable tracked files; ignored,
+   to print `DREATIVE_CHECKS_PASSED`. Showcase contracts and the required
+   project-local Experience Map must be portable tracked files; ignored,
    untracked, missing, absolute-machine, or inline-only evidence blocks
    completion. Visual smoke is mandatory for every
    substantial delivery and Showcase additionally requires an executable
@@ -164,6 +164,10 @@ inspectable assertion and never an independent review or quality verdict.
 
 Record the executable contract using `schemas/showcase-mechanism.schema.json`.
 Prototype evidence records `selectedBy: "user"`; builder selection is invalid.
+Name the selected prototype subject and integrated subject plus the focal scale,
+copy balance, control placement, material/lighting, and desktop/mobile framing
+that caused the selection. Final smoke checks structural focal preservation; it
+does not require pixel-identical screenshots or prevent intentional evolution.
 Name the shared state, its source selector, and at least three affected region
 selectors across `before`, `peak`, and `after`, with the concrete effect in each.
 Also record each real signature mechanism with its stage, selector, primary
@@ -179,7 +183,7 @@ is not a flagship transformation. A scroll mechanism whose sampled differences
 are fully explained by text, opacity, color, filter, or uniform scale is
 rejected. Interface-style products may declare
 `interface` and use a different continuous interaction structure. Final visual
-smoke exercises each trigger on desktop and 390px mobile, samples text
+smoke exercises each trigger on desktop, 390px, and 320px mobile, samples text
 collisions through the route, and observes a visible geometry, style, media,
 content, or state change. A written `mobileTransformation` promise does not
 pass when the actual mobile mechanism is static or missing.

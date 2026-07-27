@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import os from "node:os";
 import { checkSkillInstallation } from "./installSkill.js";
 import { spawnSync } from "node:child_process";
 import { runDocsCheck } from "./docsCheck.js";
@@ -17,6 +18,14 @@ function runNpmScript(projectDir: string, script: string): { command: string; ex
       cwd: projectDir, stdio: "inherit", windowsHide: true,
     })
     : spawnSync("npm", ["run", script], { cwd: projectDir, stdio: "inherit" });
+  return { command, exitCode: result.status ?? 1 };
+}
+
+function runNpmCommand(projectDir: string, args: string[]): { command: string; exitCode: number } {
+  const command = `npm ${args.join(" ")}`;
+  const result = process.platform === "win32"
+    ? spawnSync(process.env.ComSpec ?? "cmd.exe", ["/d", "/s", "/c", command], { cwd: projectDir, stdio: "inherit", windowsHide: true })
+    : spawnSync("npm", args, { cwd: projectDir, stdio: "inherit" });
   return { command, exitCode: result.status ?? 1 };
 }
 
@@ -47,6 +56,30 @@ export function checkPortableArtifacts(projectDir: string, files: string[]): str
     }
   }
   return blockers;
+}
+
+export function localShowcaseArtifacts(contract: {
+  prototypeEvidence?: {
+    boundedCaptures?: Record<string, string>;
+    higherCeilingCaptures?: Record<string, string>;
+    boundedRecordings?: Record<string, string>;
+    higherCeilingRecordings?: Record<string, string>;
+  };
+}): { files: string[]; blockers: string[] } {
+  const values = [
+    ...Object.values(contract.prototypeEvidence?.boundedCaptures ?? {}),
+    ...Object.values(contract.prototypeEvidence?.higherCeilingCaptures ?? {}),
+    ...Object.values(contract.prototypeEvidence?.boundedRecordings ?? {}),
+    ...Object.values(contract.prototypeEvidence?.higherCeilingRecordings ?? {}),
+  ].filter(Boolean);
+  const files: string[] = [];
+  const blockers: string[] = [];
+  for (const value of values) {
+    if (/^https?:\/\//i.test(value) || value.startsWith("/")) continue;
+    if (path.isAbsolute(value)) blockers.push(`Showcase evidence must not use an absolute machine path: ${value}`);
+    else files.push(value);
+  }
+  return { files: [...new Set(files)], blockers };
 }
 
 function allowedUntrackedPath(file: string): boolean {
@@ -114,7 +147,7 @@ function checkEvaluationHandoff(projectDir: string): string[] {
  */
 export function runFinalize(
   projectDir: string,
-  options: { target: "claude" | "codex"; sourceDir: string; packageVersion: string; portableArtifacts?: string[] },
+  options: { target: "claude" | "codex"; sourceDir: string; packageVersion: string; portableArtifacts?: string[]; cleanWorktree?: boolean },
 ): FinalizeResult {
   const commands: { command: string; exitCode: number }[] = [];
   const blockers: string[] = [];
@@ -136,6 +169,36 @@ export function runFinalize(
   const pkg = JSON.parse(fs.readFileSync(packageFile, "utf8"));
   const scripts = ["build", "test", "typecheck", "lint"].filter((script) => Boolean(pkg.scripts?.[script]));
   if (!scripts.includes("build")) blockers.push("package.json must provide a build script");
+
+  if (options.cleanWorktree) {
+    const root = gitOutput(projectDir, ["rev-parse", "--show-toplevel"]);
+    const status = gitOutput(projectDir, ["status", "--porcelain"]);
+    if (!root.ok) blockers.push("Showcase clean-worktree verification requires Git");
+    else if (!status.ok || status.output) blockers.push("Showcase clean-worktree verification requires a clean committed HEAD");
+    else {
+      const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-clean-worktree-"));
+      fs.rmSync(temporary, { recursive: true, force: true });
+      const added = spawnSync("git", ["worktree", "add", "--detach", temporary, "HEAD"], { cwd: root.output, encoding: "utf8", windowsHide: true });
+      if (added.status !== 0) blockers.push(`could not create clean verification worktree: ${added.stderr?.trim() || "git worktree add failed"}`);
+      else {
+        try {
+          const install = fs.existsSync(path.join(temporary, "package-lock.json"))
+            ? runNpmCommand(temporary, ["ci", "--ignore-scripts"])
+            : runNpmCommand(temporary, ["install", "--ignore-scripts"]);
+          commands.push({ command: `clean-worktree: ${install.command}`, exitCode: install.exitCode });
+          if (install.exitCode !== 0) blockers.push(`clean-worktree ${install.command} exited ${install.exitCode}`);
+          if (install.exitCode === 0) for (const script of scripts) {
+            const result = runNpmScript(temporary, script);
+            commands.push({ command: `clean-worktree: ${result.command}`, exitCode: result.exitCode });
+            if (result.exitCode !== 0) blockers.push(`clean-worktree ${result.command} exited ${result.exitCode}`);
+          }
+        } finally {
+          spawnSync("git", ["worktree", "remove", "--force", temporary], { cwd: root.output, windowsHide: true });
+          fs.rmSync(temporary, { recursive: true, force: true });
+        }
+      }
+    }
+  }
 
   for (const script of scripts) {
     const result = runNpmScript(projectDir, script);

@@ -88,3 +88,15 @@ test("intensity 5 rows require an executable rendered-state contract", () => {
   assert.match(errors, /ownedProperties/);
   assert.match(errors, /meaningfulOutcome/);
 });
+
+test("experience maps reject duplicate selector/property ownership", () => {
+  const conflict = {
+    ...map,
+    sections: [
+      map.sections[0],
+      map.sections[1],
+      { ...map.sections[1], id: "second-peak", title: "Second peak", mechanismOwner: "css timeline" },
+    ],
+  };
+  assert.match(validateExperienceMap(conflict).join("\n"), /conflicts with scroll timeline ownership of #roast transform/);
+});

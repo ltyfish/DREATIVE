@@ -54,6 +54,7 @@ export function validateExperienceMap(value: unknown): string[] {
     return errors;
   }
   const ids = new Set<string>();
+  const ownership = new Map<string, string>();
   for (const [index, raw] of map.sections.entries()) {
     if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
       errors.push(`sections[${index}] must be an object`);
@@ -77,6 +78,13 @@ export function validateExperienceMap(value: unknown): string[] {
       if (!Array.isArray(section.ownedProperties) || section.ownedProperties.length < 1 || section.ownedProperties.some((item) => !text(item)))
         errors.push(`${prefix}.ownedProperties must name at least one property for intensity 5`);
       if (!text(section.meaningfulOutcome)) errors.push(`${prefix}.meaningfulOutcome is required for intensity 5`);
+      if (text(section.selector) && Array.isArray(section.ownedProperties)) for (const property of section.ownedProperties.filter(text)) {
+        const key = `${section.selector}::${property.trim().toLowerCase()}`;
+        const existing = ownership.get(key);
+        if (existing && existing !== String(section.mechanismOwner))
+          errors.push(`${prefix} conflicts with ${existing} ownership of ${section.selector} ${property}`);
+        ownership.set(key, String(section.mechanismOwner));
+      }
     }
     if (section.override === "keep-static") {
       if (Number(section.intensity) > 2) errors.push(`${prefix}.keep-static requires intensity 1 or 2`);
