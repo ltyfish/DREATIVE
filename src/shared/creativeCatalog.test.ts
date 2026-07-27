@@ -52,9 +52,10 @@ test("native foundations install nothing unless one compatible enhancement is se
 test("external references require an adaptation and deliberate differences", () => {
   const errors = validateExternalReference({
     source: "reference.example",
-    sourceType: "case study",
+    sourceType: "full-site",
     principleExtracted: "velocity changes material clarity",
     adapt: "map reading speed to archive focus",
+    adoptedWhere: "archive transition between index and detail",
     deliberatelyDiffer: ["content only"],
     license: "reference only",
     attributionRequired: false,

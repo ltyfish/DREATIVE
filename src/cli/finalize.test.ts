@@ -5,7 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { runFinalize } from "./finalize.js";
+import { checkPortableArtifacts, runFinalize } from "./finalize.js";
 import { availableSkills, installSkill } from "./installSkill.js";
 
 const packageRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -146,4 +146,18 @@ test("finalize rejects an unexpected untracked source file", () => {
   fs.writeFileSync(path.join(source, "new-route.ts"), "export const route = true;\n");
   const result = runFinalize(root, { target: "codex", sourceDir, packageVersion });
   assert.ok(result.blockers.some((item) => item.includes("unexpected untracked files: src/new-route.ts")));
+});
+
+test("Showcase artifacts must exist inside the repository and be tracked", () => {
+  const root = fixture();
+  initializeGit(root);
+  const contract = path.join(root, ".dreative", "showcase-mechanism.json");
+  fs.mkdirSync(path.dirname(contract), { recursive: true });
+  fs.writeFileSync(contract, "{}");
+  assert.match(checkPortableArtifacts(root, [contract]).join("\n"), /must be tracked/);
+  spawnSync("git", ["add", "-f", ".dreative/showcase-mechanism.json"], { cwd: root, windowsHide: true });
+  spawnSync("git", ["commit", "-m", "Track contract"], { cwd: root, windowsHide: true });
+  assert.deepEqual(checkPortableArtifacts(root, [contract]), []);
+  assert.match(checkPortableArtifacts(root, [path.join(root, "missing.json")]).join("\n"), /missing/);
+  assert.match(checkPortableArtifacts(root, [path.join(os.tmpdir(), "outside.json")]).join("\n"), /outside the repository/);
 });

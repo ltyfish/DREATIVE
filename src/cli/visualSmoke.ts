@@ -197,16 +197,42 @@ async function exerciseScrollChoreography(page: Page, entry: MechanismContractEn
     return `${entry.name} scroll mechanism ${entry.selector} is too short to demonstrate multi-stage choreography`;
   const signatures = new Set<string>();
   const structuralSignatures = new Set<string>();
+  let visibilityFailure: string | null = null;
   for (const fraction of [.1, .3, .5, .7, .9]) {
     const y = Math.max(0, Math.min(region.pageHeight - region.viewport, region.top + region.height * fraction - region.viewport / 2));
     await page.evaluate((scrollY) => scrollTo(0, scrollY), y);
     await twoFrames(page);
     signatures.add(await declaredMediaFingerprint(page, entry));
     structuralSignatures.add(await structuralMediaFingerprint(page, entry));
+    const visibility = await page.locator(entry.selector).locator(entry.primarySelector).evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      const width = Math.max(0, Math.min(rect.right, innerWidth) - Math.max(rect.left, 0));
+      const height = Math.max(0, Math.min(rect.bottom, innerHeight) - Math.max(rect.top, 0));
+      const visibleArea = width * height;
+      return {
+        subjectRatio: visibleArea / Math.max(1, rect.width * rect.height),
+        viewportRatio: visibleArea / Math.max(1, innerWidth * innerHeight),
+      };
+    });
+    if (!visibilityFailure && (visibility.subjectRatio < .35 || visibility.viewportRatio < .01))
+      visibilityFailure = `${entry.name} primary subject ${entry.primarySubject} is materially clipped or absent at the ${Math.round(fraction * 100)}% scroll state`;
   }
   const required = Math.min(5, entry.stateCount);
   if (signatures.size < required) return `${entry.name} scroll mechanism ${entry.selector} produced ${signatures.size} distinct states; ${required} are declared`;
+  if (visibilityFailure) return visibilityFailure;
   return structuralSignatures.size >= 2 ? null : `${entry.name} scroll mechanism ${entry.selector} changes only text, opacity, color, filter, or uniform scale; Showcase requires a structural or media transformation`;
+}
+
+async function stableRouteIdentity(page: Page): Promise<string> {
+  return page.evaluate(() => {
+    const main = document.querySelector("main");
+    const heading = main?.querySelector("h1")?.textContent?.replace(/\s+/g, " ").trim() ?? "";
+    const landmarks = Array.from(document.querySelectorAll("main,header,nav,footer,[role=main]"))
+      .map((element) => `${element.tagName.toLowerCase()}:${element.getAttribute("role") ?? ""}:${element.id}`)
+      .join("|");
+    const text = (main?.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 1600);
+    return JSON.stringify({ title: document.title, heading, landmarks, text });
+  });
 }
 
 async function exerciseMechanism(page: Page, entry: MechanismContractEntry): Promise<string | null> {
@@ -511,15 +537,15 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
       blockers.push(...await verifyContinuity(page, contract));
     }
     await page.evaluate(() => scrollTo(0, 0)); await twoFrames(page);
-    const rootFingerprint = await visibleFingerprint(page, "main");
+    const rootIdentity = await stableRouteIdentity(page);
     for (const href of audit.links) {
       const routePage = await context.newPage();
       const routeResponse = await routePage.goto(href, { waitUntil: "domcontentloaded" }); await twoFrames(routePage);
       if (!routeResponse || routeResponse.status() >= 400) blockers.push(`production route ${new URL(href).pathname} returned HTTP ${routeResponse?.status() ?? "no response"}`);
       else {
         const mainCount = await routePage.locator("main").count();
-        const routeFingerprint = mainCount === 1 ? await visibleFingerprint(routePage, "main") : "missing-main";
-        if (routePage.url() !== page.url() && routeFingerprint === rootFingerprint && await routePage.title() === audit.title) blockers.push(`production route ${new URL(href).pathname} is an indistinguishable 200 SPA fallback`);
+        const routeIdentity = mainCount === 1 ? await stableRouteIdentity(routePage) : "missing-main";
+        if (routePage.url() !== page.url() && routeIdentity === rootIdentity) blockers.push(`production route ${new URL(href).pathname} is an indistinguishable 200 SPA fallback by stable title, heading, landmarks, and route content`);
       }
       await routePage.close();
     }

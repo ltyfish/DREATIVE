@@ -154,9 +154,10 @@ export const CREATIVE_MECHANISMS: NativeFoundation[] = [
 
 export interface ExternalCreativeReference {
   source: string;
-  sourceType: string;
+  sourceType: "full-site" | "product-flow" | "component" | "mechanism" | "media-presentation" | "data-visualization" | "other";
   principleExtracted: string;
   adapt: string;
+  adoptedWhere: string;
   deliberatelyDiffer: string[];
   license: string;
   attributionRequired: boolean | null;
@@ -164,7 +165,7 @@ export interface ExternalCreativeReference {
 
 export function validateExternalReference(reference: ExternalCreativeReference): string[] {
   const errors: string[] = [];
-  for (const key of ["source", "sourceType", "principleExtracted", "adapt", "license"] as const)
+  for (const key of ["source", "sourceType", "principleExtracted", "adapt", "adoptedWhere", "license"] as const)
     if (!reference[key] || reference[key].trim().length < 3) errors.push(`${key} is required`);
   if (reference.deliberatelyDiffer.length < 2) errors.push("deliberatelyDiffer must name at least two concrete differences");
   if (reference.attributionRequired === null) errors.push("attributionRequired must be resolved");

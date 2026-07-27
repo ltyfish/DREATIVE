@@ -53,7 +53,11 @@ artifact or a performance of following instructions.
 5. Compile the accepted map into the obligations defined by
    `schemas/experience-map.schema.json`: section role, input state, visible
    start and end states, mechanism owner, connection, desktop behavior, mobile
-   behavior, reduced-motion behavior, and evidence target. The schema makes
+   behavior, reduced-motion behavior, and evidence target. Intensity-5 rows
+   additionally name a real selector, trigger, owned properties, and meaningful
+   outcome so rendered verification can exercise the promise. Treat an all-5
+   map as a hierarchy warning: confirm maximum meaningful transformation rather
+   than interpreting it as constant motion. The schema makes
    promises traceable; it is not an approval artifact and does not prove taste.
    Let architecture fit the promised complexity; do not impose a generic scene
    registry, timeline controller, or folder structure.
@@ -101,7 +105,10 @@ artifact or a performance of following instructions.
    views. DOM or accessibility snapshots do not replace pixel inspection. Run production
    build plus existing test/typecheck/lint scripts. Substantial work requires
    `dreative finalize --codex --profile <direction> --visual-smoke-url <preview-url>`
-   to print `DREATIVE_CHECKS_PASSED`. Visual smoke is mandatory for every
+   to print `DREATIVE_CHECKS_PASSED`. Showcase contracts and any project-local
+   Experience Map used by finalization must be portable tracked files; ignored,
+   untracked, missing, absolute-machine, or inline-only evidence blocks
+   completion. Visual smoke is mandatory for every
    substantial delivery and Showcase additionally requires an executable
    connected-experience contract with artifact-backed prototype evidence. Compare the final
    product against the current brief and user choices. Claim completion only
@@ -296,6 +303,7 @@ rendered interface. `DREATIVE_CHECKS_PASSED` certifies commands only, not taste.
 ## Resource routing
 
 - Open redesign or external reference: `references/CREATIVE_DIRECTION.md`
+- Named adoption list or library/reference comparison: `references/REFERENCE_ADOPTION.md`
 - Advanced runtime: `references/CREATIVE_EXECUTION.md`
 - Relevant craft only: `skills/<name>.md`
 - Rendered correction loop: `references/VISUAL_REFINEMENT.md`

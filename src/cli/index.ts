@@ -13,7 +13,7 @@ import {
   validateCreativePermissions,
 } from "../shared/preflight.js";
 import { printDocsCheck, runDocsCheck } from "./docsCheck.js";
-import { runFinalize } from "./finalize.js";
+import { checkPortableArtifacts, runFinalize } from "./finalize.js";
 import { runVisualSmoke, type DeliveryProfile, type ShowcaseMechanismContract } from "./visualSmoke.js";
 import { availableSkills, checkSkillInstallation, installSkill, installationDirectory, resolveSkillSelection } from "./installSkill.js";
 import { renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
@@ -131,6 +131,19 @@ async function main(): Promise<void> {
         return;
       }
       const contractInput = valueAfter("--mechanism-contract");
+      if (profile === "showcase") {
+        if (!contractInput || contractInput.trim().startsWith("{")) {
+          console.error("BLOCKER Showcase finalization requires --mechanism-contract to reference a tracked, portable JSON file.");
+          process.exitCode = 1;
+          return;
+        }
+        const portability = checkPortableArtifacts(process.cwd(), [contractInput]);
+        if (portability.length) {
+          portability.forEach((item) => console.error(`BLOCKER ${item}`));
+          process.exitCode = 1;
+          return;
+        }
+      }
       const showcase = contractInput ? JSON.parse(fs.existsSync(path.resolve(contractInput)) ? fs.readFileSync(path.resolve(contractInput), "utf8") : contractInput) as ShowcaseMechanismContract : undefined;
       {
         const smoke = await runVisualSmoke(smokeUrl, { profile, showcase });
@@ -141,7 +154,10 @@ async function main(): Promise<void> {
           return;
         }
       }
-      const result = runFinalize(process.cwd(), { target: hostTarget(), sourceDir: packagedSkillDir, packageVersion });
+      const portableArtifacts = profile === "showcase" && contractInput ? [contractInput] : [];
+      const experienceMap = path.join(process.cwd(), ".dreative", "experience-map.json");
+      if (profile === "showcase" && fs.existsSync(experienceMap)) portableArtifacts.push(experienceMap);
+      const result = runFinalize(process.cwd(), { target: hostTarget(), sourceDir: packagedSkillDir, packageVersion, portableArtifacts });
       for (const item of result.commands) console.log(`${item.exitCode === 0 ? "PASS" : "FAIL"} ${item.command}`);
       if (!result.ok) {
         result.blockers.forEach((item) => console.error(`BLOCKER ${item}`));

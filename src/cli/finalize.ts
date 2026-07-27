@@ -25,6 +25,30 @@ function gitOutput(projectDir: string, args: string[]): { ok: boolean; output: s
   return { ok: result.status === 0, output: result.stdout?.trim() ?? "" };
 }
 
+export function checkPortableArtifacts(projectDir: string, files: string[]): string[] {
+  if (!files.length) return [];
+  const inside = gitOutput(projectDir, ["rev-parse", "--show-toplevel"]);
+  if (!inside.ok) return ["portable Showcase evidence requires a Git worktree"];
+  const root = path.resolve(inside.output);
+  const blockers: string[] = [];
+  for (const file of files) {
+    const absolute = path.resolve(projectDir, file);
+    const relative = path.relative(root, absolute).replaceAll("\\", "/");
+    if (relative.startsWith("../") || path.isAbsolute(relative))
+      blockers.push(`required artifact is outside the repository: ${file}`);
+    else if (!fs.existsSync(absolute))
+      blockers.push(`required artifact is missing: ${relative}`);
+    else {
+      const tracked = gitOutput(root, ["ls-files", "--error-unmatch", "--", relative]);
+      if (!tracked.ok) {
+        const ignored = spawnSync("git", ["check-ignore", "-q", "--", relative], { cwd: root, windowsHide: true }).status === 0;
+        blockers.push(`required artifact must be tracked${ignored ? " and is currently ignored" : ""}: ${relative}`);
+      }
+    }
+  }
+  return blockers;
+}
+
 function allowedUntrackedPath(file: string): boolean {
   const normalized = file.replaceAll("\\", "/");
   return normalized.startsWith(".dreative/generated/")
@@ -90,7 +114,7 @@ function checkEvaluationHandoff(projectDir: string): string[] {
  */
 export function runFinalize(
   projectDir: string,
-  options: { target: "claude" | "codex"; sourceDir: string; packageVersion: string },
+  options: { target: "claude" | "codex"; sourceDir: string; packageVersion: string; portableArtifacts?: string[] },
 ): FinalizeResult {
   const commands: { command: string; exitCode: number }[] = [];
   const blockers: string[] = [];
@@ -107,6 +131,7 @@ export function runFinalize(
     target: options.target,
   }).map((message) => `skill installation: ${message}`));
   blockers.push(...checkEvaluationHandoff(projectDir));
+  blockers.push(...checkPortableArtifacts(projectDir, options.portableArtifacts ?? []));
 
   const pkg = JSON.parse(fs.readFileSync(packageFile, "utf8"));
   const scripts = ["build", "test", "typecheck", "lint"].filter((script) => Boolean(pkg.scripts?.[script]));

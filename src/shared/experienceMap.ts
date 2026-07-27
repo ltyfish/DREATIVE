@@ -17,6 +17,10 @@ export interface ExperienceSection {
   mobile: string;
   reducedMotion: string;
   evidenceTarget: string;
+  selector?: string;
+  trigger?: "scroll" | "click" | "hover" | "drag" | "input" | "none";
+  ownedProperties?: string[];
+  meaningfulOutcome?: string;
   override?: ExperienceOverride;
   instruction?: string;
 }
@@ -67,6 +71,13 @@ export function validateExperienceMap(value: unknown): string[] {
     }
     if (section.override !== undefined && !OVERRIDES.has(String(section.override))) errors.push(`${prefix}.override is invalid`);
     if (section.instruction !== undefined && typeof section.instruction !== "string") errors.push(`${prefix}.instruction must be a string`);
+    if (Number(section.intensity) === 5) {
+      if (!text(section.selector)) errors.push(`${prefix}.selector is required for intensity 5`);
+      if (!text(section.trigger)) errors.push(`${prefix}.trigger is required for intensity 5`);
+      if (!Array.isArray(section.ownedProperties) || section.ownedProperties.length < 1 || section.ownedProperties.some((item) => !text(item)))
+        errors.push(`${prefix}.ownedProperties must name at least one property for intensity 5`);
+      if (!text(section.meaningfulOutcome)) errors.push(`${prefix}.meaningfulOutcome is required for intensity 5`);
+    }
     if (section.override === "keep-static") {
       if (Number(section.intensity) > 2) errors.push(`${prefix}.keep-static requires intensity 1 or 2`);
       for (const key of ["mechanismOwner", "desktop", "mobile"] as const) {
@@ -112,6 +123,8 @@ export function renderImplementationObligations(map: ExperienceMap): string {
     `  Visible change: ${section.startState} → ${section.endState}`,
     `  Owner/handoff: ${section.mechanismOwner} / ${section.connection}`,
     `  Desktop/mobile/reduced: ${section.desktop} / ${section.mobile} / ${section.reducedMotion}`,
+    `  Runtime contract: ${section.selector ?? "not declared"} / ${section.trigger ?? "not declared"} / ${(section.ownedProperties ?? []).join(", ") || "not declared"}`,
+    `  Meaningful outcome: ${section.meaningfulOutcome ?? "not declared"}`,
     `  Evidence: ${section.evidenceTarget}`,
   ].join("\n")).join("\n\n");
 }
@@ -123,6 +136,11 @@ export function journeyBalanceAdvisories(map: ExperienceMap): string[] {
   const developedOutsidePeak = map.sections.filter((section) =>
     section.id !== peak.id && section.intensity >= 3 && section.override !== "keep-static");
   const advisories: string[] = [];
+  const maximumSections = map.sections.filter((section) => section.intensity === 5);
+  if (maximumSections.length === map.sections.length)
+    advisories.push("Every section is 5/5, which creates a flat intensity map unless each row has a distinct meaningful transformation; confirm maximum meaningful transformation rather than constant motion.");
+  else if (maximumSections.length / map.sections.length >= .75)
+    advisories.push("At least three quarters of the route is 5/5; verify that experiential hierarchy and rest still exist.");
   if (peak.intensity / total >= 0.5 || developedOutsidePeak.length === 0)
     advisories.push(`The primary peak “${peak.title}” may carry most of the experiential weight; inspect a meaningful development or consequence elsewhere.`);
   const afterPeak = map.sections.slice(map.sections.indexOf(peak) + 1);

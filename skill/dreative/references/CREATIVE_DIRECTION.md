@@ -20,6 +20,10 @@ trade routes, machinery, and buying behavior are richer design material.
 
 ## 2. Decompose references
 
+When named websites, libraries, or prior-adoption lists are in scope, also read
+`REFERENCE_ADOPTION.md` and route each candidate by research role. Do not treat
+the list as an installation checklist.
+
 Never consume a reference as one aesthetic package. For each source, extract at
 most two transferable principles:
 

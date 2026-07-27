@@ -16,3 +16,9 @@ are in `systems/runtime.js`, `systems/NATIVE_FOUNDATIONS.md`, and
 `references/ASSET_PIPELINES.md`. The system set is an implementation lookup
 after a project-native concept has been chosen. It must never supply the concept
 or a named site's house style.
+
+Named reference and library candidates are routed by
+`references/REFERENCE_ADOPTION.md`. That guide separates useful full-site and
+product-flow research from conditional component or mechanism sources,
+specialist data or app-presentation tools, competing animation owners, and
+unrelated builders.
