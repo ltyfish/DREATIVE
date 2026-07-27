@@ -114,7 +114,9 @@ Recommended baseline, at least two perceptible Showcase-only qualities, two
 product-native media opportunities with use/reject reasons, and the observed
 result of comparing a bounded prototype with a higher-ceiling alternative.
 Both alternatives require inspectable routes or files plus desktop and mobile
-captures; prose written by the builder is not prototype evidence.
+captures and short desktop/mobile motion recordings; prose written by the
+builder is not prototype evidence. The recordings support human comparison;
+the prototype routes remain executable verification targets.
 The builder may record only a `builderSelectionRationale`, which is an
 inspectable assertion and never an independent review or quality verdict.
 "It works" is not proof that the bounded version reaches the stronger ceiling.
@@ -129,10 +131,14 @@ supporting state: it cannot own the peak or post-peak mechanism in a journey.
 When the premise is a journey, process, or transformation,
 declare it as `journey` and include a substantial scroll-authored mechanism.
 Smooth scrolling alone does not qualify. Bucketed text/class replacement alone
-is not a flagship transformation. Interface-style products may declare
+is not a flagship transformation. A scroll mechanism whose sampled differences
+are fully explained by text, opacity, color, filter, or uniform scale is
+rejected. Interface-style products may declare
 `interface` and use a different continuous interaction structure. Final visual
-smoke exercises each trigger and observes a visible geometry, style, media,
-content, or state change.
+smoke exercises each trigger on desktop and 390px mobile, samples text
+collisions through the route, and observes a visible geometry, style, media,
+content, or state change. A written `mobileTransformation` promise does not
+pass when the actual mobile mechanism is static or missing.
 
 Before relying on the rendered correction loop, distinguish Playwright package
 presence, browser executable detection, and a verified browser workflow. When

@@ -84,6 +84,33 @@ test("static sticky elements cannot impersonate scroll-authored choreography", a
   expect(result.blockers).toContain("instrument-peak scroll mechanism #scroll-story produced 1 distinct states; 3 are declared");
 });
 
+test("opacity and uniform scale cannot impersonate a Showcase transformation", async () => {
+  const journey = {
+    ...contract,
+    experienceType: "journey" as const,
+    continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.map((region) => region.stage === "peak" ? { ...region, selector: "#scroll-story" } : region) },
+    mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
+  };
+  const result = await runVisualSmoke(`${base}/scale-only-scroll-mechanism`, { profile: "showcase", showcase: journey });
+  expect(result.blockers.join("\n")).toContain("changes only text, opacity, color, filter, or uniform scale");
+});
+
+test("desktop-only choreography fails the mobile Showcase equivalent", async () => {
+  const journey = {
+    ...contract,
+    experienceType: "journey" as const,
+    continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.map((region) => region.stage === "peak" ? { ...region, selector: "#scroll-story" } : region) },
+    mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
+  };
+  const result = await runVisualSmoke(`${base}/desktop-only-scroll-mechanism`, { profile: "showcase", showcase: journey });
+  expect(result.blockers.join("\n")).toContain("mobile Showcase equivalent missing");
+});
+
+test("text collisions are detected during viewport sampling", async () => {
+  const result = await runVisualSmoke(`${base}/collision`, { profile: "recommended" });
+  expect(result.blockers.join("\n")).toContain("text collision detected during scroll");
+});
+
 test("connected-experience contract is structural and mandatory for Showcase", () => {
   expect(validateMechanisms("showcase", contract)).toEqual([]);
   expect(validateMechanisms("showcase", { ...contract, continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.slice(0, 2) } })).toContain("Showcase requires one meaningful state to affect at least three non-adjacent regions");

@@ -144,6 +144,35 @@ async function declaredMediaFingerprint(page: Page, entry: MechanismContractEntr
   }, entry.mediaMode);
 }
 
+async function structuralMediaFingerprint(page: Page, entry: MechanismContractEntry): Promise<string> {
+  return page.locator(entry.selector).evaluate((root, mediaMode) => {
+    const rootRect = root.getBoundingClientRect();
+    const all = [root, ...Array.from(root.querySelectorAll("*"))] as HTMLElement[];
+    const selector = mediaMode === "svg" ? "svg,svg *" : mediaMode === "image" ? "img,picture" : mediaMode === "video" ? "video" : mediaMode === "canvas" ? "canvas" : mediaMode === "3d" ? "canvas,[data-dreative-3d]" : "*";
+    const nodes = mediaMode === "dom-state" || mediaMode === "typography" || mediaMode === "spatial-layout" ? all : all.filter((element) => element !== root && element.matches(selector));
+    const meaningfulTransform = (value: string): string => {
+      if (value === "none") return "none";
+      const match = value.match(/^matrix\(([-\d.e]+), ([-\d.e]+), ([-\d.e]+), ([-\d.e]+), ([-\d.e]+), ([-\d.e]+)\)$/);
+      if (!match) return value;
+      const values = match.slice(1).map(Number);
+      const [a, b, c, d, tx, ty] = values;
+      return Math.abs(b) < .001 && Math.abs(c) < .001 && Math.abs(a - d) < .001 && Math.abs(tx) < 1 && Math.abs(ty) < 1 ? "uniform-scale" : value;
+    };
+    return JSON.stringify(nodes.slice(0, 60).map((element) => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      const viewportPinned = style.position === "sticky" || style.position === "fixed";
+      const layoutWidth = element.offsetWidth || Math.round(rect.width);
+      const layoutHeight = element.offsetHeight || Math.round(rect.height);
+      const source = element instanceof HTMLImageElement ? element.currentSrc : "";
+      const media = element instanceof HTMLMediaElement ? element.currentTime.toFixed(2) : "";
+      let canvas = "";
+      if (element instanceof HTMLCanvasElement) try { canvas = element.toDataURL().slice(-160); } catch { canvas = "unreadable"; }
+      return [element.tagName, viewportPinned ? null : Math.round(rect.x - rootRect.x), viewportPinned ? null : Math.round(rect.y - rootRect.y), layoutWidth, layoutHeight, meaningfulTransform(style.transform), style.clipPath, style.backgroundImage, source, media, canvas];
+    }));
+  }, entry.mediaMode);
+}
+
 async function spatialGeometry(page: Page, entry: MechanismContractEntry): Promise<string[]> {
   return page.locator(entry.selector).evaluate((root) => Array.from(root.querySelectorAll<HTMLElement>("*")).slice(0, 60).map((element) => {
     const rect = element.getBoundingClientRect();
@@ -159,14 +188,17 @@ async function exerciseScrollChoreography(page: Page, entry: MechanismContractEn
   if (region.height < region.viewport * 1.5)
     return `${entry.name} scroll mechanism ${entry.selector} is too short to demonstrate multi-stage choreography`;
   const signatures = new Set<string>();
+  const structuralSignatures = new Set<string>();
   for (const fraction of [.1, .3, .5, .7, .9]) {
     const y = Math.max(0, Math.min(region.pageHeight - region.viewport, region.top + region.height * fraction - region.viewport / 2));
     await page.evaluate((scrollY) => scrollTo(0, scrollY), y);
     await twoFrames(page);
     signatures.add(await declaredMediaFingerprint(page, entry));
+    structuralSignatures.add(await structuralMediaFingerprint(page, entry));
   }
   const required = Math.min(5, entry.stateCount);
-  return signatures.size >= required ? null : `${entry.name} scroll mechanism ${entry.selector} produced ${signatures.size} distinct states; ${required} are declared`;
+  if (signatures.size < required) return `${entry.name} scroll mechanism ${entry.selector} produced ${signatures.size} distinct states; ${required} are declared`;
+  return structuralSignatures.size >= 2 ? null : `${entry.name} scroll mechanism ${entry.selector} changes only text, opacity, color, filter, or uniform scale; Showcase requires a structural or media transformation`;
 }
 
 async function exerciseMechanism(page: Page, entry: MechanismContractEntry): Promise<string | null> {
@@ -379,13 +411,37 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
   if (audit.tinyMeaningfulText.length) blockers.push(`${config.label}: meaningful text is below the readability floor: ${audit.tinyMeaningfulText.join(", ")}`);
   const sampleCount = Math.min(config.samples, Math.max(3, Math.ceil(audit.documentHeight / audit.viewportHeight)));
   const sparse: number[] = [];
+  const collisionSamples = new Set<string>();
   for (let index = 0; index < sampleCount; index += 1) {
     const y = Math.round((audit.documentHeight - audit.viewportHeight) * index / Math.max(1, sampleCount - 1));
     await page.evaluate((scrollY) => scrollTo(0, scrollY), y); await twoFrames(page);
     const visible = await page.evaluate(() => Array.from(document.querySelectorAll<HTMLElement>("main h1,main h2,main h3,main p,main img,main svg,main canvas,main video,main button,main a")).filter((element) => { const rect = element.getBoundingClientRect(); const style = getComputedStyle(element); return rect.bottom > 0 && rect.top < innerHeight && rect.width > 8 && rect.height > 8 && style.visibility !== "hidden" && Number(style.opacity) > .02; }).length);
     if (visible === 0) sparse.push(y);
+    const collisions = await page.evaluate(() => {
+      const elements = Array.from(document.querySelectorAll<HTMLElement>("main h1,main h2,main h3,main h4,main p,main li,main label,main button,main a"))
+        .filter((element) => {
+          const rect = element.getBoundingClientRect();
+          const style = getComputedStyle(element);
+          return Boolean(element.innerText.trim()) && rect.bottom > 0 && rect.top < innerHeight && rect.width > 8 && rect.height > 8 && style.visibility !== "hidden" && Number(style.opacity) > .1;
+        }).slice(0, 100);
+      const name = (element: HTMLElement): string => `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : element.classList.length ? `.${element.classList[0]}` : ""}`;
+      const found: string[] = [];
+      for (let left = 0; left < elements.length; left += 1) for (let right = left + 1; right < elements.length; right += 1) {
+        const a = elements[left], b = elements[right];
+        if (a.contains(b) || b.contains(a)) continue;
+        const ar = a.getBoundingClientRect(), br = b.getBoundingClientRect();
+        const width = Math.max(0, Math.min(ar.right, br.right) - Math.max(ar.left, br.left));
+        const height = Math.max(0, Math.min(ar.bottom, br.bottom) - Math.max(ar.top, br.top));
+        const overlap = width * height;
+        const smaller = Math.min(ar.width * ar.height, br.width * br.height);
+        if (overlap >= 64 && overlap / smaller >= .18) found.push(`${name(a)} overlaps ${name(b)}`);
+      }
+      return found.slice(0, 5);
+    });
+    for (const collision of collisions) collisionSamples.add(collision);
   }
   if (sparse.some((y, index) => index > 0 && y - sparse[index - 1] <= audit.viewportHeight * 1.25)) blockers.push(`${config.label}: consecutive near-empty viewport samples detected`);
+  if (collisionSamples.size) blockers.push(`${config.label}: text collision detected during scroll: ${[...collisionSamples].join(", ")}`);
 
   for (const region of audit.longRegions) {
     const selector = `[data-dreative-audit-id=${JSON.stringify(region.auditId)}]`;
@@ -422,6 +478,12 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
       if (positions.length >= 3 && positions.some((position, index) => index > 0 && position <= positions[index - 1])) blockers.push("Showcase mechanisms must follow their declared experience order");
     }
     for (const mechanism of mechanisms) { await page.goto(url, { waitUntil: "domcontentloaded" }); await twoFrames(page); const failure = await exerciseMechanism(page, mechanism); if (failure) blockers.push(failure); }
+  } else if (config.label === "mobile-390" && contract) {
+    for (const mechanism of contract.mechanisms) {
+      await page.goto(url, { waitUntil: "domcontentloaded" }); await twoFrames(page);
+      const failure = await exerciseMechanism(page, mechanism);
+      if (failure) blockers.push(`mobile Showcase equivalent missing: ${failure}`);
+    }
   }
   blockers.push(...runtimeErrors.map((error) => `${config.label}: ${error}`));
   checks.push(`${config.label} ${config.width}×${config.height}`, `${config.label}: ${sampleCount} viewport samples`);

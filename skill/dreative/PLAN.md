@@ -210,8 +210,9 @@ For Showcase, write the compact JSON contract defined by
 least two perceptible Showcase-only differences, two concrete product-native
 media opportunities and their use/reject reasons, and an observed comparison
 between one bounded prototype and one higher-ceiling media/spatial approach.
-Reference actual prototype routes or files and desktop/mobile captures for both;
-self-authored prose is not evidence. Record any selection explanation only as a
+Reference actual prototype routes or files and desktop/mobile captures for both,
+plus short desktop/mobile motion recordings for human comparison; self-authored
+prose is not evidence. Record any selection explanation only as a
 non-authoritative `builderSelectionRationale`; never call it a reviewer decision.
 Name one shared state, its source selector,
 and at least three affected selectors across `before`, `peak`, and `after`, with

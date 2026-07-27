@@ -78,6 +78,8 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /shared state[\s\S]*source selector[\s\S]*affected region/i, "must require a connected Showcase state-continuity contract");
   requireText(findings, "SKILL.md", skill, /Recommended baseline[\s\S]*two perceptible[\s\S]*media opportunities/i, "Showcase must bind its delta and product-native media decision");
   requireText(findings, "SKILL.md", skill, /journey[\s\S]*scroll-authored[\s\S]*Smooth scrolling alone does not qualify/i, "journey-style Showcase must require substantive scroll choreography");
+  requireText(findings, "SKILL.md", skill, /text, opacity, color, filter, or uniform scale[\s\S]*rejected/i, "Showcase must reject low-salience scroll-only state changes");
+  requireText(findings, "SKILL.md", skill, /desktop and 390px mobile[\s\S]*text[\s\S]*collisions/i, "Showcase must exercise mobile mechanisms and sample collisions");
   requireText(findings, "SKILL.md", skill, /VISUAL_REFINEMENT\.md/, "must route completion through the rendered screenshot correction loop");
   requireText(findings, "SKILL.md", skill, /preflight --probe-browser.*preview-url/i, "must require launch plus preview-navigation evidence before browser verification");
   requireText(findings, "SKILL.md", skill, /\.dreative\/context\.json/, "must preserve durable project memory");
