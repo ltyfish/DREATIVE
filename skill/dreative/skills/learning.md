@@ -18,5 +18,7 @@ dogfood run.
 7. When a lesson fails, mark it `rejected` or `superseded`; preserve the reason
    so the next agent does not recreate it under a new name.
 
-Keep `DOGFOOD_LESSONS.md` concise and canonical. Do not duplicate its lessons in
-SKILL.md, PLAN.md, CHANGELOG, or generated evaluation artifacts.
+Keep `DOGFOOD_LESSONS.md` concise and canonical. Do not duplicate full lesson
+records or evidence narratives in SKILL.md, PLAN.md, CHANGELOG, or generated
+evaluation artifacts; operational rules derived from lessons still belong in
+the workflow documents.

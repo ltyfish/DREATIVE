@@ -190,6 +190,9 @@ the resulting user decision, and what meaning would be lost if removed. Remove
 or redesign automatic loops whose removal changes neither understanding nor
 task outcome. Decorative or `aria-hidden` elements
 cannot be named as the primary subject.
+These semantic fields are structured review prompts, not deterministic proof.
+Browser checks can prove that material states change; human review still decides
+whether the change is meaningful, coherent, or tasteful.
 The mechanism list is evidence routing, not a required widget count. Hover is a
 supporting state: it cannot own the peak or post-peak mechanism in a journey.
 When the premise is a journey, process, or transformation,
@@ -225,6 +228,11 @@ hierarchy, material, transition logic, interaction—not a complete house style.
 Prefer two to four cross-domain sources. Never lift one source's combined type,
 palette, composition, and signature motion. Never design “X-like.” GSAP and
 Lenis are capabilities, not aesthetics.
+Record whether each reference and asset came from explicit user requirements or
+from the design direction. A user-required item must appear visibly in the
+result, or be rejected only after the user explicitly approves that rejection.
+General permission to source media is not an explicit requirement to use a
+particular item.
 
 Commit to one concept fingerprint:
 

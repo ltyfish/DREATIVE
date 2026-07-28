@@ -29,6 +29,10 @@ fixture as independent validation. Deterministic tests prove only their exact
 contract. A real dog run plus human verdict is required to validate taste or
 creative judgment.
 
+Do not duplicate full lesson records or evidence narratives in operational
+documents. Concise rules derived from a lesson still belong in SKILL.md,
+PLAN.md, schemas, and executable checks.
+
 ## Active lessons
 
 ### DL-001 / proposed / 2026-07-28

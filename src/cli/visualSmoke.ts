@@ -39,8 +39,25 @@ export interface ShowcaseMechanismContract {
   recommendedBaseline: string;
   showcaseDelta: string[];
   mediaOpportunities: { opportunity: string; decision: "use" | "reject"; rationale: string }[];
-  referenceAdoptions: { source: string; principle: string; targetSelector: string; visibleImplementation: string }[];
-  assetCommitments: { role: string; decision: "use" | "reject"; targetSelector: string; medium: "image" | "video" | "svg" | "canvas" | "3d" | "none"; rationale: string }[];
+  referenceAdoptions: {
+    source: string;
+    principle: string;
+    decision: "use" | "reject";
+    requiredBy: "direction" | "user";
+    targetSelector?: string;
+    visibleImplementation?: string;
+    rationale: string;
+    rejectionApprovedBy?: "user";
+  }[];
+  assetCommitments: {
+    role: string;
+    decision: "use" | "reject";
+    requiredBy: "direction" | "user";
+    targetSelector: string;
+    medium: "image" | "video" | "svg" | "canvas" | "3d" | "none";
+    rationale: string;
+    rejectionApprovedBy?: "user";
+  }[];
   prototypeEvidence: {
     bestFitApproach: string;
     boldAlternativeApproach: string;
@@ -83,6 +100,7 @@ export interface ShowcaseMechanismContract {
     }[];
   };
   agencyChain: {
+    controlSectionSelector: string;
     inputSelector: string;
     primaryResponseSelector: string;
     downstreamSelector: string;
@@ -368,9 +386,18 @@ async function verifyContinuity(page: Page, contract: ShowcaseMechanismContract)
 
 async function verifyAdoptionAndAgency(page: Page, contract: ShowcaseMechanismContract): Promise<string[]> {
   const errors: string[] = [];
-  for (const adoption of contract.referenceAdoptions) {
-    if (await page.locator(adoption.targetSelector).count() !== 1)
+  for (const adoption of contract.referenceAdoptions.filter((item) => item.decision === "use")) {
+    const target = page.locator(adoption.targetSelector ?? "");
+    if (await target.count() !== 1) {
       errors.push(`reference adoption target ${adoption.targetSelector} must resolve exactly once`);
+      continue;
+    }
+    const visible = await target.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return rect.width >= 24 && rect.height >= 24 && style.display !== "none" && style.visibility !== "hidden" && Number(style.opacity) > .02;
+    });
+    if (!visible) errors.push(`reference adoption target ${adoption.targetSelector} must be visibly rendered and meaningfully sized`);
   }
   for (const asset of contract.assetCommitments.filter((item) => item.decision === "use")) {
     const target = page.locator(asset.targetSelector);
@@ -384,8 +411,17 @@ async function verifyAdoptionAndAgency(page: Page, contract: ShowcaseMechanismCo
     }, asset.medium);
     if (!present) errors.push(`required ${asset.medium} asset is missing from ${asset.targetSelector}`);
   }
-  for (const selector of [contract.agencyChain.inputSelector, contract.agencyChain.primaryResponseSelector, contract.agencyChain.downstreamSelector]) {
+  for (const selector of [contract.agencyChain.controlSectionSelector, contract.agencyChain.inputSelector, contract.agencyChain.primaryResponseSelector, contract.agencyChain.downstreamSelector]) {
     if (await page.locator(selector).count() !== 1) errors.push(`agency-chain selector ${selector} must resolve exactly once`);
+  }
+  const controlLocator = page.locator(contract.agencyChain.controlSectionSelector);
+  const inputLocator = page.locator(contract.agencyChain.inputSelector);
+  if (await controlLocator.count() === 1 && await inputLocator.count() === 1) {
+    const controlOwnsInput = await controlLocator.evaluate((section, inputSelector) => {
+      const input = document.querySelector(inputSelector);
+      return Boolean(input && (section === input || section.contains(input)));
+    }, contract.agencyChain.inputSelector);
+    if (!controlOwnsInput) errors.push(`agency control section ${contract.agencyChain.controlSectionSelector} does not own input ${contract.agencyChain.inputSelector}`);
   }
   if (new Set([contract.agencyChain.inputSelector, contract.agencyChain.primaryResponseSelector, contract.agencyChain.downstreamSelector]).size < 3)
     errors.push("agency chain must connect distinct input, primary response, and downstream decision regions");
@@ -542,6 +578,9 @@ async function verifyExperienceMapBindings(page: Page, map: ExperienceMap, contr
     if (missing.length) errors.push(`Experience Map section ${section.id} owns properties not declared by its mechanism: ${missing.join(", ")}`);
     if (await page.locator(section.selector ?? "").count() !== 1) errors.push(`Experience Map section ${section.id} selector ${section.selector} must resolve exactly once`);
   }
+  const controls = map.sections.filter((section) => section.agency === "control");
+  if (!controls.some((section) => section.selector === contract.agencyChain.controlSectionSelector))
+    errors.push(`Experience Map Control section must bind agency control section ${contract.agencyChain.controlSectionSelector}`);
   return errors;
 }
 
@@ -692,14 +731,21 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
   }
   if (!Array.isArray(contract.referenceAdoptions)) errors.push("Showcase referenceAdoptions must be an array");
   for (const [index, item] of (contract.referenceAdoptions ?? []).entries()) {
-    if (![item?.source, item?.principle, item?.targetSelector, item?.visibleImplementation].every((value) => typeof value === "string" && value.trim()))
-      errors.push(`reference adoption ${index + 1} requires source, principle, targetSelector, and visibleImplementation`);
+    if (![item?.source, item?.principle, item?.rationale].every((value) => typeof value === "string" && value.trim())
+      || !["use", "reject"].includes(item?.decision) || !["direction", "user"].includes(item?.requiredBy))
+      errors.push(`reference adoption ${index + 1} requires source, principle, decision, requiredBy, and rationale`);
+    if (item?.decision === "use" && ![item.targetSelector, item.visibleImplementation].every((value) => typeof value === "string" && value.trim()))
+      errors.push(`used reference adoption ${index + 1} requires targetSelector and visibleImplementation`);
+    if (item?.decision === "reject" && item?.requiredBy === "user" && item?.rejectionApprovedBy !== "user")
+      errors.push(`user-required reference ${index + 1} can be rejected only with explicit user approval`);
   }
   if (!Array.isArray(contract.assetCommitments) || contract.assetCommitments.length < 1) errors.push("Showcase requires explicit asset commitments");
   for (const [index, item] of (contract.assetCommitments ?? []).entries()) {
     if (![item?.role, item?.targetSelector, item?.rationale].every((value) => typeof value === "string" && value.trim())
-      || !["use", "reject"].includes(item?.decision) || !["image", "video", "svg", "canvas", "3d", "none"].includes(item?.medium))
-      errors.push(`asset commitment ${index + 1} requires role, decision, targetSelector, medium, and rationale`);
+      || !["use", "reject"].includes(item?.decision) || !["direction", "user"].includes(item?.requiredBy) || !["image", "video", "svg", "canvas", "3d", "none"].includes(item?.medium))
+      errors.push(`asset commitment ${index + 1} requires role, decision, requiredBy, targetSelector, medium, and rationale`);
+    if (item?.decision === "reject" && item?.requiredBy === "user" && item?.rejectionApprovedBy !== "user")
+      errors.push(`user-required asset ${index + 1} can be rejected only with explicit user approval`);
   }
   const prototype = contract.prototypeEvidence;
   if (!prototype || [prototype.bestFitApproach, prototype.boldAlternativeApproach, prototype.selectedApproach, prototype.bestFitArtifact, prototype.boldAlternativeArtifact, prototype.builderSelectionRationale].some((item) => typeof item !== "string" || !item.trim())
@@ -724,8 +770,15 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     if (!region?.selector?.trim() || !region?.effect?.trim() || !["before", "peak", "after"].includes(region?.stage)) errors.push(`continuity region ${index + 1} requires selector, stage, and concrete effect`);
   }
   const agency = contract.agencyChain;
-  if (!agency || ![agency.inputSelector, agency.primaryResponseSelector, agency.downstreamSelector, agency.userAction, agency.immediateResponse, agency.decisionOutcome].every((value) => typeof value === "string" && value.trim()))
+  if (!agency || ![agency.controlSectionSelector, agency.inputSelector, agency.primaryResponseSelector, agency.downstreamSelector, agency.userAction, agency.immediateResponse, agency.decisionOutcome].every((value) => typeof value === "string" && value.trim()))
     errors.push("Showcase requires a complete user-action → primary-response → downstream-decision agency chain");
+  if (agency && continuity) {
+    if (agency.inputSelector !== continuity.sourceSelector) errors.push("agency inputSelector must be the exercised continuity sourceSelector");
+    const primary = affectedRegions.find((region) => region.selector === agency.primaryResponseSelector);
+    const downstream = affectedRegions.find((region) => region.selector === agency.downstreamSelector);
+    if (primary?.stage !== "peak") errors.push("agency primaryResponseSelector must be a verified peak continuity region");
+    if (downstream?.stage !== "after") errors.push("agency downstreamSelector must be a verified after continuity region");
+  }
   const mechanisms = Array.isArray(contract.mechanisms) ? contract.mechanisms.filter((item) => item && typeof item === "object") : [];
   if (mechanisms.length < 1) errors.push("Showcase requires at least one executable signature mechanism");
   const names = mechanisms.map((item) => item.name);

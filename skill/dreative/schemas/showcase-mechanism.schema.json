@@ -37,13 +37,39 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["source", "principle", "targetSelector", "visibleImplementation"],
+        "required": ["source", "principle", "decision", "requiredBy", "rationale"],
         "properties": {
           "source": { "type": "string", "minLength": 1 },
           "principle": { "type": "string", "minLength": 1 },
+          "decision": { "enum": ["use", "reject"] },
+          "requiredBy": { "enum": ["direction", "user"] },
           "targetSelector": { "type": "string", "minLength": 1 },
-          "visibleImplementation": { "type": "string", "minLength": 1 }
-        }
+          "visibleImplementation": { "type": "string", "minLength": 1 },
+          "rationale": { "type": "string", "minLength": 1 },
+          "rejectionApprovedBy": { "const": "user" }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "decision": { "const": "use" } }, "required": ["decision"] },
+            "then": {
+              "properties": {
+                "targetSelector": {},
+                "visibleImplementation": {}
+              },
+              "required": ["targetSelector", "visibleImplementation"]
+            }
+          },
+          {
+            "if": {
+              "properties": { "decision": { "const": "reject" }, "requiredBy": { "const": "user" } },
+              "required": ["decision", "requiredBy"]
+            },
+            "then": {
+              "properties": { "rejectionApprovedBy": {} },
+              "required": ["rejectionApprovedBy"]
+            }
+          }
+        ]
       }
     },
     "assetCommitments": {
@@ -52,14 +78,28 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["role", "decision", "targetSelector", "medium", "rationale"],
+        "required": ["role", "decision", "requiredBy", "targetSelector", "medium", "rationale"],
         "properties": {
           "role": { "type": "string", "minLength": 1 },
           "decision": { "enum": ["use", "reject"] },
+          "requiredBy": { "enum": ["direction", "user"] },
           "targetSelector": { "type": "string", "minLength": 1 },
           "medium": { "enum": ["image", "video", "svg", "canvas", "3d", "none"] },
-          "rationale": { "type": "string", "minLength": 1 }
-        }
+          "rationale": { "type": "string", "minLength": 1 },
+          "rejectionApprovedBy": { "const": "user" }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": { "decision": { "const": "reject" }, "requiredBy": { "const": "user" } },
+              "required": ["decision", "requiredBy"]
+            },
+            "then": {
+              "properties": { "rejectionApprovedBy": {} },
+              "required": ["rejectionApprovedBy"]
+            }
+          }
+        ]
       }
     },
     "prototypeEvidence": {
@@ -135,8 +175,9 @@
     "agencyChain": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["inputSelector", "primaryResponseSelector", "downstreamSelector", "userAction", "immediateResponse", "decisionOutcome"],
+      "required": ["controlSectionSelector", "inputSelector", "primaryResponseSelector", "downstreamSelector", "userAction", "immediateResponse", "decisionOutcome"],
       "properties": {
+        "controlSectionSelector": { "type": "string", "minLength": 1 },
         "inputSelector": { "type": "string", "minLength": 1 },
         "primaryResponseSelector": { "type": "string", "minLength": 1 },
         "downstreamSelector": { "type": "string", "minLength": 1 },
@@ -176,8 +217,10 @@
           "stateCount": { "type": "integer", "minimum": 2, "maximum": 5 }
         }
       }
-    },
-    "responsiveRecordings": {
+    }
+  },
+  "$defs": {
+    "responsiveCaptures": {
       "type": "object",
       "additionalProperties": false,
       "required": ["desktop", "mobile"],
@@ -185,10 +228,8 @@
         "desktop": { "type": "string", "minLength": 1 },
         "mobile": { "type": "string", "minLength": 1 }
       }
-    }
-  },
-  "$defs": {
-    "responsiveCaptures": {
+    },
+    "responsiveRecordings": {
       "type": "object",
       "additionalProperties": false,
       "required": ["desktop", "mobile"],

@@ -48,7 +48,23 @@
               "required": ["intensity"]
             },
             "then": {
+              "properties": {
+                "selector": {},
+                "trigger": {},
+                "ownedProperties": {},
+                "meaningfulOutcome": {}
+              },
               "required": ["selector", "trigger", "ownedProperties", "meaningfulOutcome"]
+            }
+          },
+          {
+            "if": {
+              "properties": { "agency": { "const": "control" } },
+              "required": ["agency"]
+            },
+            "then": {
+              "properties": { "selector": {} },
+              "required": ["selector"]
             }
           },
           {
@@ -58,10 +74,10 @@
             },
             "then": {
               "properties": {
-                "intensity": { "maximum": 2 },
-                "mechanismOwner": { "not": { "pattern": "\\b(animat(e|ed|ion)|motion|transition|timeline|scroll(-linked|-driven)?|scrub|pinn?ed|parallax|morph|transform|sequence|gesture|drag)\\b" } },
-                "desktop": { "not": { "pattern": "\\b(animat(e|ed|ion)|motion|transition|timeline|scroll(-linked|-driven)?|scrub|pinn?ed|parallax|morph|transform|sequence|gesture|drag)\\b" } },
-                "mobile": { "not": { "pattern": "\\b(animat(e|ed|ion)|motion|transition|timeline|scroll(-linked|-driven)?|scrub|pinn?ed|parallax|morph|transform|sequence|gesture|drag)\\b" } }
+                "intensity": { "type": "integer", "maximum": 2 },
+                "mechanismOwner": { "type": "string", "not": { "pattern": "\\b(animat(e|ed|ion)|motion|transition|timeline|scroll(-linked|-driven)?|scrub|pinn?ed|parallax|morph|transform|sequence|gesture|drag)\\b" } },
+                "desktop": { "type": "string", "not": { "pattern": "\\b(animat(e|ed|ion)|motion|transition|timeline|scroll(-linked|-driven)?|scrub|pinn?ed|parallax|morph|transform|sequence|gesture|drag)\\b" } },
+                "mobile": { "type": "string", "not": { "pattern": "\\b(animat(e|ed|ion)|motion|transition|timeline|scroll(-linked|-driven)?|scrub|pinn?ed|parallax|morph|transform|sequence|gesture|drag)\\b" } }
               }
             }
           }

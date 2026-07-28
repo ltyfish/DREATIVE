@@ -21,10 +21,10 @@ const contract: ShowcaseMechanismContract = {
     { opportunity: "Custom SVG instrument", decision: "use", rationale: "It supplies the peak visual mode." },
   ],
   referenceAdoptions: [
-    { source: "fixture instrument", principle: "direct state legibility", targetSelector: "#peak", visibleImplementation: "the SVG instrument changes with readiness" },
+    { source: "fixture instrument", principle: "direct state legibility", decision: "use", requiredBy: "direction", targetSelector: "#peak", visibleImplementation: "the SVG instrument changes with readiness", rationale: "The reference principle is visible in the primary instrument." },
   ],
   assetCommitments: [
-    { role: "primary process instrument", decision: "use", targetSelector: "#peak", medium: "svg", rationale: "The SVG is the semantic product subject." },
+    { role: "primary process instrument", decision: "use", requiredBy: "direction", targetSelector: "#peak", medium: "svg", rationale: "The SVG is the semantic product subject." },
   ],
   prototypeEvidence: {
     bestFitApproach: "Direct connected product controls.",
@@ -63,6 +63,7 @@ const contract: ShowcaseMechanismContract = {
     ],
   },
   agencyChain: {
+    controlSectionSelector: "#before",
     inputSelector: "#before",
     primaryResponseSelector: "#peak",
     downstreamSelector: "#after",
@@ -85,9 +86,9 @@ const experienceMap: ExperienceMap = {
   primaryPeak: "peak",
   recommendations: ["Keep the instrument as the peak."],
   sections: [
-    { id: "before", title: "Before", role: "orient", intensity: 3, rhythm: "build", agency: "influence", inputState: "default", startState: "idle", endState: "ready", mechanismOwner: "native-js", connection: "feeds peak", desktop: "direct control", mobile: "direct tap", reducedMotion: "instant", evidenceTarget: "selected state" },
+    { id: "before", title: "Before", role: "orient", intensity: 3, rhythm: "build", agency: "control", inputState: "default", startState: "idle", endState: "ready", mechanismOwner: "native-js", connection: "feeds peak", desktop: "direct control", mobile: "direct tap", reducedMotion: "instant", evidenceTarget: "selected state", selector: "#before" },
     { id: "peak", title: "Peak", role: "transform", intensity: 5, rhythm: "peak", agency: "control", inputState: "ready", startState: "bounded", endState: "transformed", mechanismOwner: "native-js", connection: "feeds decision", desktop: "instrument", mobile: "bounded instrument", reducedMotion: "instant", evidenceTarget: "three states", selector: "#peak", trigger: "click", ownedProperties: ["transform"], meaningfulOutcome: "moves through three process states" },
-    { id: "after", title: "After", role: "resolve", intensity: 3, rhythm: "release", agency: "control", inputState: "transformed", startState: "open", endState: "decided", mechanismOwner: "native-js", connection: "closes journey", desktop: "decision", mobile: "stacked", reducedMotion: "instant", evidenceTarget: "decision state" },
+    { id: "after", title: "After", role: "resolve", intensity: 3, rhythm: "release", agency: "influence", inputState: "transformed", startState: "open", endState: "decided", mechanismOwner: "native-js", connection: "closes journey", desktop: "decision", mobile: "stacked", reducedMotion: "instant", evidenceTarget: "decision state" },
   ],
 };
 
@@ -122,6 +123,7 @@ test("a tall static section cannot impersonate scroll-authored choreography", as
     ...contract,
     experienceType: "journey" as const,
     continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.map((region) => region.stage === "peak" ? { ...region, selector: "#scroll-story" } : region) },
+    agencyChain: { ...contract.agencyChain, primaryResponseSelector: "#scroll-story" },
     mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", primarySelector: ".box", primarySubject: "scrolling process block", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
   };
   const result = await runVisualSmoke(`${base}/static-scroll-mechanism`, { profile: "showcase", showcase: journey });
@@ -133,6 +135,7 @@ test("static sticky elements cannot impersonate scroll-authored choreography", a
     ...contract,
     experienceType: "journey" as const,
     continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.map((region) => region.stage === "peak" ? { ...region, selector: "#scroll-story" } : region) },
+    agencyChain: { ...contract.agencyChain, primaryResponseSelector: "#scroll-story" },
     mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", primarySelector: ".box", primarySubject: "scrolling process block", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
   };
   const result = await runVisualSmoke(`${base}/static-sticky-scroll-mechanism`, { profile: "showcase", showcase: journey });
@@ -144,6 +147,7 @@ test("opacity and uniform scale cannot impersonate a Showcase transformation", a
     ...contract,
     experienceType: "journey" as const,
     continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.map((region) => region.stage === "peak" ? { ...region, selector: "#scroll-story" } : region) },
+    agencyChain: { ...contract.agencyChain, primaryResponseSelector: "#scroll-story" },
     mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", primarySelector: ".box", primarySubject: "scrolling process block", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
   };
   const result = await runVisualSmoke(`${base}/scale-only-scroll-mechanism`, { profile: "showcase", showcase: journey });
@@ -155,6 +159,7 @@ test("desktop-only choreography fails the mobile Showcase equivalent", async () 
     ...contract,
     experienceType: "journey" as const,
     continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.map((region) => region.stage === "peak" ? { ...region, selector: "#scroll-story" } : region) },
+    agencyChain: { ...contract.agencyChain, primaryResponseSelector: "#scroll-story" },
     mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", primarySelector: ".box", primarySubject: "scrolling process block", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
   };
   const result = await runVisualSmoke(`${base}/desktop-only-scroll-mechanism`, { profile: "showcase", showcase: journey });
@@ -190,6 +195,18 @@ test("prototype parity, semantic motion, and agency are mandatory", () => {
   expect(validateMechanisms("showcase", decorative).join("\n")).toContain("semantic-motion field decisionConsequence");
   const passive = { ...contract, agencyChain: undefined } as unknown as ShowcaseMechanismContract;
   expect(validateMechanisms("showcase", passive).join("\n")).toContain("downstream-decision agency chain");
+});
+
+test("user-required references and assets require explicit rejection approval", () => {
+  const rejectedReference = { ...contract, referenceAdoptions: [{ ...contract.referenceAdoptions[0], decision: "reject" as const, requiredBy: "user" as const, rejectionApprovedBy: undefined }] };
+  expect(validateMechanisms("showcase", rejectedReference).join("\n")).toContain("user-required reference");
+  const rejectedAsset = { ...contract, assetCommitments: [{ ...contract.assetCommitments[0], decision: "reject" as const, requiredBy: "user" as const, medium: "none" as const, rejectionApprovedBy: undefined }] };
+  expect(validateMechanisms("showcase", rejectedAsset).join("\n")).toContain("user-required asset");
+});
+
+test("agency must use the exercised continuity path", () => {
+  const detached = { ...contract, agencyChain: { ...contract.agencyChain, inputSelector: "#after" } };
+  expect(validateMechanisms("showcase", detached).join("\n")).toContain("exercised continuity sourceSelector");
 });
 
 test("Showcase rejects a Recommended map and unbound intensity-5 peak", async () => {
@@ -275,6 +292,7 @@ test("nonexistent continuity selectors and prototype evidence fail browser verif
     ...contract,
     prototypeEvidence: { ...contract.prototypeEvidence, bestFitArtifact: "/missing-prototype", bestFitCaptures: { ...contract.prototypeEvidence.bestFitCaptures, desktop: `${base}/missing-capture.webp` } },
     continuity: { ...contract.continuity, sourceSelector: "#missing-source", affectedRegions: contract.continuity.affectedRegions.map((region) => ({ ...region, selector: `${region.selector}-missing` })) },
+    agencyChain: { ...contract.agencyChain, inputSelector: "#missing-source", primaryResponseSelector: "#peak-missing", downstreamSelector: "#after-missing" },
   };
   const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: dishonest });
   expect(result.blockers.join("\n")).toContain("prototype artifact did not load successfully");

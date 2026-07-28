@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.3.2
+
+- Keep 1–5 as craft ambition while binding one Peak rhythm and at least one
+  Control section to an executable agency chain.
+- Replace Bounded versus Higher Ceiling with final-worthy Best Fit versus Bold
+  Alternative prototypes under equal content and viewport coverage.
+- Execute the shared input and reject static primary/downstream agency regions;
+  bind the Experience Map Control owner to that verified path.
+- Require explicit user approval before rejecting user-required references or
+  assets, and verify used reference targets are visible and meaningfully sized.
+- Validate the complete Showcase contract with Draft 2020-12 JSON Schema,
+  correct the recordings definition, and exclude compiled browser specs from
+  the production package.
+- Add persistent dogfood lessons with proposed, validated, rejected, and
+  superseded states; deterministic checks remain scoped evidence, not taste
+  certification.
+
 ## 1.3.1
 
 - Warn when maximum intensity flattens an Experience Map and require executable

@@ -85,6 +85,9 @@ Efficient uses supplied references only. Recommended uses supplied material or
 a small cross-domain scout. Showcase uses supplied material plus two to four
 strong references from different domains. Extract principles; never reproduce
 a reference's complete visual fingerprint.
+Mark each adoption as user-required or direction-recommended. A user-required
+reference must be visibly implemented, or rejected only after the user
+explicitly approves the rejection.
 
 ### Sources
 
@@ -95,6 +98,9 @@ a reference's complete visual fingerprint.
 
 Efficient defaults to existing assets. Recommended chooses best-fit media.
 Showcase permits maximum useful sourced/generated imagery, video, and 3D.
+Mark specific user-requested assets as user-required. They must ship visibly,
+or be rejected only after the user explicitly approves the rejection. Broad
+permission to source media does not make every possible asset user-required.
 
 ### Packages
 

@@ -94,6 +94,8 @@ export function validateExperienceMap(value: unknown): string[] {
         ownership.set(key, String(section.mechanismOwner));
       }
     }
+    if (section.agency === "control" && !text(section.selector))
+      errors.push(`${prefix}.selector is required when agency is control`);
     if (section.override === "keep-static") {
       if (Number(section.intensity) > 2) errors.push(`${prefix}.keep-static requires intensity 1 or 2`);
       for (const key of ["mechanismOwner", "desktop", "mobile"] as const) {
