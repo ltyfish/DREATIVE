@@ -21,6 +21,11 @@ export interface MechanismContractEntry {
   mobileTransformation: string;
   recommendedDifference: string;
   meaningfulOutcome: string;
+  productTruth: string;
+  userCause: string;
+  visibleChange: string;
+  decisionConsequence: string;
+  removalCost: string;
   animationOwner: "css" | "gsap" | "motion" | "anime" | "react-state" | "native-js" | "other";
   ownedProperties: string[];
   stateCount: number;
@@ -34,16 +39,24 @@ export interface ShowcaseMechanismContract {
   recommendedBaseline: string;
   showcaseDelta: string[];
   mediaOpportunities: { opportunity: string; decision: "use" | "reject"; rationale: string }[];
+  referenceAdoptions: { source: string; principle: string; targetSelector: string; visibleImplementation: string }[];
+  assetCommitments: { role: string; decision: "use" | "reject"; targetSelector: string; medium: "image" | "video" | "svg" | "canvas" | "3d" | "none"; rationale: string }[];
   prototypeEvidence: {
-    boundedApproach: string;
-    higherCeilingApproach: string;
+    bestFitApproach: string;
+    boldAlternativeApproach: string;
     selectedApproach: string;
-    boundedArtifact: string;
-    higherCeilingArtifact: string;
-    boundedCaptures: { desktop: string; mobile: string };
-    higherCeilingCaptures: { desktop: string; mobile: string };
-    boundedRecordings: { desktop: string; mobile: string };
-    higherCeilingRecordings: { desktop: string; mobile: string };
+    bestFitArtifact: string;
+    boldAlternativeArtifact: string;
+    bestFitCaptures: { desktop: string; mobile: string };
+    boldAlternativeCaptures: { desktop: string; mobile: string };
+    bestFitRecordings: { desktop: string; mobile: string };
+    boldAlternativeRecordings: { desktop: string; mobile: string };
+    comparisonParity: {
+      bothFinalWorthy: true;
+      sharedContent: true;
+      sharedViewportCoverage: true;
+      distinctInteractionModels: true;
+    };
     selectedBy: "user";
     builderSelectionRationale: string;
   };
@@ -68,6 +81,14 @@ export interface ShowcaseMechanismContract {
       stage: "before" | "peak" | "after";
       effect: string;
     }[];
+  };
+  agencyChain: {
+    inputSelector: string;
+    primaryResponseSelector: string;
+    downstreamSelector: string;
+    userAction: string;
+    immediateResponse: string;
+    decisionOutcome: string;
   };
   mechanisms: MechanismContractEntry[];
 }
@@ -345,6 +366,32 @@ async function verifyContinuity(page: Page, contract: ShowcaseMechanismContract)
   return errors;
 }
 
+async function verifyAdoptionAndAgency(page: Page, contract: ShowcaseMechanismContract): Promise<string[]> {
+  const errors: string[] = [];
+  for (const adoption of contract.referenceAdoptions) {
+    if (await page.locator(adoption.targetSelector).count() !== 1)
+      errors.push(`reference adoption target ${adoption.targetSelector} must resolve exactly once`);
+  }
+  for (const asset of contract.assetCommitments.filter((item) => item.decision === "use")) {
+    const target = page.locator(asset.targetSelector);
+    if (await target.count() !== 1) {
+      errors.push(`required asset target ${asset.targetSelector} must resolve exactly once`);
+      continue;
+    }
+    const present = await target.evaluate((root, medium) => {
+      const selector = medium === "image" ? "img,picture" : medium === "video" ? "video" : medium === "svg" ? "svg" : medium === "canvas" ? "canvas" : medium === "3d" ? "canvas,[data-dreative-3d]" : "";
+      return selector ? Boolean(root.matches(selector) || root.querySelector(selector)) : false;
+    }, asset.medium);
+    if (!present) errors.push(`required ${asset.medium} asset is missing from ${asset.targetSelector}`);
+  }
+  for (const selector of [contract.agencyChain.inputSelector, contract.agencyChain.primaryResponseSelector, contract.agencyChain.downstreamSelector]) {
+    if (await page.locator(selector).count() !== 1) errors.push(`agency-chain selector ${selector} must resolve exactly once`);
+  }
+  if (new Set([contract.agencyChain.inputSelector, contract.agencyChain.primaryResponseSelector, contract.agencyChain.downstreamSelector]).size < 3)
+    errors.push("agency chain must connect distinct input, primary response, and downstream decision regions");
+  return errors;
+}
+
 function imageDimensions(bytes: Buffer, contentType = ""): { width: number; height: number } | null {
   if (bytes.length >= 24 && bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])))
     return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
@@ -388,7 +435,7 @@ function recordingProblem(bytes: Buffer, contentType: string, source: string): s
 async function verifyPrototypeEvidence(context: Awaited<ReturnType<Browser["newContext"]>>, url: string, contract: ShowcaseMechanismContract): Promise<string[]> {
   const errors: string[] = [];
   const artifactFingerprints: string[] = [];
-  for (const [label, artifact] of [["bounded", contract.prototypeEvidence.boundedArtifact], ["higher-ceiling", contract.prototypeEvidence.higherCeilingArtifact]] as const) {
+  for (const [label, artifact] of [["best-fit", contract.prototypeEvidence.bestFitArtifact], ["bold-alternative", contract.prototypeEvidence.boldAlternativeArtifact]] as const) {
     const page = await context.newPage();
     const target = new URL(artifact, url).href;
     const response = await page.goto(target, { waitUntil: "domcontentloaded" });
@@ -396,8 +443,8 @@ async function verifyPrototypeEvidence(context: Awaited<ReturnType<Browser["newC
     else artifactFingerprints.push(await visibleFingerprint(page, "body"));
     await page.close();
   }
-  if (artifactFingerprints.length === 2 && artifactFingerprints[0] === artifactFingerprints[1]) errors.push("bounded and higher-ceiling prototype artifacts are indistinguishable");
-  for (const [label, captures] of [["bounded", contract.prototypeEvidence.boundedCaptures], ["higher-ceiling", contract.prototypeEvidence.higherCeilingCaptures]] as const) {
+  if (artifactFingerprints.length === 2 && artifactFingerprints[0] === artifactFingerprints[1]) errors.push("Best Fit and Bold Alternative prototype artifacts are indistinguishable");
+  for (const [label, captures] of [["best-fit", contract.prototypeEvidence.bestFitCaptures], ["bold-alternative", contract.prototypeEvidence.boldAlternativeCaptures]] as const) {
     const captureHashes: string[] = [];
     for (const viewport of ["desktop", "mobile"] as const) {
       const capture = captures?.[viewport];
@@ -425,7 +472,7 @@ async function verifyPrototypeEvidence(context: Awaited<ReturnType<Browser["newC
     }
     if (captureHashes.length === 2 && captureHashes[0] === captureHashes[1]) errors.push(`${label} desktop and mobile captures must be different images`);
   }
-  for (const [label, recordings] of [["bounded", contract.prototypeEvidence.boundedRecordings], ["higher-ceiling", contract.prototypeEvidence.higherCeilingRecordings]] as const) {
+  for (const [label, recordings] of [["best-fit", contract.prototypeEvidence.bestFitRecordings], ["bold-alternative", contract.prototypeEvidence.boldAlternativeRecordings]] as const) {
     const hashes: string[] = [];
     for (const viewport of ["desktop", "mobile"] as const) {
       const recording = recordings?.[viewport];
@@ -595,6 +642,7 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
       await page.goto(url, { waitUntil: "domcontentloaded" }); await twoFrames(page);
       blockers.push(...await verifyPrototypeFidelity(page, context, url, contract));
       blockers.push(...await verifyContinuity(page, contract));
+      blockers.push(...await verifyAdoptionAndAgency(page, contract));
       if (experienceMap) blockers.push(...await verifyExperienceMapBindings(page, experienceMap, contract));
     }
     await page.evaluate(() => scrollTo(0, 0)); await twoFrames(page);
@@ -642,10 +690,23 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
   for (const [index, item] of (contract.mediaOpportunities ?? []).entries()) {
     if (typeof item?.opportunity !== "string" || !item.opportunity.trim() || !["use", "reject"].includes(item.decision) || typeof item.rationale !== "string" || !item.rationale.trim()) errors.push(`media opportunity ${index + 1} requires an opportunity, use|reject decision, and rationale`);
   }
+  if (!Array.isArray(contract.referenceAdoptions)) errors.push("Showcase referenceAdoptions must be an array");
+  for (const [index, item] of (contract.referenceAdoptions ?? []).entries()) {
+    if (![item?.source, item?.principle, item?.targetSelector, item?.visibleImplementation].every((value) => typeof value === "string" && value.trim()))
+      errors.push(`reference adoption ${index + 1} requires source, principle, targetSelector, and visibleImplementation`);
+  }
+  if (!Array.isArray(contract.assetCommitments) || contract.assetCommitments.length < 1) errors.push("Showcase requires explicit asset commitments");
+  for (const [index, item] of (contract.assetCommitments ?? []).entries()) {
+    if (![item?.role, item?.targetSelector, item?.rationale].every((value) => typeof value === "string" && value.trim())
+      || !["use", "reject"].includes(item?.decision) || !["image", "video", "svg", "canvas", "3d", "none"].includes(item?.medium))
+      errors.push(`asset commitment ${index + 1} requires role, decision, targetSelector, medium, and rationale`);
+  }
   const prototype = contract.prototypeEvidence;
-  if (!prototype || [prototype.boundedApproach, prototype.higherCeilingApproach, prototype.selectedApproach, prototype.boundedArtifact, prototype.higherCeilingArtifact, prototype.builderSelectionRationale].some((item) => typeof item !== "string" || !item.trim())
-    || [prototype?.boundedCaptures?.desktop, prototype?.boundedCaptures?.mobile, prototype?.higherCeilingCaptures?.desktop, prototype?.higherCeilingCaptures?.mobile, prototype?.boundedRecordings?.desktop, prototype?.boundedRecordings?.mobile, prototype?.higherCeilingRecordings?.desktop, prototype?.higherCeilingRecordings?.mobile].some((item) => typeof item !== "string" || !item.trim()))
-    errors.push("Showcase requires artifact-backed bounded and higher-ceiling prototypes with desktop/mobile captures and motion recordings");
+  if (!prototype || [prototype.bestFitApproach, prototype.boldAlternativeApproach, prototype.selectedApproach, prototype.bestFitArtifact, prototype.boldAlternativeArtifact, prototype.builderSelectionRationale].some((item) => typeof item !== "string" || !item.trim())
+    || [prototype?.bestFitCaptures?.desktop, prototype?.bestFitCaptures?.mobile, prototype?.boldAlternativeCaptures?.desktop, prototype?.boldAlternativeCaptures?.mobile, prototype?.bestFitRecordings?.desktop, prototype?.bestFitRecordings?.mobile, prototype?.boldAlternativeRecordings?.desktop, prototype?.boldAlternativeRecordings?.mobile].some((item) => typeof item !== "string" || !item.trim()))
+    errors.push("Showcase requires artifact-backed Best Fit and Bold Alternative prototypes with desktop/mobile captures and motion recordings");
+  if (!prototype?.comparisonParity || Object.values(prototype.comparisonParity).some((value) => value !== true))
+    errors.push("Showcase prototypes must both be final-worthy, share content and viewport coverage, and differ in interaction model");
   if (prototype?.selectedBy !== "user") errors.push("Showcase prototype selection must come from the user before full integration");
   const fidelity = contract.prototypeFidelity;
   if (!fidelity || [fidelity.selectedArtifact, fidelity.prototypeSubjectSelector, fidelity.integratedSubjectSelector, fidelity.focalObject, fidelity.copyBalance, fidelity.controlPlacement, fidelity.materialLighting, fidelity.desktopFraming, fidelity.mobileFraming].some((item) => typeof item !== "string" || !item.trim()))
@@ -662,6 +723,9 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
   for (const [index, region] of affectedRegions.entries()) {
     if (!region?.selector?.trim() || !region?.effect?.trim() || !["before", "peak", "after"].includes(region?.stage)) errors.push(`continuity region ${index + 1} requires selector, stage, and concrete effect`);
   }
+  const agency = contract.agencyChain;
+  if (!agency || ![agency.inputSelector, agency.primaryResponseSelector, agency.downstreamSelector, agency.userAction, agency.immediateResponse, agency.decisionOutcome].every((value) => typeof value === "string" && value.trim()))
+    errors.push("Showcase requires a complete user-action → primary-response → downstream-decision agency chain");
   const mechanisms = Array.isArray(contract.mechanisms) ? contract.mechanisms.filter((item) => item && typeof item === "object") : [];
   if (mechanisms.length < 1) errors.push("Showcase requires at least one executable signature mechanism");
   const names = mechanisms.map((item) => item.name);
@@ -679,6 +743,8 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     for (const key of ["experienceRole", "ceilingContribution", "continuityConnection", "mobileTransformation", "recommendedDifference"] as const)
       if (!item[key]?.trim()) errors.push(`${item.name} mechanism requires ${key}`);
     if (!item.meaningfulOutcome?.trim()) errors.push(`${item.name} mechanism requires meaningfulOutcome`);
+    for (const key of ["productTruth", "userCause", "visibleChange", "decisionConsequence", "removalCost"] as const)
+      if (!item[key]?.trim()) errors.push(`${item.name} mechanism requires semantic-motion field ${key}`);
     if (!["css", "gsap", "motion", "anime", "react-state", "native-js", "other"].includes(item.animationOwner)) errors.push(`${item.name} mechanism requires one animationOwner`);
     if (!Array.isArray(item.ownedProperties) || item.ownedProperties.length < 1 || item.ownedProperties.some((property) => typeof property !== "string" || !property.trim())) errors.push(`${item.name} mechanism requires ownedProperties`);
     if (!Number.isInteger(item.stateCount) || item.stateCount < 2 || item.stateCount > 5) errors.push(`${item.name} mechanism stateCount must be an integer from 2 to 5`);

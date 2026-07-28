@@ -2,12 +2,16 @@ import fs from "node:fs";
 
 export type ExperienceMapDirection = "efficient" | "recommended" | "showcase";
 export type ExperienceOverride = "recommended" | "more-animated" | "calmer" | "change-layout" | "change-interaction" | "keep-static";
+export type ExperienceRhythm = "rest" | "build" | "peak" | "release";
+export type ExperienceAgency = "watch" | "influence" | "control";
 
 export interface ExperienceSection {
   id: string;
   title: string;
   role: string;
   intensity: 1 | 2 | 3 | 4 | 5;
+  rhythm: ExperienceRhythm;
+  agency: ExperienceAgency;
   inputState: string;
   startState: string;
   endState: string;
@@ -38,6 +42,8 @@ export interface ExperienceMap {
 const text = (value: unknown): value is string => typeof value === "string" && value.trim().length > 0;
 const DIRECTIONS = new Set(["efficient", "recommended", "showcase"]);
 const OVERRIDES = new Set(["recommended", "more-animated", "calmer", "change-layout", "change-interaction", "keep-static"]);
+const RHYTHMS = new Set(["rest", "build", "peak", "release"]);
+const AGENCIES = new Set(["watch", "influence", "control"]);
 const ACTIVE_MECHANISM = /\b(?:animat(?:e|ed|ion)|motion|transition|timeline|scroll(?:-linked|-driven)?|scrub|pinn?ed|parallax|morph|transform|sequence|gesture|drag)\b/i;
 
 export function validateExperienceMap(value: unknown): string[] {
@@ -66,6 +72,8 @@ export function validateExperienceMap(value: unknown): string[] {
       if (!text(section[key])) errors.push(`${prefix}.${key} must be a non-empty string`);
     if (!Number.isInteger(section.intensity) || Number(section.intensity) < 1 || Number(section.intensity) > 5)
       errors.push(`${prefix}.intensity must be an integer from 1 to 5`);
+    if (!RHYTHMS.has(String(section.rhythm))) errors.push(`${prefix}.rhythm must be rest, build, peak, or release`);
+    if (!AGENCIES.has(String(section.agency))) errors.push(`${prefix}.agency must be watch, influence, or control`);
     if (text(section.id)) {
       if (ids.has(section.id)) errors.push(`${prefix}.id must be unique`);
       ids.add(section.id);
@@ -95,6 +103,9 @@ export function validateExperienceMap(value: unknown): string[] {
     }
   }
   if (text(map.primaryPeak) && !ids.has(map.primaryPeak)) errors.push("primaryPeak must match a section id");
+  const peakRoles = (map.sections as Record<string, unknown>[]).filter((section) => section.rhythm === "peak");
+  if (peakRoles.length !== 1 || peakRoles[0]?.id !== map.primaryPeak)
+    errors.push("exactly one section must use rhythm peak, and it must match primaryPeak");
   return errors;
 }
 
@@ -111,8 +122,11 @@ export function validateShowcaseExperienceMap(map: ExperienceMap): string[] {
   const peak = map.sections.find((section) => section.id === map.primaryPeak);
   if (!peak) errors.push("Showcase Experience Map primaryPeak must resolve to a section");
   else if (peak.intensity !== 5) errors.push("Showcase Experience Map primary peak must have intensity 5");
+  else if (peak.rhythm !== "peak") errors.push("Showcase Experience Map primary peak must use rhythm peak");
   if (!map.sections.some((section) => section.intensity === 5))
     errors.push("Showcase Experience Map requires at least one intensity-5 section");
+  if (!map.sections.some((section) => section.agency === "control"))
+    errors.push("Showcase Experience Map requires at least one section where the user has control");
   return errors;
 }
 
@@ -120,7 +134,7 @@ export function renderExperienceMap(map: ExperienceMap): string {
   const width = Math.max(7, ...map.sections.map((section) => section.title.length));
   const rows = map.sections.map((section) => {
     const choice = section.override && section.override !== "recommended" ? `; user change: ${section.override}` : "";
-    return `${section.title.padEnd(width)}  ${section.intensity}/5  ${section.role} — ${section.connection}${choice}`;
+    return `${section.title.padEnd(width)}  ${section.intensity}/5 · ${section.rhythm} · ${section.agency}  ${section.role} — ${section.connection}${choice}`;
   });
   return [
     `Experience Map — ${map.route}`,
@@ -139,6 +153,7 @@ export function renderImplementationObligations(map: ExperienceMap): string {
   return map.sections.map((section) => [
     `${section.title} [${section.id}]`,
     `  Role/input: ${section.role} / ${section.inputState}`,
+    `  Craft/rhythm/agency: ${section.intensity}/5 / ${section.rhythm} / ${section.agency}`,
     `  Visible change: ${section.startState} → ${section.endState}`,
     `  Owner/handoff: ${section.mechanismOwner} / ${section.connection}`,
     `  Desktop/mobile/reduced: ${section.desktop} / ${section.mobile} / ${section.reducedMotion}`,
@@ -157,7 +172,7 @@ export function journeyBalanceAdvisories(map: ExperienceMap): string[] {
   const advisories: string[] = [];
   const maximumSections = map.sections.filter((section) => section.intensity === 5);
   if (maximumSections.length === map.sections.length)
-    advisories.push("Every section is 5/5, which creates a flat intensity map unless each row has a distinct meaningful transformation; confirm maximum meaningful transformation rather than constant motion.");
+    advisories.push("Every section is 5/5 craft. Keep that quality target, but verify the declared rest/build/peak/release rhythm is visible and only the primary peak behaves like a climax.");
   else if (maximumSections.length / map.sections.length >= .75)
     advisories.push("At least three quarters of the route is 5/5; verify that experiential hierarchy and rest still exist.");
   if (peak.intensity / total >= 0.5 || developedOutsidePeak.length === 0)

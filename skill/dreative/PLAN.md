@@ -115,16 +115,23 @@ Defaults: Efficient=Skip, Recommended=Auto, Showcase=Required.
 
 If Auto results in a prototype, or Required is selected, implementation pauses
 after both alternatives and their desktop/mobile captures and recordings exist.
-Show them together and ask the user to select the bounded or higher-ceiling
-approach. Do not integrate, self-select, or treat silence/general permission as
+Show them together as **Best Fit** and **Bold Alternative** and ask the user to
+select one. Both must be honest final candidates with shared content, equivalent
+desktop/mobile coverage, and distinct interaction models. A lower-risk option
+must not be lower-quality by design. Do not integrate, self-select, or treat silence/general permission as
 a choice. Record the resulting selection as `selectedBy: "user"`.
 
 ## Stage 3: editable Experience Map
 
 After configuration, turn the recommended concept into a short section-level
 proposal the user can understand without design or animation terminology.
-Include every major page or section, Dreative's recommended role, intensity
-from 1–5, and its connection to the surrounding journey. Add one to three
+Include every major page or section, Dreative's recommended role, craft
+intensity from 1–5, a plain journey rhythm (`Rest`, `Build`, `Peak`, or
+`Release`), user agency (`Watch`, `Influence`, or `Control`), and its connection
+to the surrounding journey. Explain once that 5 means flagship craft and a
+meaningful transformation where appropriate; it does not mean continuous or
+maximal animation. Users may choose 5 everywhere while the route retains one
+Peak and deliberate quiet sections. Add one to three
 targeted recommendations explaining where stronger treatment will help and
 where it would create competition.
 
@@ -243,8 +250,8 @@ For Showcase, write the compact JSON contract defined by
 `schemas/showcase-mechanism.schema.json`. Bind the Recommended baseline, at
 least two perceptible Showcase-only differences, two concrete product-native
 media opportunities and their use/reject reasons, and an observed comparison
-between one bounded prototype and one higher-ceiling media/spatial approach.
-Reference actual prototype routes or files and desktop/mobile captures for both,
+between one final-worthy Best Fit prototype and one final-worthy Bold
+Alternative. Reference actual prototype routes or files and desktop/mobile captures for both,
 plus short desktop/mobile motion recordings for human comparison; self-authored
 prose is not evidence. Record any selection explanation only as a
 non-authoritative `builderSelectionRationale`; never call it a reviewer decision.
@@ -259,6 +266,13 @@ concept is a journey, process, or transformation, at least one mechanism must
 be scroll-authored and visibly transform content across stages; smooth scroll
 alone does not qualify. It is executable input and an accountability contract,
 not proof that the visual result is good.
+
+For every major mechanism, record five semantic-motion answers: product truth,
+cause, visible change, decision consequence, and removal cost. A Showcase
+journey must include at least one `Control` chain where a user action changes
+the primary subject and a downstream recommendation, configuration, content
+state, or task outcome. Color, labels, and decorative geometry alone do not
+qualify as the downstream decision.
 
 ### 6. Build architecture
 

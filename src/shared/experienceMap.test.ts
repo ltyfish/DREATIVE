@@ -17,9 +17,9 @@ const map: ExperienceMap = {
   primaryPeak: "roast",
   recommendations: ["Let Roast own the peak; strengthen Beans and Subscribe instead of adding competing hero motion."],
   sections: [
-    { id: "hero", title: "Hero", role: "establish origin", intensity: 3, inputState: "default origin", startState: "unselected origin", endState: "selected origin", mechanismOwner: "origin selector", connection: "sends origin to Roast", desktop: "split composition", mobile: "direct tap rail", reducedMotion: "instant selected state", evidenceTarget: "desktop/mobile selected-state capture" },
-    { id: "roast", title: "Roast", role: "primary transformation", intensity: 5, inputState: "selected green bean", startState: "green bean", endState: "roasted bean", mechanismOwner: "scroll timeline", connection: "produces Beans input", desktop: "pinned sequence", mobile: "bounded staged sequence", reducedMotion: "four-step static diagram", evidenceTarget: "entry/midpoint/release captures", selector: "#roast", trigger: "scroll", ownedProperties: ["transform", "clip-path"], meaningfulOutcome: "the selected origin becomes a roastable product" },
-    { id: "beans", title: "Beans", role: "resolve into product", intensity: 3, inputState: "roasted bean", startState: "roast output", endState: "selected product", mechanismOwner: "shared layout transition", connection: "hands selection to Subscribe", desktop: "spatial product resolution", mobile: "single-card resolution", reducedMotion: "instant product state", evidenceTarget: "before/after product capture" },
+    { id: "hero", title: "Hero", role: "establish origin", intensity: 3, rhythm: "build", agency: "influence", inputState: "default origin", startState: "unselected origin", endState: "selected origin", mechanismOwner: "origin selector", connection: "sends origin to Roast", desktop: "split composition", mobile: "direct tap rail", reducedMotion: "instant selected state", evidenceTarget: "desktop/mobile selected-state capture" },
+    { id: "roast", title: "Roast", role: "primary transformation", intensity: 5, rhythm: "peak", agency: "control", inputState: "selected green bean", startState: "green bean", endState: "roasted bean", mechanismOwner: "scroll timeline", connection: "produces Beans input", desktop: "pinned sequence", mobile: "bounded staged sequence", reducedMotion: "four-step static diagram", evidenceTarget: "entry/midpoint/release captures", selector: "#roast", trigger: "scroll", ownedProperties: ["transform", "clip-path"], meaningfulOutcome: "the selected origin becomes a roastable product" },
+    { id: "beans", title: "Beans", role: "resolve into product", intensity: 3, rhythm: "release", agency: "control", inputState: "roasted bean", startState: "roast output", endState: "selected product", mechanismOwner: "shared layout transition", connection: "hands selection to Subscribe", desktop: "spatial product resolution", mobile: "single-card resolution", reducedMotion: "instant product state", evidenceTarget: "before/after product capture" },
   ],
 };
 
@@ -28,7 +28,7 @@ test("experience maps validate and render user-facing choices", () => {
   const rendered = renderExperienceMap(map);
   assert.match(rendered, /use Dreative’s recommended approach/);
   assert.match(rendered, /more animated.+calmer.+change layout/i);
-  assert.match(rendered, /Roast\s+5\/5/);
+  assert.match(rendered, /Roast\s+5\/5 · peak · control/);
 });
 
 test("experience rows compile into implementation obligations", () => {
@@ -41,7 +41,7 @@ test("experience rows compile into implementation obligations", () => {
 
 test("all-5 maps warn that maximum intensity can flatten the journey", () => {
   const flat = { ...map, sections: map.sections.map((section) => ({ ...section, intensity: 5 as const, selector: `#${section.id}`, trigger: "click" as const, ownedProperties: ["transform"], meaningfulOutcome: "a distinct product state" })) };
-  assert.match(journeyBalanceAdvisories(flat).join("\n"), /flat intensity map|constant motion/i);
+  assert.match(journeyBalanceAdvisories(flat).join("\n"), /5\/5 craft|primary peak/i);
 });
 
 test("journey balance is advisory, not a fake taste verdict", () => {
@@ -110,4 +110,11 @@ test("Showcase maps require Showcase direction and an intensity-5 primary peak",
   const errors = validateShowcaseExperienceMap(weakPeak).join("\n");
   assert.match(errors, /primary peak must have intensity 5/);
   assert.match(errors, /at least one intensity-5 section/);
+});
+
+test("maps keep one explicit peak and Showcase requires user control", () => {
+  const twoPeaks = { ...map, sections: map.sections.map((section) => section.id === "hero" ? { ...section, rhythm: "peak" as const } : section) };
+  assert.match(validateExperienceMap(twoPeaks).join("\n"), /exactly one section must use rhythm peak/);
+  const passive = { ...map, sections: map.sections.map((section) => ({ ...section, agency: "watch" as const })) };
+  assert.match(validateShowcaseExperienceMap(passive).join("\n"), /at least one section where the user has control/);
 });

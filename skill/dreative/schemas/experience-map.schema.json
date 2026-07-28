@@ -17,12 +17,14 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "title", "role", "intensity", "inputState", "startState", "endState", "mechanismOwner", "connection", "desktop", "mobile", "reducedMotion", "evidenceTarget"],
+        "required": ["id", "title", "role", "intensity", "rhythm", "agency", "inputState", "startState", "endState", "mechanismOwner", "connection", "desktop", "mobile", "reducedMotion", "evidenceTarget"],
         "properties": {
           "id": { "type": "string", "minLength": 1 },
           "title": { "type": "string", "minLength": 1 },
           "role": { "type": "string", "minLength": 1 },
           "intensity": { "type": "integer", "minimum": 1, "maximum": 5 },
+          "rhythm": { "enum": ["rest", "build", "peak", "release"] },
+          "agency": { "enum": ["watch", "influence", "control"] },
           "inputState": { "type": "string", "minLength": 1 },
           "startState": { "type": "string", "minLength": 1 },
           "endState": { "type": "string", "minLength": 1 },

@@ -17,6 +17,10 @@ artifact or a performance of following instructions.
    dependencies, audience, visual equity, and defects. If
    `.dreative/context.json` exists, validate and read it as fallible working
    memory; reconcile stale statements against the current product.
+   When changing Dreative itself or running a Dreative dogfood, read
+   `references/DOGFOOD_LESSONS.md` and `skills/learning.md` first. Update the
+   lesson record only for repeatable failures or later independently validated
+   corrections; never promote a same-run proposal to validated.
 2. For every open design or redesign, run the planning protocol in `PLAN.md`
    before implementation: read `references/CREATIVE_DIRECTION.md`, privately
    synthesize divergent project-native concepts, then show Recommended,
@@ -42,8 +46,12 @@ artifact or a performance of following instructions.
    prototype choice.
 4. After configuration, present a compact, project-specific **Experience Map**
    before editing code. Show every major page or section with Dreative's
-   recommended role, intensity from 1–5, and connection to the surrounding
-   journey. Lead with `Use Dreative's recommended approach`; let the user change
+   recommended role, craft intensity from 1–5, simple journey rhythm
+   (`Rest`, `Build`, `Peak`, or `Release`), user agency (`Watch`, `Influence`,
+   or `Control`), and connection to the surrounding journey. Intensity is the
+   section's quality and transformation ambition, not an instruction to keep it
+   moving. A user may choose 5 for every section while Dreative preserves one
+   clear Peak through the rhythm field. Lead with `Use Dreative's recommended approach`; let the user change
    a row with `more animated`, `calmer`, `change layout`, `change interaction`,
    `keep static`, or a plain-language instruction. Add one to three targeted
    recommendations about where more motion would strengthen the journey and
@@ -56,8 +64,9 @@ artifact or a performance of following instructions.
    behavior, reduced-motion behavior, and evidence target. Intensity-5 rows
    additionally name a real selector, trigger, owned properties, and meaningful
    outcome so rendered verification can exercise the promise. Treat an all-5
-   map as a hierarchy warning: confirm maximum meaningful transformation rather
-   than interpreting it as constant motion. The schema makes
+   map as flagship craft everywhere, not maximum energy everywhere. Exactly one
+   row owns the Peak rhythm, and Showcase includes at least one Control row.
+   The schema makes
    promises traceable; it is not an approval artifact and does not prove taste.
    Let architecture fit the promised complexity; do not impose a generic scene
    registry, timeline controller, or folder structure.
@@ -153,14 +162,17 @@ and obtain the user's consent before changing the brief.
 Before implementation, bind the difference from Recommended: state the
 Recommended baseline, at least two perceptible Showcase-only qualities, two
 product-native media opportunities with use/reject reasons, and the observed
-result of comparing a bounded prototype with a higher-ceiling alternative.
+result of comparing **Best Fit** with a **Bold Alternative**. Both must be
+final-worthy, use the same real content, receive the same desktop/mobile
+coverage, and differ in experience or interaction model—not merely runtime,
+budget, or visual polish. Neither may be a deliberately weaker strawman.
 Both alternatives require inspectable routes or files plus desktop and mobile
 captures and short desktop/mobile motion recordings; prose written by the
 builder is not prototype evidence. The recordings support human comparison;
 the prototype routes remain executable verification targets.
 The builder may record only a `builderSelectionRationale`, which is an
 inspectable assertion and never an independent review or quality verdict.
-"It works" is not proof that the bounded version reaches the stronger ceiling.
+"It works" is not proof that either option is final-worthy.
 
 Record the executable contract using `schemas/showcase-mechanism.schema.json`.
 Prototype evidence records `selectedBy: "user"`; builder selection is invalid.
@@ -172,7 +184,11 @@ Name the shared state, its source selector, and at least three affected region
 selectors across `before`, `peak`, and `after`, with the concrete effect in each.
 Also record each real signature mechanism with its stage, selector, primary
 product subject and selector, trigger, experience role, media mode, mobile
-transformation, and meaningful outcome. Decorative or `aria-hidden` elements
+transformation, and meaningful outcome. Each mechanism must also state the
+product truth it communicates, the user or system cause, the visible change,
+the resulting user decision, and what meaning would be lost if removed. Remove
+or redesign automatic loops whose removal changes neither understanding nor
+task outcome. Decorative or `aria-hidden` elements
 cannot be named as the primary subject.
 The mechanism list is evidence routing, not a required widget count. Hover is a
 supporting state: it cannot own the peak or post-peak mechanism in a journey.
@@ -307,6 +323,7 @@ rendered interface. `DREATIVE_CHECKS_PASSED` certifies commands only, not taste.
 ## Resource routing
 
 - Open redesign or external reference: `references/CREATIVE_DIRECTION.md`
+- Dreative dogfood or workflow change: `references/DOGFOOD_LESSONS.md` and `skills/learning.md`
 - Named adoption list or library/reference comparison: `references/REFERENCE_ADOPTION.md`
 - Advanced runtime: `references/CREATIVE_EXECUTION.md`
 - Relevant craft only: `skills/<name>.md`

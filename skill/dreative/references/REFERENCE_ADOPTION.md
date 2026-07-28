@@ -14,6 +14,21 @@ For every selected source record:
 - at least two combined-style or signature traits deliberately not copied;
 - license and attribution status when code or assets are used.
 
+The executable Showcase record is intentionally shorter:
+
+```text
+source → extracted principle → target selector → visible implementation
+```
+
+Permission to study a reference is not adoption. If the user asked to follow a
+reference, either record a visible adoption at a real selector or ask the user
+to approve its rejection. Do not silently list a reference as considered.
+
+For media, separate permission from commitment. A selected asset commitment
+records its product role, use/reject decision, medium, target selector, and
+rationale. Final verification checks that every `use` commitment renders the
+declared medium at the declared selector.
+
 ## Research sources worth routing
 
 - **Godly**: full-site composition, pacing, and interaction research. Study a

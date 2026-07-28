@@ -84,7 +84,7 @@ test("active installation contains only routed skill resources", () => {
   assert.equal(Object.keys(manifest.files).some((file) => file.startsWith("systems/")), true);
   assert.deepEqual(
     Object.keys(manifest.files).filter((file) => file.startsWith("references/")).sort(),
-    ["references/ASSET_PIPELINES.md", "references/CREATIVE_DIRECTION.md", "references/CREATIVE_EXECUTION.md", "references/SKILL_CONTRACT.md", "references/VISUAL_REFINEMENT.md"],
+    ["references/ASSET_PIPELINES.md", "references/CREATIVE_DIRECTION.md", "references/CREATIVE_EXECUTION.md", "references/DOGFOOD_LESSONS.md", "references/REFERENCE_ADOPTION.md", "references/SKILL_CONTRACT.md", "references/VISUAL_REFINEMENT.md"],
   );
   for (const active of ["SKILL.md", "PLAN.md", "references/CREATIVE_DIRECTION.md", "references/CREATIVE_EXECUTION.md", "agents/openai.yaml"])
     assert.equal(Object.hasOwn(manifest.files, active), true, active);

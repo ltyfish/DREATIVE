@@ -111,7 +111,9 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "PLAN.md", plan, /visibly and structurally distinct from Recommended/i, "Showcase must remain visibly distinct from Recommended");
   requireText(findings, "PLAN.md", plan, /Showcase implementation attempted:[\s\S]*Independent visual verdict:\s*awaiting user review[\s\S]*ask the user/i, "Showcase must reserve the visual verdict for the user");
   requireText(findings, "PLAN.md", plan, /Not pursued:/i, "Showcase must disclose material rejected or replaced treatments");
-  requireText(findings, "PLAN.md", plan, /bounded prototype[\s\S]*higher-ceiling/i, "Showcase prototypes must compare a bounded and higher-ceiling approach");
+  requireText(findings, "PLAN.md", plan, /Best Fit[\s\S]*Bold Alternative/i, "Showcase prototypes must compare final-worthy Best Fit and Bold Alternative approaches");
+  requireText(findings, "SKILL.md", skill, /DOGFOOD_LESSONS\.md[\s\S]*never promote a same-run proposal to validated/i, "dogfood changes must preserve the persistent learning protocol");
+  requireText(findings, "references/DOGFOOD_LESSONS.md", contents.get("references/DOGFOOD_LESSONS.md") ?? "", /proposed[\s\S]*validated[\s\S]*rejected[\s\S]*superseded/i, "dogfood lessons must preserve explicit evidence states");
   requireText(findings, "PLAN.md", plan, /blocking prototype review[\s\S]*selectedBy:\s*"user"/i, "selected prototypes must pause for explicit user selection");
   requireText(findings, "PLAN.md", plan, /Every substantial final handoff[\s\S]*human taste verdict:\s*awaiting user review/i, "substantial design work must reserve taste acceptance for the user");
   requireText(findings, "PLAN.md", plan, /token-.+efficient|least tokens/i, "Efficient must optimize token use");

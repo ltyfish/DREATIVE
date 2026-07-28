@@ -3,6 +3,13 @@ import { runVisualSmoke, validateMechanisms, type ShowcaseMechanismContract } fr
 import type { ExperienceMap } from "../shared/experienceMap.js";
 
 const base = "http://127.0.0.1:4181";
+const semanticMotion = {
+  productTruth: "Readiness changes the usable product state.",
+  userCause: "The visitor directly changes readiness.",
+  visibleChange: "The primary product subject changes state.",
+  decisionConsequence: "The visitor receives a different product decision.",
+  removalCost: "Removing the mechanism would hide the causal product transition.",
+};
 const contract: ShowcaseMechanismContract = {
   version: 2,
   experienceType: "interface",
@@ -13,17 +20,24 @@ const contract: ShowcaseMechanismContract = {
     { opportunity: "Product photography", decision: "reject", rationale: "The fixture has no product subject." },
     { opportunity: "Custom SVG instrument", decision: "use", rationale: "It supplies the peak visual mode." },
   ],
+  referenceAdoptions: [
+    { source: "fixture instrument", principle: "direct state legibility", targetSelector: "#peak", visibleImplementation: "the SVG instrument changes with readiness" },
+  ],
+  assetCommitments: [
+    { role: "primary process instrument", decision: "use", targetSelector: "#peak", medium: "svg", rationale: "The SVG is the semantic product subject." },
+  ],
   prototypeEvidence: {
-    boundedApproach: "Independent DOM controls.",
-    higherCeilingApproach: "Connected SVG and spatial state system.",
+    bestFitApproach: "Direct connected product controls.",
+    boldAlternativeApproach: "Connected SVG and spatial state system.",
     selectedApproach: "Connected SVG and spatial state system.",
     selectedBy: "user",
-    boundedArtifact: "/prototype/bounded",
-    higherCeilingArtifact: "/prototype/high-ceiling",
-    boundedCaptures: { desktop: `${base}/capture/bounded-desktop.svg`, mobile: `${base}/capture/bounded-mobile.svg` },
-    higherCeilingCaptures: { desktop: `${base}/capture/high-ceiling-desktop.svg`, mobile: `${base}/capture/high-ceiling-mobile.svg` },
-    boundedRecordings: { desktop: `${base}/recording/bounded-desktop.mp4`, mobile: `${base}/recording/bounded-mobile.mp4` },
-    higherCeilingRecordings: { desktop: `${base}/recording/high-ceiling-desktop.mp4`, mobile: `${base}/recording/high-ceiling-mobile.mp4` },
+    bestFitArtifact: "/prototype/bounded",
+    boldAlternativeArtifact: "/prototype/high-ceiling",
+    bestFitCaptures: { desktop: `${base}/capture/bounded-desktop.svg`, mobile: `${base}/capture/bounded-mobile.svg` },
+    boldAlternativeCaptures: { desktop: `${base}/capture/high-ceiling-desktop.svg`, mobile: `${base}/capture/high-ceiling-mobile.svg` },
+    bestFitRecordings: { desktop: `${base}/recording/bounded-desktop.mp4`, mobile: `${base}/recording/bounded-mobile.mp4` },
+    boldAlternativeRecordings: { desktop: `${base}/recording/high-ceiling-desktop.mp4`, mobile: `${base}/recording/high-ceiling-mobile.mp4` },
+    comparisonParity: { bothFinalWorthy: true, sharedContent: true, sharedViewportCoverage: true, distinctInteractionModels: true },
     builderSelectionRationale: "The connected system made the state transition visibly legible; this is a builder assertion, not an independent verdict.",
   },
   prototypeFidelity: {
@@ -48,10 +62,18 @@ const contract: ShowcaseMechanismContract = {
       { selector: "#after", stage: "after", effect: "changes the final decision" },
     ],
   },
+  agencyChain: {
+    inputSelector: "#before",
+    primaryResponseSelector: "#peak",
+    downstreamSelector: "#after",
+    userAction: "change readiness",
+    immediateResponse: "transform the process instrument",
+    decisionOutcome: "change the final product decision",
+  },
   mechanisms: [
-    { name: "readiness-control", stage: "before", selector: "#before", primarySelector: ".box", primarySubject: "readiness indicator", trigger: "click", experienceRole: "opens", ceilingContribution: "introduces tactile state", mediaMode: "dom-state", continuityConnection: "shared control state", mobileTransformation: "direct tap", recommendedDifference: "begins the connected instrument", meaningfulOutcome: "reveals increasing product readiness", animationOwner: "native-js", ownedProperties: ["transform"], stateCount: 3 },
-    { name: "instrument-peak", stage: "peak", selector: "#peak", primarySelector: "svg", primarySubject: "process instrument", trigger: "click", experienceRole: "transforms", ceilingContribution: "changes visual medium", mediaMode: "svg", continuityConnection: "shared control state", mobileTransformation: "bounded SVG", recommendedDifference: "creates the central visual transformation", meaningfulOutcome: "moves the product through three visible process stages", animationOwner: "native-js", ownedProperties: ["transform"], stateCount: 3 },
-    { name: "decision-resolution", stage: "after", selector: "#after", primarySelector: ".box:first-of-type", primarySubject: "decision layout", trigger: "click", experienceRole: "resolves", ceilingContribution: "closes the state arc", mediaMode: "spatial-layout", continuityConnection: "shared control state", mobileTransformation: "stacked resolution", recommendedDifference: "resolves the connected instrument", meaningfulOutcome: "recomposes the result into three decision states", animationOwner: "native-js", ownedProperties: ["transform"], stateCount: 3 },
+    { ...semanticMotion, name: "readiness-control", stage: "before", selector: "#before", primarySelector: ".box", primarySubject: "readiness indicator", trigger: "click", experienceRole: "opens", ceilingContribution: "introduces tactile state", mediaMode: "dom-state", continuityConnection: "shared control state", mobileTransformation: "direct tap", recommendedDifference: "begins the connected instrument", meaningfulOutcome: "reveals increasing product readiness", animationOwner: "native-js", ownedProperties: ["transform"], stateCount: 3 },
+    { ...semanticMotion, name: "instrument-peak", stage: "peak", selector: "#peak", primarySelector: "svg", primarySubject: "process instrument", trigger: "click", experienceRole: "transforms", ceilingContribution: "changes visual medium", mediaMode: "svg", continuityConnection: "shared control state", mobileTransformation: "bounded SVG", recommendedDifference: "creates the central visual transformation", meaningfulOutcome: "moves the product through three visible process stages", animationOwner: "native-js", ownedProperties: ["transform"], stateCount: 3 },
+    { ...semanticMotion, name: "decision-resolution", stage: "after", selector: "#after", primarySelector: ".box:first-of-type", primarySubject: "decision layout", trigger: "click", experienceRole: "resolves", ceilingContribution: "closes the state arc", mediaMode: "spatial-layout", continuityConnection: "shared control state", mobileTransformation: "stacked resolution", recommendedDifference: "resolves the connected instrument", meaningfulOutcome: "recomposes the result into three decision states", animationOwner: "native-js", ownedProperties: ["transform"], stateCount: 3 },
   ],
 };
 
@@ -63,9 +85,9 @@ const experienceMap: ExperienceMap = {
   primaryPeak: "peak",
   recommendations: ["Keep the instrument as the peak."],
   sections: [
-    { id: "before", title: "Before", role: "orient", intensity: 3, inputState: "default", startState: "idle", endState: "ready", mechanismOwner: "native-js", connection: "feeds peak", desktop: "direct control", mobile: "direct tap", reducedMotion: "instant", evidenceTarget: "selected state" },
-    { id: "peak", title: "Peak", role: "transform", intensity: 5, inputState: "ready", startState: "bounded", endState: "transformed", mechanismOwner: "native-js", connection: "feeds decision", desktop: "instrument", mobile: "bounded instrument", reducedMotion: "instant", evidenceTarget: "three states", selector: "#peak", trigger: "click", ownedProperties: ["transform"], meaningfulOutcome: "moves through three process states" },
-    { id: "after", title: "After", role: "resolve", intensity: 3, inputState: "transformed", startState: "open", endState: "decided", mechanismOwner: "native-js", connection: "closes journey", desktop: "decision", mobile: "stacked", reducedMotion: "instant", evidenceTarget: "decision state" },
+    { id: "before", title: "Before", role: "orient", intensity: 3, rhythm: "build", agency: "influence", inputState: "default", startState: "idle", endState: "ready", mechanismOwner: "native-js", connection: "feeds peak", desktop: "direct control", mobile: "direct tap", reducedMotion: "instant", evidenceTarget: "selected state" },
+    { id: "peak", title: "Peak", role: "transform", intensity: 5, rhythm: "peak", agency: "control", inputState: "ready", startState: "bounded", endState: "transformed", mechanismOwner: "native-js", connection: "feeds decision", desktop: "instrument", mobile: "bounded instrument", reducedMotion: "instant", evidenceTarget: "three states", selector: "#peak", trigger: "click", ownedProperties: ["transform"], meaningfulOutcome: "moves through three process states" },
+    { id: "after", title: "After", role: "resolve", intensity: 3, rhythm: "release", agency: "control", inputState: "transformed", startState: "open", endState: "decided", mechanismOwner: "native-js", connection: "closes journey", desktop: "decision", mobile: "stacked", reducedMotion: "instant", evidenceTarget: "decision state" },
   ],
 };
 
@@ -84,8 +106,11 @@ test("scroll-authored mechanisms must expose at least three sampled states", asy
   const journey = {
     ...contract,
     experienceType: "journey" as const,
+    referenceAdoptions: contract.referenceAdoptions.map((item) => ({ ...item, targetSelector: "#scroll-story" })),
+    assetCommitments: contract.assetCommitments.map((item) => ({ ...item, targetSelector: "#scroll-story", medium: "none" as const, decision: "reject" as const })),
     prototypeFidelity: { ...contract.prototypeFidelity, integratedSubjectSelector: "#scroll-story .box" },
     continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.map((region) => region.stage === "peak" ? { ...region, selector: "#scroll-story" } : region) },
+    agencyChain: { ...contract.agencyChain, primaryResponseSelector: "#scroll-story" },
     mechanisms: contract.mechanisms.map((item) => item.stage === "peak" ? { ...item, selector: "#scroll-story", primarySelector: ".box", primarySubject: "scrolling process block", trigger: "scroll" as const, mediaMode: "dom-state" as const } : item),
   };
   const result = await runVisualSmoke(`${base}/scroll-mechanism`, { profile: "showcase", showcase: journey });
@@ -158,6 +183,15 @@ test("prototype fidelity and animation ownership are mandatory contract fields",
   expect(validateMechanisms("showcase", missingOwner).join("\n")).toContain("requires one animationOwner");
 });
 
+test("prototype parity, semantic motion, and agency are mandatory", () => {
+  const strawman = { ...contract, prototypeEvidence: { ...contract.prototypeEvidence, comparisonParity: { ...contract.prototypeEvidence.comparisonParity, bothFinalWorthy: false } } } as unknown as ShowcaseMechanismContract;
+  expect(validateMechanisms("showcase", strawman).join("\n")).toContain("both be final-worthy");
+  const decorative = { ...contract, mechanisms: contract.mechanisms.map((item, index) => index === 0 ? { ...item, decisionConsequence: "" } : item) };
+  expect(validateMechanisms("showcase", decorative).join("\n")).toContain("semantic-motion field decisionConsequence");
+  const passive = { ...contract, agencyChain: undefined } as unknown as ShowcaseMechanismContract;
+  expect(validateMechanisms("showcase", passive).join("\n")).toContain("downstream-decision agency chain");
+});
+
 test("Showcase rejects a Recommended map and unbound intensity-5 peak", async () => {
   const recommended = { ...experienceMap, direction: "recommended" as const };
   const direction = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: contract, experienceMap: recommended });
@@ -214,21 +248,21 @@ test("hidden descendant text cannot impersonate visible continuity", async () =>
 
 test("tiny or viewport-inappropriate captures are rejected", async () => {
   const captures = { desktop: `${base}/capture/tiny-desktop.svg`, mobile: `${base}/capture/tiny-mobile.svg` };
-  const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: { ...contract, prototypeEvidence: { ...contract.prototypeEvidence, boundedCaptures: captures } } });
+  const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: { ...contract, prototypeEvidence: { ...contract.prototypeEvidence, bestFitCaptures: captures } } });
   expect(result.blockers.join("\n")).toContain("must be a desktop-like image");
   expect(result.blockers.join("\n")).toContain("must be a mobile-like image");
 });
 
 test("prototype motion recordings are executable required evidence", async () => {
-  const missing = { ...contract, prototypeEvidence: { ...contract.prototypeEvidence, boundedRecordings: { desktop: "", mobile: `${base}/missing-recording.mp4` } } };
+  const missing = { ...contract, prototypeEvidence: { ...contract.prototypeEvidence, bestFitRecordings: { desktop: "", mobile: `${base}/missing-recording.mp4` } } };
   const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: missing });
   expect(result.blockers.join("\n")).toContain("desktop/mobile captures and motion recordings");
 });
 
 test("desktop and mobile prototype recordings must be distinct", async () => {
   const same = `${base}/recording/bounded-desktop.mp4`;
-  const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: { ...contract, prototypeEvidence: { ...contract.prototypeEvidence, boundedRecordings: { desktop: same, mobile: same } } } });
-  expect(result.blockers.join("\n")).toContain("bounded desktop and mobile recordings must be different files");
+  const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: { ...contract, prototypeEvidence: { ...contract.prototypeEvidence, bestFitRecordings: { desktop: same, mobile: same } } } });
+  expect(result.blockers.join("\n")).toContain("best-fit desktop and mobile recordings must be different files");
 });
 
 test("aria-hidden decoration cannot satisfy primary transformation salience", async () => {
@@ -239,7 +273,7 @@ test("aria-hidden decoration cannot satisfy primary transformation salience", as
 test("nonexistent continuity selectors and prototype evidence fail browser verification", async () => {
   const dishonest = {
     ...contract,
-    prototypeEvidence: { ...contract.prototypeEvidence, boundedArtifact: "/missing-prototype", boundedCaptures: { ...contract.prototypeEvidence.boundedCaptures, desktop: `${base}/missing-capture.webp` } },
+    prototypeEvidence: { ...contract.prototypeEvidence, bestFitArtifact: "/missing-prototype", bestFitCaptures: { ...contract.prototypeEvidence.bestFitCaptures, desktop: `${base}/missing-capture.webp` } },
     continuity: { ...contract.continuity, sourceSelector: "#missing-source", affectedRegions: contract.continuity.affectedRegions.map((region) => ({ ...region, selector: `${region.selector}-missing` })) },
   };
   const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: dishonest });

@@ -23,6 +23,8 @@ const canonical = (value: unknown) => JSON.stringify(value, Object.keys(value as
 const ACTIVE_ROOT_FILES = new Set(["SKILL.md", "PLAN.md", "llms.txt"]);
 const ACTIVE_REFERENCES = new Set([
   "references/CREATIVE_DIRECTION.md",
+  "references/DOGFOOD_LESSONS.md",
+  "references/REFERENCE_ADOPTION.md",
   "references/CREATIVE_EXECUTION.md",
   "references/SKILL_CONTRACT.md",
   "references/VISUAL_REFINEMENT.md",

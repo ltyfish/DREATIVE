@@ -60,17 +60,17 @@ export function checkPortableArtifacts(projectDir: string, files: string[]): str
 
 export function localShowcaseArtifacts(contract: {
   prototypeEvidence?: {
-    boundedCaptures?: Record<string, string>;
-    higherCeilingCaptures?: Record<string, string>;
-    boundedRecordings?: Record<string, string>;
-    higherCeilingRecordings?: Record<string, string>;
+    bestFitCaptures?: Record<string, string>;
+    boldAlternativeCaptures?: Record<string, string>;
+    bestFitRecordings?: Record<string, string>;
+    boldAlternativeRecordings?: Record<string, string>;
   };
 }): { files: string[]; blockers: string[] } {
   const values = [
-    ...Object.values(contract.prototypeEvidence?.boundedCaptures ?? {}),
-    ...Object.values(contract.prototypeEvidence?.higherCeilingCaptures ?? {}),
-    ...Object.values(contract.prototypeEvidence?.boundedRecordings ?? {}),
-    ...Object.values(contract.prototypeEvidence?.higherCeilingRecordings ?? {}),
+    ...Object.values(contract.prototypeEvidence?.bestFitCaptures ?? {}),
+    ...Object.values(contract.prototypeEvidence?.boldAlternativeCaptures ?? {}),
+    ...Object.values(contract.prototypeEvidence?.bestFitRecordings ?? {}),
+    ...Object.values(contract.prototypeEvidence?.boldAlternativeRecordings ?? {}),
   ].filter(Boolean);
   const files: string[] = [];
   const blockers: string[] = [];

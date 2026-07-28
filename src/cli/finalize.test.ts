@@ -165,9 +165,9 @@ test("Showcase artifacts must exist inside the repository and be tracked", () =>
 test("nested Showcase evidence rejects absolute paths and returns local portable files", () => {
   const result = localShowcaseArtifacts({
     prototypeEvidence: {
-      boundedCaptures: { desktop: "evidence/desktop.png", mobile: "https://example.com/mobile.png" },
-      higherCeilingCaptures: { desktop: "C:\\private\\desktop.png", mobile: "/capture/mobile" },
-      boundedRecordings: { desktop: "evidence/desktop.webm" },
+      bestFitCaptures: { desktop: "evidence/desktop.png", mobile: "https://example.com/mobile.png" },
+      boldAlternativeCaptures: { desktop: "C:\\private\\desktop.png", mobile: "/capture/mobile" },
+      bestFitRecordings: { desktop: "evidence/desktop.webm" },
     },
   });
   assert.deepEqual(result.files, ["evidence/desktop.png", "evidence/desktop.webm"]);
