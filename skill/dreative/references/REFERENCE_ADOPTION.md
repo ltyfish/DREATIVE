@@ -24,10 +24,14 @@ Permission to study a reference is not adoption. If the user asked to follow a
 reference, either record a visible adoption at a real selector or ask the user
 to approve its rejection. Do not silently list a reference as considered.
 
-For media, separate permission from commitment. A selected asset commitment
-records its product role, use/reject decision, medium, target selector, and
-rationale. Final verification checks that every `use` commitment renders the
-declared medium at the declared selector.
+For media, separate permission from commitment. Showcase records focal
+commitments for the hero, Peak, and major post-Peak subject. Each names the
+subject kind; supplied, sourced, generated, licensed-3D, pre-rendered, or
+procedural origin; real source/file; rights; treatment; crop; animation;
+mobile fallback; external options evaluated; and capability gap when relevant.
+Final verification checks that every `use` commitment renders the declared
+medium at the declared selector. Realistic physical focal subjects may use a
+procedural treatment only with a concrete artistic-superiority reason.
 
 ## Research sources worth routing
 

@@ -132,3 +132,27 @@ explicitly pending.
 
 Recheck condition: Compare the next critic findings with an independent human
 verdict and record misses rather than rewriting the critic prompt blindly.
+
+### DL-006 / proposed / 2026-07-30
+
+Observed failure: A Showcase run built realistic focal products and brew
+equipment from DOM/CSS, let users skip scroll states, and reordered six
+comparison items with large footprint changes.
+
+Root cause: One generic asset commitment could cover the route; scroll checks
+counted states without testing input pace, dwell, reverse, or release; comparison
+layouts had no stable-identity or travel contract.
+
+Change: Require external-first focal decisions for hero, Peak, and post-Peak,
+full-page prototype storyboards, perceptual scroll exercise, and declared
+comparison-layout stability limits.
+
+Evidence: Northwind v.20.12 source and independent user/ChatGPT review. The
+tracked run contract is also stale and cannot pass the current finalizer.
+
+Cost or trade-off: Three asset records and targeted browser checks add planning
+and test time. They still cannot certify artistic quality or force 3D when a
+stronger truthful medium exists.
+
+Recheck condition: Rerun Northwind from baseline and obtain a human verdict on
+asset fidelity, scroll readability, and six-product comparison usability.

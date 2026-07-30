@@ -29,6 +29,8 @@ export interface MechanismContractEntry {
   animationOwner: "css" | "gsap" | "motion" | "anime" | "react-state" | "native-js" | "other";
   ownedProperties: string[];
   stateCount: number;
+  minimumDwellMs?: number;
+  releaseSelector?: string;
 }
 export interface ShowcaseMechanismContract {
   version: 2;
@@ -51,10 +53,22 @@ export interface ShowcaseMechanismContract {
   }[];
   assetCommitments: {
     role: string;
+    stage: "hero" | "peak" | "post-peak";
+    subjectKind: "realistic-physical" | "graphic" | "interface" | "environmental";
     decision: "use" | "reject";
     requiredBy: "direction" | "user";
     targetSelector: string;
     medium: "image" | "video" | "svg" | "canvas" | "3d" | "none";
+    productionSource: "supplied" | "sourced" | "generated" | "licensed-3d" | "pre-rendered-sequence" | "procedural" | "none";
+    sourceRef: string;
+    rights: string;
+    treatment: string;
+    crop: string;
+    animationTechnique: string;
+    mobileFallback: string;
+    externalEvaluation: string;
+    proceduralSuperiorityReason?: string;
+    capabilityGap?: string;
     rationale: string;
     rejectionApprovedBy?: "user";
   }[];
@@ -68,6 +82,7 @@ export interface ShowcaseMechanismContract {
     boldAlternativeCaptures: { desktop: string; mobile: string };
     bestFitRecordings: { desktop: string; mobile: string };
     boldAlternativeRecordings: { desktop: string; mobile: string };
+    fullPageContinuityStoryboards: { bestFit: string; boldAlternative: string };
     comparisonParity: {
       bothFinalWorthy: true;
       sharedContent: true;
@@ -108,6 +123,15 @@ export interface ShowcaseMechanismContract {
     immediateResponse: string;
     decisionOutcome: string;
   };
+  comparisonLayouts: {
+    selector: string;
+    itemSelector: string;
+    identityAttribute: string;
+    strategy: "fixed-grid" | "stable-rail" | "selected-stage" | "other";
+    reorderMode: "none" | "selected-only" | "controlled";
+    maxTravelViewportRatio: number;
+    spacingTolerancePx: number;
+  }[];
   mechanisms: MechanismContractEntry[];
 }
 export interface VisualSmokeOptions { profile: DeliveryProfile; showcase?: ShowcaseMechanismContract; experienceMap?: ExperienceMap }
@@ -250,12 +274,15 @@ async function exerciseScrollChoreography(page: Page, entry: MechanismContractEn
     return `${entry.name} scroll mechanism ${entry.selector} is too short to demonstrate multi-stage choreography`;
   const signatures = new Set<string>();
   const structuralSignatures = new Set<string>();
+  const orderedSignatures: string[] = [];
   let visibilityFailure: string | null = null;
   for (const fraction of [.1, .3, .5, .7, .9]) {
     const y = Math.max(0, Math.min(region.pageHeight - region.viewport, region.top + region.height * fraction - region.viewport / 2));
     await page.evaluate((scrollY) => scrollTo(0, scrollY), y);
     await twoFrames(page);
-    signatures.add(await declaredMediaFingerprint(page, entry));
+    const signature = await declaredMediaFingerprint(page, entry);
+    signatures.add(signature);
+    orderedSignatures.push(signature);
     structuralSignatures.add(await structuralMediaFingerprint(page, entry));
     const visibility = await page.locator(entry.selector).locator(entry.primarySelector).evaluate((element) => {
       const rect = element.getBoundingClientRect();
@@ -273,7 +300,40 @@ async function exerciseScrollChoreography(page: Page, entry: MechanismContractEn
   const required = Math.min(5, entry.stateCount);
   if (signatures.size < required) return `${entry.name} scroll mechanism ${entry.selector} produced ${signatures.size} distinct states; ${required} are declared`;
   if (visibilityFailure) return visibilityFailure;
-  return structuralSignatures.size >= 2 ? null : `${entry.name} scroll mechanism ${entry.selector} changes only text, opacity, color, filter, or uniform scale; Showcase requires a structural or media transformation`;
+  if (structuralSignatures.size < 2) return `${entry.name} scroll mechanism ${entry.selector} changes only text, opacity, color, filter, or uniform scale; Showcase requires a structural or media transformation`;
+
+  const endY = Math.max(0, Math.min(region.pageHeight - region.viewport, region.top + region.height * .9 - region.viewport / 2));
+  const startY = Math.max(0, Math.min(region.pageHeight - region.viewport, region.top + region.height * .1 - region.viewport / 2));
+  await page.evaluate(([from, to]) => { scrollTo(0, from); scrollTo(0, to); }, [startY, endY]);
+  await twoFrames(page);
+  const rapidSignature = await declaredMediaFingerprint(page, entry);
+  if (rapidSignature !== orderedSignatures.at(-1)) return `${entry.name} rapid scroll did not settle on the final authored state`;
+  const dwellSignature = await declaredMediaFingerprint(page, entry);
+  await page.waitForTimeout(entry.minimumDwellMs ?? 100);
+  if (await declaredMediaFingerprint(page, entry) !== dwellSignature) return `${entry.name} key state did not remain stable long enough to read after scroll input settled`;
+
+  for (const fraction of [.7, .5, .3, .1]) {
+    const y = Math.max(0, Math.min(region.pageHeight - region.viewport, region.top + region.height * fraction - region.viewport / 2));
+    await page.evaluate((scrollY) => scrollTo(0, scrollY), y);
+    await twoFrames(page);
+  }
+  if (await declaredMediaFingerprint(page, entry) !== orderedSignatures[0]) return `${entry.name} reverse scroll did not restore the opening authored state`;
+
+  const releaseY = Math.max(0, Math.min(region.pageHeight - region.viewport, region.top + region.height - region.viewport));
+  await page.evaluate((scrollY) => scrollTo(0, scrollY), releaseY);
+  await twoFrames(page);
+  const releaseTarget = page.locator(entry.releaseSelector ?? `${entry.selector} + *`);
+  if (await releaseTarget.count() !== 1) return `${entry.name} release selector ${entry.releaseSelector} must resolve exactly once`;
+  const releaseOverlap = await page.locator(entry.selector).evaluate((root, input) => {
+    const { primarySelector, releaseSelector } = input;
+    const primary = root.querySelector<HTMLElement>(primarySelector);
+    const next = document.querySelector<HTMLElement>(releaseSelector);
+    if (!primary || !next) return false;
+    const subject = primary.getBoundingClientRect();
+    const following = next.getBoundingClientRect();
+    return following.top < innerHeight - 1 && subject.bottom > Math.max(0, following.top);
+  }, { primarySelector: entry.primarySelector, releaseSelector: entry.releaseSelector ?? `${entry.selector} + *` });
+  return releaseOverlap ? `${entry.name} primary subject overlaps the following section during release` : null;
 }
 
 async function stableRouteIdentity(page: Page): Promise<string> {
@@ -428,6 +488,57 @@ async function verifyAdoptionAndAgency(page: Page, contract: ShowcaseMechanismCo
   return errors;
 }
 
+async function verifyComparisonLayouts(page: Page, contract: ShowcaseMechanismContract): Promise<string[]> {
+  const errors: string[] = [];
+  const snapshot = async (layout: ShowcaseMechanismContract["comparisonLayouts"][number]) => {
+    const root = page.locator(layout.selector);
+    if (await root.count() !== 1) return null;
+    return root.locator(layout.itemSelector).evaluateAll((items, attribute) => items.map((item) => {
+      const rect = item.getBoundingClientRect();
+      return { id: item.getAttribute(attribute) ?? "", x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+    }), layout.identityAttribute);
+  };
+  for (const layout of contract.comparisonLayouts) {
+    const before = await snapshot(layout);
+    if (!before || before.length < 2) {
+      errors.push(`comparison layout ${layout.selector} must resolve once and contain at least two ${layout.itemSelector} items`);
+      continue;
+    }
+    if (before.some((item) => !item.id) || new Set(before.map((item) => item.id)).size !== before.length) {
+      errors.push(`comparison layout ${layout.selector} requires unique ${layout.identityAttribute} identities`);
+      continue;
+    }
+    const source = page.locator(contract.continuity.sourceSelector);
+    if (await source.count() === 1) {
+      await source.click();
+      await twoFrames(page);
+      const after = await snapshot(layout);
+      if (!after || after.length !== before.length) {
+        errors.push(`comparison layout ${layout.selector} changed its comparison item count`);
+        continue;
+      }
+      const afterById = new Map(after.map((item) => [item.id, item]));
+      const travel = before.map((item) => {
+        const next = afterById.get(item.id);
+        return next ? Math.hypot(next.x - item.x, next.y - item.y) / Math.max(1, page.viewportSize()?.width ?? 1) : Infinity;
+      });
+      const moved = travel.filter((distance) => distance > .02).length;
+      if (travel.some((distance) => distance > layout.maxTravelViewportRatio))
+        errors.push(`comparison layout ${layout.selector} moves an item beyond its declared viewport travel limit`);
+      if (layout.reorderMode === "none" && moved > 0)
+        errors.push(`comparison layout ${layout.selector} declares stable positions but moves ${moved} items`);
+      if (layout.reorderMode === "selected-only" && moved > 1)
+        errors.push(`comparison layout ${layout.selector} moves ${moved} items; selected-only permits one`);
+      const widths = after.map((item) => item.width);
+      const heights = after.map((item) => item.height);
+      if (Math.max(...widths) - Math.min(...widths) > layout.spacingTolerancePx
+        || Math.max(...heights) - Math.min(...heights) > layout.spacingTolerancePx)
+        errors.push(`comparison layout ${layout.selector} exceeds its declared item-size tolerance`);
+    }
+  }
+  return errors;
+}
+
 function imageDimensions(bytes: Buffer, contentType = ""): { width: number; height: number } | null {
   if (bytes.length >= 24 && bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])))
     return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
@@ -478,6 +589,12 @@ async function verifyPrototypeEvidence(context: Awaited<ReturnType<Browser["newC
     if (!response || response.status() >= 400) errors.push(`${label} prototype artifact did not load successfully: ${target}`);
     else artifactFingerprints.push(await visibleFingerprint(page, "body"));
     await page.close();
+  }
+  for (const [label, storyboard] of [["best-fit", contract.prototypeEvidence.fullPageContinuityStoryboards.bestFit], ["bold-alternative", contract.prototypeEvidence.fullPageContinuityStoryboards.boldAlternative]] as const) {
+    const storyboardPage = await context.newPage();
+    const response = await storyboardPage.goto(new URL(storyboard, url).href, { waitUntil: "domcontentloaded" });
+    if (!response || response.status() >= 400) errors.push(`${label} full-page continuity storyboard did not load successfully`);
+    await storyboardPage.close();
   }
   if (artifactFingerprints.length === 2 && artifactFingerprints[0] === artifactFingerprints[1]) errors.push("Best Fit and Bold Alternative prototype artifacts are indistinguishable");
   for (const [label, captures] of [["best-fit", contract.prototypeEvidence.bestFitCaptures], ["bold-alternative", contract.prototypeEvidence.boldAlternativeCaptures]] as const) {
@@ -682,6 +799,7 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
       blockers.push(...await verifyPrototypeFidelity(page, context, url, contract));
       blockers.push(...await verifyContinuity(page, contract));
       blockers.push(...await verifyAdoptionAndAgency(page, contract));
+      blockers.push(...await verifyComparisonLayouts(page, contract));
       if (experienceMap) blockers.push(...await verifyExperienceMapBindings(page, experienceMap, contract));
     }
     await page.evaluate(() => scrollTo(0, 0)); await twoFrames(page);
@@ -739,20 +857,28 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     if (item?.decision === "reject" && item?.requiredBy === "user" && item?.rejectionApprovedBy !== "user")
       errors.push(`user-required reference ${index + 1} can be rejected only with explicit user approval`);
   }
-  if (!Array.isArray(contract.assetCommitments) || contract.assetCommitments.length < 1) errors.push("Showcase requires explicit asset commitments");
+  if (!Array.isArray(contract.assetCommitments) || contract.assetCommitments.length < 3) errors.push("Showcase requires focal asset commitments for hero, peak, and post-peak subjects");
   for (const [index, item] of (contract.assetCommitments ?? []).entries()) {
-    if (![item?.role, item?.targetSelector, item?.rationale].every((value) => typeof value === "string" && value.trim())
-      || !["use", "reject"].includes(item?.decision) || !["direction", "user"].includes(item?.requiredBy) || !["image", "video", "svg", "canvas", "3d", "none"].includes(item?.medium))
-      errors.push(`asset commitment ${index + 1} requires role, decision, requiredBy, targetSelector, medium, and rationale`);
+    if (![item?.role, item?.targetSelector, item?.sourceRef, item?.rights, item?.treatment, item?.crop, item?.animationTechnique, item?.mobileFallback, item?.externalEvaluation, item?.rationale].every((value) => typeof value === "string" && value.trim())
+      || !["hero", "peak", "post-peak"].includes(item?.stage) || !["realistic-physical", "graphic", "interface", "environmental"].includes(item?.subjectKind)
+      || !["use", "reject"].includes(item?.decision) || !["direction", "user"].includes(item?.requiredBy) || !["image", "video", "svg", "canvas", "3d", "none"].includes(item?.medium)
+      || !["supplied", "sourced", "generated", "licensed-3d", "pre-rendered-sequence", "procedural", "none"].includes(item?.productionSource))
+      errors.push(`asset commitment ${index + 1} requires stage, subject kind, source provenance, rights, treatment, crop, animation, mobile fallback, external evaluation, and rationale`);
+    if (item?.subjectKind === "realistic-physical" && item?.productionSource === "procedural" && !item?.proceduralSuperiorityReason?.trim())
+      errors.push(`procedural realistic-physical asset ${index + 1} requires an artistic-superiority reason after external evaluation`);
     if (item?.decision === "reject" && item?.requiredBy === "user" && item?.rejectionApprovedBy !== "user")
       errors.push(`user-required asset ${index + 1} can be rejected only with explicit user approval`);
   }
+  const assetStages = new Set((contract.assetCommitments ?? []).map((item) => item?.stage));
+  for (const stage of ["hero", "peak", "post-peak"]) if (!assetStages.has(stage as "hero" | "peak" | "post-peak")) errors.push(`Showcase asset commitments are missing the ${stage} focal subject`);
   const prototype = contract.prototypeEvidence;
   if (!prototype || [prototype.bestFitApproach, prototype.boldAlternativeApproach, prototype.selectedApproach, prototype.bestFitArtifact, prototype.boldAlternativeArtifact, prototype.builderSelectionRationale].some((item) => typeof item !== "string" || !item.trim())
     || [prototype?.bestFitCaptures?.desktop, prototype?.bestFitCaptures?.mobile, prototype?.boldAlternativeCaptures?.desktop, prototype?.boldAlternativeCaptures?.mobile, prototype?.bestFitRecordings?.desktop, prototype?.bestFitRecordings?.mobile, prototype?.boldAlternativeRecordings?.desktop, prototype?.boldAlternativeRecordings?.mobile].some((item) => typeof item !== "string" || !item.trim()))
     errors.push("Showcase requires artifact-backed Best Fit and Bold Alternative prototypes with desktop/mobile captures and motion recordings");
   if (!prototype?.comparisonParity || Object.values(prototype.comparisonParity).some((value) => value !== true))
     errors.push("Showcase prototypes must both be final-worthy, share content and viewport coverage, and differ in interaction model");
+  if (![prototype?.fullPageContinuityStoryboards?.bestFit, prototype?.fullPageContinuityStoryboards?.boldAlternative].every((item) => typeof item === "string" && item.trim()))
+    errors.push("Showcase prototypes require Best Fit and Bold Alternative full-page continuity storyboards");
   if (prototype?.selectedBy !== "user") errors.push("Showcase prototype selection must come from the user before full integration");
   const fidelity = contract.prototypeFidelity;
   if (!fidelity || [fidelity.selectedArtifact, fidelity.prototypeSubjectSelector, fidelity.integratedSubjectSelector, fidelity.focalObject, fidelity.copyBalance, fidelity.controlPlacement, fidelity.materialLighting, fidelity.desktopFraming, fidelity.mobileFraming].some((item) => typeof item !== "string" || !item.trim()))
@@ -779,6 +905,16 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     if (primary?.stage !== "peak") errors.push("agency primaryResponseSelector must be a verified peak continuity region");
     if (downstream?.stage !== "after") errors.push("agency downstreamSelector must be a verified after continuity region");
   }
+  if (!Array.isArray(contract.comparisonLayouts)) errors.push("Showcase comparisonLayouts must be an array");
+  for (const [index, layout] of (contract.comparisonLayouts ?? []).entries()) {
+    if (![layout?.selector, layout?.itemSelector, layout?.identityAttribute].every((value) => typeof value === "string" && value.trim())
+      || !/^data-[a-z0-9-]+$/.test(layout?.identityAttribute ?? "")
+      || !["fixed-grid", "stable-rail", "selected-stage", "other"].includes(layout?.strategy)
+      || !["none", "selected-only", "controlled"].includes(layout?.reorderMode)
+      || typeof layout?.maxTravelViewportRatio !== "number" || layout.maxTravelViewportRatio < 0 || layout.maxTravelViewportRatio > 1
+      || typeof layout?.spacingTolerancePx !== "number" || layout.spacingTolerancePx < 0 || layout.spacingTolerancePx > 48)
+      errors.push(`comparison layout ${index + 1} requires selectors, stable identity, strategy, reorder policy, travel limit, and spacing tolerance`);
+  }
   const mechanisms = Array.isArray(contract.mechanisms) ? contract.mechanisms.filter((item) => item && typeof item === "object") : [];
   if (mechanisms.length < 1) errors.push("Showcase requires at least one executable signature mechanism");
   const names = mechanisms.map((item) => item.name);
@@ -803,6 +939,8 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     if (!Number.isInteger(item.stateCount) || item.stateCount < 2 || item.stateCount > 5) errors.push(`${item.name} mechanism stateCount must be an integer from 2 to 5`);
     if (item.trigger === "hover" && item.stateCount !== 2) errors.push(`${item.name} hover mechanism must declare exactly two states`);
     if (item.trigger === "scroll" && item.stateCount < 3) errors.push(`${item.name} scroll mechanism must declare at least three states`);
+    if (item.trigger === "scroll" && (!Number.isInteger(item.minimumDwellMs) || (item.minimumDwellMs ?? 0) < 100 || (item.minimumDwellMs ?? 0) > 2000 || !item.releaseSelector?.trim()))
+      errors.push(`${item.name} scroll mechanism requires a 100–2000ms minimumDwellMs and releaseSelector`);
     if (!["dom-state", "typography", "image", "video", "svg", "canvas", "spatial-layout", "3d"].includes(item.mediaMode)) errors.push(`${item.name} mechanism has an invalid mediaMode`);
   }
   const ownership = new Map<string, string>();

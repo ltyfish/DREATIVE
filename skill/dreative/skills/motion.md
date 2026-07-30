@@ -9,6 +9,11 @@ fade/translate entrances.
 Define resting, active, resolved, reverse/rapid-input where relevant, and a
 purpose-designed reduced-motion form. Avoid continuous work offscreen.
 
+For scroll stories, verify slow, normal, and rapid forward input, reverse input,
+readable dwell after each key state settles, and a clean release before the
+next section enters. Independent triggers that update text and imagery must
+share one authored progress model or demonstrate that they remain synchronized.
+
 Reject universal fade-ups, decorative hover scaling, sticky scenes with weak
 release, and motion that makes the product slower to reach. Read
 `../references/CREATIVE_EXECUTION.md` before adding a runtime and one matching

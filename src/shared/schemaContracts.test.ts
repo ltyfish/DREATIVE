@@ -29,7 +29,9 @@ test("Draft 2020-12 validates a complete Showcase contract", () => {
       },
     ],
     assetCommitments: [
-      { role: "Product subject", decision: "use", requiredBy: "user", targetSelector: "#peak", medium: "image", rationale: "The user requested product imagery." },
+      { role: "Hero subject", stage: "hero", subjectKind: "realistic-physical", decision: "use", requiredBy: "user", targetSelector: "#hero", medium: "image", productionSource: "supplied", sourceRef: "/media/hero.webp", rights: "supplied by user", treatment: "graded cutout", crop: "responsive portrait", animationTechnique: "layered parallax", mobileFallback: "static close crop", externalEvaluation: "supplied media is the strongest truthful source", rationale: "The user requested product imagery." },
+      { role: "Product subject", stage: "peak", subjectKind: "realistic-physical", decision: "use", requiredBy: "user", targetSelector: "#peak", medium: "3d", productionSource: "licensed-3d", sourceRef: "/models/product.glb", rights: "licensed for web use", treatment: "studio material and light pass", crop: "full object", animationTechnique: "direct manipulation", mobileFallback: "pre-rendered turntable", externalEvaluation: "licensed model exceeds procedural fidelity", rationale: "The peak needs a truthful physical subject." },
+      { role: "Decision subject", stage: "post-peak", subjectKind: "realistic-physical", decision: "use", requiredBy: "direction", targetSelector: "#decision", medium: "image", productionSource: "generated", sourceRef: "/media/decision.webp", rights: "project generation terms", treatment: "packaging composite", crop: "landscape", animationTechnique: "mask reveal", mobileFallback: "static resolved state", externalEvaluation: "generation supplies a product-specific outcome", rationale: "The result must remain visible after the peak." },
     ],
     prototypeEvidence: {
       bestFitApproach: "Direct product instrument.",
@@ -42,6 +44,7 @@ test("Draft 2020-12 validates a complete Showcase contract", () => {
       boldAlternativeCaptures: { desktop: "bold-desktop.png", mobile: "bold-mobile.png" },
       bestFitRecordings: { desktop: "best-desktop.mp4", mobile: "best-mobile.mp4" },
       boldAlternativeRecordings: { desktop: "bold-desktop.mp4", mobile: "bold-mobile.mp4" },
+      fullPageContinuityStoryboards: { bestFit: "best-storyboard.png", boldAlternative: "bold-storyboard.png" },
       comparisonParity: { bothFinalWorthy: true, sharedContent: true, sharedViewportCoverage: true, distinctInteractionModels: true },
       builderSelectionRationale: "The user selected the direct instrument.",
     },
@@ -76,6 +79,7 @@ test("Draft 2020-12 validates a complete Showcase contract", () => {
       immediateResponse: "The product changes.",
       decisionOutcome: "The recommendation changes.",
     },
+    comparisonLayouts: [],
     mechanisms: [
       {
         name: "Product instrument",
