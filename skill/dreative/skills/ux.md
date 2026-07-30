@@ -13,7 +13,8 @@ Use for every page.
   Prefer a stable grid/rail plus a controlled detail or selected stage over
   wholesale reordering and large footprint changes. Measure actual gaps,
   alignment, per-item travel, and resize; do not use equal card size as a proxy
-  for spacing.
+  for spacing. Group grids into rows and columns, then compare adjacent
+  neighbours only.
 
 Verify the primary journey in the rendered app with mouse and keyboard. Check
 broken links, form states, back/direct navigation, and console errors.

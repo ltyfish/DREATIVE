@@ -18,6 +18,7 @@ const dataOnlyContinuity = shell(mechanisms, `document.querySelector('#before').
 const scrollOnlyContinuity = shell(`<div style="height:120vh"><h1>Intro spacer</h1></div>${mechanisms}`);
 const hiddenTextContinuity = shell(`<section id="before"><button>Before</button><div class="box"></div><span hidden>state 0</span></section><section id="peak"><button>Peak</button><svg viewBox="0 0 120 120" width="120" height="120"><rect class="box" width="120" height="120" fill="#f60"/></svg><span hidden>state 0</span></section><section id="after"><button>After</button><div class="box"></div><div class="box"></div><span hidden>state 0</span></section>`, `document.querySelector('#before').onclick=()=>{const stage=(Number(document.body.dataset.stage||0)+1)%3;document.body.dataset.stage=stage;for(const hidden of document.querySelectorAll('span[hidden]'))hidden.textContent='state '+stage}`);
 const unstableComparison = shell(`<section id="before"><button>Before</button><div class="box"></div></section><section id="peak"><button>Peak</button><svg viewBox="0 0 120 120" width="120" height="120"><rect class="box" width="120" height="120" fill="#f60"/></svg></section><section id="after" style="display:flex;align-items:flex-start"><button>After</button><div class="box" data-product="a"></div><div class="box" data-product="b" style="margin-left:10px"></div><div class="box" data-product="c" style="margin-left:50px;margin-top:18px"></div></section>`, sharedStateScript);
+const comparisonGrid = (broken = false) => shell(`<style>.comparison-grid .box{width:100%}@media(max-width:600px){.comparison-grid{gap:8px!important}}</style><section id="before"><button>Before</button><div class="box"></div></section><section id="peak"><button>Peak</button><svg viewBox="0 0 120 120" width="120" height="120"><rect class="box" width="120" height="120" fill="#f60"/></svg></section><section id="after" class="comparison-grid" style="display:grid;grid-template-columns:repeat(3,minmax(0,120px));grid-auto-rows:120px;gap:24px"><div class="box" data-product="a"></div><div class="box" data-product="b"></div><div class="box" data-product="c"${broken ? ` style="position:relative;left:18px;top:10px"` : ""}></div><div class="box" data-product="d"></div><div class="box" data-product="e"></div><div class="box" data-product="f"></div></section>`, sharedStateScript);
 const prototypeBounded = shell(`<section id="story-hero"><h1>Bounded hero</h1></section><section id="story-peak"><h2>Bounded peak</h2><div class="box"></div></section><section id="story-post"><h2>Bounded consequence</h2></section>`);
 const prototypeHighCeiling = shell(`<section id="story-hero"><h1>Spatial hero</h1></section><section id="story-peak"><h2>Spatial peak</h2><svg viewBox="0 0 200 100"><circle cx="50" cy="50" r="40"/></svg></section><section id="story-post"><h2>Spatial consequence</h2></section>`);
 const pages = {
@@ -42,6 +43,8 @@ const pages = {
   "/scroll-only-continuity": scrollOnlyContinuity,
   "/hidden-text-continuity": hiddenTextContinuity,
   "/unstable-comparison": unstableComparison,
+  "/regular-comparison-grid": comparisonGrid(),
+  "/broken-comparison-grid": comparisonGrid(true),
   "/prototype/bounded": prototypeBounded,
   "/prototype/high-ceiling": prototypeHighCeiling,
   "/console": shell(`<section><h1>Runtime failure</h1></section>`, `console.error('fixture exploded')`),

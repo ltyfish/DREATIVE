@@ -146,7 +146,8 @@ layouts had no stable-identity or travel contract.
 Change: Require external-first focal decisions for hero, Peak, and post-Peak,
 structurally verified full-page prototype storyboards and captures, variable
 wheel-speed scroll exercise with 400ms dwell, observable source consistency,
-and non-empty comparison contracts with real gap/alignment/resize/travel limits.
+and non-empty comparison contracts with nearest-neighbour
+gap/alignment/resize/travel limits.
 
 Evidence: Northwind v.20.12 source and independent user/ChatGPT review. The
 tracked run contract is also stale and cannot pass the current finalizer.

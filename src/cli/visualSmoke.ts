@@ -320,6 +320,7 @@ async function exerciseScrollChoreography(page: Page, entry: MechanismContractEn
       await page.mouse.wheel(0, delta);
       if (steps > 1) await twoFrames(page);
     }
+    await page.waitForTimeout(100);
     await twoFrames(page);
     if (await declaredMediaFingerprint(page, entry) !== orderedSignatures.at(-1))
       return `${entry.name} ${label} wheel input did not settle on the final authored state`;
@@ -522,23 +523,47 @@ async function verifyComparisonLayouts(page: Page, contract: ShowcaseMechanismCo
   const errors: string[] = [];
   type LayoutItem = { id: string; x: number; y: number; width: number; height: number };
   const geometry = (items: LayoutItem[], selectedIdentity?: string) => {
-    const gaps: number[] = [];
+    const horizontalGaps: number[] = [];
+    const verticalGaps: number[] = [];
     const alignments: number[] = [];
-    for (let left = 0; left < items.length; left += 1) for (let right = left + 1; right < items.length; right += 1) {
-      const a = items[left], b = items[right];
-      if (a.id === selectedIdentity || b.id === selectedIdentity) continue;
-      const verticalOverlap = Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y));
-      const horizontalOverlap = Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x));
-      if (verticalOverlap >= Math.min(a.height, b.height) * .5) {
-        gaps.push(Math.max(0, Math.max(a.x, b.x) - Math.min(a.x + a.width, b.x + b.width)));
-        alignments.push(Math.abs(a.y - b.y));
-      } else if (horizontalOverlap >= Math.min(a.width, b.width) * .5) {
-        gaps.push(Math.max(0, Math.max(a.y, b.y) - Math.min(a.y + a.height, b.y + b.height)));
-        alignments.push(Math.abs(a.x - b.x));
+    const candidates = items.filter((item) => item.id !== selectedIdentity);
+    const groups = (axis: "row" | "column"): LayoutItem[][] => {
+      const pending = [...candidates];
+      const output: LayoutItem[][] = [];
+      while (pending.length) {
+        const seed = pending.shift()!;
+        const group = [seed];
+        for (let index = pending.length - 1; index >= 0; index -= 1) {
+          const item = pending[index];
+          const overlap = axis === "row"
+            ? Math.max(0, Math.min(seed.y + seed.height, item.y + item.height) - Math.max(seed.y, item.y))
+            : Math.max(0, Math.min(seed.x + seed.width, item.x + item.width) - Math.max(seed.x, item.x));
+          const extent = axis === "row" ? Math.min(seed.height, item.height) : Math.min(seed.width, item.width);
+          if (overlap >= extent * .5) group.push(...pending.splice(index, 1));
+        }
+        output.push(group);
+      }
+      return output;
+    };
+    for (const row of groups("row")) {
+      const sorted = row.sort((a, b) => a.x - b.x);
+      for (let index = 1; index < sorted.length; index += 1) {
+        const previous = sorted[index - 1], current = sorted[index];
+        horizontalGaps.push(Math.max(0, current.x - (previous.x + previous.width)));
+        alignments.push(Math.abs(current.y - previous.y));
       }
     }
+    for (const column of groups("column")) {
+      const sorted = column.sort((a, b) => a.y - b.y);
+      for (let index = 1; index < sorted.length; index += 1) {
+        const previous = sorted[index - 1], current = sorted[index];
+        verticalGaps.push(Math.max(0, current.y - (previous.y + previous.height)));
+        alignments.push(Math.abs(current.x - previous.x));
+      }
+    }
+    const spread = (values: number[]) => values.length > 1 ? Math.max(...values) - Math.min(...values) : 0;
     return {
-      gapSpread: gaps.length > 1 ? Math.max(...gaps) - Math.min(...gaps) : 0,
+      gapSpread: Math.max(spread(horizontalGaps), spread(verticalGaps)),
       alignmentDrift: alignments.length ? Math.max(...alignments) : 0,
     };
   };

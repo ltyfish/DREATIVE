@@ -339,6 +339,8 @@ identities, reordering policy, maximum travel and resize, real gap and alignment
 tolerances, and any selected-item prominence allowance. Prominence may change,
 but wholesale reshuffling that
 forces visitors to re-find every item is not an acceptable default.
+Gap checks group items into rows and columns and compare adjacent neighbours
+only; non-adjacent card distance is not a gutter.
 
 At 390px reconsider order, crop, density, type scale, controls, sticky behavior,
 and motion. Check 320px when density risk exists. Preserve keyboard, touch,

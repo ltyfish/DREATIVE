@@ -253,6 +253,16 @@ test("comparison smoke measures real gaps and alignment", async () => {
   expect(result.blockers.join("\n")).toMatch(/inconsistent before gaps|before alignment drift/);
 });
 
+test("a regular 3×2 comparison grid passes nearest-neighbour geometry", async () => {
+  const result = await runVisualSmoke(`${base}/regular-comparison-grid`, { profile: "showcase", showcase: contract });
+  expect(result.blockers).toEqual([]);
+});
+
+test("a 3×2 grid with one altered gap and alignment fails", async () => {
+  const result = await runVisualSmoke(`${base}/broken-comparison-grid`, { profile: "showcase", showcase: contract });
+  expect(result.blockers.join("\n")).toMatch(/inconsistent before gaps|before alignment drift/);
+});
+
 test("user-required references and assets require explicit rejection approval", () => {
   const rejectedReference = { ...contract, referenceAdoptions: [{ ...contract.referenceAdoptions[0], decision: "reject" as const, requiredBy: "user" as const, rejectionApprovedBy: undefined }] };
   expect(validateMechanisms("showcase", rejectedReference).join("\n")).toContain("user-required reference");
