@@ -168,9 +168,17 @@ test("nested Showcase evidence rejects absolute paths and returns local portable
       bestFitCaptures: { desktop: "evidence/desktop.png", mobile: "https://example.com/mobile.png" },
       boldAlternativeCaptures: { desktop: "C:\\private\\desktop.png", mobile: "/capture/mobile" },
       bestFitRecordings: { desktop: "evidence/desktop.webm" },
+      fullPageContinuityStoryboards: {
+        bestFit: { capture: "evidence/best-storyboard.png" },
+        boldAlternative: { capture: "https://example.com/bold-storyboard.png" },
+      },
     },
+    assetCommitments: [
+      { sourceKind: "local-file", sourceRef: "media/product.glb" },
+      { sourceKind: "inline", sourceRef: "#product" },
+    ],
   });
-  assert.deepEqual(result.files, ["evidence/desktop.png", "evidence/desktop.webm"]);
+  assert.deepEqual(result.files, ["evidence/desktop.png", "evidence/desktop.webm", "evidence/best-storyboard.png", "media/product.glb"]);
   assert.equal(result.blockers.length, 2);
   assert.match(result.blockers.join("\n"), /C:\\private\\desktop\.png/);
   assert.match(result.blockers.join("\n"), /\/capture\/mobile/);

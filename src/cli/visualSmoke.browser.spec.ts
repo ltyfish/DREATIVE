@@ -24,9 +24,9 @@ const contract: ShowcaseMechanismContract = {
     { source: "fixture instrument", principle: "direct state legibility", decision: "use", requiredBy: "direction", targetSelector: "#peak", visibleImplementation: "the SVG instrument changes with readiness", rationale: "The reference principle is visible in the primary instrument." },
   ],
   assetCommitments: [
-    { role: "hero readiness subject", stage: "hero", subjectKind: "interface", decision: "reject", requiredBy: "direction", targetSelector: "#before", medium: "none", productionSource: "none", sourceRef: "fixture has no hero media", rights: "not applicable", treatment: "semantic control only", crop: "not applicable", animationTechnique: "native state", mobileFallback: "direct tap", externalEvaluation: "external media would not clarify this fixture", rationale: "The fixture tests state rather than art direction." },
-    { role: "primary process instrument", stage: "peak", subjectKind: "graphic", decision: "use", requiredBy: "direction", targetSelector: "#peak", medium: "svg", productionSource: "procedural", sourceRef: "inline fixture SVG", rights: "original fixture code", treatment: "direct state instrument", crop: "complete viewBox", animationTechnique: "native state changes", mobileFallback: "bounded SVG", externalEvaluation: "photography and 3D add no meaning to the abstract fixture", rationale: "The SVG is the semantic product subject." },
-    { role: "post-peak decision subject", stage: "post-peak", subjectKind: "interface", decision: "reject", requiredBy: "direction", targetSelector: "#after", medium: "none", productionSource: "none", sourceRef: "fixture decision boxes", rights: "not applicable", treatment: "semantic layout only", crop: "not applicable", animationTechnique: "native state", mobileFallback: "stacked decision", externalEvaluation: "external media would not clarify this fixture", rationale: "The post-peak fixture is an interface state." },
+    { role: "hero readiness subject", stage: "hero", subjectKind: "interface", decision: "reject", requiredBy: "direction", targetSelector: "#before", medium: "none", productionSource: "none", sourceKind: "none", sourceRef: "fixture has no hero media", rights: "not applicable", treatment: "semantic control only", crop: "not applicable", animationTechnique: "native state", mobileFallback: "direct tap", externalEvaluation: "external media would not clarify this fixture", rationale: "The fixture tests state rather than art direction." },
+    { role: "primary process instrument", stage: "peak", subjectKind: "graphic", decision: "use", requiredBy: "direction", targetSelector: "#peak", medium: "svg", productionSource: "procedural", sourceKind: "inline", sourceRef: "#peak svg", rights: "original fixture code", treatment: "direct state instrument", crop: "complete viewBox", animationTechnique: "native state changes", mobileFallback: "bounded SVG", externalEvaluation: "photography and 3D add no meaning to the abstract fixture", rationale: "The SVG is the semantic product subject." },
+    { role: "post-peak decision subject", stage: "post-peak", subjectKind: "interface", decision: "reject", requiredBy: "direction", targetSelector: "#after", medium: "none", productionSource: "none", sourceKind: "none", sourceRef: "fixture decision boxes", rights: "not applicable", treatment: "semantic layout only", crop: "not applicable", animationTechnique: "native state", mobileFallback: "stacked decision", externalEvaluation: "external media would not clarify this fixture", rationale: "The post-peak fixture is an interface state." },
   ],
   prototypeEvidence: {
     bestFitApproach: "Direct connected product controls.",
@@ -39,7 +39,10 @@ const contract: ShowcaseMechanismContract = {
     boldAlternativeCaptures: { desktop: `${base}/capture/high-ceiling-desktop.svg`, mobile: `${base}/capture/high-ceiling-mobile.svg` },
     bestFitRecordings: { desktop: `${base}/recording/bounded-desktop.mp4`, mobile: `${base}/recording/bounded-mobile.mp4` },
     boldAlternativeRecordings: { desktop: `${base}/recording/high-ceiling-desktop.mp4`, mobile: `${base}/recording/high-ceiling-mobile.mp4` },
-    fullPageContinuityStoryboards: { bestFit: "/prototype/bounded#continuity", boldAlternative: "/prototype/high-ceiling#continuity" },
+    fullPageContinuityStoryboards: {
+      bestFit: { artifact: "/prototype/bounded", capture: `${base}/capture/bounded-desktop.svg`, heroSelector: "#story-hero", peakSelector: "#story-peak", postPeakSelector: "#story-post" },
+      boldAlternative: { artifact: "/prototype/high-ceiling", capture: `${base}/capture/high-ceiling-desktop.svg`, heroSelector: "#story-hero", peakSelector: "#story-peak", postPeakSelector: "#story-post" },
+    },
     comparisonParity: { bothFinalWorthy: true, sharedContent: true, sharedViewportCoverage: true, distinctInteractionModels: true },
     builderSelectionRationale: "The connected system made the state transition visibly legible; this is a builder assertion, not an independent verdict.",
   },
@@ -74,10 +77,12 @@ const contract: ShowcaseMechanismContract = {
     immediateResponse: "transform the process instrument",
     decisionOutcome: "change the final product decision",
   },
-  comparisonLayouts: [],
+  comparisonLayouts: [
+    { selector: "#after", itemSelector: ".box", identityAttribute: "data-product", strategy: "fixed-grid", reorderMode: "controlled", maxTravelViewportRatio: .1, maxItemResizeRatio: 0, gapTolerancePx: 1, alignmentTolerancePx: 1 },
+  ],
   mechanisms: [
     { ...semanticMotion, name: "readiness-control", stage: "before", selector: "#before", primarySelector: ".box", primarySubject: "readiness indicator", trigger: "click", experienceRole: "opens", ceilingContribution: "introduces tactile state", mediaMode: "dom-state", continuityConnection: "shared control state", mobileTransformation: "direct tap", recommendedDifference: "begins the connected instrument", meaningfulOutcome: "reveals increasing product readiness", animationOwner: "native-js", ownedProperties: ["transform"], stateCount: 3 },
-    { ...semanticMotion, name: "instrument-peak", stage: "peak", selector: "#peak", primarySelector: "svg", primarySubject: "process instrument", trigger: "click", experienceRole: "transforms", ceilingContribution: "changes visual medium", mediaMode: "svg", continuityConnection: "shared control state", mobileTransformation: "bounded SVG", recommendedDifference: "creates the central visual transformation", meaningfulOutcome: "moves the product through three visible process stages", animationOwner: "native-js", ownedProperties: ["transform"], stateCount: 3, minimumDwellMs: 120, releaseSelector: "#after" },
+    { ...semanticMotion, name: "instrument-peak", stage: "peak", selector: "#peak", primarySelector: "svg", primarySubject: "process instrument", trigger: "click", experienceRole: "transforms", ceilingContribution: "changes visual medium", mediaMode: "svg", continuityConnection: "shared control state", mobileTransformation: "bounded SVG", recommendedDifference: "creates the central visual transformation", meaningfulOutcome: "moves the product through three visible process stages", animationOwner: "native-js", ownedProperties: ["transform"], stateCount: 3, minimumDwellMs: 400, releaseSelector: "#after" },
     { ...semanticMotion, name: "decision-resolution", stage: "after", selector: "#after", primarySelector: ".box:first-of-type", primarySubject: "decision layout", trigger: "click", experienceRole: "resolves", ceilingContribution: "closes the state arc", mediaMode: "spatial-layout", continuityConnection: "shared control state", mobileTransformation: "stacked resolution", recommendedDifference: "resolves the connected instrument", meaningfulOutcome: "recomposes the result into three decision states", animationOwner: "native-js", ownedProperties: ["transform"], stateCount: 3 },
   ],
 };
@@ -112,7 +117,7 @@ test("scroll-authored mechanisms must expose at least three sampled states", asy
     ...contract,
     experienceType: "journey" as const,
     referenceAdoptions: contract.referenceAdoptions.map((item) => ({ ...item, targetSelector: "#scroll-story" })),
-    assetCommitments: contract.assetCommitments.map((item) => ({ ...item, targetSelector: "#scroll-story", medium: "none" as const, decision: "reject" as const })),
+    assetCommitments: contract.assetCommitments.map((item) => ({ ...item, targetSelector: "#scroll-story", medium: "none" as const, productionSource: "none" as const, sourceKind: "none" as const, decision: "reject" as const })),
     prototypeFidelity: { ...contract.prototypeFidelity, integratedSubjectSelector: "#scroll-story .box" },
     continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.map((region) => region.stage === "peak" ? { ...region, selector: "#scroll-story" } : region) },
     agencyChain: { ...contract.agencyChain, primaryResponseSelector: "#scroll-story" },
@@ -216,8 +221,36 @@ test("Showcase requires external-first focal coverage and full-page prototype co
 });
 
 test("comparison layouts require stable identity and bounded movement declarations", () => {
-  const invalid = { ...contract, comparisonLayouts: [{ selector: "#after", itemSelector: ".box", identityAttribute: "class", strategy: "fixed-grid", reorderMode: "none", maxTravelViewportRatio: 2, spacingTolerancePx: 60 }] } as unknown as ShowcaseMechanismContract;
+  const invalid = { ...contract, comparisonLayouts: [{ selector: "#after", itemSelector: ".box", identityAttribute: "class", strategy: "fixed-grid", reorderMode: "none", maxTravelViewportRatio: 2, maxItemResizeRatio: 3, gapTolerancePx: 60, alignmentTolerancePx: 60 }] } as unknown as ShowcaseMechanismContract;
   expect(validateMechanisms("showcase", invalid).join("\n")).toContain("stable identity");
+  expect(validateMechanisms("showcase", { ...contract, comparisonLayouts: [] }).join("\n")).toContain("at least one declared comparison layout");
+});
+
+test("asset provenance fields must agree with the observable medium", () => {
+  const inconsistent = { ...contract, assetCommitments: contract.assetCommitments.map((asset, index) => index === 1 ? { ...asset, productionSource: "none" as const } : asset) };
+  expect(validateMechanisms("showcase", inconsistent).join("\n")).toContain("none states consistent");
+  const fakeModel = { ...contract, assetCommitments: contract.assetCommitments.map((asset, index) => index === 1 ? { ...asset, productionSource: "licensed-3d" as const } : asset) };
+  expect(validateMechanisms("showcase", fakeModel).join("\n")).toContain("must declare medium 3d");
+});
+
+test("storyboards require visible ordered continuity regions and a rendered capture", async () => {
+  const dishonest = {
+    ...contract,
+    prototypeEvidence: {
+      ...contract.prototypeEvidence,
+      fullPageContinuityStoryboards: {
+        ...contract.prototypeEvidence.fullPageContinuityStoryboards,
+        bestFit: { ...contract.prototypeEvidence.fullPageContinuityStoryboards.bestFit, postPeakSelector: "#missing-consequence" },
+      },
+    },
+  };
+  const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: dishonest });
+  expect(result.blockers.join("\n")).toContain("storyboard region #missing-consequence must resolve exactly once");
+});
+
+test("comparison smoke measures real gaps and alignment", async () => {
+  const result = await runVisualSmoke(`${base}/unstable-comparison`, { profile: "showcase", showcase: contract });
+  expect(result.blockers.join("\n")).toMatch(/inconsistent before gaps|before alignment drift/);
 });
 
 test("user-required references and assets require explicit rejection approval", () => {

@@ -32,6 +32,8 @@ mobile fallback; external options evaluated; and capability gap when relevant.
 Final verification checks that every `use` commitment renders the declared
 medium at the declared selector. Realistic physical focal subjects may use a
 procedural treatment only with a concrete artistic-superiority reason.
+It also checks source kind: local/generated records exist, remote URLs load,
+inline selectors resolve, `none` fields agree, and licensed 3D uses a 3D medium.
 
 ## Research sources worth routing
 

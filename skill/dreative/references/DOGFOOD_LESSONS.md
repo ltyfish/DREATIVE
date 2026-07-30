@@ -144,15 +144,17 @@ counted states without testing input pace, dwell, reverse, or release; compariso
 layouts had no stable-identity or travel contract.
 
 Change: Require external-first focal decisions for hero, Peak, and post-Peak,
-full-page prototype storyboards, perceptual scroll exercise, and declared
-comparison-layout stability limits.
+structurally verified full-page prototype storyboards and captures, variable
+wheel-speed scroll exercise with 400ms dwell, observable source consistency,
+and non-empty comparison contracts with real gap/alignment/resize/travel limits.
 
 Evidence: Northwind v.20.12 source and independent user/ChatGPT review. The
 tracked run contract is also stale and cannot pass the current finalizer.
 
-Cost or trade-off: Three asset records and targeted browser checks add planning
-and test time. They still cannot certify artistic quality or force 3D when a
-stronger truthful medium exists.
+Cost or trade-off: Three asset records, one comparison declaration, storyboard
+captures, and targeted browser checks add planning and test time. They still
+cannot certify artistic quality, prove a conversation happened, or force 3D
+when a stronger truthful medium exists.
 
 Recheck condition: Rerun Northwind from baseline and obtain a human verdict on
 asset fidelity, scroll readability, and six-product comparison usability.

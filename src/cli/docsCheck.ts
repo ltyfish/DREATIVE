@@ -81,8 +81,8 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /text, opacity, color, filter, or uniform scale[\s\S]*rejected/i, "Showcase must reject low-salience scroll-only state changes");
   requireText(findings, "SKILL.md", skill, /desktop[\s\S]*390px[\s\S]*320px mobile[\s\S]*text[\s\S]*collisions/i, "Showcase must exercise desktop, 390px, and 320px mechanisms and sample collisions");
   requireText(findings, "SKILL.md", skill, /hero, Peak, and[\s\S]*post-Peak[\s\S]*external media[\s\S]*procedural/i, "Showcase must make external-first focal asset decisions across the route");
-  requireText(findings, "SKILL.md", skill, /full-page continuity storyboard[\s\S]*hero, Peak, and post-Peak/i, "Showcase prototypes must expose full-page continuity");
-  requireText(findings, "SKILL.md", skill, /slow, normal, and rapid[\s\S]*forward and reverse[\s\S]*release cleanly/i, "Showcase scroll verification must cover perceptual completion and release");
+  requireText(findings, "SKILL.md", skill, /full-page continuity storyboard[\s\S]*hero, Peak, and[\s\S]*post-Peak/i, "Showcase prototypes must expose full-page continuity");
+  requireText(findings, "SKILL.md", skill, /slow, normal, and rapid wheel[\s\S]*reverse[\s\S]*release cleanly/i, "Showcase scroll verification must cover perceptual completion and release");
   requireText(findings, "SKILL.md", skill, /VISUAL_REFINEMENT\.md/, "must route completion through the rendered screenshot correction loop");
   requireText(findings, "SKILL.md", skill, /preflight --probe-browser.*preview-url/i, "must require launch plus preview-navigation evidence before browser verification");
   requireText(findings, "SKILL.md", skill, /\.dreative\/context\.json/, "must preserve durable project memory");

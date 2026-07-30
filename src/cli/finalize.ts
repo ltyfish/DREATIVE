@@ -64,13 +64,23 @@ export function localShowcaseArtifacts(contract: {
     boldAlternativeCaptures?: Record<string, string>;
     bestFitRecordings?: Record<string, string>;
     boldAlternativeRecordings?: Record<string, string>;
+    fullPageContinuityStoryboards?: {
+      bestFit?: { capture?: string };
+      boldAlternative?: { capture?: string };
+    };
   };
+  assetCommitments?: { sourceKind?: string; sourceRef?: string }[];
 }): { files: string[]; blockers: string[] } {
   const values = [
     ...Object.values(contract.prototypeEvidence?.bestFitCaptures ?? {}),
     ...Object.values(contract.prototypeEvidence?.boldAlternativeCaptures ?? {}),
     ...Object.values(contract.prototypeEvidence?.bestFitRecordings ?? {}),
     ...Object.values(contract.prototypeEvidence?.boldAlternativeRecordings ?? {}),
+    contract.prototypeEvidence?.fullPageContinuityStoryboards?.bestFit?.capture ?? "",
+    contract.prototypeEvidence?.fullPageContinuityStoryboards?.boldAlternative?.capture ?? "",
+    ...(contract.assetCommitments ?? [])
+      .filter((asset) => asset.sourceKind === "local-file" || asset.sourceKind === "generated-record")
+      .map((asset) => asset.sourceRef ?? ""),
   ].filter(Boolean);
   const files: string[] = [];
   const blockers: string[] = [];

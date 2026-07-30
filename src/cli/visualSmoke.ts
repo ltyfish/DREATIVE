@@ -60,6 +60,7 @@ export interface ShowcaseMechanismContract {
     targetSelector: string;
     medium: "image" | "video" | "svg" | "canvas" | "3d" | "none";
     productionSource: "supplied" | "sourced" | "generated" | "licensed-3d" | "pre-rendered-sequence" | "procedural" | "none";
+    sourceKind: "local-file" | "remote-url" | "inline" | "generated-record" | "none";
     sourceRef: string;
     rights: string;
     treatment: string;
@@ -82,7 +83,10 @@ export interface ShowcaseMechanismContract {
     boldAlternativeCaptures: { desktop: string; mobile: string };
     bestFitRecordings: { desktop: string; mobile: string };
     boldAlternativeRecordings: { desktop: string; mobile: string };
-    fullPageContinuityStoryboards: { bestFit: string; boldAlternative: string };
+    fullPageContinuityStoryboards: {
+      bestFit: { artifact: string; capture: string; heroSelector: string; peakSelector: string; postPeakSelector: string };
+      boldAlternative: { artifact: string; capture: string; heroSelector: string; peakSelector: string; postPeakSelector: string };
+    };
     comparisonParity: {
       bothFinalWorthy: true;
       sharedContent: true;
@@ -130,7 +134,11 @@ export interface ShowcaseMechanismContract {
     strategy: "fixed-grid" | "stable-rail" | "selected-stage" | "other";
     reorderMode: "none" | "selected-only" | "controlled";
     maxTravelViewportRatio: number;
-    spacingTolerancePx: number;
+    maxItemResizeRatio: number;
+    gapTolerancePx: number;
+    alignmentTolerancePx: number;
+    selectedIdentity?: string;
+    selectedItemMaxScale?: number;
   }[];
   mechanisms: MechanismContractEntry[];
 }
@@ -304,12 +312,20 @@ async function exerciseScrollChoreography(page: Page, entry: MechanismContractEn
 
   const endY = Math.max(0, Math.min(region.pageHeight - region.viewport, region.top + region.height * .9 - region.viewport / 2));
   const startY = Math.max(0, Math.min(region.pageHeight - region.viewport, region.top + region.height * .1 - region.viewport / 2));
-  await page.evaluate(([from, to]) => { scrollTo(0, from); scrollTo(0, to); }, [startY, endY]);
-  await twoFrames(page);
-  const rapidSignature = await declaredMediaFingerprint(page, entry);
-  if (rapidSignature !== orderedSignatures.at(-1)) return `${entry.name} rapid scroll did not settle on the final authored state`;
+  for (const [label, steps] of [["slow", 12], ["normal", 4], ["rapid", 1]] as const) {
+    await page.evaluate((scrollY) => scrollTo(0, scrollY), startY);
+    await twoFrames(page);
+    const delta = (endY - startY) / steps;
+    for (let index = 0; index < steps; index += 1) {
+      await page.mouse.wheel(0, delta);
+      if (steps > 1) await twoFrames(page);
+    }
+    await twoFrames(page);
+    if (await declaredMediaFingerprint(page, entry) !== orderedSignatures.at(-1))
+      return `${entry.name} ${label} wheel input did not settle on the final authored state`;
+  }
   const dwellSignature = await declaredMediaFingerprint(page, entry);
-  await page.waitForTimeout(entry.minimumDwellMs ?? 100);
+  await page.waitForTimeout(entry.minimumDwellMs ?? 400);
   if (await declaredMediaFingerprint(page, entry) !== dwellSignature) return `${entry.name} key state did not remain stable long enough to read after scroll input settled`;
 
   for (const fraction of [.7, .5, .3, .1]) {
@@ -470,6 +486,20 @@ async function verifyAdoptionAndAgency(page: Page, contract: ShowcaseMechanismCo
       return selector ? Boolean(root.matches(selector) || root.querySelector(selector)) : false;
     }, asset.medium);
     if (!present) errors.push(`required ${asset.medium} asset is missing from ${asset.targetSelector}`);
+    if (asset.sourceKind === "inline" && await page.locator(asset.sourceRef).count() !== 1)
+      errors.push(`inline asset source ${asset.sourceRef} must resolve exactly once`);
+    if (asset.sourceKind === "local-file") {
+      const file = path.resolve(asset.sourceRef);
+      if (!fs.existsSync(file) || !fs.statSync(file).isFile()) errors.push(`local asset source does not exist: ${asset.sourceRef}`);
+    }
+    if (asset.sourceKind === "remote-url") {
+      const response = await page.request.get(asset.sourceRef);
+      if (!response.ok()) errors.push(`remote asset source is not loadable: ${asset.sourceRef}`);
+    }
+    if (asset.sourceKind === "generated-record") {
+      const file = path.resolve(asset.sourceRef);
+      if (!fs.existsSync(file) || !fs.statSync(file).isFile()) errors.push(`generated asset record does not exist: ${asset.sourceRef}`);
+    }
   }
   for (const selector of [contract.agencyChain.controlSectionSelector, contract.agencyChain.inputSelector, contract.agencyChain.primaryResponseSelector, contract.agencyChain.downstreamSelector]) {
     if (await page.locator(selector).count() !== 1) errors.push(`agency-chain selector ${selector} must resolve exactly once`);
@@ -490,6 +520,28 @@ async function verifyAdoptionAndAgency(page: Page, contract: ShowcaseMechanismCo
 
 async function verifyComparisonLayouts(page: Page, contract: ShowcaseMechanismContract): Promise<string[]> {
   const errors: string[] = [];
+  type LayoutItem = { id: string; x: number; y: number; width: number; height: number };
+  const geometry = (items: LayoutItem[], selectedIdentity?: string) => {
+    const gaps: number[] = [];
+    const alignments: number[] = [];
+    for (let left = 0; left < items.length; left += 1) for (let right = left + 1; right < items.length; right += 1) {
+      const a = items[left], b = items[right];
+      if (a.id === selectedIdentity || b.id === selectedIdentity) continue;
+      const verticalOverlap = Math.max(0, Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y));
+      const horizontalOverlap = Math.max(0, Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x));
+      if (verticalOverlap >= Math.min(a.height, b.height) * .5) {
+        gaps.push(Math.max(0, Math.max(a.x, b.x) - Math.min(a.x + a.width, b.x + b.width)));
+        alignments.push(Math.abs(a.y - b.y));
+      } else if (horizontalOverlap >= Math.min(a.width, b.width) * .5) {
+        gaps.push(Math.max(0, Math.max(a.y, b.y) - Math.min(a.y + a.height, b.y + b.height)));
+        alignments.push(Math.abs(a.x - b.x));
+      }
+    }
+    return {
+      gapSpread: gaps.length > 1 ? Math.max(...gaps) - Math.min(...gaps) : 0,
+      alignmentDrift: alignments.length ? Math.max(...alignments) : 0,
+    };
+  };
   const snapshot = async (layout: ShowcaseMechanismContract["comparisonLayouts"][number]) => {
     const root = page.locator(layout.selector);
     if (await root.count() !== 1) return null;
@@ -529,11 +581,19 @@ async function verifyComparisonLayouts(page: Page, contract: ShowcaseMechanismCo
         errors.push(`comparison layout ${layout.selector} declares stable positions but moves ${moved} items`);
       if (layout.reorderMode === "selected-only" && moved > 1)
         errors.push(`comparison layout ${layout.selector} moves ${moved} items; selected-only permits one`);
-      const widths = after.map((item) => item.width);
-      const heights = after.map((item) => item.height);
-      if (Math.max(...widths) - Math.min(...widths) > layout.spacingTolerancePx
-        || Math.max(...heights) - Math.min(...heights) > layout.spacingTolerancePx)
-        errors.push(`comparison layout ${layout.selector} exceeds its declared item-size tolerance`);
+      for (const item of before) {
+        const next = afterById.get(item.id);
+        if (!next) continue;
+        const resize = Math.max(Math.abs(next.width / Math.max(1, item.width) - 1), Math.abs(next.height / Math.max(1, item.height) - 1));
+        const limit = item.id === layout.selectedIdentity ? (layout.selectedItemMaxScale ?? 1) - 1 : layout.maxItemResizeRatio;
+        if (resize > limit) errors.push(`comparison layout ${layout.selector} resizes ${item.id} beyond its declared limit`);
+      }
+      for (const [state, metrics] of [["before", geometry(before, layout.selectedIdentity)], ["after", geometry(after, layout.selectedIdentity)]] as const) {
+        if (metrics.gapSpread > layout.gapTolerancePx)
+          errors.push(`comparison layout ${layout.selector} has inconsistent ${state} gaps beyond ${layout.gapTolerancePx}px`);
+        if (metrics.alignmentDrift > layout.alignmentTolerancePx)
+          errors.push(`comparison layout ${layout.selector} has ${state} alignment drift beyond ${layout.alignmentTolerancePx}px`);
+      }
     }
   }
   return errors;
@@ -592,9 +652,34 @@ async function verifyPrototypeEvidence(context: Awaited<ReturnType<Browser["newC
   }
   for (const [label, storyboard] of [["best-fit", contract.prototypeEvidence.fullPageContinuityStoryboards.bestFit], ["bold-alternative", contract.prototypeEvidence.fullPageContinuityStoryboards.boldAlternative]] as const) {
     const storyboardPage = await context.newPage();
-    const response = await storyboardPage.goto(new URL(storyboard, url).href, { waitUntil: "domcontentloaded" });
+    const target = new URL(storyboard.artifact, url).href;
+    const response = await storyboardPage.goto(target, { waitUntil: "domcontentloaded" });
     if (!response || response.status() >= 400) errors.push(`${label} full-page continuity storyboard did not load successfully`);
+    else {
+      const selectors = [storyboard.heroSelector, storyboard.peakSelector, storyboard.postPeakSelector];
+      const regions = [];
+      for (const selector of selectors) {
+        const locator = storyboardPage.locator(selector);
+        if (await locator.count() !== 1) { errors.push(`${label} storyboard region ${selector} must resolve exactly once`); continue; }
+        regions.push(await locator.evaluate((element) => {
+          const rect = element.getBoundingClientRect();
+          const style = getComputedStyle(element);
+          return { top: rect.top + scrollY, visible: rect.width >= 32 && rect.height >= 32 && style.display !== "none" && style.visibility !== "hidden" && Number(style.opacity) > .02 };
+        }));
+      }
+      if (regions.some((region) => !region.visible)) errors.push(`${label} storyboard hero, peak, and post-peak regions must be visibly rendered`);
+      if (regions.length === 3 && !(regions[0].top < regions[1].top && regions[1].top < regions[2].top))
+        errors.push(`${label} storyboard must order hero → peak → post-peak consequence`);
+    }
     await storyboardPage.close();
+    const captureTarget = new URL(storyboard.capture, url).href;
+    const captureResponse = await context.request.get(captureTarget);
+    const contentType = captureResponse.headers()["content-type"] ?? "";
+    if (!captureResponse.ok() || !/^image\//i.test(contentType)) errors.push(`${label} storyboard capture is not a loadable image`);
+    else {
+      const problem = captureProblem(Buffer.from(await captureResponse.body()), contentType, "desktop");
+      if (problem) errors.push(`${label} storyboard capture ${problem}`);
+    }
   }
   if (artifactFingerprints.length === 2 && artifactFingerprints[0] === artifactFingerprints[1]) errors.push("Best Fit and Bold Alternative prototype artifacts are indistinguishable");
   for (const [label, captures] of [["best-fit", contract.prototypeEvidence.bestFitCaptures], ["bold-alternative", contract.prototypeEvidence.boldAlternativeCaptures]] as const) {
@@ -862,8 +947,13 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     if (![item?.role, item?.targetSelector, item?.sourceRef, item?.rights, item?.treatment, item?.crop, item?.animationTechnique, item?.mobileFallback, item?.externalEvaluation, item?.rationale].every((value) => typeof value === "string" && value.trim())
       || !["hero", "peak", "post-peak"].includes(item?.stage) || !["realistic-physical", "graphic", "interface", "environmental"].includes(item?.subjectKind)
       || !["use", "reject"].includes(item?.decision) || !["direction", "user"].includes(item?.requiredBy) || !["image", "video", "svg", "canvas", "3d", "none"].includes(item?.medium)
-      || !["supplied", "sourced", "generated", "licensed-3d", "pre-rendered-sequence", "procedural", "none"].includes(item?.productionSource))
+      || !["supplied", "sourced", "generated", "licensed-3d", "pre-rendered-sequence", "procedural", "none"].includes(item?.productionSource)
+      || !["local-file", "remote-url", "inline", "generated-record", "none"].includes(item?.sourceKind))
       errors.push(`asset commitment ${index + 1} requires stage, subject kind, source provenance, rights, treatment, crop, animation, mobile fallback, external evaluation, and rationale`);
+    if ((item?.productionSource === "none") !== (item?.medium === "none") || (item?.sourceKind === "none") !== (item?.medium === "none"))
+      errors.push(`asset commitment ${index + 1} must keep productionSource, sourceKind, and medium none states consistent`);
+    if (item?.productionSource === "licensed-3d" && item?.medium !== "3d")
+      errors.push(`licensed-3d asset ${index + 1} must declare medium 3d`);
     if (item?.subjectKind === "realistic-physical" && item?.productionSource === "procedural" && !item?.proceduralSuperiorityReason?.trim())
       errors.push(`procedural realistic-physical asset ${index + 1} requires an artistic-superiority reason after external evaluation`);
     if (item?.decision === "reject" && item?.requiredBy === "user" && item?.rejectionApprovedBy !== "user")
@@ -877,7 +967,8 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     errors.push("Showcase requires artifact-backed Best Fit and Bold Alternative prototypes with desktop/mobile captures and motion recordings");
   if (!prototype?.comparisonParity || Object.values(prototype.comparisonParity).some((value) => value !== true))
     errors.push("Showcase prototypes must both be final-worthy, share content and viewport coverage, and differ in interaction model");
-  if (![prototype?.fullPageContinuityStoryboards?.bestFit, prototype?.fullPageContinuityStoryboards?.boldAlternative].every((item) => typeof item === "string" && item.trim()))
+  const storyboards = [prototype?.fullPageContinuityStoryboards?.bestFit, prototype?.fullPageContinuityStoryboards?.boldAlternative];
+  if (!storyboards.every((item) => item && [item.artifact, item.capture, item.heroSelector, item.peakSelector, item.postPeakSelector].every((value) => typeof value === "string" && value.trim())))
     errors.push("Showcase prototypes require Best Fit and Bold Alternative full-page continuity storyboards");
   if (prototype?.selectedBy !== "user") errors.push("Showcase prototype selection must come from the user before full integration");
   const fidelity = contract.prototypeFidelity;
@@ -905,15 +996,18 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     if (primary?.stage !== "peak") errors.push("agency primaryResponseSelector must be a verified peak continuity region");
     if (downstream?.stage !== "after") errors.push("agency downstreamSelector must be a verified after continuity region");
   }
-  if (!Array.isArray(contract.comparisonLayouts)) errors.push("Showcase comparisonLayouts must be an array");
+  if (!Array.isArray(contract.comparisonLayouts) || contract.comparisonLayouts.length < 1) errors.push("Showcase requires at least one declared comparison layout");
   for (const [index, layout] of (contract.comparisonLayouts ?? []).entries()) {
     if (![layout?.selector, layout?.itemSelector, layout?.identityAttribute].every((value) => typeof value === "string" && value.trim())
       || !/^data-[a-z0-9-]+$/.test(layout?.identityAttribute ?? "")
       || !["fixed-grid", "stable-rail", "selected-stage", "other"].includes(layout?.strategy)
       || !["none", "selected-only", "controlled"].includes(layout?.reorderMode)
       || typeof layout?.maxTravelViewportRatio !== "number" || layout.maxTravelViewportRatio < 0 || layout.maxTravelViewportRatio > 1
-      || typeof layout?.spacingTolerancePx !== "number" || layout.spacingTolerancePx < 0 || layout.spacingTolerancePx > 48)
-      errors.push(`comparison layout ${index + 1} requires selectors, stable identity, strategy, reorder policy, travel limit, and spacing tolerance`);
+      || typeof layout?.maxItemResizeRatio !== "number" || layout.maxItemResizeRatio < 0 || layout.maxItemResizeRatio > 2
+      || typeof layout?.gapTolerancePx !== "number" || layout.gapTolerancePx < 0 || layout.gapTolerancePx > 48
+      || typeof layout?.alignmentTolerancePx !== "number" || layout.alignmentTolerancePx < 0 || layout.alignmentTolerancePx > 48
+      || (layout?.selectedIdentity && (typeof layout.selectedItemMaxScale !== "number" || layout.selectedItemMaxScale < 1 || layout.selectedItemMaxScale > 3)))
+      errors.push(`comparison layout ${index + 1} requires selectors, stable identity, strategy, reorder policy, travel, resize, gap, and alignment limits`);
   }
   const mechanisms = Array.isArray(contract.mechanisms) ? contract.mechanisms.filter((item) => item && typeof item === "object") : [];
   if (mechanisms.length < 1) errors.push("Showcase requires at least one executable signature mechanism");
@@ -939,8 +1033,8 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     if (!Number.isInteger(item.stateCount) || item.stateCount < 2 || item.stateCount > 5) errors.push(`${item.name} mechanism stateCount must be an integer from 2 to 5`);
     if (item.trigger === "hover" && item.stateCount !== 2) errors.push(`${item.name} hover mechanism must declare exactly two states`);
     if (item.trigger === "scroll" && item.stateCount < 3) errors.push(`${item.name} scroll mechanism must declare at least three states`);
-    if (item.trigger === "scroll" && (!Number.isInteger(item.minimumDwellMs) || (item.minimumDwellMs ?? 0) < 100 || (item.minimumDwellMs ?? 0) > 2000 || !item.releaseSelector?.trim()))
-      errors.push(`${item.name} scroll mechanism requires a 100–2000ms minimumDwellMs and releaseSelector`);
+    if (item.trigger === "scroll" && (!Number.isInteger(item.minimumDwellMs) || (item.minimumDwellMs ?? 0) < 400 || (item.minimumDwellMs ?? 0) > 2000 || !item.releaseSelector?.trim()))
+      errors.push(`${item.name} scroll mechanism requires a 400–2000ms minimumDwellMs and releaseSelector`);
     if (!["dom-state", "typography", "image", "video", "svg", "canvas", "spatial-layout", "3d"].includes(item.mediaMode)) errors.push(`${item.name} mechanism has an invalid mediaMode`);
   }
   const ownership = new Map<string, string>();

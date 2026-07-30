@@ -169,8 +169,9 @@ budget, or visual polish. Neither may be a deliberately weaker strawman.
 Both alternatives require inspectable routes or files plus desktop and mobile
 captures and short desktop/mobile motion recordings; prose written by the
 builder is not prototype evidence. Each alternative also requires a compact
-full-page continuity storyboard showing hero, Peak, and post-Peak consequence;
-an isolated interaction prototype is not evidence of the route's complete arc.
+full-page continuity storyboard showing visibly ordered hero, Peak, and
+post-Peak consequence regions plus a rendered full-page capture; an isolated
+interaction prototype is not evidence of the route's complete arc.
 The recordings support human comparison;
 the prototype routes remain executable verification targets.
 The builder may record only a `builderSelectionRationale`, which is an
@@ -209,8 +210,9 @@ smoke exercises each trigger on desktop, 390px, and 320px mobile, samples text
 collisions through the route, and observes a visible geometry, style, media,
 content, or state change. A written `mobileTransformation` promise does not
 pass when the actual mobile mechanism is static or missing.
-Scroll-authored mechanisms are exercised at slow, normal, and rapid input,
-forward and reverse. The key state must remain perceptible after input settles,
+Scroll-authored mechanisms are exercised with slow, normal, and rapid wheel
+input, then in reverse. The key state must remain stable for at least 400ms
+after input settles,
 and the subject must release cleanly before the following section enters. A
 state-count pass alone does not prove readable choreography.
 
@@ -273,6 +275,10 @@ than the external options—not because it is faster, familiar, cheaper, or
 easier. If the chosen ceiling requires an unavailable sourcing, editing, model,
 render, or sequence capability, expose the capability gap and ask for a tool,
 asset, or user-approved direction change instead of silently approximating it.
+Local and generated source records must exist inside the repository and be
+tracked; remote sources must load; inline sources must resolve in the rendered
+route. `none` source/medium states and
+licensed-3D medium declarations must be internally consistent.
 
 Treat Native Foundations as baseline implementation skeletons, not preferred
 substitutes for mature specialist runtimes. Use one only when it fully
@@ -328,8 +334,10 @@ microtype, empty viewport gaps, content-covering canvases, clipped controls,
 broken sticky releases, accidental overflow, repeated/placeholder assets,
 fabricated claims, broken glyphs, and desktop merely stacked on mobile.
 Product-comparison layouts must preserve identity and predictable spacing.
-Declare comparison regions, item identities, reordering policy, maximum travel,
-and spacing tolerance. Prominence may change, but wholesale reshuffling that
+Every Showcase declares at least one comparison region with stable item
+identities, reordering policy, maximum travel and resize, real gap and alignment
+tolerances, and any selected-item prominence allowance. Prominence may change,
+but wholesale reshuffling that
 forces visitors to re-find every item is not an acceptable default.
 
 At 390px reconsider order, crop, density, type scale, controls, sticky behavior,
