@@ -177,8 +177,9 @@ test("nested Showcase evidence rejects absolute paths and returns local portable
       { sourceKind: "local-file", sourceRef: "media/product.glb" },
       { sourceKind: "inline", sourceRef: "#product" },
     ],
+    mechanisms: [{ temporalEvidence: "frame-analysis", motionEvidenceRef: "evidence/motion.json" }],
   });
-  assert.deepEqual(result.files, ["evidence/desktop.png", "evidence/desktop.webm", "evidence/best-storyboard.png", "media/product.glb"]);
+  assert.deepEqual(result.files, ["evidence/desktop.png", "evidence/desktop.webm", "evidence/best-storyboard.png", "media/product.glb", "evidence/motion.json"]);
   assert.equal(result.blockers.length, 2);
   assert.match(result.blockers.join("\n"), /C:\\private\\desktop\.png/);
   assert.match(result.blockers.join("\n"), /\/capture\/mobile/);

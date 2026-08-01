@@ -115,17 +115,24 @@ capabilities are necessary for the selected experience.
 
 - Skip — build directly.
 - Auto — test only a central mechanism with real uncertainty.
-- Required — test the riskiest signature mechanism before integration.
+- Required — compare two or three cheap 3–8-frame visual treatment boards, then build one production-like prototype of the selected treatment before integration.
 
 Defaults: Efficient=Skip, Recommended=Auto, Showcase=Required.
 
-If Auto results in a prototype, or Required is selected, implementation pauses
-after both alternatives and their desktop/mobile captures and recordings exist.
-Show them together as **Best Fit** and **Bold Alternative** and ask the user to
-select one. Both must be honest final candidates with shared content, equivalent
-desktop/mobile coverage, and distinct interaction models. A lower-risk option
-must not be lower-quality by design. Do not integrate, self-select, or treat silence/general permission as
-a choice. Record the resulting selection as `selectedBy: "user"`.
+If Auto results in a prototype, or Required is selected, first show two or
+three cheap visual boards that concretely show input, change, and outcome, and ask the user to
+select one. Then build one production-like prototype with desktop/mobile
+captures and recordings, show it, and stop for explicit user acceptance or a
+revision request before integration. Build a second coded prototype only when a named
+decision remains genuinely unresolved and the alternatives differ materially
+in medium, interaction model, spatial structure, or mobile behavior. Changing
+only input method, runtime, or polish does not justify a second build. Label
+every artifact `treatment-board`, `animatic`, `production-like`, or
+`integration-ready`; an animatic cannot be presented as final motion fidelity
+or integrated as Showcase production evidence. Record the treatment selection
+as `selectedBy: "user"`; silence or general permission is not a selection.
+Record production-prototype acceptance as `prototypeReview.status: "accepted"`
+and `acceptedBy: "user"`; treatment selection alone is not implementation approval.
 
 ## Stage 3: editable Experience Map
 
@@ -252,33 +259,16 @@ Start from the accepted Experience Map. Preserve every row's role and intensity
 intent while privately adding executable states, owners, handoffs, responsive
 forms, fallbacks, and evidence targets. Do not force a generic architecture.
 
-For Showcase, write the compact JSON contract defined by
-`schemas/showcase-mechanism.schema.json`. Bind the Recommended baseline, at
-least two perceptible Showcase-only differences, two concrete product-native
-media opportunities and their use/reject reasons, and an observed comparison
-between one final-worthy Best Fit prototype and one final-worthy Bold
-Alternative. Reference actual prototype routes or files and desktop/mobile captures for both,
-plus short desktop/mobile motion recordings for human comparison; self-authored
-prose is not evidence. Record any selection explanation only as a
-non-authoritative `builderSelectionRationale`; never call it a reviewer decision.
-Name one shared state, its source selector,
-and at least three affected selectors across `before`, `peak`, and `after`, with
-the concrete downstream effect in each. Then list only the real executable
-signature mechanisms. Each mechanism must identify its primary product subject
-and selector; a decorative orbit, particle, label, or `aria-hidden` element
-cannot satisfy primary transformation salience. Hover cannot own a journey's peak or post-peak
-transformation. If the
-concept is a journey, process, or transformation, at least one mechanism must
-be scroll-authored and visibly transform content across stages; smooth scroll
-alone does not qualify. It is executable input and an accountability contract,
-not proof that the visual result is good.
-
-For every major mechanism, record five semantic-motion answers: product truth,
-cause, visible change, decision consequence, and removal cost. A Showcase
-journey must include at least one `Control` chain where a user action changes
-the primary subject and a downstream recommendation, configuration, content
-state, or task outcome. Color, labels, and decorative geometry alone do not
-qualify as the downstream decision.
+For Showcase, write `schemas/showcase-mechanism.schema.json` using the
+operational rules in `SKILL.md`: bind the Recommended baseline, perceptible
+Showcase differences, media decisions, two or three concrete 3–8-frame
+treatment boards, and one user-selected production-like prototype. Build a
+second coded prototype only for a named material uncertainty. The connected
+experience system must carry one state through non-adjacent pre-peak, central
+peak, and post-peak regions, including a real `Control` consequence. Reference
+the executable routes, captures, recordings, primary subjects, and temporal
+evidence required by the schema. These are accountability inputs, not proof of
+visual quality; `builderSelectionRationale` is never a reviewer verdict.
 
 ### 6. Build architecture
 
@@ -300,10 +290,8 @@ Do not call the work complete while an item is absent, imperceptible, replaced
 by a weaker substitute, or unverified. Continue correcting it or report the
 specific blocker and remaining scope.
 
-For Showcase, perform a below-hero comparison: inspect the route after its
-first major peak and reject completion if those sections could plausibly be the
-Efficient or ordinary Recommended direction. In the final response include two
-short disclosures:
+For Showcase, inspect below the first peak and reject completion if the rest
+could plausibly be Efficient or ordinary Recommended. Disclose:
 
 ```text
 Showcase implementation attempted: <what visibly shipped>
@@ -311,19 +299,15 @@ Independent visual verdict: awaiting user review
 Not pursued: <material advanced treatment rejected or replaced, and why>
 ```
 
-Omit the second line only when no material treatment was considered, promised,
-rejected, downgraded, or replaced. Do not turn these lines into a ledger.
-Always ask the user to inspect the supplied rendered views and provide the
-independent visual verdict. Codex must not author, infer, store, or promote it.
+Omit `Not pursued:` only when no material treatment was rejected or replaced.
+Ask the user for the independent visual verdict; Codex cannot author it.
 
 After the explicit Experience Map reply, implement. Do not generate another
 approval or contract gate. The prototype-review pause above and a small
 integrated experience checkpoint are the only exceptions.
 
-For Showcase and experience-led Recommended work, the integrated checkpoint
-shows only the primary peak, its most important downstream development or
-consequence, and their handoff at desktop and mobile. Ask whether their
-relative weight matches the accepted map before polishing the entire route.
+For Showcase and experience-led Recommended work, checkpoint the primary peak,
+its downstream consequence, and their desktop/mobile handoff before polishing.
 
 Every substantial final handoff ends with:
 
@@ -331,8 +315,5 @@ Every substantial final handoff ends with:
 Implementation complete; human taste verdict: awaiting user review
 ```
 
-This applies to Efficient, Recommended, and Showcase. Technical completion is
-not human acceptance. Supply the rendered views, ask for the verdict, and do
-not call the design finished or taste-approved before the user replies.
-For an opted-in evaluation package, reconcile the decision record and final
-review with the delivered source and rendered result before completion.
+This applies to every direction. Supply rendered views and ask for the verdict.
+For opted-in evaluation, reconcile the designated record with shipped source.

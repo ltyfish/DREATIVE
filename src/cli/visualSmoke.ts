@@ -14,23 +14,31 @@ export interface MechanismContractEntry {
   primarySelector: string;
   primarySubject: string;
   trigger: MechanismTrigger;
-  experienceRole: string;
-  ceilingContribution: string;
   mediaMode: ShowcaseMediaMode;
-  continuityConnection: string;
   mobileTransformation: string;
-  recommendedDifference: string;
-  meaningfulOutcome: string;
   productTruth: string;
   userCause: string;
   visibleChange: string;
   decisionConsequence: string;
-  removalCost: string;
+  motionIntent: "deliberate-stepped" | "continuous-subject" | "state-transition" | "camera-only" | "none";
+  temporalEvidence: "runtime-sampled" | "frame-analysis" | "user-accepted-limitation" | "none";
+  motionEvidenceRef?: string;
   animationOwner: "css" | "gsap" | "motion" | "anime" | "react-state" | "native-js" | "other";
   ownedProperties: string[];
   stateCount: number;
   minimumDwellMs?: number;
   releaseSelector?: string;
+}
+export interface MotionAnalysisEvidence {
+  version: 1;
+  recording: string;
+  recordingSha256: string;
+  framesSampled: number;
+  abruptReplacements: number;
+  frozenIntervals: number;
+  wholeFrameScaling: boolean;
+  continuousSubjectMotion: boolean;
+  method: string;
 }
 export interface ShowcaseMechanismContract {
   version: 2;
@@ -41,8 +49,12 @@ export interface ShowcaseMechanismContract {
   recommendedBaseline: string;
   showcaseDelta: string[];
   mediaOpportunities: { opportunity: string; decision: "use" | "reject"; rationale: string }[];
+  referenceMode: "none" | "supplied" | "scout";
+  referenceMinimum: number;
   referenceAdoptions: {
     source: string;
+    sourceRef: string;
+    rights: string;
     principle: string;
     decision: "use" | "reject";
     requiredBy: "direction" | "user";
@@ -74,29 +86,34 @@ export interface ShowcaseMechanismContract {
     rejectionApprovedBy?: "user";
   }[];
   prototypeEvidence: {
+    treatmentOptions: { name: string; frames: { stage: "input" | "change" | "reveal" | "outcome"; visual: string }[] }[];
+    comparisonRequired: boolean;
     bestFitApproach: string;
-    boldAlternativeApproach: string;
+    boldAlternativeApproach?: string;
     selectedApproach: string;
     bestFitArtifact: string;
-    boldAlternativeArtifact: string;
+    boldAlternativeArtifact?: string;
     bestFitCaptures: { desktop: string; mobile: string };
-    boldAlternativeCaptures: { desktop: string; mobile: string };
+    boldAlternativeCaptures?: { desktop: string; mobile: string };
     bestFitRecordings: { desktop: string; mobile: string };
-    boldAlternativeRecordings: { desktop: string; mobile: string };
+    boldAlternativeRecordings?: { desktop: string; mobile: string };
     fullPageContinuityStoryboards: {
       bestFit: { artifact: string; capture: string; heroSelector: string; peakSelector: string; postPeakSelector: string };
-      boldAlternative: { artifact: string; capture: string; heroSelector: string; peakSelector: string; postPeakSelector: string };
+      boldAlternative?: { artifact: string; capture: string; heroSelector: string; peakSelector: string; postPeakSelector: string };
     };
-    comparisonParity: {
+    comparisonParity?: {
       bothFinalWorthy: true;
       sharedContent: true;
       sharedViewportCoverage: true;
       distinctInteractionModels: true;
     };
+    prototypeReview: { status: "accepted"; acceptedBy: "user" };
     selectedBy: "user";
     builderSelectionRationale: string;
   };
   prototypeFidelity: {
+    level: "treatment-board" | "animatic" | "production-like" | "integration-ready";
+    limitations: string;
     selectedArtifact: string;
     prototypeSubjectSelector: string;
     integratedSubjectSelector: string;
@@ -139,11 +156,28 @@ export interface ShowcaseMechanismContract {
     alignmentTolerancePx: number;
     selectedIdentity?: string;
     selectedItemMaxScale?: number;
+    identityChannels: { channel: string; selector: string; uniqueProperty: "src" | "background-image" | "background-color" | "border-radius" | "clip-path" | "text" | "class" | `data-${string}` }[];
+    assetStatus: "placeholder" | "production";
   }[];
   mechanisms: MechanismContractEntry[];
 }
 export interface VisualSmokeOptions { profile: DeliveryProfile; showcase?: ShowcaseMechanismContract; experienceMap?: ExperienceMap }
 export interface VisualSmokeResult { ok: boolean; blockers: string[]; checks: string[] }
+
+export function motionFidelityAdvisories(contract?: ShowcaseMechanismContract): string[] {
+  if (!contract) return [];
+  return contract.mechanisms.map((item) => {
+    const properties = new Set(item.ownedProperties.map((value) => value.toLowerCase()));
+    const wholeFrameOnly = [...properties].every((value) => /transform|opacity|filter|color|background/.test(value));
+    if (item.mediaMode === "image")
+      return `${item.name} motion fidelity: ${item.motionIntent}; discrete image sequence detected by contract; event/state coverage may pass, declared consequence and independent subject motion remain unverified; human review required`;
+    if (item.mediaMode === "video")
+      return `${item.name} motion fidelity: ${item.motionIntent}; continuous media candidate; event/state coverage may pass, declared consequence and independent subject choreography remain unverified; human review required`;
+    if (wholeFrameOnly)
+      return `${item.name} motion fidelity: ${item.motionIntent}; state transition dominated by whole-element style properties; event/state coverage may pass, declared consequence remains unverified; human review required`;
+    return `${item.name} motion fidelity: ${item.motionIntent}; ${item.stateCount} observable states declared; consequence, temporal coherence, and taste unverified; human review required`;
+  });
+}
 
 const contexts = [
   { label: "desktop", width: 1440, height: 900, reducedMotion: false, samples: 20 },
@@ -463,6 +497,15 @@ async function verifyContinuity(page: Page, contract: ShowcaseMechanismContract)
 
 async function verifyAdoptionAndAgency(page: Page, contract: ShowcaseMechanismContract): Promise<string[]> {
   const errors: string[] = [];
+  for (const adoption of contract.referenceAdoptions) {
+    if (/^https?:\/\//i.test(adoption.sourceRef)) {
+      const response = await page.request.get(adoption.sourceRef);
+      if (!response.ok()) errors.push(`reference source is not loadable: ${adoption.sourceRef}`);
+    } else {
+      const file = path.resolve(adoption.sourceRef);
+      if (!fs.existsSync(file) || !fs.statSync(file).isFile()) errors.push(`reference source does not exist: ${adoption.sourceRef}`);
+    }
+  }
   for (const adoption of contract.referenceAdoptions.filter((item) => item.decision === "use")) {
     const target = page.locator(adoption.targetSelector ?? "");
     if (await target.count() !== 1) {
@@ -585,6 +628,22 @@ async function verifyComparisonLayouts(page: Page, contract: ShowcaseMechanismCo
       errors.push(`comparison layout ${layout.selector} requires unique ${layout.identityAttribute} identities`);
       continue;
     }
+    const identityEvidence = await page.locator(layout.selector).locator(layout.itemSelector).evaluateAll((items, channels) => channels.map((channel) => {
+      const values = items.map((item) => {
+        const target = channel.selector === "$self" ? item : item.querySelector(channel.selector);
+        if (!target) return "";
+        if (channel.uniqueProperty === "src") return target instanceof HTMLImageElement ? target.currentSrc : target.getAttribute("src") ?? "";
+        if (["background-image", "background-color", "border-radius", "clip-path"].includes(channel.uniqueProperty)) return getComputedStyle(target).getPropertyValue(channel.uniqueProperty);
+        if (channel.uniqueProperty === "text") return target.textContent?.trim() ?? "";
+        if (channel.uniqueProperty === "class") return target.getAttribute("class") ?? "";
+        return target.getAttribute(channel.uniqueProperty) ?? "";
+      });
+      return { channel: channel.channel, values };
+    }), layout.identityChannels);
+    for (const evidence of identityEvidence) {
+      if (evidence.values.some((value) => !value) || new Set(evidence.values).size < Math.min(2, evidence.values.length))
+        errors.push(`comparison layout ${layout.selector} identity channel ${evidence.channel} does not render distinct values across products`);
+    }
     const source = page.locator(contract.continuity.sourceSelector);
     if (await source.count() === 1) {
       await source.click();
@@ -667,7 +726,10 @@ function recordingProblem(bytes: Buffer, contentType: string, source: string): s
 async function verifyPrototypeEvidence(context: Awaited<ReturnType<Browser["newContext"]>>, url: string, contract: ShowcaseMechanismContract): Promise<string[]> {
   const errors: string[] = [];
   const artifactFingerprints: string[] = [];
-  for (const [label, artifact] of [["best-fit", contract.prototypeEvidence.bestFitArtifact], ["bold-alternative", contract.prototypeEvidence.boldAlternativeArtifact]] as const) {
+  const artifacts = contract.prototypeEvidence.comparisonRequired && contract.prototypeEvidence.boldAlternativeArtifact
+    ? [["best-fit", contract.prototypeEvidence.bestFitArtifact], ["bold-alternative", contract.prototypeEvidence.boldAlternativeArtifact]] as const
+    : [["selected", contract.prototypeEvidence.bestFitArtifact]] as const;
+  for (const [label, artifact] of artifacts) {
     const page = await context.newPage();
     const target = new URL(artifact, url).href;
     const response = await page.goto(target, { waitUntil: "domcontentloaded" });
@@ -675,7 +737,10 @@ async function verifyPrototypeEvidence(context: Awaited<ReturnType<Browser["newC
     else artifactFingerprints.push(await visibleFingerprint(page, "body"));
     await page.close();
   }
-  for (const [label, storyboard] of [["best-fit", contract.prototypeEvidence.fullPageContinuityStoryboards.bestFit], ["bold-alternative", contract.prototypeEvidence.fullPageContinuityStoryboards.boldAlternative]] as const) {
+  const storyboards = contract.prototypeEvidence.comparisonRequired && contract.prototypeEvidence.fullPageContinuityStoryboards.boldAlternative
+    ? [["best-fit", contract.prototypeEvidence.fullPageContinuityStoryboards.bestFit], ["bold-alternative", contract.prototypeEvidence.fullPageContinuityStoryboards.boldAlternative]] as const
+    : [["selected", contract.prototypeEvidence.fullPageContinuityStoryboards.bestFit]] as const;
+  for (const [label, storyboard] of storyboards) {
     const storyboardPage = await context.newPage();
     const target = new URL(storyboard.artifact, url).href;
     const response = await storyboardPage.goto(target, { waitUntil: "domcontentloaded" });
@@ -707,7 +772,10 @@ async function verifyPrototypeEvidence(context: Awaited<ReturnType<Browser["newC
     }
   }
   if (artifactFingerprints.length === 2 && artifactFingerprints[0] === artifactFingerprints[1]) errors.push("Best Fit and Bold Alternative prototype artifacts are indistinguishable");
-  for (const [label, captures] of [["best-fit", contract.prototypeEvidence.bestFitCaptures], ["bold-alternative", contract.prototypeEvidence.boldAlternativeCaptures]] as const) {
+  const capturesToCheck = contract.prototypeEvidence.comparisonRequired && contract.prototypeEvidence.boldAlternativeCaptures
+    ? [["best-fit", contract.prototypeEvidence.bestFitCaptures], ["bold-alternative", contract.prototypeEvidence.boldAlternativeCaptures]] as const
+    : [["selected", contract.prototypeEvidence.bestFitCaptures]] as const;
+  for (const [label, captures] of capturesToCheck) {
     const captureHashes: string[] = [];
     for (const viewport of ["desktop", "mobile"] as const) {
       const capture = captures?.[viewport];
@@ -735,7 +803,10 @@ async function verifyPrototypeEvidence(context: Awaited<ReturnType<Browser["newC
     }
     if (captureHashes.length === 2 && captureHashes[0] === captureHashes[1]) errors.push(`${label} desktop and mobile captures must be different images`);
   }
-  for (const [label, recordings] of [["best-fit", contract.prototypeEvidence.bestFitRecordings], ["bold-alternative", contract.prototypeEvidence.boldAlternativeRecordings]] as const) {
+  const recordingsToCheck = contract.prototypeEvidence.comparisonRequired && contract.prototypeEvidence.boldAlternativeRecordings
+    ? [["best-fit", contract.prototypeEvidence.bestFitRecordings], ["bold-alternative", contract.prototypeEvidence.boldAlternativeRecordings]] as const
+    : [["selected", contract.prototypeEvidence.bestFitRecordings]] as const;
+  for (const [label, recordings] of recordingsToCheck) {
     const hashes: string[] = [];
     for (const viewport of ["desktop", "mobile"] as const) {
       const recording = recordings?.[viewport];
@@ -797,9 +868,9 @@ async function verifyPrototypeFidelity(page: Page, context: Awaited<ReturnType<B
 
 async function verifyExperienceMapBindings(page: Page, map: ExperienceMap, contract: ShowcaseMechanismContract): Promise<string[]> {
   const errors: string[] = [];
-  for (const section of map.sections.filter((item) => item.intensity === 5)) {
+  for (const section of map.sections.filter((item) => item.agency !== "watch" || (item.trigger && item.trigger !== "none"))) {
     const mechanism = contract.mechanisms.find((item) => item.selector === section.selector);
-    if (!mechanism) { errors.push(`Experience Map intensity-5 section ${section.id} is not bound to a verified Showcase mechanism at ${section.selector}`); continue; }
+    if (!mechanism) { errors.push(`Experience Map agency/transform section ${section.id} is not bound to a verified Showcase mechanism at ${section.selector}`); continue; }
     if (mechanism.trigger !== section.trigger) errors.push(`Experience Map section ${section.id} trigger ${section.trigger} does not match mechanism trigger ${mechanism.trigger}`);
     const missing = (section.ownedProperties ?? []).filter((property) => !mechanism.ownedProperties.includes(property));
     if (missing.length) errors.push(`Experience Map section ${section.id} owns properties not declared by its mechanism: ${missing.join(", ")}`);
@@ -958,10 +1029,15 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     if (typeof item?.opportunity !== "string" || !item.opportunity.trim() || !["use", "reject"].includes(item.decision) || typeof item.rationale !== "string" || !item.rationale.trim()) errors.push(`media opportunity ${index + 1} requires an opportunity, use|reject decision, and rationale`);
   }
   if (!Array.isArray(contract.referenceAdoptions)) errors.push("Showcase referenceAdoptions must be an array");
+  if (!["none", "supplied", "scout"].includes(contract.referenceMode)) errors.push("Showcase referenceMode must be none, supplied, or scout");
+  if (!Number.isInteger(contract.referenceMinimum) || contract.referenceMinimum < 0 || contract.referenceMinimum > 4) errors.push("Showcase referenceMinimum must be an integer from 0 to 4");
+  if (contract.referenceMode === "none" && ((contract.referenceMinimum ?? 0) !== 0 || (contract.referenceAdoptions?.length ?? 0) !== 0)) errors.push("referenceMode none requires zero references");
+  if (contract.referenceMode === "supplied" && (contract.referenceAdoptions?.length ?? 0) < Math.max(1, contract.referenceMinimum ?? 0)) errors.push("referenceMode supplied requires the configured number of traceable references");
+  if (contract.referenceMode === "scout" && (contract.referenceAdoptions?.length ?? 0) < Math.max(2, contract.referenceMinimum ?? 0)) errors.push("referenceMode scout requires at least two traceable candidates or adoptions");
   for (const [index, item] of (contract.referenceAdoptions ?? []).entries()) {
-    if (![item?.source, item?.principle, item?.rationale].every((value) => typeof value === "string" && value.trim())
+    if (![item?.source, item?.sourceRef, item?.rights, item?.principle, item?.rationale].every((value) => typeof value === "string" && value.trim())
       || !["use", "reject"].includes(item?.decision) || !["direction", "user"].includes(item?.requiredBy))
-      errors.push(`reference adoption ${index + 1} requires source, principle, decision, requiredBy, and rationale`);
+      errors.push(`reference adoption ${index + 1} requires a traceable sourceRef, rights status, principle, decision, requiredBy, and rationale`);
     if (item?.decision === "use" && ![item.targetSelector, item.visibleImplementation].every((value) => typeof value === "string" && value.trim()))
       errors.push(`used reference adoption ${index + 1} requires targetSelector and visibleImplementation`);
     if (item?.decision === "reject" && item?.requiredBy === "user" && item?.rejectionApprovedBy !== "user")
@@ -987,17 +1063,23 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
   const assetStages = new Set((contract.assetCommitments ?? []).map((item) => item?.stage));
   for (const stage of ["hero", "peak", "post-peak"]) if (!assetStages.has(stage as "hero" | "peak" | "post-peak")) errors.push(`Showcase asset commitments are missing the ${stage} focal subject`);
   const prototype = contract.prototypeEvidence;
-  if (!prototype || [prototype.bestFitApproach, prototype.boldAlternativeApproach, prototype.selectedApproach, prototype.bestFitArtifact, prototype.boldAlternativeArtifact, prototype.builderSelectionRationale].some((item) => typeof item !== "string" || !item.trim())
-    || [prototype?.bestFitCaptures?.desktop, prototype?.bestFitCaptures?.mobile, prototype?.boldAlternativeCaptures?.desktop, prototype?.boldAlternativeCaptures?.mobile, prototype?.bestFitRecordings?.desktop, prototype?.bestFitRecordings?.mobile, prototype?.boldAlternativeRecordings?.desktop, prototype?.boldAlternativeRecordings?.mobile].some((item) => typeof item !== "string" || !item.trim()))
-    errors.push("Showcase requires artifact-backed Best Fit and Bold Alternative prototypes with desktop/mobile captures and motion recordings");
-  if (!prototype?.comparisonParity || Object.values(prototype.comparisonParity).some((value) => value !== true))
-    errors.push("Showcase prototypes must both be final-worthy, share content and viewport coverage, and differ in interaction model");
-  const storyboards = [prototype?.fullPageContinuityStoryboards?.bestFit, prototype?.fullPageContinuityStoryboards?.boldAlternative];
+  if (!prototype || !Array.isArray(prototype.treatmentOptions) || prototype.treatmentOptions.length < 2 || prototype.treatmentOptions.length > 3 || prototype.treatmentOptions.some((item) => !item || typeof item.name !== "string" || !item.name.trim() || !Array.isArray(item.frames) || item.frames.length < 3 || item.frames.length > 8 || item.frames.some((frame) => !frame || !["input", "change", "reveal", "outcome"].includes(frame.stage) || typeof frame.visual !== "string" || !frame.visual.trim()) || !item.frames.some((frame) => frame.stage === "change") || !item.frames.some((frame) => frame.stage === "outcome")))
+    errors.push("Showcase requires two or three concrete treatment boards, each with 3-8 visual frames including change and outcome");
+  if (!prototype || [prototype.bestFitApproach, prototype.selectedApproach, prototype.bestFitArtifact, prototype.builderSelectionRationale].some((item) => typeof item !== "string" || !item.trim())
+    || [prototype?.bestFitCaptures?.desktop, prototype?.bestFitCaptures?.mobile, prototype?.bestFitRecordings?.desktop, prototype?.bestFitRecordings?.mobile].some((item) => typeof item !== "string" || !item.trim()))
+    errors.push("Showcase requires one artifact-backed production prototype with desktop/mobile captures and motion recordings");
+  if (prototype?.comparisonRequired && ([prototype.boldAlternativeApproach, prototype.boldAlternativeArtifact, prototype?.boldAlternativeCaptures?.desktop, prototype?.boldAlternativeCaptures?.mobile, prototype?.boldAlternativeRecordings?.desktop, prototype?.boldAlternativeRecordings?.mobile].some((item) => typeof item !== "string" || !item.trim())
+    || !prototype.comparisonParity || Object.values(prototype.comparisonParity).some((value) => value !== true)))
+    errors.push("A declared unresolved decision requires a genuinely distinct, equally covered second coded prototype");
+  const storyboards = prototype?.comparisonRequired
+    ? [prototype?.fullPageContinuityStoryboards?.bestFit, prototype?.fullPageContinuityStoryboards?.boldAlternative]
+    : [prototype?.fullPageContinuityStoryboards?.bestFit];
   if (!storyboards.every((item) => item && [item.artifact, item.capture, item.heroSelector, item.peakSelector, item.postPeakSelector].every((value) => typeof value === "string" && value.trim())))
-    errors.push("Showcase prototypes require Best Fit and Bold Alternative full-page continuity storyboards");
+    errors.push("Each coded Showcase prototype requires a full-page continuity storyboard");
   if (prototype?.selectedBy !== "user") errors.push("Showcase prototype selection must come from the user before full integration");
+  if (prototype?.prototypeReview?.status !== "accepted" || prototype?.prototypeReview?.acceptedBy !== "user") errors.push("Showcase production-like prototype must be shown and explicitly accepted by the user before integration");
   const fidelity = contract.prototypeFidelity;
-  if (!fidelity || [fidelity.selectedArtifact, fidelity.prototypeSubjectSelector, fidelity.integratedSubjectSelector, fidelity.focalObject, fidelity.copyBalance, fidelity.controlPlacement, fidelity.materialLighting, fidelity.desktopFraming, fidelity.mobileFraming].some((item) => typeof item !== "string" || !item.trim()))
+  if (!fidelity || !["production-like", "integration-ready"].includes(fidelity.level) || !fidelity.limitations?.trim() || [fidelity.selectedArtifact, fidelity.prototypeSubjectSelector, fidelity.integratedSubjectSelector, fidelity.focalObject, fidelity.copyBalance, fidelity.controlPlacement, fidelity.materialLighting, fidelity.desktopFraming, fidelity.mobileFraming].some((item) => typeof item !== "string" || !item.trim()))
     errors.push("Showcase requires a complete prototype-to-product fidelity contract");
   const continuity = contract.continuity;
   const affectedRegions = Array.isArray(continuity?.affectedRegions) ? continuity.affectedRegions : [];
@@ -1031,8 +1113,12 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
       || typeof layout?.maxItemResizeRatio !== "number" || layout.maxItemResizeRatio < 0 || layout.maxItemResizeRatio > 2
       || typeof layout?.gapTolerancePx !== "number" || layout.gapTolerancePx < 0 || layout.gapTolerancePx > 48
       || typeof layout?.alignmentTolerancePx !== "number" || layout.alignmentTolerancePx < 0 || layout.alignmentTolerancePx > 48
+      || !Array.isArray(layout?.identityChannels) || layout.identityChannels.length < 2 || layout.identityChannels.some((channel) => !channel || typeof channel.channel !== "string" || !channel.channel.trim() || typeof channel.selector !== "string" || !channel.selector.trim() || !/^(?:src|background-image|background-color|border-radius|clip-path|text|class|data-[a-z0-9-]+)$/.test(channel.uniqueProperty))
+      || new Set((layout.identityChannels ?? []).map((channel) => `${channel.selector}::${channel.uniqueProperty}`)).size !== (layout.identityChannels?.length ?? 0)
+      || !(layout.identityChannels ?? []).some((channel) => ["src", "background-image", "background-color", "border-radius", "clip-path"].includes(channel.uniqueProperty))
+      || layout?.assetStatus !== "production"
       || (layout?.selectedIdentity && (typeof layout.selectedItemMaxScale !== "number" || layout.selectedItemMaxScale < 1 || layout.selectedItemMaxScale > 3)))
-      errors.push(`comparison layout ${index + 1} requires selectors, stable identity, strategy, reorder policy, travel, resize, gap, and alignment limits`);
+      errors.push(`comparison layout ${index + 1} requires stable production identity with at least two visual channels plus layout limits`);
   }
   const mechanisms = Array.isArray(contract.mechanisms) ? contract.mechanisms.filter((item) => item && typeof item === "object") : [];
   if (mechanisms.length < 1) errors.push("Showcase requires at least one executable signature mechanism");
@@ -1048,11 +1134,14 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     if (!item.selector?.trim()) errors.push(`${item.name} mechanism requires a selector`);
     if (!item.primarySelector?.trim() || !item.primarySubject?.trim()) errors.push(`${item.name} mechanism requires a primarySelector and product-native primarySubject`);
     if (!["scroll", "click", "hover", "drag"].includes(item.trigger)) errors.push(`${item.name} mechanism has an invalid trigger`);
-    for (const key of ["experienceRole", "ceilingContribution", "continuityConnection", "mobileTransformation", "recommendedDifference"] as const)
-      if (!item[key]?.trim()) errors.push(`${item.name} mechanism requires ${key}`);
-    if (!item.meaningfulOutcome?.trim()) errors.push(`${item.name} mechanism requires meaningfulOutcome`);
-    for (const key of ["productTruth", "userCause", "visibleChange", "decisionConsequence", "removalCost"] as const)
+    if (!item.mobileTransformation?.trim()) errors.push(`${item.name} mechanism requires mobileTransformation`);
+    for (const key of ["productTruth", "userCause", "visibleChange", "decisionConsequence"] as const)
       if (!item[key]?.trim()) errors.push(`${item.name} mechanism requires semantic-motion field ${key}`);
+    if (!["deliberate-stepped", "continuous-subject", "state-transition", "camera-only", "none"].includes(item.motionIntent)) errors.push(`${item.name} mechanism requires a valid motionIntent`);
+    if (!["runtime-sampled", "frame-analysis", "user-accepted-limitation", "none"].includes(item.temporalEvidence)) errors.push(`${item.name} mechanism requires a valid temporalEvidence classification`);
+    if (item.motionIntent === "continuous-subject" && item.mediaMode === "image" && !["frame-analysis", "user-accepted-limitation"].includes(item.temporalEvidence))
+      errors.push(`${item.name} promises continuous subject motion from images and requires frame-analysis evidence or explicit user-accepted limitation`);
+    if (["frame-analysis", "user-accepted-limitation"].includes(item.temporalEvidence) && !item.motionEvidenceRef?.trim()) errors.push(`${item.name} temporalEvidence requires motionEvidenceRef`);
     if (!["css", "gsap", "motion", "anime", "react-state", "native-js", "other"].includes(item.animationOwner)) errors.push(`${item.name} mechanism requires one animationOwner`);
     if (!Array.isArray(item.ownedProperties) || item.ownedProperties.length < 1 || item.ownedProperties.some((property) => typeof property !== "string" || !property.trim())) errors.push(`${item.name} mechanism requires ownedProperties`);
     if (!Number.isInteger(item.stateCount) || item.stateCount < 2 || item.stateCount > 5) errors.push(`${item.name} mechanism stateCount must be an integer from 2 to 5`);
@@ -1072,8 +1161,29 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
   return [...new Set(errors)];
 }
 
+export function validateMotionAnalysisEvidence(contract: ShowcaseMechanismContract, projectDir = process.cwd()): string[] {
+  const errors: string[] = [];
+  const submitted = new Set(Object.values(contract.prototypeEvidence.bestFitRecordings));
+  if (contract.prototypeEvidence.comparisonRequired) for (const value of Object.values(contract.prototypeEvidence.boldAlternativeRecordings ?? {})) submitted.add(value);
+  for (const mechanism of contract.mechanisms.filter((item) => item.temporalEvidence === "frame-analysis")) {
+    const ref = mechanism.motionEvidenceRef ?? "";
+    if (!ref || /^https?:\/\//i.test(ref) || path.isAbsolute(ref)) { errors.push(`${mechanism.name} frame analysis must reference a repository-relative JSON file`); continue; }
+    const evidencePath = path.resolve(projectDir, ref);
+    let evidence: MotionAnalysisEvidence;
+    try { evidence = JSON.parse(fs.readFileSync(evidencePath, "utf8")) as MotionAnalysisEvidence; }
+    catch { errors.push(`${mechanism.name} frame analysis is missing or invalid JSON: ${ref}`); continue; }
+    if (evidence.version !== 1 || !submitted.has(evidence.recording) || !/^[a-f0-9]{64}$/i.test(evidence.recordingSha256 ?? "") || !Number.isInteger(evidence.framesSampled) || evidence.framesSampled < 12 || !Number.isInteger(evidence.abruptReplacements) || evidence.abruptReplacements < 0 || !Number.isInteger(evidence.frozenIntervals) || evidence.frozenIntervals < 0 || typeof evidence.wholeFrameScaling !== "boolean" || typeof evidence.continuousSubjectMotion !== "boolean" || !evidence.method?.trim())
+      errors.push(`${mechanism.name} frame analysis must contain measured results and name one submitted recording`);
+    const recordingPath = evidence.recording && !/^https?:\/\//i.test(evidence.recording) && !path.isAbsolute(evidence.recording) ? path.resolve(projectDir, evidence.recording) : "";
+    if (!recordingPath || !fs.existsSync(recordingPath)) errors.push(`${mechanism.name} frame analysis recording must be a repository-local submitted recording`);
+    else if (createHash("sha256").update(fs.readFileSync(recordingPath)).digest("hex") !== evidence.recordingSha256) errors.push(`${mechanism.name} frame analysis hash does not match ${evidence.recording}`);
+  }
+  return errors;
+}
+
 export async function runVisualSmoke(url: string, options: VisualSmokeOptions): Promise<VisualSmokeResult> {
   const contractErrors = validateMechanisms(options.profile, options.showcase);
+  if (options.profile === "showcase" && options.showcase) contractErrors.push(...validateMotionAnalysisEvidence(options.showcase));
   if (options.profile === "showcase" && options.experienceMap) contractErrors.push(...validateShowcaseExperienceMap(options.experienceMap));
   if (contractErrors.length) return { ok: false, blockers: contractErrors, checks: [] };
   const browser = await chromium.launch({ headless: true });
@@ -1081,6 +1191,6 @@ export async function runVisualSmoke(url: string, options: VisualSmokeOptions): 
     const results = [];
     for (const config of contexts) results.push(await inspectContext(browser, url, config, options.showcase, options.experienceMap));
     const blockers = [...new Set(results.flatMap((result) => result.blockers))];
-    return { ok: blockers.length === 0, blockers, checks: results.flatMap((result) => result.checks) };
+    return { ok: blockers.length === 0, blockers, checks: [...results.flatMap((result) => result.checks), ...motionFidelityAdvisories(options.showcase)] };
   } finally { await browser.close(); }
 }

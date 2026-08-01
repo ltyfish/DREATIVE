@@ -80,12 +80,13 @@ export function validateExperienceMap(value: unknown): string[] {
     }
     if (section.override !== undefined && !OVERRIDES.has(String(section.override))) errors.push(`${prefix}.override is invalid`);
     if (section.instruction !== undefined && typeof section.instruction !== "string") errors.push(`${prefix}.instruction must be a string`);
-    if (Number(section.intensity) === 5) {
-      if (!text(section.selector)) errors.push(`${prefix}.selector is required for intensity 5`);
-      if (!text(section.trigger)) errors.push(`${prefix}.trigger is required for intensity 5`);
+    const executable = section.agency === "control" || section.agency === "influence" || (text(section.trigger) && section.trigger !== "none");
+    if (executable) {
+      if (!text(section.selector)) errors.push(`${prefix}.selector is required for meaningful agency or transformation`);
+      if (!text(section.trigger) || section.trigger === "none") errors.push(`${prefix}.trigger must be executable for meaningful agency or transformation`);
       if (!Array.isArray(section.ownedProperties) || section.ownedProperties.length < 1 || section.ownedProperties.some((item) => !text(item)))
-        errors.push(`${prefix}.ownedProperties must name at least one property for intensity 5`);
-      if (!text(section.meaningfulOutcome)) errors.push(`${prefix}.meaningfulOutcome is required for intensity 5`);
+        errors.push(`${prefix}.ownedProperties must name at least one property for meaningful agency or transformation`);
+      if (!text(section.meaningfulOutcome)) errors.push(`${prefix}.meaningfulOutcome is required for meaningful agency or transformation`);
       if (text(section.selector) && Array.isArray(section.ownedProperties)) for (const property of section.ownedProperties.filter(text)) {
         const key = `${section.selector}::${property.trim().toLowerCase()}`;
         const existing = ownership.get(key);
@@ -94,8 +95,6 @@ export function validateExperienceMap(value: unknown): string[] {
         ownership.set(key, String(section.mechanismOwner));
       }
     }
-    if (section.agency === "control" && !text(section.selector))
-      errors.push(`${prefix}.selector is required when agency is control`);
     if (section.override === "keep-static") {
       if (Number(section.intensity) > 2) errors.push(`${prefix}.keep-static requires intensity 1 or 2`);
       for (const key of ["mechanismOwner", "desktop", "mobile"] as const) {

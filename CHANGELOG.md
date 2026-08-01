@@ -1,5 +1,37 @@
 # Changelog
 
+## 1.4.4
+
+- Make cheap Showcase treatments concrete 3-8-frame visual boards with an
+  observable change and outcome instead of abstract option labels.
+- Require every production collection to expose at least one distinct rendered
+  media or computed-style identity channel; text, classes, and `data-*` values
+  remain supporting identifiers only.
+- Validate repository-local frame-analysis JSON, measured fields, submitted
+  recording identity, and SHA-256 binding; include the analysis in tracked
+  portable Showcase evidence.
+- Update the handoff version and keep motion classification objective while
+  leaving animation quality and creative acceptance to human review.
+- Consolidate repeated Showcase and runtime guidance so `PLAN.md` owns the
+  user-facing decisions while `SKILL.md` remains the operational contract.
+
+## 1.4.3
+
+- Make the single production-prototype path work end to end: cheap treatments
+  precede one coded prototype, a second coded comparison is conditional, and
+  the rendered production prototype requires separate user acceptance before
+  integration.
+- Add explicit `none`, `supplied`, and `scout` reference modes with enforceable
+  candidate counts, traceable source references, rights status, and source
+  resolution during browser verification.
+- Replace self-declared product identity with rendered uniqueness channels
+  bound to selectors and concrete media, style, text, class, or data values.
+- Add motion-intent and temporal-evidence compatibility checks while keeping
+  consequence, choreography, and taste explicitly outside deterministic proof.
+- Remove six duplicated semantic fields from each Showcase mechanism; section
+  role and continuity remain canonical in the Experience Map and shared-state
+  contract.
+
 ## 1.3.2
 
 - Keep 1–5 as craft ambition while binding one Peak rhythm and at least one

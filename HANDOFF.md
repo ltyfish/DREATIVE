@@ -2,7 +2,7 @@
 
 ## Current architecture
 
-Dreative 1.3 is a frontend design-builder skill. It separates observable
+Dreative 1.4 is a frontend design-builder skill. It separates observable
 product quality from unverifiable local ceremony.
 
 The default CLI command is `brief`; it prints Recommended, Efficient, and

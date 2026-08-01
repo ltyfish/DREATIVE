@@ -70,6 +70,7 @@ export function localShowcaseArtifacts(contract: {
     };
   };
   assetCommitments?: { sourceKind?: string; sourceRef?: string }[];
+  mechanisms?: { temporalEvidence?: string; motionEvidenceRef?: string }[];
 }): { files: string[]; blockers: string[] } {
   const values = [
     ...Object.values(contract.prototypeEvidence?.bestFitCaptures ?? {}),
@@ -81,6 +82,9 @@ export function localShowcaseArtifacts(contract: {
     ...(contract.assetCommitments ?? [])
       .filter((asset) => asset.sourceKind === "local-file" || asset.sourceKind === "generated-record")
       .map((asset) => asset.sourceRef ?? ""),
+    ...(contract.mechanisms ?? [])
+      .filter((mechanism) => mechanism.temporalEvidence === "frame-analysis")
+      .map((mechanism) => mechanism.motionEvidenceRef ?? ""),
   ].filter(Boolean);
   const files: string[] = [];
   const blockers: string[] = [];

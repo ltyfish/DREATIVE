@@ -39,11 +39,14 @@ artifact or a performance of following instructions.
    preference. Ask one focused question when uncertainty would materially alter
    a page's intensity, a selected treatment, the signature behavior, or scope.
    When Prototype is selected and a prototype is actually produced, it creates
-   a third blocking gate: build both promised alternatives, capture the required
-   desktop/mobile stills and recordings, show them to the user, and stop. Do not
-   integrate either approach until the user explicitly selects one. The builder
-   cannot select for the user, and a general instruction to continue is not a
-   prototype choice.
+   two focused review moments: first show two or three cheap visual treatment
+   boards and stop
+   for the user's selection; then build the selected production-like prototype,
+   capture desktop/mobile stills and recordings, show it, and stop for explicit
+   acceptance or revision before integration. Build a second coded prototype
+   only for a named unresolved material decision. The builder cannot select or
+   accept for the user, and a general instruction to continue is neither a
+   treatment choice nor prototype acceptance.
 4. After configuration, present a compact, project-specific **Experience Map**
    before editing code. Show every major page or section with Dreative's
    recommended role, craft intensity from 1–5, simple journey rhythm
@@ -61,9 +64,12 @@ artifact or a performance of following instructions.
 5. Compile the accepted map into the obligations defined by
    `schemas/experience-map.schema.json`: section role, input state, visible
    start and end states, mechanism owner, connection, desktop behavior, mobile
-   behavior, reduced-motion behavior, and evidence target. Intensity-5 rows
-   additionally name a real selector, trigger, owned properties, and meaningful
-   outcome so rendered verification can exercise the promise. Treat an all-5
+   behavior, reduced-motion behavior, and evidence target. Rows assigned
+   meaningful Influence/Control agency or an explicit transformation additionally
+   name a real selector, trigger, owned properties, and meaningful outcome so
+   rendered verification can exercise the promise. Intensity 5 may instead be
+   exceptional composition, imagery, typography, pacing, or material craft; it
+   does not itself require interaction. Treat an all-5
    map as flagship craft everywhere, not maximum energy everywhere. Exactly one
    row owns the Peak rhythm, and Showcase includes at least one Control row.
    The schema makes
@@ -161,25 +167,34 @@ lower the selected ceiling or abandon promised choreography or media, pause
 and obtain the user's consent before changing the brief.
 Before implementation, bind the difference from Recommended: state the
 Recommended baseline, at least two perceptible Showcase-only qualities, two
-product-native media opportunities with use/reject reasons, and the observed
-result of comparing **Best Fit** with a **Bold Alternative**. Both must be
-final-worthy, use the same real content, receive the same desktop/mobile
-coverage, and differ in experience or interaction model—not merely runtime,
-budget, or visual polish. Neither may be a deliberately weaker strawman.
-Both alternatives require inspectable routes or files plus desktop and mobile
-captures and short desktop/mobile motion recordings; prose written by the
-builder is not prototype evidence. Each alternative also requires a compact
-full-page continuity storyboard showing visibly ordered hero, Peak, and
-post-Peak consequence regions plus a rendered full-page capture; an isolated
-interaction prototype is not evidence of the route's complete arc.
-The recordings support human comparison;
-the prototype routes remain executable verification targets.
+product-native media opportunities with use/reject reasons, and compare two or
+three cheap concept or motion treatments. After the user selects one, build one
+production-like prototype using representative assets, pacing, framing, and
+transition quality. Build a second coded prototype only when a named unresolved
+decision could materially change the shipped experience; it must differ in
+medium, interaction model, spatial structure, or mobile behavior, not merely
+input method, runtime, budget, or polish. Each coded prototype requires an
+inspectable route or file, desktop/mobile captures and short recordings, and a
+compact full-page continuity storyboard. Prose is never prototype evidence.
 The builder may record only a `builderSelectionRationale`, which is an
 inspectable assertion and never an independent review or quality verdict.
-"It works" is not proof that either option is final-worthy.
+"It works" is not proof of production fidelity or a taste verdict.
 
 Record the executable contract using `schemas/showcase-mechanism.schema.json`.
-Prototype evidence records `selectedBy: "user"`; builder selection is invalid.
+Prototype evidence records the cheap treatments, whether a second coded
+comparison was genuinely required, and `selectedBy: "user"`; builder selection
+is invalid. Label every focal artifact `treatment-board`, `animatic`,
+`production-like`, or `integration-ready`, with visible limitations. Only
+`production-like` or `integration-ready` evidence may be integrated for
+Showcase. Stepped still replacement may be a valid animatic or deliberate
+editorial treatment, but it cannot silently stand in for promised continuous
+motion.
+Each cheap treatment is a concrete 3â€“8-frame visual sequence, not an abstract
+mechanism label. Show the product entering or receiving input, the visible
+change, and the downstream outcomeâ€”for example beans entering a roaster,
+heating, the drum opening, beans falling into the tray, and the recommendation
+emerging. These boards compare story, framing, and motion grammar cheaply; they
+do not claim production motion fidelity.
 Name the selected prototype subject and integrated subject plus the focal scale,
 copy balance, control placement, material/lighting, and desktop/mobile framing
 that caused the selection. Final smoke checks structural focal preservation; it
@@ -187,10 +202,11 @@ does not require pixel-identical screenshots or prevent intentional evolution.
 Name the shared state, its source selector, and at least three affected region
 selectors across `before`, `peak`, and `after`, with the concrete effect in each.
 Also record each real signature mechanism with its stage, selector, primary
-product subject and selector, trigger, experience role, media mode, mobile
-transformation, and meaningful outcome. Each mechanism must also state the
+product subject and selector, trigger, media mode, mobile transformation,
+motion intent, and temporal evidence class. Each mechanism states only the
 product truth it communicates, the user or system cause, the visible change,
-the resulting user decision, and what meaning would be lost if removed. Remove
+and the resulting user decision; section role and continuity remain canonical
+in the Experience Map and shared-state contract. Remove
 or redesign automatic loops whose removal changes neither understanding nor
 task outcome. Decorative or `aria-hidden` elements
 cannot be named as the primary subject.
@@ -237,6 +253,11 @@ hierarchy, material, transition logic, interaction—not a complete house style.
 Prefer two to four cross-domain sources. Never lift one source's combined type,
 palette, composition, and signature motion. Never design “X-like.” GSAP and
 Lenis are capabilities, not aesthetics.
+Record reference mode as `none`, `supplied`, or `scout`. `scout` requires at
+least two traceable candidates with real URLs/files and rights status;
+`supplied` requires the configured supplied references; an empty adoption list
+cannot satisfy either mode. Final smoke resolves local references and requests
+remote references so prose alone cannot impersonate scouting.
 Record whether each reference and asset came from explicit user requirements or
 from the design direction. A user-required item must appear visibly in the
 result, or be rejected only after the user explicitly approves that rejection.
@@ -255,14 +276,9 @@ Repeat the logic, not the same component. Each section must advance the
 experience through a new role, state, scale, or density. Without the hero, the
 remaining route must still express the concept.
 
-Choose mechanisms after the concept:
-
-- GSAP for sequencing, scrubbing, pinning, reversibility, and coordinated
-  DOM/SVG/WebGL choreography.
-- Lenis when interpolated scroll or velocity is part of the interaction.
-- Three.js/OGL/R3F when spatial behavior explains or embodies the subject.
-- Canvas/shaders for bounded procedural behavior the DOM cannot deliver.
-- Sourced/generated media when it materially strengthens art direction.
+Choose mechanisms after the concept. Use the narrowest capable runtime; route
+advanced sequencing, scroll, spatial, procedural, and media decisions through
+`references/CREATIVE_EXECUTION.md` rather than duplicating its recipes here.
 
 For Showcase, make an explicit focal-asset decision for the hero, Peak, and
 major post-Peak subject. Record whether each is supplied, sourced, generated,
@@ -273,8 +289,10 @@ evaluate external media before procedural DOM/CSS/SVG fabrication. Procedural
 fabrication is allowed only when its recorded artistic advantage is stronger
 than the external options—not because it is faster, familiar, cheaper, or
 easier. If the chosen ceiling requires an unavailable sourcing, editing, model,
-render, or sequence capability, expose the capability gap and ask for a tool,
-asset, or user-approved direction change instead of silently approximating it.
+render, or sequence capability, expose the capability gap and recommend one
+concrete available tool/plugin or asset route before asking for installation,
+a supplied asset, or a user-approved direction change. State what was actually
+available and never imply that scouting or production occurred when it did not.
 Local and generated source records must exist inside the repository and be
 tracked; remote sources must load; inline sources must resolve in the rendered
 route. `none` source/medium states and
@@ -288,20 +306,13 @@ already available, familiar, cheaper, or easier. For advanced choreography,
 rendering, state orchestration, or smooth-scroll coordination, choose the
 appropriate established runtime when it better serves the required result.
 
-Use specialist systems confidently when they create real value, but make each
-one own a meaningful state change, mobile form, fallback, and cleanup path.
-Showcase has access to every treatment but selects only those that strengthen
-the premise. Creative ambition is not measured by treatment count.
+Each specialist system owns a meaningful state change, mobile form, fallback,
+and cleanup path. Reject generic spectacle; creative ambition is not treatment
+count.
 
-Reject generic machinery: arbitrary particles, floating spheres, default
-smooth scroll, shader wallpaper, permanent cursor followers, telemetry
-overlays, endless fade-ups, and 3D that behaves like a flat image.
-
-Use external systems in four roles only: reference sources, accessible
-primitives, motion-recipe candidates, and runtime engines. For copied or
-installed code, record source, license, dependencies, bundle cost,
-accessibility status, intended section, required customization, and concept
-fit. A component or library never qualifies as the concept.
+External systems are ingredients—references, accessible primitives, motion
+recipes, or runtimes—never the concept. Record source, license, cost,
+accessibility, section, customization, and fit for copied or installed code.
 
 ## Quality floor
 
@@ -334,6 +345,13 @@ microtype, empty viewport gaps, content-covering canvases, clipped controls,
 broken sticky releases, accidental overflow, repeated/placeholder assets,
 fabricated claims, broken glyphs, and desktop merely stacked on mobile.
 Product-comparison layouts must preserve identity and predictable spacing.
+Every focal collection names at least two product-specific identity channels
+(such as media, material/packaging, data-derived color/texture, geometry, or
+label system). At least one must bind to genuinely visible media or a computed
+style difference: `src`, background image/color, border radius, or clip path.
+Text, class names, and `data-*` values are supporting identifiers only and do
+not prove visual identity. The browser verifies distinct rendered values. Placeholder
+collections remain explicitly labelled and cannot pass final Showcase classification.
 Every Showcase declares at least one comparison region with stable item
 identities, reordering policy, maximum travel and resize, real gap and alignment
 tolerances, and any selected-item prominence allowance. Prominence may change,

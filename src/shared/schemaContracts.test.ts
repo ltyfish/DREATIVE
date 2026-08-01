@@ -17,9 +17,13 @@ test("Draft 2020-12 validates a complete Showcase contract", () => {
       { opportunity: "Product image", decision: "use", rationale: "Shows the real subject." },
       { opportunity: "Process video", decision: "reject", rationale: "No truthful footage exists." },
     ],
+    referenceMode: "supplied",
+    referenceMinimum: 1,
     referenceAdoptions: [
       {
         source: "Industrial control reference",
+        sourceRef: "https://example.com/reference",
+        rights: "reference use only",
         principle: "Direct cause and effect",
         decision: "use",
         requiredBy: "direction",
@@ -34,6 +38,11 @@ test("Draft 2020-12 validates a complete Showcase contract", () => {
       { role: "Decision subject", stage: "post-peak", subjectKind: "realistic-physical", decision: "use", requiredBy: "direction", targetSelector: "#decision", medium: "image", productionSource: "generated", sourceKind: "generated-record", sourceRef: "/media/decision.json", rights: "project generation terms", treatment: "packaging composite", crop: "landscape", animationTechnique: "mask reveal", mobileFallback: "static resolved state", externalEvaluation: "generation supplies a product-specific outcome", rationale: "The result must remain visible after the peak." },
     ],
     prototypeEvidence: {
+      treatmentOptions: [
+        { name: "Direct product instrument", frames: [{ stage: "input", visual: "User selects the input" }, { stage: "change", visual: "Instrument changes state" }, { stage: "outcome", visual: "Recommendation appears" }] },
+        { name: "Spatial product journey", frames: [{ stage: "input", visual: "Product enters the scene" }, { stage: "change", visual: "Product moves through the process" }, { stage: "outcome", visual: "Resolved product appears" }] },
+      ],
+      comparisonRequired: true,
       bestFitApproach: "Direct product instrument.",
       boldAlternativeApproach: "Spatial product journey.",
       selectedApproach: "Direct product instrument.",
@@ -49,9 +58,12 @@ test("Draft 2020-12 validates a complete Showcase contract", () => {
         boldAlternative: { artifact: "/prototype/bold", capture: "bold-storyboard.png", heroSelector: "#hero", peakSelector: "#peak", postPeakSelector: "#decision" },
       },
       comparisonParity: { bothFinalWorthy: true, sharedContent: true, sharedViewportCoverage: true, distinctInteractionModels: true },
+      prototypeReview: { status: "accepted", acceptedBy: "user" },
       builderSelectionRationale: "The user selected the direct instrument.",
     },
     prototypeFidelity: {
+      level: "production-like",
+      limitations: "Representative interaction and media fidelity; human taste review remains external.",
       selectedArtifact: "/prototype/best-fit",
       prototypeSubjectSelector: "#instrument",
       integratedSubjectSelector: "#peak",
@@ -83,7 +95,7 @@ test("Draft 2020-12 validates a complete Showcase contract", () => {
       decisionOutcome: "The recommendation changes.",
     },
     comparisonLayouts: [
-      { selector: "#products", itemSelector: "[data-product]", identityAttribute: "data-product", strategy: "fixed-grid", reorderMode: "none", maxTravelViewportRatio: 0, maxItemResizeRatio: 0, gapTolerancePx: 4, alignmentTolerancePx: 4 },
+      { selector: "#products", itemSelector: "[data-product]", identityAttribute: "data-product", strategy: "fixed-grid", reorderMode: "none", maxTravelViewportRatio: 0, maxItemResizeRatio: 0, gapTolerancePx: 4, alignmentTolerancePx: 4, identityChannels: [{ channel: "product media", selector: "img", uniqueProperty: "src" }, { channel: "packaging label", selector: "$self", uniqueProperty: "text" }], assetStatus: "production" },
     ],
     mechanisms: [
       {
@@ -93,18 +105,14 @@ test("Draft 2020-12 validates a complete Showcase contract", () => {
         primarySelector: "img",
         primarySubject: "The product",
         trigger: "click",
-        experienceRole: "Transforms the product",
-        ceilingContribution: "Makes product causality tangible",
         mediaMode: "image",
-        continuityConnection: "Reads the shared choice",
         mobileTransformation: "Compact direct control",
-        recommendedDifference: "Adds a connected response",
-        meaningfulOutcome: "Changes the product decision",
         productTruth: "Configuration changes product suitability",
         userCause: "The visitor selects a configuration",
         visibleChange: "The product image changes",
         decisionConsequence: "The recommendation changes",
-        removalCost: "The relationship becomes invisible",
+        motionIntent: "state-transition",
+        temporalEvidence: "runtime-sampled",
         animationOwner: "native-js",
         ownedProperties: ["src"],
         stateCount: 3,
@@ -112,6 +120,15 @@ test("Draft 2020-12 validates a complete Showcase contract", () => {
     ],
   };
   assert.equal(validate(contract), true, JSON.stringify(validate.errors, null, 2));
+  const singlePrototype: any = structuredClone(contract);
+  singlePrototype.prototypeEvidence.comparisonRequired = false;
+  delete singlePrototype.prototypeEvidence.boldAlternativeApproach;
+  delete singlePrototype.prototypeEvidence.boldAlternativeArtifact;
+  delete singlePrototype.prototypeEvidence.boldAlternativeCaptures;
+  delete singlePrototype.prototypeEvidence.boldAlternativeRecordings;
+  delete singlePrototype.prototypeEvidence.fullPageContinuityStoryboards.boldAlternative;
+  delete singlePrototype.prototypeEvidence.comparisonParity;
+  assert.equal(validate(singlePrototype), true, JSON.stringify(validate.errors, null, 2));
 });
 
 test("Draft 2020-12 strictly compiles the Experience Map schema", () => {

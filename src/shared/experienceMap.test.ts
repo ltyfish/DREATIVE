@@ -17,9 +17,9 @@ const map: ExperienceMap = {
   primaryPeak: "roast",
   recommendations: ["Let Roast own the peak; strengthen Beans and Subscribe instead of adding competing hero motion."],
   sections: [
-    { id: "hero", title: "Hero", role: "establish origin", intensity: 3, rhythm: "build", agency: "influence", inputState: "default origin", startState: "unselected origin", endState: "selected origin", mechanismOwner: "origin selector", connection: "sends origin to Roast", desktop: "split composition", mobile: "direct tap rail", reducedMotion: "instant selected state", evidenceTarget: "desktop/mobile selected-state capture" },
+    { id: "hero", title: "Hero", role: "establish origin", intensity: 3, rhythm: "build", agency: "influence", inputState: "default origin", startState: "unselected origin", endState: "selected origin", mechanismOwner: "origin selector", connection: "sends origin to Roast", desktop: "split composition", mobile: "direct tap rail", reducedMotion: "instant selected state", evidenceTarget: "desktop/mobile selected-state capture", selector: "#hero", trigger: "click", ownedProperties: ["selected state"], meaningfulOutcome: "sets the origin" },
     { id: "roast", title: "Roast", role: "primary transformation", intensity: 5, rhythm: "peak", agency: "control", inputState: "selected green bean", startState: "green bean", endState: "roasted bean", mechanismOwner: "scroll timeline", connection: "produces Beans input", desktop: "pinned sequence", mobile: "bounded staged sequence", reducedMotion: "four-step static diagram", evidenceTarget: "entry/midpoint/release captures", selector: "#roast", trigger: "scroll", ownedProperties: ["transform", "clip-path"], meaningfulOutcome: "the selected origin becomes a roastable product" },
-    { id: "beans", title: "Beans", role: "resolve into product", intensity: 3, rhythm: "release", agency: "influence", inputState: "roasted bean", startState: "roast output", endState: "selected product", mechanismOwner: "shared layout transition", connection: "hands selection to Subscribe", desktop: "spatial product resolution", mobile: "single-card resolution", reducedMotion: "instant product state", evidenceTarget: "before/after product capture" },
+    { id: "beans", title: "Beans", role: "resolve into product", intensity: 3, rhythm: "release", agency: "influence", inputState: "roasted bean", startState: "roast output", endState: "selected product", mechanismOwner: "shared layout transition", connection: "hands selection to Subscribe", desktop: "spatial product resolution", mobile: "single-card resolution", reducedMotion: "instant product state", evidenceTarget: "before/after product capture", selector: "#beans", trigger: "click", ownedProperties: ["selected state"], meaningfulOutcome: "selects a purchasable product" },
   ],
 };
 
@@ -73,7 +73,7 @@ test("keep-static rejects high intensity and active motion mechanisms", () => {
   assert.match(errors, /mobile contradicts keep-static/);
 });
 
-test("intensity 5 rows require an executable rendered-state contract", () => {
+test("meaningful agency rows require an executable rendered-state contract", () => {
   const incompletePeak = {
     ...map,
     sections: map.sections.map((section) => section.id === "roast" ? {
@@ -85,7 +85,7 @@ test("intensity 5 rows require an executable rendered-state contract", () => {
     } : section),
   };
   const errors = validateExperienceMap(incompletePeak).join("\n");
-  assert.match(errors, /selector is required for intensity 5/);
+  assert.match(errors, /selector is required for meaningful agency/);
   assert.match(errors, /ownedProperties/);
   assert.match(errors, /meaningfulOutcome/);
 });

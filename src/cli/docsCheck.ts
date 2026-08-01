@@ -82,6 +82,9 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /desktop[\s\S]*390px[\s\S]*320px mobile[\s\S]*text[\s\S]*collisions/i, "Showcase must exercise desktop, 390px, and 320px mechanisms and sample collisions");
   requireText(findings, "SKILL.md", skill, /hero, Peak, and[\s\S]*post-Peak[\s\S]*external media[\s\S]*procedural/i, "Showcase must make external-first focal asset decisions across the route");
   requireText(findings, "SKILL.md", skill, /full-page continuity storyboard[\s\S]*hero, Peak, and[\s\S]*post-Peak/i, "Showcase prototypes must expose full-page continuity");
+  requireText(findings, "SKILL.md", skill, /production-like prototype[\s\S]*stop for explicit[\s\S]*acceptance or revision before integration/i, "the selected production prototype must have a separate user review gate");
+  requireText(findings, "SKILL.md", skill, /reference mode[\s\S]*none[\s\S]*supplied[\s\S]*scout[\s\S]*traceable/i, "Showcase reference scouting must be explicit and traceable");
+  requireText(findings, "SKILL.md", skill, /identity channels[\s\S]*visible media or a computed[\s\S]*distinct rendered values/i, "focal product identity must bind to rendered uniqueness evidence");
   requireText(findings, "SKILL.md", skill, /slow, normal, and rapid wheel[\s\S]*reverse[\s\S]*release cleanly/i, "Showcase scroll verification must cover perceptual completion and release");
   requireText(findings, "SKILL.md", skill, /VISUAL_REFINEMENT\.md/, "must route completion through the rendered screenshot correction loop");
   requireText(findings, "SKILL.md", skill, /preflight --probe-browser.*preview-url/i, "must require launch plus preview-navigation evidence before browser verification");
@@ -114,10 +117,11 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "PLAN.md", plan, /visibly and structurally distinct from Recommended/i, "Showcase must remain visibly distinct from Recommended");
   requireText(findings, "PLAN.md", plan, /Showcase implementation attempted:[\s\S]*Independent visual verdict:\s*awaiting user review[\s\S]*ask the user/i, "Showcase must reserve the visual verdict for the user");
   requireText(findings, "PLAN.md", plan, /Not pursued:/i, "Showcase must disclose material rejected or replaced treatments");
-  requireText(findings, "PLAN.md", plan, /Best Fit[\s\S]*Bold Alternative/i, "Showcase prototypes must compare final-worthy Best Fit and Bold Alternative approaches");
+  requireText(findings, "PLAN.md", plan, /cheap (?:visual|concept).+boards[\s\S]*production-like[\s\S]*second coded prototype only/i, "Showcase must select a cheap treatment before one production-like prototype and make a second coded build conditional");
   requireText(findings, "SKILL.md", skill, /DOGFOOD_LESSONS\.md[\s\S]*never promote a same-run proposal to validated/i, "dogfood changes must preserve the persistent learning protocol");
   requireText(findings, "references/DOGFOOD_LESSONS.md", contents.get("references/DOGFOOD_LESSONS.md") ?? "", /proposed[\s\S]*validated[\s\S]*rejected[\s\S]*superseded/i, "dogfood lessons must preserve explicit evidence states");
-  requireText(findings, "PLAN.md", plan, /blocking prototype review[\s\S]*selectedBy:\s*"user"/i, "selected prototypes must pause for explicit user selection");
+  requireText(findings, "PLAN.md", plan, /ask the user to\s+select one/i, "selected treatments must pause for explicit user selection");
+  requireText(findings, "PLAN.md", plan, /selectedBy[\s\S]{0,24}user/i, "prototype evidence must record user selection");
   requireText(findings, "PLAN.md", plan, /Every substantial final handoff[\s\S]*human taste verdict:\s*awaiting user review/i, "substantial design work must reserve taste acceptance for the user");
   requireText(findings, "PLAN.md", plan, /token-.+efficient|least tokens/i, "Efficient must optimize token use");
 

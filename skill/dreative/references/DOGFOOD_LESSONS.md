@@ -35,7 +35,7 @@ PLAN.md, schemas, and executable checks.
 
 ## Active lessons
 
-### DL-001 / proposed / 2026-07-28
+### DL-001 / superseded / 2026-08-01
 
 Observed failure: Bounded versus Higher Ceiling repeatedly made the lower-risk
 prototype an obvious strawman.
@@ -43,9 +43,9 @@ prototype an obvious strawman.
 Root cause: The options differed in polish and technical ceiling rather than in
 final-worthy interaction models.
 
-Change: Compare Best Fit with Bold Alternative. Require shared content,
-equivalent desktop/mobile coverage, distinct interaction models, and both
-options to be final-worthy.
+Change: Superseded by DL-007. Compare cheap treatments first, build one
+production-like prototype, and add a second coded build only for a named
+unresolved decision.
 
 Evidence: Northwind v.20.11 prototype artifacts and independent review.
 
@@ -159,3 +159,40 @@ when a stronger truthful medium exists.
 
 Recheck condition: Rerun Northwind from baseline and obtain a human verdict on
 asset fidelity, scroll readability, and six-product comparison usability.
+
+### DL-007 / proposed / 2026-08-01
+
+Observed failure: Two near-identical coded prototypes, stepped image swaps,
+placeholder product identities, and nominal eight-pixel click changes consumed
+substantial effort while passing Showcase evidence checks.
+
+Root cause: Craft intensity was coupled to executable mechanisms; prototype
+quantity substituted for fidelity; contracts lacked honest artifact labels and
+render-bound production identity requirements; reference intent was not encoded;
+state fingerprints proved events fired but were treated as evidence of
+meaningful interaction.
+
+Change: Bind mechanisms to explicit Influence/Control or transformation rather
+than intensity 5. Compare two or three cheap treatments, then build one
+production-like prototype; require a second coded prototype only for a named
+material decision. Label artifacts by fidelity, reject animatics as final
+Showcase evidence, require separate user acceptance of the rendered prototype,
+bind reference modes to traceable source counts, require cheap treatments to be
+concrete visual sequences, and require two selector/property identity channels
+with at least one computed visual difference for focal collections. Declare
+motion intent and require repository-local, recording-hash-bound analysis or
+explicit user acceptance when continuous
+subject motion is attempted with images. Treat motion/state diagnostics as
+classifiers, never taste verdicts.
+
+Evidence: Northwind v.20.13 source, recordings, rendered route, and two aligned
+independent reviews. The roast used twelve hard-swapped frames and generic
+section clicks produced an eight-pixel shift despite more ambitious prose.
+
+Cost or trade-off: Adds small fidelity and identity fields, but removes a full
+duplicate prototype and fake per-section mechanism work. Automated motion
+classification remains limited and must expose uncertainty.
+
+Recheck condition: Two later Showcase dog runs where one production-like
+prototype is accepted without total rebuild and no placeholder collection or
+nominal interaction passes finalization.

@@ -44,8 +44,8 @@
         "allOf": [
           {
             "if": {
-              "properties": { "intensity": { "const": 5 } },
-              "required": ["intensity"]
+              "properties": { "agency": { "enum": ["influence", "control"] } },
+              "required": ["agency"]
             },
             "then": {
               "properties": {
@@ -55,16 +55,6 @@
                 "meaningfulOutcome": {}
               },
               "required": ["selector", "trigger", "ownedProperties", "meaningfulOutcome"]
-            }
-          },
-          {
-            "if": {
-              "properties": { "agency": { "const": "control" } },
-              "required": ["agency"]
-            },
-            "then": {
-              "properties": { "selector": {} },
-              "required": ["selector"]
             }
           },
           {

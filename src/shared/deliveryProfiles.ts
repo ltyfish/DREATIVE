@@ -126,7 +126,7 @@ export function renderDetailedPlanGuide(profileId: DeliveryProfileId): string {
     "Visible execution map — experience arc, section ownership, post-hero peak, continuity owner, and mobile transformation in roughly ten lines.",
     "Editable Experience Map — recommended section roles, 1–5 intensity, connections, targeted suggestions, and plain-language per-section overrides.",
     "Compiled obligations — each accepted row gets input, visible start/end, mechanism owner, desktop/mobile/reduced-motion behavior, and evidence target.",
-    "Showcase ceiling — bind the Recommended baseline, two perceptible Showcase-only qualities, two product-native media opportunities, the equal-quality Best Fit versus Bold Alternative result, and why the delivered route is visibly beyond Recommended.",
+    "Showcase ceiling — bind the Recommended baseline, two perceptible Showcase-only qualities, two product-native media opportunities, two or three cheap treatments, one production-like selected prototype, any genuinely necessary second coded comparison, and why the delivered route is visibly beyond Recommended.",
     "Showcase final response — state `Showcase implementation attempted:` and `Independent visual verdict: awaiting user review`, then ask the user for that verdict; disclose materially rejected or replaced advanced treatments under `Not pursued:` with the reason.",
     "",
     "The brief must adapt every decision to the inspected project. Do not imitate a named site, emit a generic template, or require another implementation-contract approval.",

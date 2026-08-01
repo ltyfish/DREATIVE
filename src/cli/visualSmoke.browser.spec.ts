@@ -1,5 +1,9 @@
 import { test, expect } from "@playwright/test";
-import { runVisualSmoke, validateMechanisms, type ShowcaseMechanismContract } from "./visualSmoke.js";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { createHash } from "node:crypto";
+import { runVisualSmoke, validateMechanisms, validateMotionAnalysisEvidence, type ShowcaseMechanismContract } from "./visualSmoke.js";
 import type { ExperienceMap } from "../shared/experienceMap.js";
 
 const base = "http://127.0.0.1:4181";
@@ -8,7 +12,8 @@ const semanticMotion = {
   userCause: "The visitor directly changes readiness.",
   visibleChange: "The primary product subject changes state.",
   decisionConsequence: "The visitor receives a different product decision.",
-  removalCost: "Removing the mechanism would hide the causal product transition.",
+  motionIntent: "state-transition" as const,
+  temporalEvidence: "runtime-sampled" as const,
 };
 const contract: ShowcaseMechanismContract = {
   version: 2,
@@ -20,8 +25,10 @@ const contract: ShowcaseMechanismContract = {
     { opportunity: "Product photography", decision: "reject", rationale: "The fixture has no product subject." },
     { opportunity: "Custom SVG instrument", decision: "use", rationale: "It supplies the peak visual mode." },
   ],
+  referenceMode: "supplied",
+  referenceMinimum: 1,
   referenceAdoptions: [
-    { source: "fixture instrument", principle: "direct state legibility", decision: "use", requiredBy: "direction", targetSelector: "#peak", visibleImplementation: "the SVG instrument changes with readiness", rationale: "The reference principle is visible in the primary instrument." },
+    { source: "fixture instrument", sourceRef: "scripts/serve-visual-smoke-fixtures.mjs", rights: "original test fixture", principle: "direct state legibility", decision: "use", requiredBy: "direction", targetSelector: "#peak", visibleImplementation: "the SVG instrument changes with readiness", rationale: "The reference principle is visible in the primary instrument." },
   ],
   assetCommitments: [
     { role: "hero readiness subject", stage: "hero", subjectKind: "interface", decision: "reject", requiredBy: "direction", targetSelector: "#before", medium: "none", productionSource: "none", sourceKind: "none", sourceRef: "fixture has no hero media", rights: "not applicable", treatment: "semantic control only", crop: "not applicable", animationTechnique: "native state", mobileFallback: "direct tap", externalEvaluation: "external media would not clarify this fixture", rationale: "The fixture tests state rather than art direction." },
@@ -29,6 +36,11 @@ const contract: ShowcaseMechanismContract = {
     { role: "post-peak decision subject", stage: "post-peak", subjectKind: "interface", decision: "reject", requiredBy: "direction", targetSelector: "#after", medium: "none", productionSource: "none", sourceKind: "none", sourceRef: "fixture decision boxes", rights: "not applicable", treatment: "semantic layout only", crop: "not applicable", animationTechnique: "native state", mobileFallback: "stacked decision", externalEvaluation: "external media would not clarify this fixture", rationale: "The post-peak fixture is an interface state." },
   ],
   prototypeEvidence: {
+    treatmentOptions: [
+      { name: "direct controls", frames: [{ stage: "input", visual: "Readiness control at rest" }, { stage: "change", visual: "Control changes the product state" }, { stage: "outcome", visual: "Decision result appears" }] },
+      { name: "connected spatial instrument", frames: [{ stage: "input", visual: "Instrument receives readiness" }, { stage: "change", visual: "SVG geometry transforms" }, { stage: "outcome", visual: "Resolved product arrangement appears" }] },
+    ],
+    comparisonRequired: true,
     bestFitApproach: "Direct connected product controls.",
     boldAlternativeApproach: "Connected SVG and spatial state system.",
     selectedApproach: "Connected SVG and spatial state system.",
@@ -44,9 +56,12 @@ const contract: ShowcaseMechanismContract = {
       boldAlternative: { artifact: "/prototype/high-ceiling", capture: `${base}/capture/high-ceiling-desktop.svg`, heroSelector: "#story-hero", peakSelector: "#story-peak", postPeakSelector: "#story-post" },
     },
     comparisonParity: { bothFinalWorthy: true, sharedContent: true, sharedViewportCoverage: true, distinctInteractionModels: true },
+    prototypeReview: { status: "accepted", acceptedBy: "user" },
     builderSelectionRationale: "The connected system made the state transition visibly legible; this is a builder assertion, not an independent verdict.",
   },
   prototypeFidelity: {
+    level: "production-like",
+    limitations: "Fixture media is representative of the final interaction, not a taste verdict.",
     selectedArtifact: "/prototype/high-ceiling",
     prototypeSubjectSelector: "circle",
     integratedSubjectSelector: "#peak svg",
@@ -78,12 +93,12 @@ const contract: ShowcaseMechanismContract = {
     decisionOutcome: "change the final product decision",
   },
   comparisonLayouts: [
-    { selector: "#after", itemSelector: ".box", identityAttribute: "data-product", strategy: "fixed-grid", reorderMode: "controlled", maxTravelViewportRatio: .1, maxItemResizeRatio: 0, gapTolerancePx: 1, alignmentTolerancePx: 1 },
+    { selector: "#after", itemSelector: ".box", identityAttribute: "data-product", strategy: "fixed-grid", reorderMode: "controlled", maxTravelViewportRatio: .1, maxItemResizeRatio: 0, gapTolerancePx: 1, alignmentTolerancePx: 1, identityChannels: [{ channel: "product id", selector: "$self", uniqueProperty: "data-product" }, { channel: "product colour", selector: "$self", uniqueProperty: "background-color" }], assetStatus: "production" },
   ],
   mechanisms: [
-    { ...semanticMotion, name: "readiness-control", stage: "before", selector: "#before", primarySelector: ".box", primarySubject: "readiness indicator", trigger: "click", experienceRole: "opens", ceilingContribution: "introduces tactile state", mediaMode: "dom-state", continuityConnection: "shared control state", mobileTransformation: "direct tap", recommendedDifference: "begins the connected instrument", meaningfulOutcome: "reveals increasing product readiness", animationOwner: "native-js", ownedProperties: ["transform"], stateCount: 3 },
-    { ...semanticMotion, name: "instrument-peak", stage: "peak", selector: "#peak", primarySelector: "svg", primarySubject: "process instrument", trigger: "click", experienceRole: "transforms", ceilingContribution: "changes visual medium", mediaMode: "svg", continuityConnection: "shared control state", mobileTransformation: "bounded SVG", recommendedDifference: "creates the central visual transformation", meaningfulOutcome: "moves the product through three visible process stages", animationOwner: "native-js", ownedProperties: ["transform"], stateCount: 3, minimumDwellMs: 400, releaseSelector: "#after" },
-    { ...semanticMotion, name: "decision-resolution", stage: "after", selector: "#after", primarySelector: ".box:first-of-type", primarySubject: "decision layout", trigger: "click", experienceRole: "resolves", ceilingContribution: "closes the state arc", mediaMode: "spatial-layout", continuityConnection: "shared control state", mobileTransformation: "stacked resolution", recommendedDifference: "resolves the connected instrument", meaningfulOutcome: "recomposes the result into three decision states", animationOwner: "native-js", ownedProperties: ["transform"], stateCount: 3 },
+    { ...semanticMotion, name: "readiness-control", stage: "before", selector: "#before", primarySelector: ".box", primarySubject: "readiness indicator", trigger: "click", mediaMode: "dom-state", mobileTransformation: "direct tap", animationOwner: "native-js", ownedProperties: ["transform"], stateCount: 3 },
+    { ...semanticMotion, name: "instrument-peak", stage: "peak", selector: "#peak", primarySelector: "svg", primarySubject: "process instrument", trigger: "click", mediaMode: "svg", mobileTransformation: "bounded SVG", animationOwner: "native-js", ownedProperties: ["transform"], stateCount: 3, minimumDwellMs: 400, releaseSelector: "#after" },
+    { ...semanticMotion, name: "decision-resolution", stage: "after", selector: "#after", primarySelector: ".box:first-of-type", primarySubject: "decision layout", trigger: "click", mediaMode: "spatial-layout", mobileTransformation: "stacked resolution", animationOwner: "native-js", ownedProperties: ["transform"], stateCount: 3 },
   ],
 };
 
@@ -95,15 +110,47 @@ const experienceMap: ExperienceMap = {
   primaryPeak: "peak",
   recommendations: ["Keep the instrument as the peak."],
   sections: [
-    { id: "before", title: "Before", role: "orient", intensity: 3, rhythm: "build", agency: "control", inputState: "default", startState: "idle", endState: "ready", mechanismOwner: "native-js", connection: "feeds peak", desktop: "direct control", mobile: "direct tap", reducedMotion: "instant", evidenceTarget: "selected state", selector: "#before" },
+    { id: "before", title: "Before", role: "orient", intensity: 3, rhythm: "build", agency: "control", inputState: "default", startState: "idle", endState: "ready", mechanismOwner: "native-js", connection: "feeds peak", desktop: "direct control", mobile: "direct tap", reducedMotion: "instant", evidenceTarget: "selected state", selector: "#before", trigger: "click", ownedProperties: ["transform"], meaningfulOutcome: "sets readiness" },
     { id: "peak", title: "Peak", role: "transform", intensity: 5, rhythm: "peak", agency: "control", inputState: "ready", startState: "bounded", endState: "transformed", mechanismOwner: "native-js", connection: "feeds decision", desktop: "instrument", mobile: "bounded instrument", reducedMotion: "instant", evidenceTarget: "three states", selector: "#peak", trigger: "click", ownedProperties: ["transform"], meaningfulOutcome: "moves through three process states" },
-    { id: "after", title: "After", role: "resolve", intensity: 3, rhythm: "release", agency: "influence", inputState: "transformed", startState: "open", endState: "decided", mechanismOwner: "native-js", connection: "closes journey", desktop: "decision", mobile: "stacked", reducedMotion: "instant", evidenceTarget: "decision state" },
+    { id: "after", title: "After", role: "resolve", intensity: 3, rhythm: "release", agency: "influence", inputState: "transformed", startState: "open", endState: "decided", mechanismOwner: "native-js", connection: "closes journey", desktop: "decision", mobile: "stacked", reducedMotion: "instant", evidenceTarget: "decision state", selector: "#after", trigger: "click", ownedProperties: ["transform"], meaningfulOutcome: "changes the final decision" },
   ],
 };
+
+test("production identity rejects text and hidden identifiers without a visual channel", () => {
+  const dishonest = structuredClone(contract);
+  dishonest.comparisonLayouts[0].identityChannels = [
+    { channel: "name", selector: "$self", uniqueProperty: "text" },
+    { channel: "hidden id", selector: "$self", uniqueProperty: "data-product" },
+  ];
+  expect(validateMechanisms("showcase", dishonest).join("\n")).toContain("visual channels");
+});
+
+test("frame analysis is measured and hash-bound to a submitted recording", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-motion-"));
+  const recording = "evidence/roast.webm";
+  fs.mkdirSync(path.join(root, "evidence"));
+  fs.writeFileSync(path.join(root, recording), "recording bytes");
+  const analyzed = structuredClone(contract);
+  analyzed.prototypeEvidence.bestFitRecordings = { desktop: recording, mobile: recording };
+  analyzed.mechanisms[0].temporalEvidence = "frame-analysis";
+  analyzed.mechanisms[0].motionEvidenceRef = "evidence/roast-motion.json";
+  fs.writeFileSync(path.join(root, "evidence/roast-motion.json"), JSON.stringify({
+    version: 1, recording,
+    recordingSha256: createHash("sha256").update("recording bytes").digest("hex"),
+    framesSampled: 30, abruptReplacements: 11, frozenIntervals: 12,
+    wholeFrameScaling: true, continuousSubjectMotion: false,
+    method: "Thirty evenly spaced frames compared for pixel and subject change.",
+  }));
+  expect(validateMotionAnalysisEvidence(analyzed, root)).toEqual([]);
+  fs.writeFileSync(path.join(root, recording), "changed bytes");
+  expect(validateMotionAnalysisEvidence(analyzed, root).join("\n")).toContain("hash does not match");
+  fs.rmSync(root, { recursive: true, force: true });
+});
 
 test("healthy responsive fixture and three real mechanisms pass", async () => {
   const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: contract, experienceMap });
   expect(result.blockers).toEqual([]);
+  expect(result.checks.some((item) => item.includes("declared consequence") && item.includes("unverified") && item.includes("human review required"))).toBe(true);
 });
 
 test("declared media must exist in the mechanism region", async () => {
@@ -190,6 +237,18 @@ test("builder contract has no field for an independent visual verdict", () => {
   expect("independentVisualVerdict" in contract.classification).toBe(false);
 });
 
+test("single prototype acceptance and selected reference mode are enforced", () => {
+  const unreviewed = { ...contract, prototypeEvidence: { ...contract.prototypeEvidence, prototypeReview: undefined } } as unknown as ShowcaseMechanismContract;
+  expect(validateMechanisms("showcase", unreviewed).join("\n")).toContain("explicitly accepted by the user");
+  const emptyScout = { ...contract, referenceMode: "scout" as const, referenceMinimum: 2, referenceAdoptions: [] };
+  expect(validateMechanisms("showcase", emptyScout).join("\n")).toContain("at least two traceable candidates");
+});
+
+test("continuous image motion requires temporal proof or accepted limitation", () => {
+  const dishonest = { ...contract, mechanisms: contract.mechanisms.map((item, index) => index === 1 ? { ...item, mediaMode: "image" as const, motionIntent: "continuous-subject" as const, temporalEvidence: "runtime-sampled" as const } : item) };
+  expect(validateMechanisms("showcase", dishonest).join("\n")).toContain("frame-analysis evidence or explicit user-accepted limitation");
+});
+
 test("prototype fidelity and animation ownership are mandatory contract fields", () => {
   const missingFidelity = { ...contract, prototypeFidelity: undefined } as unknown as ShowcaseMechanismContract;
   expect(validateMechanisms("showcase", missingFidelity).join("\n")).toContain("prototype-to-product fidelity contract");
@@ -197,9 +256,9 @@ test("prototype fidelity and animation ownership are mandatory contract fields",
   expect(validateMechanisms("showcase", missingOwner).join("\n")).toContain("requires one animationOwner");
 });
 
-test("prototype parity, semantic motion, and agency are mandatory", () => {
+test("conditional prototype parity, semantic motion, and agency are mandatory", () => {
   const strawman = { ...contract, prototypeEvidence: { ...contract.prototypeEvidence, comparisonParity: { ...contract.prototypeEvidence.comparisonParity, bothFinalWorthy: false } } } as unknown as ShowcaseMechanismContract;
-  expect(validateMechanisms("showcase", strawman).join("\n")).toContain("both be final-worthy");
+  expect(validateMechanisms("showcase", strawman).join("\n")).toContain("genuinely distinct, equally covered second coded prototype");
   const decorative = { ...contract, mechanisms: contract.mechanisms.map((item, index) => index === 0 ? { ...item, decisionConsequence: "" } : item) };
   expect(validateMechanisms("showcase", decorative).join("\n")).toContain("semantic-motion field decisionConsequence");
   const passive = { ...contract, agencyChain: undefined } as unknown as ShowcaseMechanismContract;
