@@ -126,8 +126,6 @@ export function validateShowcaseExperienceMap(map: ExperienceMap): string[] {
   else if (peak.rhythm !== "peak") errors.push("Showcase Experience Map primary peak must use rhythm peak");
   if (!map.sections.some((section) => section.intensity === 5))
     errors.push("Showcase Experience Map requires at least one intensity-5 section");
-  if (!map.sections.some((section) => section.agency === "control"))
-    errors.push("Showcase Experience Map requires at least one section where the user has control");
   return errors;
 }
 

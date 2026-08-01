@@ -1,4 +1,5 @@
 import http from "node:http";
+import fs from "node:fs";
 
 const port = 4181;
 const shell = (body, script = "", links = "") => `<!doctype html><html><head><title>Smoke fixture</title><style>html,body{margin:0}main>section{min-height:70vh;padding:32px}.box{width:120px;height:120px;background:#f60;transition:transform .01s,opacity .01s}.product-b,.product-d,.product-f{background-color:#06c}.product-c,.product-e{background-color:#6a4}.changed .box{transform:translateX(80px);opacity:.55}</style></head><body><main>${links}${body}</main><script>${script}</script></body></html>`;
@@ -20,7 +21,8 @@ const hiddenTextContinuity = shell(`<section id="before"><button>Before</button>
 const unstableComparison = shell(`<section id="before"><button>Before</button><div class="box"></div></section><section id="peak"><button>Peak</button><svg viewBox="0 0 120 120" width="120" height="120"><rect class="box" width="120" height="120" fill="#f60"/></svg></section><section id="after" style="display:flex;align-items:flex-start"><button>After</button><div class="box product-a" data-product="a"></div><div class="box product-b" data-product="b" style="margin-left:10px"></div><div class="box product-c" data-product="c" style="margin-left:50px;margin-top:18px"></div></section>`, sharedStateScript);
 const comparisonGrid = (broken = false) => shell(`<style>.comparison-grid .box{width:100%}@media(max-width:600px){.comparison-grid{gap:8px!important}}</style><section id="before"><button>Before</button><div class="box"></div></section><section id="peak"><button>Peak</button><svg viewBox="0 0 120 120" width="120" height="120"><rect class="box" width="120" height="120" fill="#f60"/></svg></section><section id="after" class="comparison-grid" style="display:grid;grid-template-columns:repeat(3,minmax(0,120px));grid-auto-rows:120px;gap:24px"><div class="box product-a" data-product="a"></div><div class="box product-b" data-product="b"></div><div class="box product-c" data-product="c"${broken ? ` style="position:relative;left:18px;top:10px"` : ""}></div><div class="box product-d" data-product="d"></div><div class="box product-e" data-product="e"></div><div class="box product-f" data-product="f"></div></section>`, sharedStateScript);
 const prototypeBounded = shell(`<section id="story-hero"><h1>Bounded hero</h1></section><section id="story-peak"><h2>Bounded peak</h2><div class="box"></div></section><section id="story-post"><h2>Bounded consequence</h2></section>`);
-const prototypeHighCeiling = shell(`<section id="story-hero"><h1>Spatial hero</h1></section><section id="story-peak"><h2>Spatial peak</h2><svg viewBox="0 0 200 100"><circle cx="50" cy="50" r="40"/></svg></section><section id="story-post"><h2>Spatial consequence</h2></section>`);
+const prototypeHighCeiling = shell(`<section id="story-hero"><h1>Spatial hero</h1></section><section id="story-peak"><h2>Spatial peak</h2><img width="160" height="90" src="/asset/instrument.jpeg" data-dreative-asset-ref="skill/dreative/systems/browser.spec.ts-snapshots/native-foundations-header-win32.jpeg" alt="Test production asset"><svg viewBox="0 0 200 100"><circle cx="50" cy="50" r="40"/></svg></section><section id="story-post"><h2>Spatial consequence</h2></section>`);
+const prototypeWrongAsset = shell(`<section id="story-hero"><h1>Spatial hero</h1></section><section id="story-peak"><h2>Spatial peak</h2><img width="160" height="90" src="/capture/high-ceiling-desktop.svg" data-dreative-asset-ref="skill/dreative/systems/browser.spec.ts-snapshots/native-foundations-header-win32.jpeg" alt="Wrong loaded asset"><svg viewBox="0 0 200 100"><circle cx="50" cy="50" r="40"/></svg></section><section id="story-post"><h2>Spatial consequence</h2></section>`);
 const pages = {
   "/": healthy,
   "/about": shell(`<section><h1>About this fixture</h1><p>This is a distinct route.</p></section>`),
@@ -47,11 +49,16 @@ const pages = {
   "/broken-comparison-grid": comparisonGrid(true),
   "/prototype/bounded": prototypeBounded,
   "/prototype/high-ceiling": prototypeHighCeiling,
+  "/prototype/wrong-asset": prototypeWrongAsset,
   "/console": shell(`<section><h1>Runtime failure</h1></section>`, `console.error('fixture exploded')`),
   "/asset": shell(`<section><h1>Missing asset</h1><img src="/missing.png" alt="missing"></section>`),
   "/reduced-overflow": `<!doctype html><html><head><title>Smoke fixture</title><style>main{min-height:100vh}@media(prefers-reduced-motion:reduce){.wide{width:700px}}</style></head><body><main><h1>Reduced motion</h1><div class="wide">fallback</div></main></body></html>`,
 };
 http.createServer((request, response) => {
+  if (request.url === "/asset/instrument.jpeg") {
+    const bytes = fs.readFileSync(new URL("../skill/dreative/systems/browser.spec.ts-snapshots/native-foundations-header-win32.jpeg", import.meta.url));
+    response.writeHead(200, { "content-type": "image/jpeg" }); response.end(bytes); return;
+  }
   if (request.url?.startsWith("/recording/")) {
     const marker = request.url.includes("high-ceiling") ? 2 : 1;
     const device = request.url.includes("mobile") ? 4 : 3;

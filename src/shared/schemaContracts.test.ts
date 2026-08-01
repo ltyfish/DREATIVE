@@ -37,6 +37,11 @@ test("Draft 2020-12 validates a complete Showcase contract", () => {
       { role: "Product subject", stage: "peak", subjectKind: "realistic-physical", decision: "use", requiredBy: "user", targetSelector: "#peak", medium: "3d", productionSource: "licensed-3d", sourceKind: "local-file", sourceRef: "/models/product.glb", rights: "licensed for web use", treatment: "studio material and light pass", crop: "full object", animationTechnique: "direct manipulation", mobileFallback: "pre-rendered turntable", externalEvaluation: "licensed model exceeds procedural fidelity", rationale: "The peak needs a truthful physical subject." },
       { role: "Decision subject", stage: "post-peak", subjectKind: "realistic-physical", decision: "use", requiredBy: "direction", targetSelector: "#decision", medium: "image", productionSource: "generated", sourceKind: "generated-record", sourceRef: "/media/decision.json", rights: "project generation terms", treatment: "packaging composite", crop: "landscape", animationTechnique: "mask reveal", mobileFallback: "static resolved state", externalEvaluation: "generation supplies a product-specific outcome", rationale: "The result must remain visible after the peak." },
     ],
+    productionFeasibility: {
+      gateStatus: "ready",
+      prototypeAssetRefs: ["media/hero-desktop.webp", "media/hero-mobile.webp"],
+      focalSubjects: [{ stage: "hero", subject: "Hero product", treatmentDefining: true, requiredMedium: "image", outputKind: "native", responsiveMode: "distinct", exactToolOrSource: "supplied studio source", editingWork: ["grade and responsive crop"], desktopDeliverable: "media/hero-desktop.webp", mobileDeliverable: "media/hero-mobile.webp", rights: "supplied by user", cost: "free", readiness: "ready", outputFiles: ["media/hero-desktop.webp", "media/hero-mobile.webp"], prototypeBindings: [{ viewport: "desktop", selector: "#hero img", assetRef: "media/hero-desktop.webp" }, { viewport: "mobile", selector: "#hero img", assetRef: "media/hero-mobile.webp" }] }],
+    },
     prototypeEvidence: {
       treatmentOptions: [
         { name: "Direct product instrument", frames: [{ stage: "input", visual: "User selects the input" }, { stage: "change", visual: "Instrument changes state" }, { stage: "outcome", visual: "Recommendation appears" }] },
@@ -94,6 +99,7 @@ test("Draft 2020-12 validates a complete Showcase contract", () => {
       immediateResponse: "The product changes.",
       decisionOutcome: "The recommendation changes.",
     },
+    comparisonPolicy: { present: true, rationale: "Products are compared in a stable grid.", sectionSelector: "#products" },
     comparisonLayouts: [
       { selector: "#products", itemSelector: "[data-product]", identityAttribute: "data-product", strategy: "fixed-grid", reorderMode: "none", maxTravelViewportRatio: 0, maxItemResizeRatio: 0, gapTolerancePx: 4, alignmentTolerancePx: 4, identityChannels: [{ channel: "product media", selector: "img", uniqueProperty: "src" }, { channel: "packaging label", selector: "$self", uniqueProperty: "text" }], assetStatus: "production" },
     ],

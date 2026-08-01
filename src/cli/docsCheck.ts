@@ -75,9 +75,9 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /encoding|mojibake|broken glyphs/i, "must check visible text integrity");
   requireText(findings, "SKILL.md", skill, /DREATIVE_CHECKS_PASSED/, "must retain fail-closed deterministic checks");
   requireText(findings, "SKILL.md", skill, /visual smoke is mandatory for every/i, "must make visual smoke mandatory for substantial delivery");
-  requireText(findings, "SKILL.md", skill, /shared state[\s\S]*source selector[\s\S]*affected region/i, "must require a connected Showcase state-continuity contract");
+  requireText(findings, "SKILL.md", skill, /shared-state continuity[\s\S]*authored-sequence continuity[\s\S]*before\/peak\/after/i, "must support state or authored-sequence Showcase continuity");
   requireText(findings, "SKILL.md", skill, /Recommended baseline[\s\S]*two perceptible[\s\S]*media opportunities/i, "Showcase must bind its delta and product-native media decision");
-  requireText(findings, "SKILL.md", skill, /journey[\s\S]*scroll-authored[\s\S]*Smooth scrolling alone does not qualify/i, "journey-style Showcase must require substantive scroll choreography");
+  requireText(findings, "SKILL.md", skill, /journey[\s\S]*scroll-authored choreography only when[\s\S]*Smooth scrolling[\s\S]*does not qualify/i, "journey-style Showcase must use scroll choreography only when the treatment requires it");
   requireText(findings, "SKILL.md", skill, /text, opacity, color, filter, or uniform scale[\s\S]*rejected/i, "Showcase must reject low-salience scroll-only state changes");
   requireText(findings, "SKILL.md", skill, /desktop[\s\S]*390px[\s\S]*320px mobile[\s\S]*text[\s\S]*collisions/i, "Showcase must exercise desktop, 390px, and 320px mechanisms and sample collisions");
   requireText(findings, "SKILL.md", skill, /hero, Peak, and[\s\S]*post-Peak[\s\S]*external media[\s\S]*procedural/i, "Showcase must make external-first focal asset decisions across the route");
@@ -118,6 +118,12 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "PLAN.md", plan, /Showcase implementation attempted:[\s\S]*Independent visual verdict:\s*awaiting user review[\s\S]*ask the user/i, "Showcase must reserve the visual verdict for the user");
   requireText(findings, "PLAN.md", plan, /Not pursued:/i, "Showcase must disclose material rejected or replaced treatments");
   requireText(findings, "PLAN.md", plan, /cheap (?:visual|concept).+boards[\s\S]*production-like[\s\S]*second coded prototype only/i, "Showcase must select a cheap treatment before one production-like prototype and make a second coded build conditional");
+  requireText(findings, "PLAN.md", plan, /production-feasibility table[\s\S]*exact available source\/tool[\s\S]*stop before focal application code/i, "Showcase must prove focal-media feasibility before application implementation");
+  requireText(findings, "PLAN.md", plan, /treatment-defining subjects must be `ready`[\s\S]*exist, be tracked[\s\S]*accepted prototype/i, "Showcase production assets must be ready, tracked, and prototype-referenced");
+  requireText(findings, "PLAN.md", plan, /signatures and[\s\S]*extensions must match[\s\S]*responsiveMode: shared[\s\S]*data-dreative-asset-ref[\s\S]*hashes the resource actually loaded/i, "Showcase outputs must match their medium and loaded resource in the accepted prototype");
+  requireText(findings, "SKILL.md", skill, /visible motif carrier[\s\S]*stable identity[\s\S]*media reference[\s\S]*observable channel/i, "authored continuity must bind observable motif carriers");
+  requireText(findings, "SKILL.md", skill, /Triggers may be scroll[\s\S]*time[\s\S]*media playback[\s\S]*route transition/i, "cinematic mechanisms must support honest non-interactive triggers");
+  requireText(findings, "SKILL.md", skill, /declares whether a comparison region is present[\s\S]*correspond to the Experience Map/i, "comparison verification must be explicitly conditional");
   requireText(findings, "SKILL.md", skill, /DOGFOOD_LESSONS\.md[\s\S]*never promote a same-run proposal to validated/i, "dogfood changes must preserve the persistent learning protocol");
   requireText(findings, "references/DOGFOOD_LESSONS.md", contents.get("references/DOGFOOD_LESSONS.md") ?? "", /proposed[\s\S]*validated[\s\S]*rejected[\s\S]*superseded/i, "dogfood lessons must preserve explicit evidence states");
   requireText(findings, "PLAN.md", plan, /ask the user to\s+select one/i, "selected treatments must pause for explicit user selection");

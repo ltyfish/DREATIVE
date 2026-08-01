@@ -270,13 +270,38 @@ Start from the accepted Experience Map. Preserve every row's role and intensity
 intent while privately adding executable states, owners, handoffs, responsive
 forms, fallbacks, and evidence targets. Do not force a generic architecture.
 
-For Showcase, write `schemas/showcase-mechanism.schema.json` using the
+For Showcase, first write a compact production-feasibility table for every
+focal subject: required medium, exact available source/tool, editing required,
+responsive deliverable, rights/cost, and readiness (`executable now`, `needs a
+tool`, `paid/licensed`, or `external production`). Read
+`references/ASSET_PIPELINES.md`. If a treatment-defining subject cannot be
+produced at the selected fidelity, stop before focal application code and ask
+for the exact missing capability or an explicit treatment change. Final focal
+assets, responsive crops, masks, and sequences come before the production-like
+signature-scene prototype; CSS/SVG stand-ins are not temporary substitutes for
+photoreal subjects. The executable production-feasibility gate records every
+treatment-defining subject, exact tool/source, editing operations, desktop and
+mobile deliverables, rights/cost, readiness, and repository-relative output
+files. All treatment-defining subjects must be `ready`; their outputs must
+exist, be tracked, and be referenced by the accepted prototype. `needs-tool`,
+`paid-licensed`, or `external-production` blocks focal implementation until
+resolved or the user explicitly changes the treatment. Output signatures and
+extensions must match the declared medium. Desktop and mobile use distinct
+files unless `responsiveMode: shared` explicitly names one responsive asset.
+Each viewport binds its repository-relative output to a visible selector in the
+accepted prototype through `data-dreative-asset-ref`; browser verification runs
+at desktop, 390px, and 320px, checks the corresponding viewport deliverable,
+and hashes the resource actually loaded by source-addressable media against the
+declared output file. The data attribute is an index, not proof by itself.
+
+Then write `schemas/showcase-mechanism.schema.json` using the
 operational rules in `SKILL.md`: bind the Recommended baseline, perceptible
 Showcase differences, media decisions, two or three concrete 3–8-frame
 treatment boards, and one user-selected production-like prototype. Build a
 second coded prototype only for a named material uncertainty. The connected
-experience system must carry one state through non-adjacent pre-peak, central
-peak, and post-peak regions, including a real `Control` consequence. Reference
+experience system must carry either meaningful shared state or one authored
+physical/cinematic/material motif through pre-peak, central peak, and post-peak
+regions. User Control is required only when it improves the product decision. Reference
 the executable routes, captures, recordings, primary subjects, and temporal
 evidence required by the schema. These are accountability inputs, not proof of
 visual quality; `builderSelectionRationale` is never a reviewer verdict.

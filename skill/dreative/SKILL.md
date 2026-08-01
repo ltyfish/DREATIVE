@@ -82,7 +82,8 @@ artifact or a performance of following instructions.
    exceptional composition, imagery, typography, pacing, or material craft; it
    does not itself require interaction. Treat an all-5
    map as flagship craft everywhere, not maximum energy everywhere. Exactly one
-   row owns the Peak rhythm, and Showcase includes at least one Control row.
+   row owns the Peak rhythm. Showcase does not require a Control row when
+   cinematic, physical, editorial, or material continuity better serves the premise.
    The schema makes
    promises traceable; it is not an approval artifact and does not prove taste.
    Let architecture fit the promised complexity; do not impose a generic scene
@@ -170,10 +171,13 @@ any materially considered or promised advanced treatment that was rejected,
 downgraded, or replaced, with the product or prototype reason. Do not list
 irrelevant technologies merely to prove they were omitted.
 
-Showcase must implement one connected experience system. At least one meaningful
-choice or transformation must propagate through three non-adjacent regions
-spanning before the central peak, the peak, and after it. Independent widgets
-arranged in sequence do not establish continuity. If a required prototype would
+Showcase must implement one connected experience system. Continuity may be a
+meaningful shared state, or an authored physical/cinematic/material sequence
+spanning before the central peak, the peak, and after it. A travelling object,
+match cut, evolving camera, process curve, film frame, or material
+transformation can carry the experience without inventing a user-controlled
+variable. Independent widgets arranged in sequence do not establish continuity.
+If a required prototype would
 lower the selected ceiling or abandon promised choreography or media, pause
 and obtain the user's consent before changing the brief.
 Before implementation, bind the difference from Recommended: state the
@@ -216,8 +220,11 @@ Name the selected prototype subject and integrated subject plus the focal scale,
 copy balance, control placement, material/lighting, and desktop/mobile framing
 that caused the selection. Final smoke checks structural focal preservation; it
 does not require pixel-identical screenshots or prevent intentional evolution.
-Name the shared state, its source selector, and at least three affected region
-selectors across `before`, `peak`, and `after`, with the concrete effect in each.
+For shared-state continuity, name the state, source selector, and affected
+regions. For authored-sequence continuity, name the motif and its visible
+before/peak/after handoffs. Each authored region binds a visible motif carrier,
+stable identity, visible state, incoming/outgoing handoff, real media reference,
+and observable channel. Do not add a selector merely to satisfy the contract.
 Also record each real signature mechanism with its stage, selector, primary
 product subject and selector, trigger, media mode, mobile transformation,
 motion intent, and temporal evidence class. Each mechanism states only the
@@ -232,9 +239,15 @@ Browser checks can prove that material states change; human review still decides
 whether the change is meaningful, coherent, or tasteful.
 The mechanism list is evidence routing, not a required widget count. Hover is a
 supporting state: it cannot own the peak or post-peak mechanism in a journey.
-When the premise is a journey, process, or transformation,
-declare it as `journey` and include a substantial scroll-authored mechanism.
-Smooth scrolling alone does not qualify. Bucketed text/class replacement alone
+Triggers may be scroll, click, hover, drag, time, media playback, page load,
+route transition, or none for a static authored handoff. Time and media triggers
+must expose sampled progression; load, route, and none declare one resolved
+observable state rather than inventing interaction.
+When the premise is a journey, process, or transformation, declare it as
+`journey`. Use scroll-authored choreography only when the selected treatment
+depends on scroll controlling time or space; a cinematic sequence, direct
+manipulation, or authored edit may own the journey instead. Smooth scrolling
+alone does not qualify. Bucketed text/class replacement alone
 is not a flagship transformation. A scroll mechanism whose sampled differences
 are fully explained by text, opacity, color, filter, or uniform scale is
 rejected. Interface-style products may declare
@@ -369,7 +382,8 @@ style difference: `src`, background image/color, border radius, or clip path.
 Text, class names, and `data-*` values are supporting identifiers only and do
 not prove visual identity. The browser verifies distinct rendered values. Placeholder
 collections remain explicitly labelled and cannot pass final Showcase classification.
-Every Showcase declares at least one comparison region with stable item
+Every Showcase declares whether a comparison region is present and why. When
+present, it must correspond to the Experience Map and declare stable item
 identities, reordering policy, maximum travel and resize, real gap and alignment
 tolerances, and any selected-item prominence allowance. Prominence may change,
 but wholesale reshuffling that
@@ -402,6 +416,7 @@ rendered interface. `DREATIVE_CHECKS_PASSED` certifies commands only, not taste.
 - Dreative dogfood or workflow change: `references/DOGFOOD_LESSONS.md` and `skills/learning.md`
 - Named adoption list or library/reference comparison: `references/REFERENCE_ADOPTION.md`
 - Advanced runtime: `references/CREATIVE_EXECUTION.md`
+- Focal media feasibility and offline production: `references/ASSET_PIPELINES.md`
 - Relevant craft only: `skills/<name>.md`
 - Rendered correction loop: `references/VISUAL_REFINEMENT.md`
 - Selected treatment board: `references/TREATMENT_TRANSLATION.md`

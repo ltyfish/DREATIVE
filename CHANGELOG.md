@@ -1,5 +1,49 @@
 # Changelog
 
+## 1.5.3
+
+- Exercise accepted-prototype production bindings in desktop, 390px, and 320px
+  browser contexts.
+- Require desktop and mobile bindings to name their corresponding deliverables.
+- Hash the resource actually loaded by image, video, rendered-sequence, and
+  source-addressable 3D bindings and compare it with the declared output file.
+- Add regressions for dishonest `data-dreative-asset-ref` values and broken
+  mobile-only selectors.
+
+## 1.5.2
+
+- Reject tracked-but-unrelated production outputs by validating file signatures
+  and extensions against image, video, SVG, native 3D, or rendered-sequence media.
+- Require explicit shared or distinct responsive-output policy.
+- Bind every treatment-defining desktop/mobile output to a visible accepted-
+  prototype selector using `data-dreative-asset-ref`, and verify the rendered
+  medium and exact repository-relative asset reference in the browser.
+
+## 1.5.1
+
+- Make Showcase production feasibility executable: treatment-defining focal
+  subjects must be ready with tracked desktop/mobile outputs referenced by the
+  accepted prototype.
+- Bind authored continuity to visible motif carriers, stable identity, visible
+  states, handoffs, media references, and observable channels across separated
+  before/Peak/after regions.
+- Add honest `time`, `media`, `load`, `route`, and `none` mechanism triggers.
+- Replace optional comparison evidence with an explicit presence policy tied to
+  the Experience Map and full layout verification when present.
+- Align the public TypeScript contract with optional Showcase agency.
+
+## 1.5.0
+
+- Add authored physical, cinematic, and material continuity as a first-class
+  Showcase alternative to shared UI state.
+- Remove mandatory user Control and mandatory scroll choreography from
+  Showcase; both are now used only when they improve the selected treatment.
+- Make comparison-layout contracts conditional on an actual comparison region.
+- Add an asset-first production-feasibility gate before focal application code,
+  including exact tool/source, editing, rights, responsive output, and readiness.
+- Keep runtime verification strict for declared signature mechanisms and retain
+  anti-slop checks for missing, procedural-substitute, repeated, or weak media.
+
 ## 1.4.4
 
 - Make cheap Showcase treatments concrete 3-8-frame visual boards with an

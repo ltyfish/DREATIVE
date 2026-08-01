@@ -15,7 +15,7 @@ const semanticMotion = {
   motionIntent: "state-transition" as const,
   temporalEvidence: "runtime-sampled" as const,
 };
-const contract: ShowcaseMechanismContract = {
+const contract: ShowcaseMechanismContract & { agencyChain: NonNullable<ShowcaseMechanismContract["agencyChain"]> } = {
   version: 2,
   experienceType: "interface",
   classification: { implementation: "attempted" },
@@ -35,6 +35,11 @@ const contract: ShowcaseMechanismContract = {
     { role: "primary process instrument", stage: "peak", subjectKind: "graphic", decision: "use", requiredBy: "direction", targetSelector: "#peak", medium: "svg", productionSource: "procedural", sourceKind: "inline", sourceRef: "#peak svg", rights: "original fixture code", treatment: "direct state instrument", crop: "complete viewBox", animationTechnique: "native state changes", mobileFallback: "bounded SVG", externalEvaluation: "photography and 3D add no meaning to the abstract fixture", rationale: "The SVG is the semantic product subject." },
     { role: "post-peak decision subject", stage: "post-peak", subjectKind: "interface", decision: "reject", requiredBy: "direction", targetSelector: "#after", medium: "none", productionSource: "none", sourceKind: "none", sourceRef: "fixture decision boxes", rights: "not applicable", treatment: "semantic layout only", crop: "not applicable", animationTechnique: "native state", mobileFallback: "stacked decision", externalEvaluation: "external media would not clarify this fixture", rationale: "The post-peak fixture is an interface state." },
   ],
+  productionFeasibility: {
+    gateStatus: "ready",
+    prototypeAssetRefs: ["skill/dreative/systems/browser.spec.ts-snapshots/native-foundations-header-win32.jpeg"],
+    focalSubjects: [{ stage: "peak", subject: "test fixture production image", treatmentDefining: true, requiredMedium: "image", outputKind: "native", responsiveMode: "shared", exactToolOrSource: "skill/dreative/systems/browser.spec.ts-snapshots/native-foundations-header-win32.jpeg", editingWork: ["capture the rendered foundation"], desktopDeliverable: "skill/dreative/systems/browser.spec.ts-snapshots/native-foundations-header-win32.jpeg", mobileDeliverable: "skill/dreative/systems/browser.spec.ts-snapshots/native-foundations-header-win32.jpeg", rights: "original test fixture", cost: "free", readiness: "ready", outputFiles: ["skill/dreative/systems/browser.spec.ts-snapshots/native-foundations-header-win32.jpeg"], prototypeBindings: [{ viewport: "desktop", selector: "#story-peak img", assetRef: "skill/dreative/systems/browser.spec.ts-snapshots/native-foundations-header-win32.jpeg" }, { viewport: "mobile", selector: "#story-peak img", assetRef: "skill/dreative/systems/browser.spec.ts-snapshots/native-foundations-header-win32.jpeg" }] }],
+  },
   prototypeEvidence: {
     treatmentOptions: [
       { name: "direct controls", frames: [{ stage: "input", visual: "Readiness control at rest" }, { stage: "change", visual: "Control changes the product state" }, { stage: "outcome", visual: "Decision result appears" }] },
@@ -92,6 +97,7 @@ const contract: ShowcaseMechanismContract = {
     immediateResponse: "transform the process instrument",
     decisionOutcome: "change the final product decision",
   },
+  comparisonPolicy: { present: true, rationale: "The after region compares stable product states.", sectionSelector: "#after" },
   comparisonLayouts: [
     { selector: "#after", itemSelector: ".box", identityAttribute: "data-product", strategy: "fixed-grid", reorderMode: "controlled", maxTravelViewportRatio: .1, maxItemResizeRatio: 0, gapTolerancePx: 1, alignmentTolerancePx: 1, identityChannels: [{ channel: "product id", selector: "$self", uniqueProperty: "data-product" }, { channel: "product colour", selector: "$self", uniqueProperty: "background-color" }], assetStatus: "production" },
   ],
@@ -229,7 +235,7 @@ test("text collisions are detected during viewport sampling", async () => {
 
 test("connected-experience contract is structural and mandatory for Showcase", () => {
   expect(validateMechanisms("showcase", contract)).toEqual([]);
-  expect(validateMechanisms("showcase", { ...contract, continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.slice(0, 2) } })).toContain("Showcase requires one meaningful state to affect at least three non-adjacent regions");
+  expect(validateMechanisms("showcase", { ...contract, continuity: { ...contract.continuity, affectedRegions: contract.continuity.affectedRegions.slice(0, 2) } }).join("\n")).toContain("shared state or an authored motif across at least three non-adjacent regions");
   expect(validateMechanisms("recommended")).toEqual([]);
 });
 
@@ -256,13 +262,72 @@ test("prototype fidelity and animation ownership are mandatory contract fields",
   expect(validateMechanisms("showcase", missingOwner).join("\n")).toContain("requires one animationOwner");
 });
 
-test("conditional prototype parity, semantic motion, and agency are mandatory", () => {
+test("conditional prototype parity and semantic motion are mandatory while agency is optional", () => {
   const strawman = { ...contract, prototypeEvidence: { ...contract.prototypeEvidence, comparisonParity: { ...contract.prototypeEvidence.comparisonParity, bothFinalWorthy: false } } } as unknown as ShowcaseMechanismContract;
   expect(validateMechanisms("showcase", strawman).join("\n")).toContain("genuinely distinct, equally covered second coded prototype");
   const decorative = { ...contract, mechanisms: contract.mechanisms.map((item, index) => index === 0 ? { ...item, decisionConsequence: "" } : item) };
   expect(validateMechanisms("showcase", decorative).join("\n")).toContain("semantic-motion field decisionConsequence");
   const passive = { ...contract, agencyChain: undefined } as unknown as ShowcaseMechanismContract;
-  expect(validateMechanisms("showcase", passive).join("\n")).toContain("downstream-decision agency chain");
+  expect(validateMechanisms("showcase", passive)).toEqual([]);
+});
+
+test("production feasibility blocks unresolved or unreferenced focal outputs", () => {
+  const blocked = { ...contract, productionFeasibility: { ...contract.productionFeasibility, gateStatus: "blocked" as const, focalSubjects: contract.productionFeasibility.focalSubjects.map((subject) => ({ ...subject, readiness: "needs-tool" as const })) } };
+  expect(validateMechanisms("showcase", blocked).join("\n")).toContain("production feasibility gate must be ready");
+  expect(validateMechanisms("showcase", blocked).join("\n")).toContain("must be ready with bound desktop and mobile outputs");
+  const unreferenced = { ...contract, productionFeasibility: { ...contract.productionFeasibility, prototypeAssetRefs: [] } };
+  expect(validateMechanisms("showcase", unreferenced).join("\n")).toContain("accepted-prototype asset references");
+});
+
+test("production output rejects unrelated tracked files and missing prototype bindings", async () => {
+  const fake = { ...contract, productionFeasibility: { gateStatus: "ready" as const, prototypeAssetRefs: ["package.json"], focalSubjects: [{ ...contract.productionFeasibility.focalSubjects[0], requiredMedium: "svg" as const, exactToolOrSource: "package.json", desktopDeliverable: "package.json", mobileDeliverable: "package.json", outputFiles: ["package.json"], prototypeBindings: [{ viewport: "desktop" as const, selector: "#story-peak img", assetRef: "package.json" }, { viewport: "mobile" as const, selector: "#story-peak img", assetRef: "package.json" }] }] } };
+  const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: fake });
+  expect(result.blockers.join("\n")).toContain("does not match required medium svg");
+  const wrongBinding = { ...contract, productionFeasibility: { ...contract.productionFeasibility, focalSubjects: contract.productionFeasibility.focalSubjects.map((subject) => ({ ...subject, prototypeBindings: subject.prototypeBindings.map((binding) => ({ ...binding, assetRef: "tests/fixtures/missing.svg" })) })) } };
+  expect(validateMechanisms("showcase", wrongBinding).join("\n")).toContain("must be ready with bound desktop and mobile outputs");
+  const unboundPrototype = { ...contract, prototypeFidelity: { ...contract.prototypeFidelity, selectedArtifact: "/prototype/bounded" } };
+  const bindingResult = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: unboundPrototype });
+  expect(bindingResult.blockers.join("\n")).toContain("prototype binding #story-peak img must resolve exactly once");
+});
+
+test("prototype binding rejects a truthful asset ref paired with the wrong loaded source", async () => {
+  const dishonest = { ...contract, prototypeFidelity: { ...contract.prototypeFidelity, selectedArtifact: "/prototype/wrong-asset" } };
+  const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: dishonest });
+  expect(result.blockers.join("\n")).toContain("loaded media does not match declared asset");
+});
+
+test("prototype binding is exercised in mobile contexts", async () => {
+  const brokenMobile = {
+    ...contract,
+    productionFeasibility: {
+      ...contract.productionFeasibility,
+      focalSubjects: contract.productionFeasibility.focalSubjects.map((subject) => ({
+        ...subject,
+        prototypeBindings: subject.prototypeBindings.map((binding) => binding.viewport === "mobile" ? { ...binding, selector: "#story-peak .missing-mobile-asset" } : binding),
+      })),
+    },
+  };
+  const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: brokenMobile });
+  expect(result.blockers.join("\n")).toContain("prototype binding #story-peak .missing-mobile-asset must resolve exactly once");
+});
+
+test("authored continuity requires concrete visible carriers", () => {
+  const weak = { ...contract, continuity: { mode: "authored-sequence" as const, motif: "generic process", affectedRegions: contract.continuity.affectedRegions }, agencyChain: undefined } as unknown as ShowcaseMechanismContract;
+  expect(validateMechanisms("showcase", weak).join("\n")).toContain("requires motifSelector, identity, visibleState, handoffs, mediaRef, and observableChannel");
+});
+
+test("cinematic triggers are valid without invented click or scroll input", () => {
+  const timed = { ...contract, mechanisms: contract.mechanisms.map((item, index) => index === 0 ? { ...item, trigger: "time" as const } : item) };
+  expect(validateMechanisms("showcase", timed)).toEqual([]);
+  const resolved = { ...contract, mechanisms: contract.mechanisms.map((item, index) => index === 0 ? { ...item, trigger: "load" as const, stateCount: 1 } : item) };
+  expect(validateMechanisms("showcase", resolved)).toEqual([]);
+});
+
+test("comparison presence cannot bypass its layout contract", () => {
+  const omitted = { ...contract, comparisonLayouts: [] };
+  expect(validateMechanisms("showcase", omitted).join("\n")).toContain("present comparison region requires");
+  const absent = { ...contract, comparisonPolicy: { present: false, rationale: "No comparison exists." }, comparisonLayouts: contract.comparisonLayouts };
+  expect(validateMechanisms("showcase", absent).join("\n")).toContain("must be empty");
 });
 
 test("Showcase requires external-first focal coverage and full-page prototype continuity", () => {
@@ -282,7 +347,7 @@ test("Showcase requires external-first focal coverage and full-page prototype co
 test("comparison layouts require stable identity and bounded movement declarations", () => {
   const invalid = { ...contract, comparisonLayouts: [{ selector: "#after", itemSelector: ".box", identityAttribute: "class", strategy: "fixed-grid", reorderMode: "none", maxTravelViewportRatio: 2, maxItemResizeRatio: 3, gapTolerancePx: 60, alignmentTolerancePx: 60 }] } as unknown as ShowcaseMechanismContract;
   expect(validateMechanisms("showcase", invalid).join("\n")).toContain("stable identity");
-  expect(validateMechanisms("showcase", { ...contract, comparisonLayouts: [] }).join("\n")).toContain("at least one declared comparison layout");
+  expect(validateMechanisms("showcase", { ...contract, comparisonPolicy: { present: false, rationale: "No comparison region is present." }, comparisonLayouts: [] })).toEqual([]);
 });
 
 test("asset provenance fields must agree with the observable medium", () => {
@@ -346,8 +411,18 @@ test("Showcase rejects a Recommended map and unbound intensity-5 peak", async ()
   expect(binding.blockers.join("\n")).toContain("is not bound to a verified Showcase mechanism");
 });
 
-test("a journey requires scroll-authored choreography", () => {
-  expect(validateMechanisms("showcase", { ...contract, experienceType: "journey" })).toContain("A Showcase journey requires at least one substantial scroll-authored mechanism");
+test("a journey permits cinematic choreography without mandatory scroll", () => {
+  expect(validateMechanisms("showcase", { ...contract, experienceType: "journey" })).toEqual([]);
+  const authoredRegions = contract.continuity.affectedRegions.map((region) => ({ ...region, motifSelector: region.stage === "peak" ? "svg" : ".box:first-of-type", identity: "readiness material", visibleState: `${region.stage} state`, incomingHandoff: `${region.stage} receives the material`, outgoingHandoff: `${region.stage} passes the material onward`, mediaRef: "fixture-state", observableChannel: region.stage === "peak" ? "svg" as const : "dom-state" as const }));
+  const authored = { ...contract, experienceType: "journey" as const, continuity: { mode: "authored-sequence" as const, motif: "readiness material travels through the instrument", affectedRegions: authoredRegions }, agencyChain: undefined } as unknown as ShowcaseMechanismContract;
+  expect(validateMechanisms("showcase", authored)).toEqual([]);
+});
+
+test("authored continuity verifies visible motif carriers in separated regions", async () => {
+  const authoredRegions = contract.continuity.affectedRegions.map((region) => ({ ...region, motifSelector: region.stage === "peak" ? "svg" : ".box:first-of-type", identity: "readiness material", visibleState: `${region.stage} state`, incomingHandoff: `${region.stage} receives the material`, outgoingHandoff: `${region.stage} passes the material onward`, mediaRef: "fixture-state", observableChannel: region.stage === "peak" ? "svg" as const : "dom-state" as const }));
+  const authored = { ...contract, experienceType: "journey" as const, continuity: { mode: "authored-sequence" as const, motif: "readiness material travels through the instrument", affectedRegions: authoredRegions }, agencyChain: undefined } as unknown as ShowcaseMechanismContract;
+  const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: authored });
+  expect(result.blockers).toEqual([]);
 });
 
 test("a journey cannot use lightweight hover as its post-peak mechanism", () => {

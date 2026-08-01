@@ -2,10 +2,11 @@ import { chromium, type Browser, type Page } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { validateShowcaseExperienceMap, type ExperienceMap } from "../shared/experienceMap.js";
 
 export type DeliveryProfile = "efficient" | "recommended" | "showcase";
-export type MechanismTrigger = "scroll" | "click" | "hover" | "drag";
+export type MechanismTrigger = "scroll" | "click" | "hover" | "drag" | "time" | "media" | "load" | "route" | "none";
 export type ShowcaseMediaMode = "dom-state" | "typography" | "image" | "video" | "svg" | "canvas" | "spatial-layout" | "3d";
 export interface MechanismContractEntry {
   name: string;
@@ -85,6 +86,31 @@ export interface ShowcaseMechanismContract {
     rationale: string;
     rejectionApprovedBy?: "user";
   }[];
+  productionFeasibility: {
+    gateStatus: "ready" | "blocked";
+    prototypeAssetRefs: string[];
+    focalSubjects: {
+      stage: "hero" | "peak" | "post-peak";
+      subject: string;
+      treatmentDefining: boolean;
+      requiredMedium: "image" | "video" | "svg" | "canvas" | "3d";
+      outputKind: "native" | "rendered-sequence";
+      responsiveMode: "distinct" | "shared";
+      exactToolOrSource: string;
+      editingWork: string[];
+      desktopDeliverable: string;
+      mobileDeliverable: string;
+      rights: string;
+      cost: "free" | "paid" | "licensed" | "external-production";
+      readiness: "ready" | "needs-tool" | "paid-licensed" | "external-production";
+      outputFiles: string[];
+      prototypeBindings: {
+        viewport: "desktop" | "mobile";
+        selector: string;
+        assetRef: string;
+      }[];
+    }[];
+  };
   prototypeEvidence: {
     treatmentOptions: { name: string; frames: { stage: "input" | "change" | "reveal" | "outcome"; visual: string }[] }[];
     comparisonRequired: boolean;
@@ -125,17 +151,26 @@ export interface ShowcaseMechanismContract {
     mobileFraming: string;
   };
   continuity: {
-    stateKey: string;
-    sourceSelector: string;
-    sourceTrigger: "click" | "drag";
-    stateCount: number;
+    mode?: "shared-state" | "authored-sequence";
+    stateKey?: string;
+    sourceSelector?: string;
+    sourceTrigger?: "click" | "drag";
+    stateCount?: number;
+    motif?: string;
     affectedRegions: {
       selector: string;
       stage: "before" | "peak" | "after";
       effect: string;
+      motifSelector?: string;
+      identity?: string;
+      visibleState?: string;
+      incomingHandoff?: string;
+      outgoingHandoff?: string;
+      mediaRef?: string;
+      observableChannel?: ShowcaseMediaMode;
     }[];
   };
-  agencyChain: {
+  agencyChain?: {
     controlSectionSelector: string;
     inputSelector: string;
     primaryResponseSelector: string;
@@ -143,6 +178,11 @@ export interface ShowcaseMechanismContract {
     userAction: string;
     immediateResponse: string;
     decisionOutcome: string;
+  };
+  comparisonPolicy: {
+    present: boolean;
+    rationale: string;
+    sectionSelector?: string;
   };
   comparisonLayouts: {
     selector: string;
@@ -431,7 +471,24 @@ async function exerciseMechanism(page: Page, entry: MechanismContractEntry): Pro
     }
   }
   else if (entry.trigger === "hover") await locator.hover();
-  else { await page.mouse.move(box.x + box.width * .2, box.y + box.height / 2); await page.mouse.down(); await page.mouse.move(box.x + box.width * .8, box.y + box.height / 2, { steps: 8 }); await page.mouse.up(); }
+  else if (entry.trigger === "drag") { await page.mouse.move(box.x + box.width * .2, box.y + box.height / 2); await page.mouse.down(); await page.mouse.move(box.x + box.width * .8, box.y + box.height / 2, { steps: 8 }); await page.mouse.up(); }
+  else if (entry.trigger === "time") {
+    for (let index = 1; index < entry.stateCount; index += 1) {
+      await page.waitForTimeout(250);
+      signatures.add(await declaredMediaFingerprint(page, entry));
+    }
+  }
+  else if (entry.trigger === "media") {
+    const media = locator.locator("video,audio");
+    if (await media.count() !== 1) return `${entry.name} media trigger requires exactly one video or audio element`;
+    await media.evaluate((element) => (element as HTMLMediaElement).play());
+    for (let index = 1; index < entry.stateCount; index += 1) {
+      await page.waitForTimeout(250);
+      signatures.add(await declaredMediaFingerprint(page, entry));
+    }
+  }
+  else if (["load", "route", "none"].includes(entry.trigger) && entry.stateCount !== 1)
+    return `${entry.name} ${entry.trigger} trigger must declare one resolved observable state`;
   await twoFrames(page);
   const after = await declaredMediaFingerprint(page, entry);
   signatures.add(after);
@@ -441,19 +498,56 @@ async function exerciseMechanism(page: Page, entry: MechanismContractEntry): Pro
     if (changed < 2) return `${entry.name} spatial-layout mechanism changed fewer than two element geometries`;
   }
   if (signatures.size < entry.stateCount) return `${entry.name} mechanism ${entry.selector} produced ${signatures.size} distinct states; ${entry.stateCount} are declared`;
+  if (["load", "route", "none"].includes(entry.trigger)) return null;
   return before === after ? `${entry.name} mechanism ${entry.selector} did not visibly change its declared ${entry.mediaMode} medium after ${entry.trigger}` : null;
 }
 
 async function verifyContinuity(page: Page, contract: ShowcaseMechanismContract): Promise<string[]> {
   const errors: string[] = [];
-  const source = page.locator(contract.continuity.sourceSelector);
+  const regions = contract.continuity.affectedRegions;
+  const locators = regions.map((region) => page.locator(region.selector));
+  if (contract.continuity.mode === "authored-sequence") {
+    const ordered: { stage: "before" | "peak" | "after"; y: number }[] = [];
+    for (let index = 0; index < locators.length; index += 1) {
+      const region = regions[index];
+      if (await locators[index].count() !== 1) { errors.push(`continuity region ${region.selector} must resolve to exactly one element`); continue; }
+      const box = await locators[index].boundingBox();
+      if (!box || box.width < 8 || box.height < 8) errors.push(`continuity region ${region.selector} is hidden or zero-sized`);
+      else ordered.push({ stage: region.stage, y: box.y });
+      const required = [region.motifSelector, region.identity, region.visibleState, region.incomingHandoff, region.outgoingHandoff, region.mediaRef, region.observableChannel];
+      if (required.some((value) => typeof value !== "string" || !value.trim())) { errors.push(`authored continuity region ${region.selector} requires a visible motif carrier, identity, state, handoffs, mediaRef, and observableChannel`); continue; }
+      const motif = locators[index].locator(region.motifSelector!);
+      if (await motif.count() !== 1) { errors.push(`authored motif ${region.motifSelector} must resolve exactly once inside ${region.selector}`); continue; }
+      const observed = await motif.evaluate((element, input) => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        const channel = input.channel;
+        const medium = channel === "image" ? element.matches("img,picture") || Boolean(element.querySelector("img,picture"))
+          : channel === "video" ? element.matches("video") || Boolean(element.querySelector("video"))
+          : channel === "svg" ? element.matches("svg") || Boolean(element.querySelector("svg"))
+          : channel === "canvas" || channel === "3d" ? element.matches("canvas,[data-dreative-3d]") || Boolean(element.querySelector("canvas,[data-dreative-3d]"))
+          : true;
+        const source = element instanceof HTMLImageElement || element instanceof HTMLMediaElement ? element.currentSrc : element.querySelector<HTMLImageElement | HTMLMediaElement>("img,video,audio")?.currentSrc ?? style.backgroundImage;
+        return { visible: rect.width >= 24 && rect.height >= 24 && style.display !== "none" && style.visibility !== "hidden" && Number(style.opacity) > .02, medium, source };
+      }, { channel: region.observableChannel! });
+      if (!observed.visible) errors.push(`authored motif ${region.motifSelector} is not visibly rendered`);
+      if (!observed.medium) errors.push(`authored motif ${region.motifSelector} does not expose its declared ${region.observableChannel} channel`);
+      const mediaRef = region.mediaRef!;
+      if (["image", "video"].includes(region.observableChannel!) && !observed.source.includes(path.basename(mediaRef))) errors.push(`authored motif ${region.motifSelector} does not render declared mediaRef ${mediaRef}`);
+    }
+    const stageY = (["before", "peak", "after"] as const).map((stage) => Math.min(...ordered.filter((item) => item.stage === stage).map((item) => item.y)));
+    if (stageY.every(Number.isFinite) && !(stageY[0] < stageY[1] && stageY[1] < stageY[2])) errors.push("Showcase authored continuity must appear in before, peak, after document order");
+    const viewportHeight = await page.evaluate(() => innerHeight);
+    if (stageY.every(Number.isFinite) && (stageY[1] - stageY[0] < viewportHeight * .5 || stageY[2] - stageY[1] < viewportHeight * .5)) errors.push("Showcase authored continuity stages must occupy meaningfully separated page regions");
+    if (new Set(regions.map((region) => region.identity)).size !== 1) errors.push("Showcase authored continuity regions must name one stable motif identity");
+    return errors;
+  }
+  const source = page.locator(contract.continuity.sourceSelector ?? "");
   if (await source.count() !== 1) return [`Showcase continuity source ${contract.continuity.sourceSelector} must resolve to exactly one element`];
   await source.scrollIntoViewIfNeeded();
   await twoFrames(page);
   const sourceBox = await source.boundingBox();
   if (!sourceBox || sourceBox.width < 8 || sourceBox.height < 8) return [`Showcase continuity source ${contract.continuity.sourceSelector} is hidden or zero-sized`];
-  const regions = contract.continuity.affectedRegions;
-  const locators = regions.map((region) => page.locator(region.selector));
   for (let index = 0; index < locators.length; index += 1) {
     if (await locators[index].count() !== 1) errors.push(`continuity region ${regions[index].selector} must resolve to exactly one element`);
     else {
@@ -472,9 +566,10 @@ async function verifyContinuity(page: Page, contract: ShowcaseMechanismContract)
   const viewportHeight = await page.evaluate(() => innerHeight);
   if (stageY[1] - stageY[0] < viewportHeight * .5 || stageY[2] - stageY[1] < viewportHeight * .5) errors.push("Showcase continuity stages must occupy meaningfully separated page regions");
   const signatures = regions.map(() => new Set<string>());
-  for (let state = 0; state < contract.continuity.stateCount; state += 1) {
+  const stateCount = contract.continuity.stateCount ?? 0;
+  for (let state = 0; state < stateCount; state += 1) {
     for (let index = 0; index < regions.length; index += 1) signatures[index].add(await continuityFingerprint(page, regions[index].selector));
-    if (state === contract.continuity.stateCount - 1) break;
+    if (state === stateCount - 1) break;
     if (contract.continuity.sourceTrigger === "click") await source.click();
     else {
       const box = await source.boundingBox();
@@ -489,7 +584,7 @@ async function verifyContinuity(page: Page, contract: ShowcaseMechanismContract)
   }
   for (const stage of ["before", "peak", "after"] as const) {
     const stageIndexes = regions.map((region, index) => region.stage === stage ? index : -1).filter((index) => index >= 0);
-    if (!stageIndexes.some((index) => signatures[index].size >= contract.continuity.stateCount))
+    if (!stageIndexes.some((index) => signatures[index].size >= stateCount))
       errors.push(`Showcase shared state ${contract.continuity.stateKey} did not propagate through ${stage} regions from ${contract.continuity.sourceSelector}`);
   }
   return errors;
@@ -545,6 +640,7 @@ async function verifyAdoptionAndAgency(page: Page, contract: ShowcaseMechanismCo
       if (!fs.existsSync(file) || !fs.statSync(file).isFile()) errors.push(`generated asset record does not exist: ${asset.sourceRef}`);
     }
   }
+  if (!contract.agencyChain) return errors;
   for (const selector of [contract.agencyChain.controlSectionSelector, contract.agencyChain.inputSelector, contract.agencyChain.primaryResponseSelector, contract.agencyChain.downstreamSelector]) {
     if (await page.locator(selector).count() !== 1) errors.push(`agency-chain selector ${selector} must resolve exactly once`);
   }
@@ -644,8 +740,8 @@ async function verifyComparisonLayouts(page: Page, contract: ShowcaseMechanismCo
       if (evidence.values.some((value) => !value) || new Set(evidence.values).size < Math.min(2, evidence.values.length))
         errors.push(`comparison layout ${layout.selector} identity channel ${evidence.channel} does not render distinct values across products`);
     }
-    const source = page.locator(contract.continuity.sourceSelector);
-    if (await source.count() === 1) {
+    const source = page.locator(contract.continuity.sourceSelector ?? "");
+    if (contract.continuity.mode !== "authored-sequence" && await source.count() === 1) {
       await source.click();
       await twoFrames(page);
       const after = await snapshot(layout);
@@ -843,6 +939,48 @@ async function verifyPrototypeFidelity(page: Page, context: Awaited<ReturnType<B
   await twoFrames(prototypePage);
   const errors: string[] = [];
   if (!response || response.status() >= 400) errors.push(`selected prototype artifact did not load successfully: ${target}`);
+  const viewport = await prototypePage.evaluate(() => innerWidth <= 600 ? "mobile" : "desktop") as "desktop" | "mobile";
+  for (const subject of contract.productionFeasibility.focalSubjects.filter((item) => item.treatmentDefining)) {
+    const binding = subject.prototypeBindings.find((item) => item.viewport === viewport);
+    if (!binding) { errors.push(`${subject.subject} has no ${viewport} accepted-prototype asset binding`); continue; }
+    const rendered = prototypePage.locator(binding.selector);
+    if (await rendered.count() !== 1) { errors.push(`${subject.subject} prototype binding ${binding.selector} must resolve exactly once`); continue; }
+    const observation = await rendered.evaluate((element, input) => {
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      const ref = element.getAttribute("data-dreative-asset-ref") ?? element.closest("[data-dreative-asset-ref]")?.getAttribute("data-dreative-asset-ref") ?? "";
+      const medium = input.outputKind === "rendered-sequence" ? (element.matches("img,picture") || Boolean(element.querySelector("img,picture")))
+        : input.requiredMedium === "image" ? (element.matches("img,picture") || Boolean(element.querySelector("img,picture")))
+        : input.requiredMedium === "video" ? (element.matches("video") || Boolean(element.querySelector("video")))
+        : input.requiredMedium === "svg" ? (element.matches("svg") || Boolean(element.querySelector("svg")))
+        : input.requiredMedium === "3d" ? (element.matches("canvas,model-viewer,[data-dreative-3d]") || Boolean(element.querySelector("canvas,model-viewer,[data-dreative-3d]")))
+        : input.requiredMedium === "canvas" ? (element.matches("canvas") || Boolean(element.querySelector("canvas"))) : false;
+      const image = element.matches("img") ? element as HTMLImageElement : element.querySelector("img");
+      const video = element.matches("video") ? element as HTMLVideoElement : element.querySelector("video");
+      const model = element.matches("model-viewer,[data-dreative-3d]") ? element : element.querySelector("model-viewer,[data-dreative-3d]");
+      const loadedSource = image?.currentSrc || video?.currentSrc || model?.getAttribute("src") || model?.getAttribute("data-model-src") || "";
+      return { ref, loadedSource, medium, visible: rect.width >= 24 && rect.height >= 24 && style.display !== "none" && style.visibility !== "hidden" && Number(style.opacity) > .02 };
+    }, { requiredMedium: subject.requiredMedium, outputKind: subject.outputKind });
+    if (observation.ref !== binding.assetRef) errors.push(`${subject.subject} prototype binding ${binding.selector} renders asset ref ${observation.ref || "<missing>"}, expected ${binding.assetRef}`);
+    if (!observation.medium) errors.push(`${subject.subject} prototype binding ${binding.selector} does not render required medium ${subject.requiredMedium}`);
+    if (!observation.visible) errors.push(`${subject.subject} prototype binding ${binding.selector} is not visibly rendered`);
+    if (["image", "video", "3d"].includes(subject.requiredMedium) || subject.outputKind === "rendered-sequence") {
+      if (!observation.loadedSource) errors.push(`${subject.subject} prototype binding ${binding.selector} exposes no loaded media source`);
+      else {
+        const loadedResponse = await context.request.get(new URL(observation.loadedSource, target).href);
+        if (!loadedResponse.ok()) errors.push(`${subject.subject} prototype binding ${binding.selector} loaded resource returned HTTP ${loadedResponse.status()}`);
+        else {
+          const declaredPath = path.resolve(binding.assetRef);
+          if (!fs.existsSync(declaredPath) || !fs.statSync(declaredPath).isFile()) errors.push(`${subject.subject} declared prototype asset does not exist: ${binding.assetRef}`);
+          else {
+            const actualHash = createHash("sha256").update(Buffer.from(await loadedResponse.body())).digest("hex");
+            const declaredHash = createHash("sha256").update(fs.readFileSync(declaredPath)).digest("hex");
+            if (actualHash !== declaredHash) errors.push(`${subject.subject} prototype binding ${binding.selector} loaded media does not match declared asset ${binding.assetRef}`);
+          }
+        }
+      }
+    }
+  }
   const measure = async (targetPage: Page, selector: string) => {
     const locator = targetPage.locator(selector);
     if (await locator.count() !== 1) return null;
@@ -868,7 +1006,7 @@ async function verifyPrototypeFidelity(page: Page, context: Awaited<ReturnType<B
 
 async function verifyExperienceMapBindings(page: Page, map: ExperienceMap, contract: ShowcaseMechanismContract): Promise<string[]> {
   const errors: string[] = [];
-  for (const section of map.sections.filter((item) => item.agency !== "watch" || (item.trigger && item.trigger !== "none"))) {
+  for (const section of map.sections.filter((item) => item.trigger && item.trigger !== "none")) {
     const mechanism = contract.mechanisms.find((item) => item.selector === section.selector);
     if (!mechanism) { errors.push(`Experience Map agency/transform section ${section.id} is not bound to a verified Showcase mechanism at ${section.selector}`); continue; }
     if (mechanism.trigger !== section.trigger) errors.push(`Experience Map section ${section.id} trigger ${section.trigger} does not match mechanism trigger ${mechanism.trigger}`);
@@ -877,8 +1015,14 @@ async function verifyExperienceMapBindings(page: Page, map: ExperienceMap, contr
     if (await page.locator(section.selector ?? "").count() !== 1) errors.push(`Experience Map section ${section.id} selector ${section.selector} must resolve exactly once`);
   }
   const controls = map.sections.filter((section) => section.agency === "control");
-  if (!controls.some((section) => section.selector === contract.agencyChain.controlSectionSelector))
-    errors.push(`Experience Map Control section must bind agency control section ${contract.agencyChain.controlSectionSelector}`);
+  const agency = contract.agencyChain;
+  if (agency && !controls.some((section) => section.selector === agency.controlSectionSelector))
+    errors.push(`Experience Map Control section must bind agency control section ${agency.controlSectionSelector}`);
+  const comparisonSections = map.sections.filter((section) => /comparison|compare|catalog|catalogue|products?|collection/i.test(`${section.title} ${section.role}`));
+  if (contract.comparisonPolicy.present && !map.sections.some((section) => section.selector === contract.comparisonPolicy.sectionSelector))
+    errors.push(`comparisonPolicy section ${contract.comparisonPolicy.sectionSelector} must correspond to an Experience Map section`);
+  if (!contract.comparisonPolicy.present && comparisonSections.length)
+    errors.push(`comparisonPolicy cannot declare absent while the Experience Map contains comparison-like section ${comparisonSections[0].id}`);
   return errors;
 }
 
@@ -973,11 +1117,13 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
     if (signatures.size === 1) blockers.push(`${config.label}: long region ${region.name} (${region.height}px) showed no observable state change`);
   }
 
+  if (["desktop", "mobile-390", "mobile-320"].includes(config.label) && contract) {
+    blockers.push(...await verifyPrototypeFidelity(page, context, url, contract));
+  }
   if (config.label === "desktop") {
     if (contract) {
       blockers.push(...await verifyPrototypeEvidence(context, url, contract));
       await page.goto(url, { waitUntil: "domcontentloaded" }); await twoFrames(page);
-      blockers.push(...await verifyPrototypeFidelity(page, context, url, contract));
       blockers.push(...await verifyContinuity(page, contract));
       blockers.push(...await verifyAdoptionAndAgency(page, contract));
       blockers.push(...await verifyComparisonLayouts(page, contract));
@@ -1062,6 +1208,34 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
   }
   const assetStages = new Set((contract.assetCommitments ?? []).map((item) => item?.stage));
   for (const stage of ["hero", "peak", "post-peak"]) if (!assetStages.has(stage as "hero" | "peak" | "post-peak")) errors.push(`Showcase asset commitments are missing the ${stage} focal subject`);
+  const production = contract.productionFeasibility;
+  if (!production || production.gateStatus !== "ready" || !Array.isArray(production.focalSubjects) || production.focalSubjects.length < 1 || !Array.isArray(production.prototypeAssetRefs) || production.prototypeAssetRefs.length < 1)
+    errors.push("Showcase production feasibility gate must be ready with focal subjects and accepted-prototype asset references");
+  for (const [index, subject] of (production?.focalSubjects ?? []).entries()) {
+    if (![subject?.subject, subject?.exactToolOrSource, subject?.desktopDeliverable, subject?.mobileDeliverable, subject?.rights].every((value) => typeof value === "string" && value.trim())
+      || !["hero", "peak", "post-peak"].includes(subject?.stage)
+      || !["image", "video", "svg", "canvas", "3d"].includes(subject?.requiredMedium)
+      || !["native", "rendered-sequence"].includes(subject?.outputKind)
+      || !["distinct", "shared"].includes(subject?.responsiveMode)
+      || !["free", "paid", "licensed", "external-production"].includes(subject?.cost)
+      || !["ready", "needs-tool", "paid-licensed", "external-production"].includes(subject?.readiness)
+      || !Array.isArray(subject?.editingWork) || subject.editingWork.length < 1 || subject.editingWork.some((item) => typeof item !== "string" || !item.trim())
+      || !Array.isArray(subject?.outputFiles)
+      || !Array.isArray(subject?.prototypeBindings)) errors.push(`production focal subject ${index + 1} requires source/tool, medium/output kind, editing, responsive deliverables, rights, cost, readiness, output files, and prototype bindings`);
+    const bindings = subject?.prototypeBindings ?? [];
+    const bindingViewports = new Set(bindings.map((binding) => binding.viewport));
+    if (subject?.treatmentDefining && (subject.readiness !== "ready" || subject.outputFiles.length < 1 || !subject.outputFiles.includes(subject.desktopDeliverable) || !subject.outputFiles.includes(subject.mobileDeliverable)
+      || bindingViewports.size !== 2 || !bindingViewports.has("desktop") || !bindingViewports.has("mobile")
+      || bindings.some((binding) => !binding.selector?.trim() || !subject.outputFiles.includes(binding.assetRef))))
+      errors.push(`treatment-defining focal subject ${subject?.subject || index + 1} must be ready with bound desktop and mobile outputs before focal implementation`);
+    const desktopBinding = bindings.find((binding) => binding.viewport === "desktop");
+    const mobileBinding = bindings.find((binding) => binding.viewport === "mobile");
+    if (subject?.treatmentDefining && (desktopBinding?.assetRef !== subject.desktopDeliverable || mobileBinding?.assetRef !== subject.mobileDeliverable))
+      errors.push(`${subject.subject} prototype bindings must use the corresponding desktop and mobile deliverables`);
+    if (subject?.responsiveMode === "distinct" && subject.desktopDeliverable === subject.mobileDeliverable) errors.push(`${subject.subject} distinct responsive outputs must use different files`);
+    if (subject?.responsiveMode === "shared" && subject.desktopDeliverable !== subject.mobileDeliverable) errors.push(`${subject.subject} shared responsive output must use the same file for desktop and mobile`);
+    if (subject?.requiredMedium !== "3d" && subject?.outputKind === "rendered-sequence") errors.push(`${subject.subject} rendered-sequence outputKind is reserved for 3d fallback output`);
+  }
   const prototype = contract.prototypeEvidence;
   if (!prototype || !Array.isArray(prototype.treatmentOptions) || prototype.treatmentOptions.length < 2 || prototype.treatmentOptions.length > 3 || prototype.treatmentOptions.some((item) => !item || typeof item.name !== "string" || !item.name.trim() || !Array.isArray(item.frames) || item.frames.length < 3 || item.frames.length > 8 || item.frames.some((frame) => !frame || !["input", "change", "reveal", "outcome"].includes(frame.stage) || typeof frame.visual !== "string" || !frame.visual.trim()) || !item.frames.some((frame) => frame.stage === "change") || !item.frames.some((frame) => frame.stage === "outcome")))
     errors.push("Showcase requires two or three concrete treatment boards, each with 3-8 visual frames including change and outcome");
@@ -1083,27 +1257,37 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     errors.push("Showcase requires a complete prototype-to-product fidelity contract");
   const continuity = contract.continuity;
   const affectedRegions = Array.isArray(continuity?.affectedRegions) ? continuity.affectedRegions : [];
-  if (!continuity?.stateKey?.trim() || !continuity?.sourceSelector?.trim()) errors.push("Showcase requires a named shared state and source selector");
-  if (!["click", "drag"].includes(continuity?.sourceTrigger)) errors.push("Showcase continuity sourceTrigger must be click or drag");
-  if (!Number.isInteger(continuity?.stateCount) || continuity.stateCount < 2 || continuity.stateCount > 5) errors.push("Showcase continuity stateCount must be an integer from 2 to 5");
-  if (affectedRegions.length < 3) errors.push("Showcase requires one meaningful state to affect at least three non-adjacent regions");
+  const continuityMode = continuity?.mode ?? "shared-state";
+  if (!["shared-state", "authored-sequence"].includes(continuityMode)) errors.push("Showcase continuity mode must be shared-state or authored-sequence");
+  if (continuityMode === "shared-state" && (!continuity?.stateKey?.trim() || !continuity?.sourceSelector?.trim())) errors.push("Shared-state continuity requires a named state and source selector");
+  if (continuityMode === "shared-state" && !["click", "drag"].includes(continuity?.sourceTrigger as string)) errors.push("Shared-state continuity sourceTrigger must be click or drag");
+  if (continuityMode === "shared-state" && (!Number.isInteger(continuity?.stateCount) || (continuity.stateCount ?? 0) < 2 || (continuity.stateCount ?? 0) > 5)) errors.push("Shared-state continuity stateCount must be an integer from 2 to 5");
+  if (continuityMode === "authored-sequence" && !continuity?.motif?.trim()) errors.push("Authored-sequence continuity requires a named physical, cinematic, typographic, or material motif");
+  if (affectedRegions.length < 3) errors.push("Showcase requires shared state or an authored motif across at least three non-adjacent regions");
   const continuityStages = new Set(affectedRegions.map((region) => region?.stage));
   for (const stage of ["before", "peak", "after"]) if (!continuityStages.has(stage as "before" | "peak" | "after")) errors.push(`Showcase continuity is missing a ${stage} region`);
   if (new Set(affectedRegions.map((region) => region?.selector)).size !== affectedRegions.length) errors.push("Showcase continuity selectors must be unique");
   for (const [index, region] of affectedRegions.entries()) {
     if (!region?.selector?.trim() || !region?.effect?.trim() || !["before", "peak", "after"].includes(region?.stage)) errors.push(`continuity region ${index + 1} requires selector, stage, and concrete effect`);
+    if (continuityMode === "authored-sequence" && [region?.motifSelector, region?.identity, region?.visibleState, region?.incomingHandoff, region?.outgoingHandoff, region?.mediaRef, region?.observableChannel].some((value) => typeof value !== "string" || !value.trim()))
+      errors.push(`authored continuity region ${index + 1} requires motifSelector, identity, visibleState, handoffs, mediaRef, and observableChannel`);
   }
   const agency = contract.agencyChain;
-  if (!agency || ![agency.controlSectionSelector, agency.inputSelector, agency.primaryResponseSelector, agency.downstreamSelector, agency.userAction, agency.immediateResponse, agency.decisionOutcome].every((value) => typeof value === "string" && value.trim()))
+  if (agency && ![agency.controlSectionSelector, agency.inputSelector, agency.primaryResponseSelector, agency.downstreamSelector, agency.userAction, agency.immediateResponse, agency.decisionOutcome].every((value) => typeof value === "string" && value.trim()))
     errors.push("Showcase requires a complete user-action → primary-response → downstream-decision agency chain");
-  if (agency && continuity) {
+  if (agency && continuityMode === "shared-state") {
     if (agency.inputSelector !== continuity.sourceSelector) errors.push("agency inputSelector must be the exercised continuity sourceSelector");
     const primary = affectedRegions.find((region) => region.selector === agency.primaryResponseSelector);
     const downstream = affectedRegions.find((region) => region.selector === agency.downstreamSelector);
     if (primary?.stage !== "peak") errors.push("agency primaryResponseSelector must be a verified peak continuity region");
     if (downstream?.stage !== "after") errors.push("agency downstreamSelector must be a verified after continuity region");
   }
-  if (!Array.isArray(contract.comparisonLayouts) || contract.comparisonLayouts.length < 1) errors.push("Showcase requires at least one declared comparison layout");
+  const comparisonPolicy = contract.comparisonPolicy;
+  if (!comparisonPolicy || typeof comparisonPolicy.present !== "boolean" || !comparisonPolicy.rationale?.trim() || (comparisonPolicy.present && !comparisonPolicy.sectionSelector?.trim())) errors.push("Showcase comparisonPolicy must declare presence, rationale, and a section selector when present");
+  if (!Array.isArray(contract.comparisonLayouts)) errors.push("Showcase comparisonLayouts must be an array");
+  if (comparisonPolicy?.present && contract.comparisonLayouts?.length < 1) errors.push("A present comparison region requires a comparison-layout contract");
+  if (!comparisonPolicy?.present && (contract.comparisonLayouts?.length ?? 0) > 0) errors.push("comparisonLayouts must be empty when comparisonPolicy.present is false");
+  if (comparisonPolicy?.present && !contract.comparisonLayouts?.some((layout) => layout.selector === comparisonPolicy.sectionSelector)) errors.push("comparisonPolicy sectionSelector must match a declared comparison layout");
   for (const [index, layout] of (contract.comparisonLayouts ?? []).entries()) {
     if (![layout?.selector, layout?.itemSelector, layout?.identityAttribute].every((value) => typeof value === "string" && value.trim())
       || !/^data-[a-z0-9-]+$/.test(layout?.identityAttribute ?? "")
@@ -1125,7 +1309,6 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
   const names = mechanisms.map((item) => item.name);
   if (new Set(names).size !== names.length) errors.push("Showcase mechanism names must be unique");
   if (new Set(mechanisms.map((item) => item.selector)).size !== mechanisms.length) errors.push("Showcase mechanism selectors must be unique");
-  if (contract.experienceType === "journey" && !mechanisms.some((item) => item.trigger === "scroll")) errors.push("A Showcase journey requires at least one substantial scroll-authored mechanism");
   if (contract.experienceType === "journey" && mechanisms.some((item) => item.stage === "after" && item.trigger === "hover")) errors.push("A Showcase journey cannot use hover alone as its post-peak mechanism");
   if (mechanisms.some((item) => item.stage === "peak" && item.trigger === "hover")) errors.push("A Showcase peak cannot be hover-only");
   for (const item of mechanisms) {
@@ -1133,7 +1316,7 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     if (!["before", "peak", "after"].includes(item.stage)) errors.push(`${item.name} mechanism requires a valid stage`);
     if (!item.selector?.trim()) errors.push(`${item.name} mechanism requires a selector`);
     if (!item.primarySelector?.trim() || !item.primarySubject?.trim()) errors.push(`${item.name} mechanism requires a primarySelector and product-native primarySubject`);
-    if (!["scroll", "click", "hover", "drag"].includes(item.trigger)) errors.push(`${item.name} mechanism has an invalid trigger`);
+    if (!["scroll", "click", "hover", "drag", "time", "media", "load", "route", "none"].includes(item.trigger)) errors.push(`${item.name} mechanism has an invalid trigger`);
     if (!item.mobileTransformation?.trim()) errors.push(`${item.name} mechanism requires mobileTransformation`);
     for (const key of ["productTruth", "userCause", "visibleChange", "decisionConsequence"] as const)
       if (!item[key]?.trim()) errors.push(`${item.name} mechanism requires semantic-motion field ${key}`);
@@ -1144,7 +1327,9 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     if (["frame-analysis", "user-accepted-limitation"].includes(item.temporalEvidence) && !item.motionEvidenceRef?.trim()) errors.push(`${item.name} temporalEvidence requires motionEvidenceRef`);
     if (!["css", "gsap", "motion", "anime", "react-state", "native-js", "other"].includes(item.animationOwner)) errors.push(`${item.name} mechanism requires one animationOwner`);
     if (!Array.isArray(item.ownedProperties) || item.ownedProperties.length < 1 || item.ownedProperties.some((property) => typeof property !== "string" || !property.trim())) errors.push(`${item.name} mechanism requires ownedProperties`);
-    if (!Number.isInteger(item.stateCount) || item.stateCount < 2 || item.stateCount > 5) errors.push(`${item.name} mechanism stateCount must be an integer from 2 to 5`);
+    const resolvedOnly = ["load", "route", "none"].includes(item.trigger);
+    if (!Number.isInteger(item.stateCount) || item.stateCount < (resolvedOnly ? 1 : 2) || item.stateCount > 5) errors.push(`${item.name} mechanism stateCount must be ${resolvedOnly ? "1" : "an integer from 2 to 5"}`);
+    if (resolvedOnly && item.stateCount !== 1) errors.push(`${item.name} ${item.trigger} trigger must declare one resolved state`);
     if (item.trigger === "hover" && item.stateCount !== 2) errors.push(`${item.name} hover mechanism must declare exactly two states`);
     if (item.trigger === "scroll" && item.stateCount < 3) errors.push(`${item.name} scroll mechanism must declare at least three states`);
     if (item.trigger === "scroll" && (!Number.isInteger(item.minimumDwellMs) || (item.minimumDwellMs ?? 0) < 400 || (item.minimumDwellMs ?? 0) > 2000 || !item.releaseSelector?.trim()))
@@ -1181,9 +1366,45 @@ export function validateMotionAnalysisEvidence(contract: ShowcaseMechanismContra
   return errors;
 }
 
+export function validateProductionFeasibilityFiles(contract: ShowcaseMechanismContract, projectDir = process.cwd()): string[] {
+  const errors: string[] = [];
+  const defining = contract.productionFeasibility?.focalSubjects?.filter((subject) => subject.treatmentDefining) ?? [];
+  const prototypeRefs = new Set(contract.productionFeasibility?.prototypeAssetRefs ?? []);
+  for (const subject of defining) for (const ref of subject.outputFiles ?? []) {
+    if (/^https?:\/\//i.test(ref) || path.isAbsolute(ref)) { errors.push(`${subject.subject} production output must be a repository-relative file: ${ref}`); continue; }
+    const output = path.resolve(projectDir, ref);
+    if (!fs.existsSync(output) || !fs.statSync(output).isFile()) { errors.push(`${subject.subject} production output is missing: ${ref}`); continue; }
+    const bytes = fs.readFileSync(output);
+    const extension = path.extname(ref).toLowerCase();
+    const textHead = bytes.subarray(0, 512).toString("utf8").trimStart();
+    const image = (extension === ".png" && bytes.subarray(0, 8).equals(Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a])))
+      || ([".jpg", ".jpeg"].includes(extension) && bytes[0] === 0xff && bytes[1] === 0xd8)
+      || (extension === ".webp" && bytes.subarray(0, 4).toString("ascii") === "RIFF" && bytes.subarray(8, 12).toString("ascii") === "WEBP")
+      || ([".avif", ".heif", ".heic"].includes(extension) && bytes.subarray(4, 12).toString("ascii").includes("ftyp"))
+      || (extension === ".gif" && bytes.subarray(0, 3).toString("ascii") === "GIF");
+    const video = ([".mp4", ".m4v", ".mov"].includes(extension) && bytes.subarray(4, 12).toString("ascii").includes("ftyp"))
+      || (extension === ".webm" && bytes.subarray(0, 4).equals(Buffer.from([0x1a,0x45,0xdf,0xa3])))
+      || (extension === ".ogv" && bytes.subarray(0, 4).toString("ascii") === "OggS");
+    const svg = extension === ".svg" && /<svg[\s>]/i.test(textHead);
+    const native3d = (extension === ".glb" && bytes.subarray(0, 4).toString("ascii") === "glTF")
+      || (extension === ".gltf" && (() => { try { return Boolean(JSON.parse(bytes.toString("utf8"))?.asset?.version); } catch { return false; } })());
+    const mediumMatches = subject.requiredMedium === "image" ? image
+      : subject.requiredMedium === "video" ? video
+      : subject.requiredMedium === "svg" ? svg
+      : subject.requiredMedium === "3d" ? (subject.outputKind === "rendered-sequence" ? image : native3d)
+      : subject.requiredMedium === "canvas" ? (image || extension === ".bin") : false;
+    if (!mediumMatches) errors.push(`${subject.subject} production output ${ref} does not match required medium ${subject.requiredMedium}${subject.outputKind === "rendered-sequence" ? " rendered sequence" : ""}`);
+    if (!prototypeRefs.has(ref)) errors.push(`${subject.subject} production output is not referenced by the accepted prototype: ${ref}`);
+    try { execFileSync("git", ["ls-files", "--error-unmatch", ref], { cwd: projectDir, stdio: "ignore" }); }
+    catch { errors.push(`${subject.subject} production output must be tracked: ${ref}`); }
+  }
+  return errors;
+}
+
 export async function runVisualSmoke(url: string, options: VisualSmokeOptions): Promise<VisualSmokeResult> {
   const contractErrors = validateMechanisms(options.profile, options.showcase);
   if (options.profile === "showcase" && options.showcase) contractErrors.push(...validateMotionAnalysisEvidence(options.showcase));
+  if (options.profile === "showcase" && options.showcase) contractErrors.push(...validateProductionFeasibilityFiles(options.showcase));
   if (options.profile === "showcase" && options.experienceMap) contractErrors.push(...validateShowcaseExperienceMap(options.experienceMap));
   if (contractErrors.length) return { ok: false, blockers: contractErrors, checks: [] };
   const browser = await chromium.launch({ headless: true });

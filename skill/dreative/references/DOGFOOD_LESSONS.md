@@ -229,3 +229,30 @@ human taste review still decides whether the translation is compelling.
 Recheck condition: Two later Showcase prototypes preserve their selected
 treatment's defining composition and media hierarchy and are accepted without a
 ground-up visual rewrite.
+
+### DL-009 / proposed / 2026-08-01
+
+Observed failure: The 1.5.0 workflow allowed authored continuity and described
+asset-first production, but three ordered containers and a prose feasibility
+table could satisfy the executable contract without produced focal media.
+
+Root cause: The old state checks were relaxed before equivalent observable
+carriers, production outputs, cinematic triggers, and comparison-presence
+conditions were represented in the schema and runtime verifier.
+
+Change: Require ready, tracked, medium-validated, prototype-rendered focal
+outputs with explicit shared/distinct responsive policy; bind each
+authored handoff to a visible carrier and medium; support time/media/load/route
+triggers; and require an explicit comparison presence policy.
+
+Evidence: Independent review of the 1.5.0 source and passing tests found the
+schema/runtime gaps. This validates the mismatch, not the creative effectiveness
+of the replacement.
+
+Cost or trade-off: Adds one production table, per-viewport selector bindings,
+and richer continuity rows only to Showcase. Media identity and handoff quality
+still require human review.
+
+Recheck condition: A later media-led dog run must fail before focal code when
+assets are unavailable, then pass only after the accepted prototype uses the
+tracked outputs and the human recognizes the intended handoff.

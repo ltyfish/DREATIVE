@@ -4,7 +4,7 @@
   "title": "Dreative Showcase mechanism contract",
   "type": "object",
   "additionalProperties": false,
-  "required": ["version", "experienceType", "classification", "recommendedBaseline", "showcaseDelta", "mediaOpportunities", "referenceMode", "referenceMinimum", "referenceAdoptions", "assetCommitments", "prototypeEvidence", "prototypeFidelity", "continuity", "agencyChain", "comparisonLayouts", "mechanisms"],
+  "required": ["version", "experienceType", "classification", "recommendedBaseline", "showcaseDelta", "mediaOpportunities", "referenceMode", "referenceMinimum", "referenceAdoptions", "assetCommitments", "productionFeasibility", "prototypeEvidence", "prototypeFidelity", "continuity", "comparisonPolicy", "comparisonLayouts", "mechanisms"],
   "properties": {
     "version": { "const": 2 },
     "experienceType": { "enum": ["journey", "interface"] },
@@ -137,6 +137,60 @@
         { "contains": { "type": "object", "properties": { "stage": { "const": "post-peak" } }, "required": ["stage"] } }
       ]
     },
+    "productionFeasibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gateStatus", "prototypeAssetRefs", "focalSubjects"],
+      "properties": {
+        "gateStatus": { "const": "ready" },
+        "prototypeAssetRefs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "focalSubjects": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["stage", "subject", "treatmentDefining", "requiredMedium", "outputKind", "responsiveMode", "exactToolOrSource", "editingWork", "desktopDeliverable", "mobileDeliverable", "rights", "cost", "readiness", "outputFiles", "prototypeBindings"],
+            "properties": {
+              "stage": { "enum": ["hero", "peak", "post-peak"] },
+              "subject": { "type": "string", "minLength": 1 },
+              "treatmentDefining": { "type": "boolean" },
+              "requiredMedium": { "enum": ["image", "video", "svg", "canvas", "3d"] },
+              "outputKind": { "enum": ["native", "rendered-sequence"] },
+              "responsiveMode": { "enum": ["distinct", "shared"] },
+              "exactToolOrSource": { "type": "string", "minLength": 1 },
+              "editingWork": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+              "desktopDeliverable": { "type": "string", "minLength": 1 },
+              "mobileDeliverable": { "type": "string", "minLength": 1 },
+              "rights": { "type": "string", "minLength": 1 },
+              "cost": { "enum": ["free", "paid", "licensed", "external-production"] },
+              "readiness": { "enum": ["ready", "needs-tool", "paid-licensed", "external-production"] },
+              "outputFiles": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+              "prototypeBindings": {
+                "type": "array",
+                "minItems": 2,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["viewport", "selector", "assetRef"],
+                  "properties": {
+                    "viewport": { "enum": ["desktop", "mobile"] },
+                    "selector": { "type": "string", "minLength": 1 },
+                    "assetRef": { "type": "string", "minLength": 1 }
+                  }
+                }
+              }
+            },
+            "allOf": [{
+              "if": { "properties": { "treatmentDefining": { "const": true } }, "required": ["treatmentDefining"] },
+              "then": {
+                "properties": { "readiness": { "const": "ready" }, "outputFiles": { "type": "array", "minItems": 1 } }
+              }
+            }]
+          }
+        }
+      }
+    },
     "prototypeEvidence": {
       "type": "object",
       "additionalProperties": false,
@@ -225,12 +279,14 @@
     "continuity": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["stateKey", "sourceSelector", "sourceTrigger", "stateCount", "affectedRegions"],
+      "required": ["affectedRegions"],
       "properties": {
+        "mode": { "enum": ["shared-state", "authored-sequence"] },
         "stateKey": { "type": "string", "minLength": 1 },
         "sourceSelector": { "type": "string", "minLength": 1 },
         "sourceTrigger": { "enum": ["click", "drag"] },
         "stateCount": { "type": "integer", "minimum": 2, "maximum": 5 },
+        "motif": { "type": "string", "minLength": 1 },
         "affectedRegions": {
           "type": "array",
           "minItems": 3,
@@ -241,11 +297,34 @@
             "properties": {
               "selector": { "type": "string", "minLength": 1 },
               "stage": { "enum": ["before", "peak", "after"] },
-              "effect": { "type": "string", "minLength": 1 }
+              "effect": { "type": "string", "minLength": 1 },
+              "motifSelector": { "type": "string", "minLength": 1 },
+              "identity": { "type": "string", "minLength": 1 },
+              "visibleState": { "type": "string", "minLength": 1 },
+              "incomingHandoff": { "type": "string", "minLength": 1 },
+              "outgoingHandoff": { "type": "string", "minLength": 1 },
+              "mediaRef": { "type": "string", "minLength": 1 },
+              "observableChannel": { "enum": ["dom-state", "typography", "image", "video", "svg", "canvas", "spatial-layout", "3d"] }
             }
           }
         }
-      }
+      },
+      "oneOf": [
+        {
+          "properties": { "mode": { "const": "authored-sequence" }, "motif": {} },
+          "required": ["mode", "motif"]
+        },
+        {
+          "properties": {
+            "mode": { "enum": ["shared-state"] },
+            "stateKey": {},
+            "sourceSelector": {},
+            "sourceTrigger": {},
+            "stateCount": {}
+          },
+          "required": ["stateKey", "sourceSelector", "sourceTrigger", "stateCount"]
+        }
+      ]
     },
     "agencyChain": {
       "type": "object",
@@ -261,9 +340,23 @@
         "decisionOutcome": { "type": "string", "minLength": 1 }
       }
     },
+    "comparisonPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["present", "rationale"],
+      "properties": {
+        "present": { "type": "boolean" },
+        "rationale": { "type": "string", "minLength": 1 },
+        "sectionSelector": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [{
+        "if": { "properties": { "present": { "const": true } }, "required": ["present"] },
+        "then": { "properties": { "sectionSelector": {} }, "required": ["sectionSelector"] }
+      }]
+    },
     "comparisonLayouts": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -316,7 +409,7 @@
           "selector": { "type": "string", "minLength": 1 },
           "primarySelector": { "type": "string", "minLength": 1 },
           "primarySubject": { "type": "string", "minLength": 1 },
-          "trigger": { "enum": ["scroll", "click", "hover", "drag"] },
+          "trigger": { "enum": ["scroll", "click", "hover", "drag", "time", "media", "load", "route", "none"] },
           "mediaMode": { "enum": ["dom-state", "typography", "image", "video", "svg", "canvas", "spatial-layout", "3d"] },
           "mobileTransformation": { "type": "string", "minLength": 1 },
           "productTruth": { "type": "string", "minLength": 1 },
@@ -328,7 +421,7 @@
           "motionEvidenceRef": { "type": "string", "minLength": 1 },
           "animationOwner": { "enum": ["css", "gsap", "motion", "anime", "react-state", "native-js", "other"] },
           "ownedProperties": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-          "stateCount": { "type": "integer", "minimum": 2, "maximum": 5 },
+          "stateCount": { "type": "integer", "minimum": 1, "maximum": 5 },
           "minimumDwellMs": { "type": "integer", "minimum": 400, "maximum": 2000 },
           "releaseSelector": { "type": "string", "minLength": 1 }
         },
@@ -339,6 +432,11 @@
               "properties": { "minimumDwellMs": {}, "releaseSelector": {} },
               "required": ["minimumDwellMs", "releaseSelector"]
             }
+          },
+          {
+            "if": { "properties": { "trigger": { "enum": ["load", "route", "none"] } }, "required": ["trigger"] },
+            "then": { "properties": { "stateCount": { "type": "integer", "const": 1 } } },
+            "else": { "properties": { "stateCount": { "type": "integer", "minimum": 2 } } }
           }
         ]
       }

@@ -112,9 +112,9 @@ test("Showcase maps require Showcase direction and an intensity-5 primary peak",
   assert.match(errors, /at least one intensity-5 section/);
 });
 
-test("maps keep one explicit peak and Showcase requires user control", () => {
+test("maps keep one explicit peak and Showcase permits authored passive journeys", () => {
   const twoPeaks = { ...map, sections: map.sections.map((section) => section.id === "hero" ? { ...section, rhythm: "peak" as const } : section) };
   assert.match(validateExperienceMap(twoPeaks).join("\n"), /exactly one section must use rhythm peak/);
   const passive = { ...map, sections: map.sections.map((section) => ({ ...section, agency: "watch" as const })) };
-  assert.match(validateShowcaseExperienceMap(passive).join("\n"), /at least one section where the user has control/);
+  assert.doesNotMatch(validateShowcaseExperienceMap(passive).join("\n"), /user has control/);
 });
