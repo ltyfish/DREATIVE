@@ -1075,7 +1075,7 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
     ? [prototype?.fullPageContinuityStoryboards?.bestFit, prototype?.fullPageContinuityStoryboards?.boldAlternative]
     : [prototype?.fullPageContinuityStoryboards?.bestFit];
   if (!storyboards.every((item) => item && [item.artifact, item.capture, item.heroSelector, item.peakSelector, item.postPeakSelector].every((value) => typeof value === "string" && value.trim())))
-    errors.push("Each coded Showcase prototype requires a full-page continuity storyboard");
+    errors.push("Each coded Showcase prototype requires full-page continuity storyboards");
   if (prototype?.selectedBy !== "user") errors.push("Showcase prototype selection must come from the user before full integration");
   if (prototype?.prototypeReview?.status !== "accepted" || prototype?.prototypeReview?.acceptedBy !== "user") errors.push("Showcase production-like prototype must be shown and explicitly accepted by the user before integration");
   const fidelity = contract.prototypeFidelity;
@@ -1118,7 +1118,7 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
       || !(layout.identityChannels ?? []).some((channel) => ["src", "background-image", "background-color", "border-radius", "clip-path"].includes(channel.uniqueProperty))
       || layout?.assetStatus !== "production"
       || (layout?.selectedIdentity && (typeof layout.selectedItemMaxScale !== "number" || layout.selectedItemMaxScale < 1 || layout.selectedItemMaxScale > 3)))
-      errors.push(`comparison layout ${index + 1} requires stable production identity with at least two visual channels plus layout limits`);
+      errors.push(`comparison layout ${index + 1} requires stable identity with at least two production visual channels plus layout limits`);
   }
   const mechanisms = Array.isArray(contract.mechanisms) ? contract.mechanisms.filter((item) => item && typeof item === "object") : [];
   if (mechanisms.length < 1) errors.push("Showcase requires at least one executable signature mechanism");

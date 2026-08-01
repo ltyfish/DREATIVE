@@ -134,6 +134,17 @@ as `selectedBy: "user"`; silence or general permission is not a selection.
 Record production-prototype acceptance as `prototypeReview.status: "accepted"`
 and `acceptedBy: "user"`; treatment selection alone is not implementation approval.
 
+After treatment selection, compile a treatment-translation lock before coding.
+Name the selected board artifact; bind composition, focal subject,
+material/lighting, type scale, transition handoff, and mobile framing to visible
+prototype selectors; and list prohibited substitutions. This is not another
+approval gate. It prevents a coded probe from preserving only palette and copy
+while discarding the selected composition and media logic. At prototype review,
+show the selected board and matched desktop/mobile captures side by side. Do not
+ask for acceptance if the defining crop, realism, scale, or handoff is absent.
+Use `references/TREATMENT_TRANSLATION.md` for the required categories and
+side-by-side self-review.
+
 ## Stage 3: editable Experience Map
 
 After configuration, turn the recommended concept into a short section-level

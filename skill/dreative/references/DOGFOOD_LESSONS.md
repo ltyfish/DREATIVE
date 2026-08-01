@@ -196,3 +196,36 @@ classification remains limited and must expose uncertainty.
 Recheck condition: Two later Showcase dog runs where one production-like
 prototype is accepted without total rebuild and no placeholder collection or
 nominal interaction passes finalization.
+
+### DL-008 / proposed / 2026-08-01
+
+Observed failure: A user selected a cinematic four-panel Roaster's Cut board
+whose appeal came from photographic physical subjects, hard editorial cuts,
+macro material detail, and object-led handoffs. The coded prototype retained
+the black/bone/orange palette and roast state, but replaced the drum, origin
+landscapes, and brew equipment with CSS geometry and turned the panel sequence
+into an ordinary stacked landing page.
+
+Root cause: Reference adoption and prototype fidelity recorded prose, artifact
+presence, and focal scale but did not bind the treatment board's defining visual
+grammar to rendered selectors. Functional continuity was allowed to impersonate
+faithful art-direction execution, and acceptance was requested without a
+side-by-side board-to-prototype comparison.
+
+Change: Treat the selected board as a translation contract. Bind composition,
+focal subjects, material/lighting, type scale, handoffs, and mobile framing to
+visible selectors; declare prohibited substitutions; and present matched
+desktop/mobile side-by-side captures before acceptance. Reject production-like
+status when realistic media becomes procedural placeholder art or a distinctive
+panel system becomes a conventional vertical page.
+
+Evidence: Northwind Roaster's Cut treatment board, generated prototype source,
+desktop full-page capture, and explicit user rejection on 2026-08-01.
+
+Cost or trade-off: Adds a small translation record and one comparison layout to
+prototype review. Automated checks can verify bindings and media presence, but
+human taste review still decides whether the translation is compelling.
+
+Recheck condition: Two later Showcase prototypes preserve their selected
+treatment's defining composition and media hierarchy and are accepted without a
+ground-up visual rewrite.

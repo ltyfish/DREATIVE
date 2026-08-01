@@ -47,6 +47,17 @@ artifact or a performance of following instructions.
    only for a named unresolved material decision. The builder cannot select or
    accept for the user, and a general instruction to continue is neither a
    treatment choice nor prototype acceptance.
+   A selected treatment board is a visual translation contract, not loose
+   inspiration. Before coding, bind its composition, focal subjects,
+   material/lighting, type scale, transition handoffs, and mobile framing to
+   concrete prototype selectors. Show the board beside matched desktop/mobile
+   prototype captures at review. A production-like label is invalid when a
+   realistic photographic or rendered subject was replaced by CSS/SVG geometry,
+   when the board's panel or crop system became ordinary stacked sections, or
+   when its defining handoff exists only in prose. Stop and revise before asking
+   for acceptance; functional state propagation does not excuse visual drift.
+   Read `references/TREATMENT_TRANSLATION.md` and complete its translation lock
+   before implementing the selected board.
 4. After configuration, present a compact, project-specific **Experience Map**
    before editing code. Show every major page or section with Dreative's
    recommended role, craft intensity from 1–5, simple journey rhythm
@@ -179,6 +190,12 @@ compact full-page continuity storyboard. Prose is never prototype evidence.
 The builder may record only a `builderSelectionRationale`, which is an
 inspectable assertion and never an independent review or quality verdict.
 "It works" is not proof of production fidelity or a taste verdict.
+The selected board's defining visual grammar must survive into the prototype.
+Require a side-by-side acceptance view and name prohibited substitutions (for
+example, CSS-drawn machinery for a photoreal machine, gradient placeholders for
+origin photography, or a normal vertical landing page for a panelized cinematic
+edit). If any prohibited substitution appears, reject the prototype before it
+reaches the user.
 
 Record the executable contract using `schemas/showcase-mechanism.schema.json`.
 Prototype evidence records the cheap treatments, whether a second coded
@@ -387,6 +404,7 @@ rendered interface. `DREATIVE_CHECKS_PASSED` certifies commands only, not taste.
 - Advanced runtime: `references/CREATIVE_EXECUTION.md`
 - Relevant craft only: `skills/<name>.md`
 - Rendered correction loop: `references/VISUAL_REFINEMENT.md`
+- Selected treatment board: `references/TREATMENT_TRANSLATION.md`
 - Opted-in evaluator handoff: project-local `.dreative/evaluation/README.md`
 - Chosen mechanism only: zero or one matching native foundation initially
 - Focused mechanism lookup only: `llms.txt` or `dreative catalogue`

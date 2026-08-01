@@ -19,3 +19,9 @@ repeat one hero image through unrelated sections.
 
 Reject generic stock, untreated rectangles, fake product photography,
 placeholder media, and imagery whose crop or contrast fails on mobile.
+
+When a user selects a visual treatment board, preserve its medium hierarchy.
+Photographic or rendered focal subjects may not silently become CSS/SVG
+illustrations, and distinct image-led stages may not collapse into one reused
+hero plus procedural placeholders. Treat that as a material direction change
+requiring revision or explicit user approval, not an implementation fallback.
