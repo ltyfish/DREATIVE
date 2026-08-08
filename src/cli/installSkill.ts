@@ -35,6 +35,7 @@ function activeSkillFile(relative: string, selectedSkills: Set<string>): boolean
   if (ACTIVE_ROOT_FILES.has(relative)) return true;
   if (relative.startsWith("agents/")) return true;
   if (relative.startsWith("frameworks/") || relative.startsWith("systems/") || relative.startsWith("schemas/")) return true;
+  if (relative.startsWith("exemplars/")) return true;
   if (relative.startsWith("skills/")) return selectedSkills.has(path.basename(relative, ".md"));
   return ACTIVE_REFERENCES.has(relative);
 }

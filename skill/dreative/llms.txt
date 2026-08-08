@@ -17,6 +17,13 @@ are in `systems/runtime.js`, `systems/NATIVE_FOUNDATIONS.md`, and
 after a project-native concept has been chosen. It must never supply the concept
 or a named site's house style.
 
+`exemplars/SLOP.md` lists the default shapes that make generated frontends
+recognisable as generated, and `exemplars/PRINCIPLES.md` holds principles
+indexed by the condition under which they apply. Neither contains copied
+designs: a library of examples converges the output on its own average, which is
+the failure being avoided. Read `exemplars/SLOP.md` before committing to a
+visual system.
+
 Named reference and library candidates are routed by
 `references/REFERENCE_ADOPTION.md`. That guide separates useful full-site and
 product-flow research from conditional component or mechanism sources,

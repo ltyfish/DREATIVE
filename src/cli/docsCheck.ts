@@ -78,7 +78,9 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /shared-state continuity[\s\S]*authored-sequence continuity[\s\S]*before\/peak\/after/i, "must support state or authored-sequence Showcase continuity");
   requireText(findings, "SKILL.md", skill, /Recommended baseline[\s\S]*two perceptible[\s\S]*media opportunities/i, "Showcase must bind its delta and product-native media decision");
   requireText(findings, "SKILL.md", skill, /journey[\s\S]*scroll-authored choreography only when[\s\S]*Smooth scrolling[\s\S]*does not qualify/i, "journey-style Showcase must use scroll choreography only when the treatment requires it");
-  requireText(findings, "SKILL.md", skill, /text, opacity, color, filter, or uniform scale[\s\S]*rejected/i, "Showcase must reject low-salience scroll-only state changes");
+  requireText(findings, "SKILL.md", skill, /text, opacity, colour, filter, or uniform scale[\s\S]*doing the work the concept promised/i, "Showcase must question low-salience scroll-only state changes");
+  requireText(findings, "SKILL.md", skill, /exemplars\/SLOP\.md/, "must route the visual system through the slop catalogue");
+  requireText(findings, "SKILL.md", skill, /calmer and faster|damaged by it/i, "must allow restraint as a first-class direction");
   requireText(findings, "SKILL.md", skill, /desktop[\s\S]*390px[\s\S]*320px mobile[\s\S]*text[\s\S]*collisions/i, "Showcase must exercise desktop, 390px, and 320px mechanisms and sample collisions");
   requireText(findings, "SKILL.md", skill, /hero, Peak, and[\s\S]*post-Peak[\s\S]*external media[\s\S]*procedural/i, "Showcase must make external-first focal asset decisions across the route");
   requireText(findings, "SKILL.md", skill, /full-page continuity storyboard[\s\S]*hero, Peak, and[\s\S]*post-Peak/i, "Showcase prototypes must expose full-page continuity");

@@ -81,8 +81,10 @@ artifact or a performance of following instructions.
    rendered verification can exercise the promise. Intensity 5 may instead be
    exceptional composition, imagery, typography, pacing, or material craft; it
    does not itself require interaction. Treat an all-5
-   map as flagship craft everywhere, not maximum energy everywhere. Exactly one
-   row owns the Peak rhythm. Showcase does not require a Control row when
+   map as flagship craft everywhere, not maximum energy everywhere. A route
+   normally has one clear Peak, because two competing peaks usually means
+   neither lands; depart from that when the content genuinely has two arcs, and
+   say why. Showcase does not require a Control row when
    cinematic, physical, editorial, or material continuity better serves the premise.
    The schema makes
    promises traceable; it is not an approval artifact and does not prove taste.
@@ -162,10 +164,8 @@ from Recommended. A conventional long page with one isolated spectacle does
 not fulfill the highest-ceiling promise. In the final response state
 `Showcase implementation attempted:` followed by the concrete mechanisms,
 media, and distributed experience actually shipped, plus
-`Independent visual verdict: awaiting user review`. Always ask the user to
-inspect the supplied desktop, mobile, and motion views and provide the verdict.
-The builder contract has no verdict field: Codex must never generate, infer,
-persist, or promote this verdict, even when it believes the result passes.
+`Independent visual verdict: awaiting user review`. Ask the user to inspect the
+supplied desktop, mobile, and motion views.
 Also state `Not pursued:` for
 any materially considered or promised advanced treatment that was rejected,
 downgraded, or replaced, with the product or prototype reason. Do not list
@@ -210,9 +210,9 @@ is invalid. Label every focal artifact `treatment-board`, `animatic`,
 Showcase. Stepped still replacement may be a valid animatic or deliberate
 editorial treatment, but it cannot silently stand in for promised continuous
 motion.
-Each cheap treatment is a concrete 3â€“8-frame visual sequence, not an abstract
+Each cheap treatment is a concrete 3–8-frame visual sequence, not an abstract
 mechanism label. Show the product entering or receiving input, the visible
-change, and the downstream outcomeâ€”for example beans entering a roaster,
+change, and the downstream outcome—for example beans entering a roaster,
 heating, the drum opening, beans falling into the tray, and the recommendation
 emerging. These boards compare story, framing, and motion grammar cheaply; they
 do not claim production motion fidelity.
@@ -237,8 +237,9 @@ cannot be named as the primary subject.
 These semantic fields are structured review prompts, not deterministic proof.
 Browser checks can prove that material states change; human review still decides
 whether the change is meaningful, coherent, or tasteful.
-The mechanism list is evidence routing, not a required widget count. Hover is a
-supporting state: it cannot own the peak or post-peak mechanism in a journey.
+The mechanism list is evidence routing, not a required widget count. Hover is
+unavailable on touch, so a mechanism that exists only on hover needs a stated
+mobile equivalent rather than a prohibition.
 Triggers may be scroll, click, hover, drag, time, media playback, page load,
 route transition, or none for a static authored handoff. Time and media triggers
 must expose sampled progression; load, route, and none declare one resolved
@@ -248,9 +249,11 @@ When the premise is a journey, process, or transformation, declare it as
 depends on scroll controlling time or space; a cinematic sequence, direct
 manipulation, or authored edit may own the journey instead. Smooth scrolling
 alone does not qualify. Bucketed text/class replacement alone
-is not a flagship transformation. A scroll mechanism whose sampled differences
-are fully explained by text, opacity, color, filter, or uniform scale is
-rejected. Interface-style products may declare
+is not a flagship transformation. When a scroll mechanism's sampled differences
+reduce to text, opacity, colour, filter, or uniform scale, check that the change
+is genuinely doing the work the concept promised; a restrained cross-fade can be
+the right answer, but it is rarely a flagship one.
+Interface-style products may declare
 `interface` and use a different continuous interaction structure. Final visual
 smoke exercises each trigger on desktop, 390px, and 320px mobile, samples text
 collisions through the route, and observes a visible geometry, style, media,
@@ -274,15 +277,24 @@ package or executable detection into browser evidence.
 ## Creative decisions
 
 Begin with product truth: subject verbs, materials, data, history, audience,
-language, assets, behavior, and content shape. Include at least three decisions
-that could only have come from this product. A fashionable layout with the logo
-swapped is failure.
+language, assets, behavior, and content shape. The design must carry decisions
+that could only have come from this product; the test is whether it would break
+if applied to a competitor, not how many such decisions you can list. A
+fashionable layout with the logo swapped is failure.
+
+Match ambition to the product's actual job. Some products are served by
+spectacle and some are damaged by it: a clinic, a checkout, a docs page, or a
+crisis notice is better when it is calmer and faster than what it replaced.
+Choosing restraint for a real user reason is a design decision of the same rank
+as choosing a set-piece, not a downgrade to justify.
 
 Treat references as ingredients. Extract individual principles—rhythm,
 hierarchy, material, transition logic, interaction—not a complete house style.
-Prefer two to four cross-domain sources. Never lift one source's combined type,
-palette, composition, and signature motion. Never design “X-like.” GSAP and
-Lenis are capabilities, not aesthetics.
+Draw from more than one domain so no single source dictates the result. Never
+lift one source's combined type, palette, composition, and signature motion.
+Never design “X-like.” GSAP and Lenis are capabilities, not aesthetics.
+Read `exemplars/SLOP.md` before committing to a visual system; it lists the
+default shapes that make generated frontends recognisable as generated.
 Record reference mode as `none`, `supplied`, or `scout`. `scout` requires at
 least two traceable candidates with real URLs/files and rights status;
 `supplied` requires the configured supplied references; an empty adoption list
