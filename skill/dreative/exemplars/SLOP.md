@@ -139,7 +139,33 @@ screenshotted.
 **Instead:** the body is where the user actually spends their time. Judge the
 route by its weakest section, not its best one.
 
-## 10. Mobile as a consequence
+## 10. The fabricated prop
+
+A realistic physical object — a product, a machine, a piece of fruit, a bean —
+assembled out of CSS gradients, SVG ellipses, and box-shadows to look
+three-dimensional. Usually floating, usually rotating, usually the wrong colour.
+
+**Why it happens:** it is fully under the model's control. No sourcing, no
+rights, no licence check, no file. It feels like craft because it is a lot of
+markup, and the code looks impressive in the diff.
+
+**Tell:** the object does not read as the thing it is named. Ask someone what it
+is without telling them; if they hesitate, it failed. The colours are also
+usually a give-away — invented rather than sampled from the real material.
+
+**Instead:** source a photograph, a licensed model, or a pre-rendered view. See
+`../references/MEDIA_SOURCES.md`. Procedural fabrication is a legitimate answer
+when the result is genuinely the better image — a diagram, a schematic, a
+stylised mark, anything that is not pretending to be a photograph. It is not a
+legitimate answer for "I needed a picture of the product and did not look for
+one."
+
+This is the most expensive entry in this list. Blind reviewers describe an
+otherwise strong page as ruined by it — *"the lighthouse image is soo bad omg"*,
+*"the coffeebeans dont look like it"* — while the rest of the page's typography
+and layout were scoring as the better of the two designs.
+
+## 11. Mobile as a consequence
 
 The desktop layout with columns stacked. Type still at desktop scale or shrunk
 uniformly. A hero that now takes three screens. Tap targets under 44px. A

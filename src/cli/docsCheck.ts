@@ -89,6 +89,15 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /MEDIA_SOURCES\.md/, "must route focal media to concrete sources rather than only requiring that external options be evaluated");
   requireText(findings, "references/MEDIA_SOURCES.md", contents.get("references/MEDIA_SOURCES.md") ?? "", /router, not a library[\s\S]*no bundled assets/i, "media sources must stay a router; bundling assets recreates the averaging failure");
   requireText(findings, "references/MEDIA_SOURCES.md", contents.get("references/MEDIA_SOURCES.md") ?? "", /licence covers your use[\s\S]*subject is truthful[\s\S]*attribute it/i, "media sources must require licence, truthfulness, and attribution checks before use");
+  // A realistic subject faked out of gradients has cost more verdicts than any
+  // other single defect, and it is the failure the 3D specialist exists to route
+  // around rather than dress up.
+  requireText(findings, "exemplars/SLOP.md", contents.get("exemplars/SLOP.md") ?? "", /## \d+\. The fabricated prop[\s\S]*does not read as the thing it is named/i, "the slop catalogue must name the fabricated realistic prop");
+  const threeD = contents.get("skills/3d.md") ?? "";
+  requireText(findings, "skills/3d.md", threeD, /Where the object comes from[\s\S]*licensed or CC0 model[\s\S]*MEDIA_SOURCES\.md/i, "the 3D specialist must route the object to a real source before geometry");
+  requireText(findings, "skills/3d.md", threeD, /Lighting and material are the work/i, "the 3D specialist must treat lighting and material as the actual difficulty");
+  requireText(findings, "skills/3d.md", threeD, /Prefer the pre-rendered view[\s\S]*Reserve live WebGL/i, "the 3D specialist must default realistic props to pre-rendered output");
+  requireText(findings, "skills/3d.md", threeD, /Photo-to-3D reconstruction is not an available capability/i, "the 3D specialist must name photo-to-3D as a capability gap rather than an attempt");
   requireText(findings, "SKILL.md", skill, /reference mode[\s\S]*none[\s\S]*supplied[\s\S]*scout[\s\S]*traceable/i, "Showcase reference scouting must be explicit and traceable");
   requireText(findings, "SKILL.md", skill, /identity channel[\s\S]*visible media or a computed[\s\S]*distinct rendered values/i, "focal product identity must bind to rendered uniqueness evidence");
   // Positive requirements. Blind A/B review named all three as the reason a
