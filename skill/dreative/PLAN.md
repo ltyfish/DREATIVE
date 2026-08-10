@@ -267,10 +267,12 @@ the requirement most often missed, and removing generic components does not
 satisfy it.
 
 For every focal subject, decide the medium and where the asset actually comes
-from before writing focal code. Read `references/ASSET_PIPELINES.md`. Evaluate
-external media before fabricating a realistic physical subject out of CSS or
-SVG; fabricated product imagery is the single failure blind reviewers have
-called out most sharply. If the selected fidelity needs a capability you do not
+from before writing focal code. Read `references/MEDIA_SOURCES.md` for where to
+look and what each licence permits, and `references/ASSET_PIPELINES.md` for
+turning what you find into shippable output. Evaluate external media before
+fabricating a realistic physical subject out of CSS or SVG; fabricated product
+imagery is the single failure blind reviewers have called out most sharply, and
+"evaluated external options" means you searched. If the selected fidelity needs a capability you do not
 have, say so and name one concrete route to it — a tool, a supplied asset, or an
 explicit treatment change — rather than quietly substituting geometry. Local
 assets must exist in the repository and be tracked; remote assets must load.

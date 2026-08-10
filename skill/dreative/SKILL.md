@@ -341,8 +341,11 @@ absent, plus its real source/file, rights status, and mobile fallback. A
 realistic physical product, machine, character, or material must evaluate
 external media before procedural DOM/CSS/SVG fabrication — blind review has
 repeatedly singled out fabricated product imagery as the worst thing on an
-otherwise strong page. Procedural fabrication is allowed when it is genuinely
-the better image, not because it is faster, familiar, cheaper, or easier. If the
+otherwise strong page. Read `references/MEDIA_SOURCES.md` for where to actually
+look and what each source's licence permits; "evaluated external options" means
+you searched, not that you considered searching. Procedural fabrication is
+allowed when it is genuinely the better image, not because it is faster,
+familiar, cheaper, or easier. If the
 chosen ceiling requires an unavailable sourcing, editing, model, render, or
 sequence capability, expose the capability gap and recommend one concrete
 available tool/plugin or asset route before asking for installation, a supplied
@@ -430,6 +433,7 @@ prompts a look over a blocker that encodes taste as pass/fail.
 - Dreative dogfood or workflow change: `references/DOGFOOD_LESSONS.md` and `skills/learning.md`
 - Named adoption list or library/reference comparison: `references/REFERENCE_ADOPTION.md`
 - Advanced runtime: `references/CREATIVE_EXECUTION.md`
+- Where to source real imagery, texture, 3D, or type: `references/MEDIA_SOURCES.md`
 - Focal media feasibility and offline production: `references/ASSET_PIPELINES.md`
 - What to build, not only what to avoid: `exemplars/PRINCIPLES.md` and `exemplars/SLOP.md`
 - Relevant craft only: `skills/<name>.md`

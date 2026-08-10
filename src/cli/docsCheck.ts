@@ -83,6 +83,12 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /calmer and faster|damaged by it/i, "must allow restraint as a first-class direction");
   requireText(findings, "SKILL.md", skill, /desktop[\s\S]*390px[\s\S]*320px mobile[\s\S]*text[\s\S]*collisions/i, "Showcase must exercise desktop, 390px, and 320px mechanisms and sample collisions");
   requireText(findings, "SKILL.md", skill, /hero, Peak, and[\s\S]*post-Peak[\s\S]*external media[\s\S]*procedural/i, "Showcase must make external-first focal asset decisions across the route");
+  // Fabricated product imagery was the sharpest single complaint in blind
+  // review, in both arms. "Evaluate external media" is only actionable if the
+  // builder is told where to look.
+  requireText(findings, "SKILL.md", skill, /MEDIA_SOURCES\.md/, "must route focal media to concrete sources rather than only requiring that external options be evaluated");
+  requireText(findings, "references/MEDIA_SOURCES.md", contents.get("references/MEDIA_SOURCES.md") ?? "", /router, not a library[\s\S]*no bundled assets/i, "media sources must stay a router; bundling assets recreates the averaging failure");
+  requireText(findings, "references/MEDIA_SOURCES.md", contents.get("references/MEDIA_SOURCES.md") ?? "", /licence covers your use[\s\S]*subject is truthful[\s\S]*attribute it/i, "media sources must require licence, truthfulness, and attribution checks before use");
   requireText(findings, "SKILL.md", skill, /reference mode[\s\S]*none[\s\S]*supplied[\s\S]*scout[\s\S]*traceable/i, "Showcase reference scouting must be explicit and traceable");
   requireText(findings, "SKILL.md", skill, /identity channel[\s\S]*visible media or a computed[\s\S]*distinct rendered values/i, "focal product identity must bind to rendered uniqueness evidence");
   // Positive requirements. Blind A/B review named all three as the reason a

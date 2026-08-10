@@ -28,6 +28,13 @@ Where to actually *look* at real work is a separate question, answered in
 component collections to the research role each is genuinely good for. Study
 sites there; extract principles here.
 
+Where to get real *material* — photography, archive imagery, texture, 3D, type —
+is a third question, answered in `../references/MEDIA_SOURCES.md`. That one is
+safe to hold as a list because an asset is not a look: two projects drawing from
+the same museum archive do not converge, whereas two projects drawing from the
+same saved layout do. It is a router of sources, not a store of files, for the
+same reason this folder holds no designs.
+
 ## The rule that keeps this from becoming a template library
 
 > Adopt a **decision and its reason**, never a look.
