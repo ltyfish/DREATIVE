@@ -56,8 +56,8 @@ test("invalid maps fail on missing peak and incomplete obligations", () => {
   assert.match(errors, /at least two/);
 });
 
-test("keep-static rejects high intensity and active motion mechanisms", () => {
-  const staticContradiction = {
+test("keep-static is the user's word and is no longer contradicted by prose matching", () => {
+  const staticSection = {
     ...map,
     sections: map.sections.map((section) => section.id === "hero" ? {
       ...section,
@@ -67,10 +67,7 @@ test("keep-static rejects high intensity and active motion mechanisms", () => {
       mobile: "animated card transition",
     } : section),
   };
-  const errors = validateExperienceMap(staticContradiction).join("\n");
-  assert.match(errors, /keep-static requires intensity 1 or 2/);
-  assert.match(errors, /mechanismOwner contradicts keep-static/);
-  assert.match(errors, /mobile contradicts keep-static/);
+  assert.deepEqual(validateExperienceMap(staticSection), []);
 });
 
 test("meaningful agency rows require an executable rendered-state contract", () => {
@@ -102,19 +99,20 @@ test("experience maps reject duplicate selector/property ownership", () => {
   assert.match(validateExperienceMap(conflict).join("\n"), /conflicts with scroll timeline ownership of #roast transform/);
 });
 
-test("Showcase maps require Showcase direction and an intensity-5 primary peak", () => {
+test("Showcase maps require Showcase direction and a resolvable peak, not a declared intensity", () => {
   assert.deepEqual(validateShowcaseExperienceMap(map), []);
   const recommended = { ...map, direction: "recommended" as const };
   assert.match(validateShowcaseExperienceMap(recommended).join("\n"), /direction showcase/);
   const weakPeak = { ...map, sections: map.sections.map((section) => section.id === "roast" ? { ...section, intensity: 4 as const } : section) };
-  const errors = validateShowcaseExperienceMap(weakPeak).join("\n");
-  assert.match(errors, /primary peak must have intensity 5/);
-  assert.match(errors, /at least one intensity-5 section/);
+  assert.deepEqual(validateShowcaseExperienceMap(weakPeak), []);
+  const missingPeak = { ...map, primaryPeak: "roast", sections: map.sections.map((section) => ({ ...section, rhythm: "build" as const })) };
+  assert.match(validateShowcaseExperienceMap(missingPeak).join("\n"), /must use rhythm peak/);
 });
 
-test("maps keep one explicit peak and Showcase permits authored passive journeys", () => {
+test("two peaks are an advisory, not a rejection, and passive journeys stay valid", () => {
   const twoPeaks = { ...map, sections: map.sections.map((section) => section.id === "hero" ? { ...section, rhythm: "peak" as const } : section) };
-  assert.match(validateExperienceMap(twoPeaks).join("\n"), /exactly one section must use rhythm peak/);
+  assert.deepEqual(validateExperienceMap(twoPeaks), []);
+  assert.match(journeyBalanceAdvisories(twoPeaks).join("\n"), /2 sections claim rhythm peak/);
   const passive = { ...map, sections: map.sections.map((section) => ({ ...section, agency: "watch" as const })) };
   assert.doesNotMatch(validateShowcaseExperienceMap(passive).join("\n"), /user has control/);
 });

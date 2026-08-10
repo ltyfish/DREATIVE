@@ -1,292 +1,72 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://dreative.dev/schemas/showcase-mechanism.schema.json",
-  "title": "Dreative Showcase mechanism contract",
+  "title": "Showcase connected-experience contract",
+  "description": "Routes a Showcase build to browser verification. Every field is either exercised against the rendered page or read by a human reviewer. Fields describing the builder's own process — rationales, prototype acceptance, frame counts, feasibility narratives — are deliberately absent: a non-empty string is not evidence.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["version", "experienceType", "classification", "recommendedBaseline", "showcaseDelta", "mediaOpportunities", "referenceMode", "referenceMinimum", "referenceAdoptions", "assetCommitments", "productionFeasibility", "prototypeEvidence", "prototypeFidelity", "continuity", "comparisonPolicy", "comparisonLayouts", "mechanisms"],
+  "required": ["version", "experienceType", "signature", "referenceMode", "referenceAdoptions", "assetCommitments", "continuity", "mechanisms"],
   "properties": {
-    "version": { "const": 2 },
+    "version": { "const": 3 },
     "experienceType": { "enum": ["journey", "interface"] },
-    "classification": {
+    "signature": {
       "type": "object",
+      "description": "The one component on this route that could not be lifted onto a competitor's page. Verified to resolve, render, and occupy at least 5% of the viewport.",
       "additionalProperties": false,
-      "required": ["implementation"],
+      "required": ["name", "selector", "whyOnlyThisProduct"],
       "properties": {
-        "implementation": { "const": "attempted" }
-      }
-    },
-    "recommendedBaseline": { "type": "string", "minLength": 1 },
-    "showcaseDelta": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 1 } },
-    "mediaOpportunities": {
-      "type": "array",
-      "minItems": 2,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["opportunity", "decision", "rationale"],
-        "properties": {
-          "opportunity": { "type": "string", "minLength": 1 },
-          "decision": { "enum": ["use", "reject"] },
-          "rationale": { "type": "string", "minLength": 1 }
-        }
+        "name": { "type": "string", "minLength": 1 },
+        "selector": { "type": "string", "minLength": 1 },
+        "whyOnlyThisProduct": { "type": "string", "minLength": 1 }
       }
     },
     "referenceMode": { "enum": ["none", "supplied", "scout"] },
-    "referenceMinimum": { "type": "integer", "minimum": 0, "maximum": 4 },
     "referenceAdoptions": {
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["source", "sourceRef", "rights", "principle", "decision", "requiredBy", "rationale"],
+        "required": ["source", "sourceRef", "rights", "principle", "decision"],
         "properties": {
           "source": { "type": "string", "minLength": 1 },
-          "sourceRef": { "type": "string", "minLength": 1 },
+          "sourceRef": { "type": "string", "minLength": 1, "description": "A real URL or repository-relative file. Remote refs are requested; local refs must exist." },
           "rights": { "type": "string", "minLength": 1 },
           "principle": { "type": "string", "minLength": 1 },
           "decision": { "enum": ["use", "reject"] },
-          "requiredBy": { "enum": ["direction", "user"] },
-          "targetSelector": { "type": "string", "minLength": 1 },
-          "visibleImplementation": { "type": "string", "minLength": 1 },
-          "rationale": { "type": "string", "minLength": 1 },
-          "rejectionApprovedBy": { "const": "user" }
-        },
-        "allOf": [
-          {
-            "if": { "properties": { "decision": { "const": "use" } }, "required": ["decision"] },
-            "then": {
-              "properties": {
-                "targetSelector": {},
-                "visibleImplementation": {}
-              },
-              "required": ["targetSelector", "visibleImplementation"]
-            }
-          },
-          {
-            "if": {
-              "properties": { "decision": { "const": "reject" }, "requiredBy": { "const": "user" } },
-              "required": ["decision", "requiredBy"]
-            },
-            "then": {
-              "properties": { "rejectionApprovedBy": {} },
-              "required": ["rejectionApprovedBy"]
-            }
-          }
-        ]
+          "targetSelector": { "type": "string", "minLength": 1, "description": "Required when decision is use; must render visibly." }
+        }
       }
     },
     "assetCommitments": {
       "type": "array",
-      "minItems": 1,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["role", "stage", "subjectKind", "decision", "requiredBy", "targetSelector", "medium", "productionSource", "sourceKind", "sourceRef", "rights", "treatment", "crop", "animationTechnique", "mobileFallback", "externalEvaluation", "rationale"],
+        "required": ["role", "decision", "targetSelector", "medium", "sourceKind", "sourceRef", "rights", "mobileFallback"],
         "properties": {
           "role": { "type": "string", "minLength": 1 },
-          "stage": { "enum": ["hero", "peak", "post-peak"] },
-          "subjectKind": { "enum": ["realistic-physical", "graphic", "interface", "environmental"] },
           "decision": { "enum": ["use", "reject"] },
-          "requiredBy": { "enum": ["direction", "user"] },
           "targetSelector": { "type": "string", "minLength": 1 },
           "medium": { "enum": ["image", "video", "svg", "canvas", "3d", "none"] },
-          "productionSource": { "enum": ["supplied", "sourced", "generated", "licensed-3d", "pre-rendered-sequence", "procedural", "none"] },
-          "sourceKind": { "enum": ["local-file", "remote-url", "inline", "generated-record", "none"] },
+          "sourceKind": { "enum": ["local-file", "remote-url", "inline", "none"] },
           "sourceRef": { "type": "string", "minLength": 1 },
           "rights": { "type": "string", "minLength": 1 },
-          "treatment": { "type": "string", "minLength": 1 },
-          "crop": { "type": "string", "minLength": 1 },
-          "animationTechnique": { "type": "string", "minLength": 1 },
-          "mobileFallback": { "type": "string", "minLength": 1 },
-          "externalEvaluation": { "type": "string", "minLength": 1 },
-          "proceduralSuperiorityReason": { "type": "string", "minLength": 1 },
-          "capabilityGap": { "type": "string", "minLength": 1 },
-          "rationale": { "type": "string", "minLength": 1 },
-          "rejectionApprovedBy": { "const": "user" }
-        },
-        "allOf": [
-          {
-            "if": {
-              "properties": { "decision": { "const": "reject" }, "requiredBy": { "const": "user" } },
-              "required": ["decision", "requiredBy"]
-            },
-            "then": {
-              "properties": { "rejectionApprovedBy": {} },
-              "required": ["rejectionApprovedBy"]
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "subjectKind": { "const": "realistic-physical" },
-                "productionSource": { "const": "procedural" }
-              },
-              "required": ["subjectKind", "productionSource"]
-            },
-            "then": {
-              "properties": { "proceduralSuperiorityReason": {} },
-              "required": ["proceduralSuperiorityReason"]
-            }
-          }
-        ]
-      },
-      "allOf": [
-        { "contains": { "type": "object", "properties": { "stage": { "const": "hero" } }, "required": ["stage"] } },
-        { "contains": { "type": "object", "properties": { "stage": { "const": "peak" } }, "required": ["stage"] } },
-        { "contains": { "type": "object", "properties": { "stage": { "const": "post-peak" } }, "required": ["stage"] } }
-      ]
-    },
-    "productionFeasibility": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["gateStatus", "prototypeAssetRefs", "focalSubjects"],
-      "properties": {
-        "gateStatus": { "const": "ready" },
-        "prototypeAssetRefs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-        "focalSubjects": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["stage", "subject", "treatmentDefining", "requiredMedium", "outputKind", "responsiveMode", "exactToolOrSource", "editingWork", "desktopDeliverable", "mobileDeliverable", "rights", "cost", "readiness", "outputFiles", "prototypeBindings"],
-            "properties": {
-              "stage": { "enum": ["hero", "peak", "post-peak"] },
-              "subject": { "type": "string", "minLength": 1 },
-              "treatmentDefining": { "type": "boolean" },
-              "requiredMedium": { "enum": ["image", "video", "svg", "canvas", "3d"] },
-              "outputKind": { "enum": ["native", "rendered-sequence"] },
-              "responsiveMode": { "enum": ["distinct", "shared"] },
-              "exactToolOrSource": { "type": "string", "minLength": 1 },
-              "editingWork": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-              "desktopDeliverable": { "type": "string", "minLength": 1 },
-              "mobileDeliverable": { "type": "string", "minLength": 1 },
-              "rights": { "type": "string", "minLength": 1 },
-              "cost": { "enum": ["free", "paid", "licensed", "external-production"] },
-              "readiness": { "enum": ["ready", "needs-tool", "paid-licensed", "external-production"] },
-              "outputFiles": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-              "prototypeBindings": {
-                "type": "array",
-                "minItems": 2,
-                "items": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": ["viewport", "selector", "assetRef"],
-                  "properties": {
-                    "viewport": { "enum": ["desktop", "mobile"] },
-                    "selector": { "type": "string", "minLength": 1 },
-                    "assetRef": { "type": "string", "minLength": 1 }
-                  }
-                }
-              }
-            },
-            "allOf": [{
-              "if": { "properties": { "treatmentDefining": { "const": true } }, "required": ["treatmentDefining"] },
-              "then": {
-                "properties": { "readiness": { "const": "ready" }, "outputFiles": { "type": "array", "minItems": 1 } }
-              }
-            }]
-          }
+          "mobileFallback": { "type": "string", "minLength": 1 }
         }
-      }
-    },
-    "prototypeEvidence": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["treatmentOptions", "comparisonRequired", "bestFitApproach", "selectedApproach", "selectedBy", "bestFitArtifact", "bestFitCaptures", "bestFitRecordings", "fullPageContinuityStoryboards", "prototypeReview", "builderSelectionRationale"],
-      "properties": {
-        "treatmentOptions": { "type": "array", "minItems": 2, "maxItems": 3, "items": { "$ref": "#/$defs/treatmentBoard" } },
-        "comparisonRequired": { "type": "boolean" },
-        "bestFitApproach": { "type": "string", "minLength": 1 },
-        "boldAlternativeApproach": { "type": "string", "minLength": 1 },
-        "selectedApproach": { "type": "string", "minLength": 1 },
-        "selectedBy": { "const": "user" },
-        "bestFitArtifact": { "type": "string", "minLength": 1 },
-        "boldAlternativeArtifact": { "type": "string", "minLength": 1 },
-        "bestFitCaptures": { "$ref": "#/$defs/responsiveCaptures" },
-        "boldAlternativeCaptures": { "$ref": "#/$defs/responsiveCaptures" },
-        "bestFitRecordings": { "$ref": "#/$defs/responsiveRecordings" },
-        "boldAlternativeRecordings": { "$ref": "#/$defs/responsiveRecordings" },
-        "fullPageContinuityStoryboards": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["bestFit"],
-          "properties": {
-            "bestFit": { "$ref": "#/$defs/continuityStoryboard" },
-            "boldAlternative": { "$ref": "#/$defs/continuityStoryboard" }
-          }
-        },
-        "prototypeReview": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["status", "acceptedBy"],
-          "properties": {
-            "status": { "const": "accepted" },
-            "acceptedBy": { "const": "user" }
-          }
-        },
-        "comparisonParity": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["bothFinalWorthy", "sharedContent", "sharedViewportCoverage", "distinctInteractionModels"],
-          "properties": {
-            "bothFinalWorthy": { "const": true },
-            "sharedContent": { "const": true },
-            "sharedViewportCoverage": { "const": true },
-            "distinctInteractionModels": { "const": true }
-          }
-        },
-        "builderSelectionRationale": { "type": "string", "minLength": 1 }
-      },
-      "allOf": [{
-        "if": { "properties": { "comparisonRequired": { "const": true } }, "required": ["comparisonRequired"] },
-        "then": {
-          "properties": {
-            "boldAlternativeApproach": {},
-            "boldAlternativeArtifact": {},
-            "boldAlternativeCaptures": {},
-            "boldAlternativeRecordings": {},
-            "comparisonParity": {},
-            "fullPageContinuityStoryboards": {
-              "type": "object",
-              "properties": { "boldAlternative": {} },
-              "required": ["boldAlternative"]
-            }
-          },
-          "required": ["boldAlternativeApproach", "boldAlternativeArtifact", "boldAlternativeCaptures", "boldAlternativeRecordings", "comparisonParity"]
-        }
-      }]
-    },
-    "prototypeFidelity": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["level", "limitations", "selectedArtifact", "prototypeSubjectSelector", "integratedSubjectSelector", "focalObject", "copyBalance", "controlPlacement", "materialLighting", "desktopFraming", "mobileFraming"],
-      "properties": {
-        "level": { "enum": ["treatment-board", "animatic", "production-like", "integration-ready"] },
-        "limitations": { "type": "string", "minLength": 1 },
-        "selectedArtifact": { "type": "string", "minLength": 1 },
-        "prototypeSubjectSelector": { "type": "string", "minLength": 1 },
-        "integratedSubjectSelector": { "type": "string", "minLength": 1 },
-        "focalObject": { "type": "string", "minLength": 1 },
-        "copyBalance": { "type": "string", "minLength": 1 },
-        "controlPlacement": { "type": "string", "minLength": 1 },
-        "materialLighting": { "type": "string", "minLength": 1 },
-        "desktopFraming": { "type": "string", "minLength": 1 },
-        "mobileFraming": { "type": "string", "minLength": 1 }
       }
     },
     "continuity": {
       "type": "object",
+      "description": "One connected experience spanning before, peak, and after. Shared state is exercised from its source; an authored sequence is checked for document order.",
       "additionalProperties": false,
-      "required": ["affectedRegions"],
+      "required": ["mode", "affectedRegions"],
       "properties": {
         "mode": { "enum": ["shared-state", "authored-sequence"] },
+        "motif": { "type": "string", "minLength": 1 },
         "stateKey": { "type": "string", "minLength": 1 },
         "sourceSelector": { "type": "string", "minLength": 1 },
         "sourceTrigger": { "enum": ["click", "drag"] },
-        "stateCount": { "type": "integer", "minimum": 2, "maximum": 5 },
-        "motif": { "type": "string", "minLength": 1 },
+        "stateCount": { "type": "integer", "minimum": 2 },
         "affectedRegions": {
           "type": "array",
           "minItems": 3,
@@ -297,102 +77,34 @@
             "properties": {
               "selector": { "type": "string", "minLength": 1 },
               "stage": { "enum": ["before", "peak", "after"] },
-              "effect": { "type": "string", "minLength": 1 },
-              "motifSelector": { "type": "string", "minLength": 1 },
-              "identity": { "type": "string", "minLength": 1 },
-              "visibleState": { "type": "string", "minLength": 1 },
-              "incomingHandoff": { "type": "string", "minLength": 1 },
-              "outgoingHandoff": { "type": "string", "minLength": 1 },
-              "mediaRef": { "type": "string", "minLength": 1 },
-              "observableChannel": { "enum": ["dom-state", "typography", "image", "video", "svg", "canvas", "spatial-layout", "3d"] }
+              "effect": { "type": "string", "minLength": 1 }
             }
           }
         }
-      },
-      "oneOf": [
-        {
-          "properties": { "mode": { "const": "authored-sequence" }, "motif": {} },
-          "required": ["mode", "motif"]
-        },
-        {
-          "properties": {
-            "mode": { "enum": ["shared-state"] },
-            "stateKey": {},
-            "sourceSelector": {},
-            "sourceTrigger": {},
-            "stateCount": {}
-          },
-          "required": ["stateKey", "sourceSelector", "sourceTrigger", "stateCount"]
-        }
-      ]
-    },
-    "agencyChain": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["controlSectionSelector", "inputSelector", "primaryResponseSelector", "downstreamSelector", "userAction", "immediateResponse", "decisionOutcome"],
-      "properties": {
-        "controlSectionSelector": { "type": "string", "minLength": 1 },
-        "inputSelector": { "type": "string", "minLength": 1 },
-        "primaryResponseSelector": { "type": "string", "minLength": 1 },
-        "downstreamSelector": { "type": "string", "minLength": 1 },
-        "userAction": { "type": "string", "minLength": 1 },
-        "immediateResponse": { "type": "string", "minLength": 1 },
-        "decisionOutcome": { "type": "string", "minLength": 1 }
       }
     },
-    "comparisonPolicy": {
+    "comparison": {
       "type": "object",
+      "description": "Declared only when the route compares items. Checked for one thing: the items render visibly distinct values, rather than reading as repeated cards.",
       "additionalProperties": false,
-      "required": ["present", "rationale"],
+      "required": ["selector", "itemSelector", "identityAttribute", "identityChannels"],
       "properties": {
-        "present": { "type": "boolean" },
-        "rationale": { "type": "string", "minLength": 1 },
-        "sectionSelector": { "type": "string", "minLength": 1 }
-      },
-      "allOf": [{
-        "if": { "properties": { "present": { "const": true } }, "required": ["present"] },
-        "then": { "properties": { "sectionSelector": {} }, "required": ["sectionSelector"] }
-      }]
-    },
-    "comparisonLayouts": {
-      "type": "array",
-      "minItems": 0,
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["selector", "itemSelector", "identityAttribute", "strategy", "reorderMode", "maxTravelViewportRatio", "maxItemResizeRatio", "gapTolerancePx", "alignmentTolerancePx", "identityChannels", "assetStatus"],
-        "properties": {
-          "selector": { "type": "string", "minLength": 1 },
-          "itemSelector": { "type": "string", "minLength": 1 },
-          "identityAttribute": { "type": "string", "pattern": "^data-[a-z0-9-]+$" },
-          "strategy": { "enum": ["fixed-grid", "stable-rail", "selected-stage", "other"] },
-          "reorderMode": { "enum": ["none", "selected-only", "controlled"] },
-          "maxTravelViewportRatio": { "type": "number", "minimum": 0, "maximum": 1 },
-          "maxItemResizeRatio": { "type": "number", "minimum": 0, "maximum": 2 },
-          "gapTolerancePx": { "type": "number", "minimum": 0, "maximum": 48 },
-          "alignmentTolerancePx": { "type": "number", "minimum": 0, "maximum": 48 },
-          "identityChannels": {
-            "type": "array",
-            "minItems": 2,
-            "contains": {
-              "type": "object",
-              "properties": { "uniqueProperty": { "enum": ["src", "background-image", "background-color", "border-radius", "clip-path"] } },
-              "required": ["uniqueProperty"]
-            },
-            "items": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": ["channel", "selector", "uniqueProperty"],
-              "properties": {
-                "channel": { "type": "string", "minLength": 1 },
-                "selector": { "type": "string", "minLength": 1 },
-                "uniqueProperty": { "type": "string", "pattern": "^(src|background-image|background-color|border-radius|clip-path|text|class|data-[a-z0-9-]+)$" }
-              }
+        "selector": { "type": "string", "minLength": 1 },
+        "itemSelector": { "type": "string", "minLength": 1 },
+        "identityAttribute": { "type": "string", "pattern": "^data-[a-z0-9-]+$" },
+        "identityChannels": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["channel", "selector", "uniqueProperty"],
+            "properties": {
+              "channel": { "type": "string", "minLength": 1 },
+              "selector": { "type": "string", "minLength": 1, "description": "$self targets the item itself." },
+              "uniqueProperty": { "enum": ["src", "background-image", "background-color", "border-radius", "clip-path"] }
             }
-          },
-          "assetStatus": { "enum": ["placeholder", "production"] },
-          "selectedIdentity": { "type": "string", "minLength": 1 },
-          "selectedItemMaxScale": { "type": "number", "minimum": 1, "maximum": 3 }
+          }
         }
       }
     },
@@ -402,94 +114,21 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["name", "stage", "selector", "primarySelector", "primarySubject", "trigger", "mediaMode", "mobileTransformation", "productTruth", "userCause", "visibleChange", "decisionConsequence", "motionIntent", "temporalEvidence", "animationOwner", "ownedProperties", "stateCount"],
+        "required": ["name", "stage", "selector", "primarySelector", "primarySubject", "trigger", "mediaMode", "mobileTransformation", "visibleChange", "animationOwner", "ownedProperties", "stateCount"],
         "properties": {
           "name": { "type": "string", "minLength": 1 },
           "stage": { "enum": ["before", "peak", "after"] },
           "selector": { "type": "string", "minLength": 1 },
           "primarySelector": { "type": "string", "minLength": 1 },
-          "primarySubject": { "type": "string", "minLength": 1 },
+          "primarySubject": { "type": "string", "minLength": 1, "description": "The real product subject. Decorative or aria-hidden elements are rejected at runtime." },
           "trigger": { "enum": ["scroll", "click", "hover", "drag", "time", "media", "load", "route", "none"] },
           "mediaMode": { "enum": ["dom-state", "typography", "image", "video", "svg", "canvas", "spatial-layout", "3d"] },
           "mobileTransformation": { "type": "string", "minLength": 1 },
-          "productTruth": { "type": "string", "minLength": 1 },
-          "userCause": { "type": "string", "minLength": 1 },
           "visibleChange": { "type": "string", "minLength": 1 },
-          "decisionConsequence": { "type": "string", "minLength": 1 },
-          "motionIntent": { "enum": ["deliberate-stepped", "continuous-subject", "state-transition", "camera-only", "none"] },
-          "temporalEvidence": { "enum": ["runtime-sampled", "frame-analysis", "user-accepted-limitation", "none"] },
-          "motionEvidenceRef": { "type": "string", "minLength": 1 },
           "animationOwner": { "enum": ["css", "gsap", "motion", "anime", "react-state", "native-js", "other"] },
           "ownedProperties": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-          "stateCount": { "type": "integer", "minimum": 1, "maximum": 5 },
-          "minimumDwellMs": { "type": "integer", "minimum": 400, "maximum": 2000 },
-          "releaseSelector": { "type": "string", "minLength": 1 }
-        },
-        "allOf": [
-          {
-            "if": { "properties": { "trigger": { "const": "scroll" } }, "required": ["trigger"] },
-            "then": {
-              "properties": { "minimumDwellMs": {}, "releaseSelector": {} },
-              "required": ["minimumDwellMs", "releaseSelector"]
-            }
-          },
-          {
-            "if": { "properties": { "trigger": { "enum": ["load", "route", "none"] } }, "required": ["trigger"] },
-            "then": { "properties": { "stateCount": { "type": "integer", "const": 1 } } },
-            "else": { "properties": { "stateCount": { "type": "integer", "minimum": 2 } } }
-          }
-        ]
-      }
-    }
-  },
-  "$defs": {
-    "treatmentBoard": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["name", "frames"],
-      "properties": {
-        "name": { "type": "string", "minLength": 1 },
-        "frames": {
-          "type": "array", "minItems": 3, "maxItems": 8,
-          "items": {
-            "type": "object", "additionalProperties": false, "required": ["stage", "visual"],
-            "properties": { "stage": { "enum": ["input", "change", "reveal", "outcome"] }, "visual": { "type": "string", "minLength": 1 } }
-          },
-          "allOf": [
-            { "contains": { "type": "object", "properties": { "stage": { "const": "change" } }, "required": ["stage"] } },
-            { "contains": { "type": "object", "properties": { "stage": { "const": "outcome" } }, "required": ["stage"] } }
-          ]
+          "stateCount": { "type": "integer", "minimum": 1 }
         }
-      }
-    },
-    "responsiveCaptures": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["desktop", "mobile"],
-      "properties": {
-        "desktop": { "type": "string", "minLength": 1 },
-        "mobile": { "type": "string", "minLength": 1 }
-      }
-    },
-    "responsiveRecordings": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["desktop", "mobile"],
-      "properties": {
-        "desktop": { "type": "string", "minLength": 1 },
-        "mobile": { "type": "string", "minLength": 1 }
-      }
-    },
-    "continuityStoryboard": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["artifact", "capture", "heroSelector", "peakSelector", "postPeakSelector"],
-      "properties": {
-        "artifact": { "type": "string", "minLength": 1 },
-        "capture": { "type": "string", "minLength": 1 },
-        "heroSelector": { "type": "string", "minLength": 1 },
-        "peakSelector": { "type": "string", "minLength": 1 },
-        "postPeakSelector": { "type": "string", "minLength": 1 }
       }
     }
   }

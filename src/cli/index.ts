@@ -172,6 +172,7 @@ async function main(): Promise<void> {
       {
         const smoke = await runVisualSmoke(smokeUrl, { profile, showcase, experienceMap });
         smoke.checks.forEach((item) => console.log(`PASS visual-smoke ${item}`));
+        smoke.advisories.forEach((item) => console.log(`ADVISORY visual-smoke ${item}`));
         if (!smoke.ok) {
           smoke.blockers.forEach((item) => console.error(`BLOCKER visual-smoke: ${item}`));
           process.exitCode = 1;
@@ -210,6 +211,7 @@ async function main(): Promise<void> {
       const experienceMap = experienceMapInput ? readExperienceMap(path.resolve(experienceMapInput)) : undefined;
       const result = await runVisualSmoke(url, { profile, showcase, experienceMap });
       result.checks.forEach((item) => console.log(`PASS ${item}`));
+      result.advisories.forEach((item) => console.log(`ADVISORY ${item}`));
       result.blockers.forEach((item) => console.error(`BLOCKER ${item}`));
       if (!result.ok) process.exitCode = 1;
       return;

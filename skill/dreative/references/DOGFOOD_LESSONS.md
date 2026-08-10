@@ -256,3 +256,59 @@ still require human review.
 Recheck condition: A later media-led dog run must fail before focal code when
 assets are unavailable, then pass only after the accepted prototype uses the
 tracked outputs and the human recognizes the intended handoff.
+
+### DL-010 / validated / 2026-08-10
+
+Observed failure: Eight blind paired verdicts (six Recommended, two Showcase)
+went 5-3 to the skill, but the free-text told a more useful story than the
+score. Across nearly every pair — including ones the skill won — the Dreative
+arm was called clean, professional, and "not AI slop" while losing on three
+recurring things: too little motion, no component that could only belong to
+this product, and prose or tables where a scannable structure was needed. Every
+time the reviewer named the best thing about a losing control build, it was one
+bespoke component: a CLI card, a process graph, an interactive definition demo.
+
+Root cause: The system was almost entirely negative. `exemplars/SLOP.md` and roughly
+thirty enforcement rules described what not to ship; nothing required a
+distinctive thing to exist. Restraint was cost-free in the contract and
+expensive in review. Meanwhile a large share of the Showcase contract asked the
+builder to write prose about its own process — production rationales, prototype
+acceptance, frame-analysis counts, procedural-superiority arguments — and
+checked only that the strings were non-empty, which is not evidence and
+selects for longer strings.
+
+Change: Added three positive, browser-measured requirements — a declared
+signature component that must resolve and render at meaningful size, a motion
+floor that blocks a route where no region changes state, and a scannability
+advisory for sections with no landing points. Capped ambition by verifiability.
+Removed the fakeable half of the contract: `productionFeasibility`,
+`prototypeEvidence` captures/recordings/storyboards, `prototypeFidelity`,
+`selectedBy`/`acceptedBy` self-attestation, frame-analysis JSON, and every
+non-empty-string check on builder-authored rationale. Removed the taste-as-
+pass/fail scroll rules: the 400ms dwell floor, the structural-transform
+requirement, exact reverse-scroll restoration, and identical settling across
+three wheel speeds — none appeared in any of the eight verdicts. Comparison
+layouts kept only the identity-channel check; the gap, alignment, travel, and
+resize tolerances measured differences no reviewer could perceive.
+
+Evidence: Rounds 202608081241, 202608090424, 202608091149, and 202608091621 in
+`dreative-testbed`, scored blind with randomised sides. Two verdicts from
+202608090424 are void (usage limit) and were excluded. This validates the
+diagnosis of what reviewers penalise; the replacement rules are not yet
+validated and need their own round.
+
+Cost or trade-off: The signature component and motion floor can both be
+satisfied badly — a token bespoke widget, one decorative transition — and the
+browser cannot tell. They are floors that make the omission visible, not proof
+of quality. Removing the process fields also removes a paper trail some
+reviewers liked reading; the trade is accepted because it was not true evidence.
+
+Recheck condition: Run a full round on the new build. The diagnosis is
+confirmed if motion, distinctiveness, and scannability stop appearing as the
+named weakness of Dreative arms. It is refuted if reviewers start describing the
+Dreative arm as busy, gimmicky, or over-structured — in which case the floors
+are too high, not too low.
+
+This supersedes the enforcement half of DL-006, DL-007, DL-008, and DL-009.
+Their diagnoses of specific evasions were accurate; the response — one more
+deterministic rule each time — was the mistake.

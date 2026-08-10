@@ -115,35 +115,26 @@ capabilities are necessary for the selected experience.
 
 - Skip — build directly.
 - Auto — test only a central mechanism with real uncertainty.
-- Required — compare two or three cheap 3–8-frame visual treatment boards, then build one production-like prototype of the selected treatment before integration.
+- Required — build the riskiest signature mechanism before integrating it.
 
 Defaults: Efficient=Skip, Recommended=Auto, Showcase=Required.
 
-If Auto results in a prototype, or Required is selected, first show two or
-three cheap visual boards that concretely show input, change, and outcome, and ask the user to
-select one. Then build one production-like prototype with desktop/mobile
-captures and recordings, show it, and stop for explicit user acceptance or a
-revision request before integration. Build a second coded prototype only when a named
-decision remains genuinely unresolved and the alternatives differ materially
-in medium, interaction model, spatial structure, or mobile behavior. Changing
-only input method, runtime, or polish does not justify a second build. Label
-every artifact `treatment-board`, `animatic`, `production-like`, or
-`integration-ready`; an animatic cannot be presented as final motion fidelity
-or integrated as Showcase production evidence. Record the treatment selection
-as `selectedBy: "user"`; silence or general permission is not a selection.
-Record production-prototype acceptance as `prototypeReview.status: "accepted"`
-and `acceptedBy: "user"`; treatment selection alone is not implementation approval.
+Prototype the one mechanism whose outcome you genuinely cannot predict and whose
+result would change the build. Show it rendered at desktop and mobile, say what
+it does and does not yet prove, and stop for the user's response before
+integrating. A general instruction to continue is not acceptance.
 
-After treatment selection, compile a treatment-translation lock before coding.
-Name the selected board artifact; bind composition, focal subject,
-material/lighting, type scale, transition handoff, and mobile framing to visible
-prototype selectors; and list prohibited substitutions. This is not another
-approval gate. It prevents a coded probe from preserving only palette and copy
-while discarding the selected composition and media logic. At prototype review,
-show the selected board and matched desktop/mobile captures side by side. Do not
-ask for acceptance if the defining crop, realism, scale, or handoff is absent.
-Use `references/TREATMENT_TRANSLATION.md` for the required categories and
-side-by-side self-review.
+Keep the prototype cheap in ceremony and honest in fidelity. If it is easier to
+build the real route than to build an artifact about the route, build the real
+route. Do not manufacture a second comparison build unless a named decision is
+still unresolved and the alternatives differ in medium, interaction model,
+spatial structure, or mobile behavior — input method, runtime, or polish is not
+a material difference.
+
+The prototype exists to answer a question, not to produce evidence. Its output
+is a decision and a rendered thing the user looked at; captures, recordings,
+storyboards, frame counts, and fidelity labels are not required and are not
+treated as proof of anything.
 
 ## Stage 3: editable Experience Map
 
@@ -270,41 +261,32 @@ Start from the accepted Experience Map. Preserve every row's role and intensity
 intent while privately adding executable states, owners, handoffs, responsive
 forms, fallbacks, and evidence targets. Do not force a generic architecture.
 
-For Showcase, first write a compact production-feasibility table for every
-focal subject: required medium, exact available source/tool, editing required,
-responsive deliverable, rights/cost, and readiness (`executable now`, `needs a
-tool`, `paid/licensed`, or `external production`). Read
-`references/ASSET_PIPELINES.md`. If a treatment-defining subject cannot be
-produced at the selected fidelity, stop before focal application code and ask
-for the exact missing capability or an explicit treatment change. Final focal
-assets, responsive crops, masks, and sequences come before the production-like
-signature-scene prototype; CSS/SVG stand-ins are not temporary substitutes for
-photoreal subjects. The executable production-feasibility gate records every
-treatment-defining subject, exact tool/source, editing operations, desktop and
-mobile deliverables, rights/cost, readiness, and repository-relative output
-files. All treatment-defining subjects must be `ready`; their outputs must
-exist, be tracked, and be referenced by the accepted prototype. `needs-tool`,
-`paid-licensed`, or `external-production` blocks focal implementation until
-resolved or the user explicitly changes the treatment. Output signatures and
-extensions must match the declared medium. Desktop and mobile use distinct
-files unless `responsiveMode: shared` explicitly names one responsive asset.
-Each viewport binds its repository-relative output to a visible selector in the
-accepted prototype through `data-dreative-asset-ref`; browser verification runs
-at desktop, 390px, and 320px, checks the corresponding viewport deliverable,
-and hashes the resource actually loaded by source-addressable media against the
-declared output file. The data attribute is an index, not proof by itself.
+Name the **signature component** here: the one element on this route that could
+not be lifted onto a competitor's page, and the one sentence saying why. It is
+the requirement most often missed, and removing generic components does not
+satisfy it.
 
-Then write `schemas/showcase-mechanism.schema.json` using the
-operational rules in `SKILL.md`: bind the Recommended baseline, perceptible
-Showcase differences, media decisions, two or three concrete 3–8-frame
-treatment boards, and one user-selected production-like prototype. Build a
-second coded prototype only for a named material uncertainty. The connected
-experience system must carry either meaningful shared state or one authored
-physical/cinematic/material motif through pre-peak, central peak, and post-peak
-regions. User Control is required only when it improves the product decision. Reference
-the executable routes, captures, recordings, primary subjects, and temporal
-evidence required by the schema. These are accountability inputs, not proof of
-visual quality; `builderSelectionRationale` is never a reviewer verdict.
+For every focal subject, decide the medium and where the asset actually comes
+from before writing focal code. Read `references/ASSET_PIPELINES.md`. Evaluate
+external media before fabricating a realistic physical subject out of CSS or
+SVG; fabricated product imagery is the single failure blind reviewers have
+called out most sharply. If the selected fidelity needs a capability you do not
+have, say so and name one concrete route to it — a tool, a supplied asset, or an
+explicit treatment change — rather than quietly substituting geometry. Local
+assets must exist in the repository and be tracked; remote assets must load.
+
+Then write `schemas/showcase-mechanism.schema.json` using the operational rules
+in `SKILL.md`: the signature component, the Recommended baseline, perceptible
+Showcase differences, media decisions, and the mechanisms the browser will
+exercise. The connected experience system must carry either meaningful shared
+state or one authored physical/cinematic/material motif through pre-peak,
+central peak, and post-peak regions. User Control is required only when it
+improves the product decision.
+
+The contract is small on purpose. It has no field for your own account of your
+process, because a non-empty string is not evidence and checking one only
+teaches you to write longer strings. Everything in it is exercised in a browser
+or read by a human; none of it is a verdict on visual quality.
 
 ### 6. Build architecture
 

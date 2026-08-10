@@ -58,34 +58,19 @@ export function checkPortableArtifacts(projectDir: string, files: string[]): str
   return blockers;
 }
 
+/**
+ * Only media the shipped route actually loads. Prototype captures, recordings
+ * and storyboards used to be tracked and byte-checked here; they proved a file
+ * existed with plausible dimensions, never that it showed the design, so the
+ * portability requirement now covers assets the browser resolves on the page.
+ */
 export function localShowcaseArtifacts(contract: {
-  prototypeEvidence?: {
-    bestFitCaptures?: Record<string, string>;
-    boldAlternativeCaptures?: Record<string, string>;
-    bestFitRecordings?: Record<string, string>;
-    boldAlternativeRecordings?: Record<string, string>;
-    fullPageContinuityStoryboards?: {
-      bestFit?: { capture?: string };
-      boldAlternative?: { capture?: string };
-    };
-  };
   assetCommitments?: { sourceKind?: string; sourceRef?: string }[];
-  mechanisms?: { temporalEvidence?: string; motionEvidenceRef?: string }[];
 }): { files: string[]; blockers: string[] } {
-  const values = [
-    ...Object.values(contract.prototypeEvidence?.bestFitCaptures ?? {}),
-    ...Object.values(contract.prototypeEvidence?.boldAlternativeCaptures ?? {}),
-    ...Object.values(contract.prototypeEvidence?.bestFitRecordings ?? {}),
-    ...Object.values(contract.prototypeEvidence?.boldAlternativeRecordings ?? {}),
-    contract.prototypeEvidence?.fullPageContinuityStoryboards?.bestFit?.capture ?? "",
-    contract.prototypeEvidence?.fullPageContinuityStoryboards?.boldAlternative?.capture ?? "",
-    ...(contract.assetCommitments ?? [])
-      .filter((asset) => asset.sourceKind === "local-file" || asset.sourceKind === "generated-record")
-      .map((asset) => asset.sourceRef ?? ""),
-    ...(contract.mechanisms ?? [])
-      .filter((mechanism) => mechanism.temporalEvidence === "frame-analysis")
-      .map((mechanism) => mechanism.motionEvidenceRef ?? ""),
-  ].filter(Boolean);
+  const values = (contract.assetCommitments ?? [])
+    .filter((asset) => asset.sourceKind === "local-file")
+    .map((asset) => asset.sourceRef ?? "")
+    .filter(Boolean);
   const files: string[] = [];
   const blockers: string[] = [];
   for (const value of values) {

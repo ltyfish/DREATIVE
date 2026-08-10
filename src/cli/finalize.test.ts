@@ -162,27 +162,21 @@ test("Showcase artifacts must exist inside the repository and be tracked", () =>
   assert.match(checkPortableArtifacts(root, [path.join(os.tmpdir(), "outside.json")]).join("\n"), /outside the repository/);
 });
 
-test("nested Showcase evidence rejects absolute paths and returns local portable files", () => {
+test("Showcase asset media rejects absolute paths and returns local portable files", () => {
   const result = localShowcaseArtifacts({
-    prototypeEvidence: {
-      bestFitCaptures: { desktop: "evidence/desktop.png", mobile: "https://example.com/mobile.png" },
-      boldAlternativeCaptures: { desktop: "C:\\private\\desktop.png", mobile: "/capture/mobile" },
-      bestFitRecordings: { desktop: "evidence/desktop.webm" },
-      fullPageContinuityStoryboards: {
-        bestFit: { capture: "evidence/best-storyboard.png" },
-        boldAlternative: { capture: "https://example.com/bold-storyboard.png" },
-      },
-    },
     assetCommitments: [
       { sourceKind: "local-file", sourceRef: "media/product.glb" },
+      { sourceKind: "local-file", sourceRef: "media/hero.webp" },
+      { sourceKind: "local-file", sourceRef: "C:\\private\\hero.png" },
+      { sourceKind: "local-file", sourceRef: "/etc/hero.png" },
+      { sourceKind: "remote-url", sourceRef: "https://example.com/hero.png" },
       { sourceKind: "inline", sourceRef: "#product" },
     ],
-    mechanisms: [{ temporalEvidence: "frame-analysis", motionEvidenceRef: "evidence/motion.json" }],
   });
-  assert.deepEqual(result.files, ["evidence/desktop.png", "evidence/desktop.webm", "evidence/best-storyboard.png", "media/product.glb", "evidence/motion.json"]);
+  assert.deepEqual(result.files, ["media/product.glb", "media/hero.webp"]);
   assert.equal(result.blockers.length, 2);
-  assert.match(result.blockers.join("\n"), /C:\\private\\desktop\.png/);
-  assert.match(result.blockers.join("\n"), /\/capture\/mobile/);
+  assert.match(result.blockers.join("\n"), /C:\\private\\hero\.png/);
+  assert.match(result.blockers.join("\n"), /\/etc\/hero\.png/);
 });
 
 test("clean-worktree verification refuses a dirty HEAD", () => {

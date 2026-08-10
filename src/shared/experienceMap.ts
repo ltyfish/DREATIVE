@@ -44,7 +44,6 @@ const DIRECTIONS = new Set(["efficient", "recommended", "showcase"]);
 const OVERRIDES = new Set(["recommended", "more-animated", "calmer", "change-layout", "change-interaction", "keep-static"]);
 const RHYTHMS = new Set(["rest", "build", "peak", "release"]);
 const AGENCIES = new Set(["watch", "influence", "control"]);
-const ACTIVE_MECHANISM = /\b(?:animat(?:e|ed|ion)|motion|transition|timeline|scroll(?:-linked|-driven)?|scrub|pinn?ed|parallax|morph|transform|sequence|gesture|drag)\b/i;
 
 export function validateExperienceMap(value: unknown): string[] {
   if (!value || typeof value !== "object" || Array.isArray(value)) return ["experience map must be a JSON object"];
@@ -95,18 +94,10 @@ export function validateExperienceMap(value: unknown): string[] {
         ownership.set(key, String(section.mechanismOwner));
       }
     }
-    if (section.override === "keep-static") {
-      if (Number(section.intensity) > 2) errors.push(`${prefix}.keep-static requires intensity 1 or 2`);
-      for (const key of ["mechanismOwner", "desktop", "mobile"] as const) {
-        if (text(section[key]) && ACTIVE_MECHANISM.test(section[key]))
-          errors.push(`${prefix}.${key} contradicts keep-static with an active motion mechanism`);
-      }
-    }
   }
   if (text(map.primaryPeak) && !ids.has(map.primaryPeak)) errors.push("primaryPeak must match a section id");
-  const peakRoles = (map.sections as Record<string, unknown>[]).filter((section) => section.rhythm === "peak");
-  if (peakRoles.length !== 1 || peakRoles[0]?.id !== map.primaryPeak)
-    errors.push("exactly one section must use rhythm peak, and it must match primaryPeak");
+  const peaks = (map.sections as Record<string, unknown>[]).filter((section) => section.rhythm === "peak");
+  if (!peaks.some((section) => section.id === map.primaryPeak)) errors.push("primaryPeak must be a section with rhythm peak");
   return errors;
 }
 
@@ -117,15 +108,17 @@ export function readExperienceMap(file: string): ExperienceMap {
   return parsed as ExperienceMap;
 }
 
+/**
+ * Intensity is a number the builder writes about its own plan, so asserting it
+ * equals 5 only checked that a 5 was typed. What remains is the structural
+ * claim the rest of the pipeline depends on: the named peak exists.
+ */
 export function validateShowcaseExperienceMap(map: ExperienceMap): string[] {
   const errors: string[] = [];
   if (map.direction !== "showcase") errors.push("Showcase finalization requires an Experience Map with direction showcase");
   const peak = map.sections.find((section) => section.id === map.primaryPeak);
   if (!peak) errors.push("Showcase Experience Map primaryPeak must resolve to a section");
-  else if (peak.intensity !== 5) errors.push("Showcase Experience Map primary peak must have intensity 5");
   else if (peak.rhythm !== "peak") errors.push("Showcase Experience Map primary peak must use rhythm peak");
-  if (!map.sections.some((section) => section.intensity === 5))
-    errors.push("Showcase Experience Map requires at least one intensity-5 section");
   return errors;
 }
 
@@ -169,6 +162,9 @@ export function journeyBalanceAdvisories(map: ExperienceMap): string[] {
   const developedOutsidePeak = map.sections.filter((section) =>
     section.id !== peak.id && section.intensity >= 3 && section.override !== "keep-static");
   const advisories: string[] = [];
+  const peaks = map.sections.filter((section) => section.rhythm === "peak");
+  if (peaks.length > 1)
+    advisories.push(`${peaks.length} sections claim rhythm peak. Two arcs can be right when the content genuinely has two; otherwise competing peaks usually mean neither lands.`);
   const maximumSections = map.sections.filter((section) => section.intensity === 5);
   if (maximumSections.length === map.sections.length)
     advisories.push("Every section is 5/5 craft. Keep that quality target, but verify the declared rest/build/peak/release rhythm is visible and only the primary peak behaves like a climax.");

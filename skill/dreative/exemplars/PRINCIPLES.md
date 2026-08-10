@@ -6,6 +6,43 @@ condition is a style, and styles transplant badly.
 
 ---
 
+## Always — the three things blind review keeps punishing
+
+These are not style advice. They come from paired A/B rounds where the same
+brief was built with and without this skill, scored without knowing which was
+which. Each one is a reason a cleaner, more restrained build lost.
+
+**Ship one component that could only belong to this product.**
+Condition: always, in Recommended and Showcase. A command-line card on a
+developer tool, a roast curve on a coffee page, a triage clock on a clinic page.
+Cost: it is genuinely harder than composing a page out of known parts. Wrong
+when: never — the version of this that is wrong is a gimmick attached to a
+product it has nothing to do with, which is a different failure.
+Reviewers describing what they liked about a losing build named a single
+bespoke component almost every time. Reviewers describing a winning build's
+weakness said "nothing stands out as what it is."
+
+**A route where nothing moves reads as unfinished, not as restrained.**
+Condition: always, outside Efficient. Cost: motion has to be built and tested on
+every viewport. Wrong when: motion competes with an urgent task — and even then
+the answer is one quiet authored motion, not none. Few and well-executed beats
+many and decorative, but zero loses to both.
+
+**Being readable is not the same as being scannable.**
+Condition: any section a visitor meets before they have decided to invest
+attention. Cost: prose you were pleased with gets broken up. Wrong when: the
+user has already committed to reading, as in long-form editorial.
+A well-written wall of text and a table with no visual differentiation both lose
+to structure a reader can land on. Reviewers reach for the words "hard to
+understand" and "no clear separation" — and they reach for them about builds
+whose typography was otherwise the better of the two.
+
+**Execution beats ambition, and ambition beats neither when unverified.**
+Condition: any bold treatment. Cost: you must be able to serve the route and
+look at the mechanism before you commit to it. Wrong when: never. A bold,
+expressive, wrongly-executed page loses to a plain correct one; a bold correctly
+executed page beats everything. The difference is entirely whether you checked.
+
 ## When the product is a physical thing
 
 **Show the object doing what makes it worth buying.**
