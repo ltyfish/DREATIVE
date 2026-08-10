@@ -82,9 +82,12 @@ test("active installation contains only routed skill resources", () => {
   const manifest = installSkill({ sourceDir, projectDir: root, packageVersion: version, target: "codex", selected, explicitAll: true });
   assert.equal(Object.keys(manifest.files).some((file) => file.startsWith("schemas/")), true);
   assert.equal(Object.keys(manifest.files).some((file) => file.startsWith("systems/")), true);
+  // Derived from the package, never hard-coded. This assertion previously
+  // listed reference names by hand, so MEDIA_SOURCES.md shipped in the package,
+  // was silently dropped by the installer, and the test agreed with the bug.
   assert.deepEqual(
     Object.keys(manifest.files).filter((file) => file.startsWith("references/")).sort(),
-    ["references/ASSET_PIPELINES.md", "references/CREATIVE_DIRECTION.md", "references/CREATIVE_EXECUTION.md", "references/DOGFOOD_LESSONS.md", "references/REFERENCE_ADOPTION.md", "references/SKILL_CONTRACT.md", "references/VISUAL_REFINEMENT.md"],
+    fs.readdirSync(path.join(sourceDir, "references")).filter((name) => name.endsWith(".md")).map((name) => `references/${name}`).sort(),
   );
   for (const active of ["SKILL.md", "PLAN.md", "references/CREATIVE_DIRECTION.md", "references/CREATIVE_EXECUTION.md", "agents/openai.yaml"])
     assert.equal(Object.hasOwn(manifest.files, active), true, active);

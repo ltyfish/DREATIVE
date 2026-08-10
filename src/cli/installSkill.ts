@@ -21,23 +21,18 @@ export interface InstallManifest {
 const hash = (value: Buffer | string) => crypto.createHash("sha256").update(value).digest("hex");
 const canonical = (value: unknown) => JSON.stringify(value, Object.keys(value as object).sort());
 const ACTIVE_ROOT_FILES = new Set(["SKILL.md", "PLAN.md", "llms.txt"]);
-const ACTIVE_REFERENCES = new Set([
-  "references/CREATIVE_DIRECTION.md",
-  "references/DOGFOOD_LESSONS.md",
-  "references/REFERENCE_ADOPTION.md",
-  "references/CREATIVE_EXECUTION.md",
-  "references/SKILL_CONTRACT.md",
-  "references/VISUAL_REFINEMENT.md",
-  "references/ASSET_PIPELINES.md",
-]);
-
+/**
+ * Whole directories, never a hand-maintained file list. An allowlist of
+ * reference names silently dropped every reference added after it was written —
+ * MEDIA_SOURCES.md shipped in the package and never reached an installed skill,
+ * so the guidance existed and no agent could read it. Deleting a file is how a
+ * file stops being installed.
+ */
 function activeSkillFile(relative: string, selectedSkills: Set<string>): boolean {
   if (ACTIVE_ROOT_FILES.has(relative)) return true;
-  if (relative.startsWith("agents/")) return true;
-  if (relative.startsWith("frameworks/") || relative.startsWith("systems/") || relative.startsWith("schemas/")) return true;
-  if (relative.startsWith("exemplars/")) return true;
   if (relative.startsWith("skills/")) return selectedSkills.has(path.basename(relative, ".md"));
-  return ACTIVE_REFERENCES.has(relative);
+  return ["agents/", "frameworks/", "systems/", "schemas/", "exemplars/", "references/"]
+    .some((directory) => relative.startsWith(directory));
 }
 
 export function availableSkills(sourceDir: string): string[] {
