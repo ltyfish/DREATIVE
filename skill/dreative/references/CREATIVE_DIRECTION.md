@@ -123,3 +123,14 @@ For each advanced mechanism name:
 If those answers are weak, omit the mechanism. If they are strong, use the
 specialist runtime confidently rather than reducing the idea to a decorative
 approximation.
+
+The mechanism's expressive form must match how the product is experienced, not
+only its topic. A data-visualisation, dashboard, chart, or telemetry-log peak
+belongs to products whose value is data, measurement, or system state. On a
+commerce or tactile product it misrepresents the offer: the peak should
+foreground the goods themselves—material, craft, provenance, freshness, the
+object in the hand—not abstract the product into statistics. Selling coffee
+through a metrics graph and roast logs is a category error even when the graph
+is well built; the visitor came to want the beans, not to read a chart about
+them. Choose the peak's medium from the product's own mode—physical goods lead
+with imagery, material, and process; data tools lead with the live data.
