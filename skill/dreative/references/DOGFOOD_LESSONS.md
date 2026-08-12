@@ -367,9 +367,21 @@ a ban on the baseline layer. Added the bounded-degenerate-case rule after a
 filter emphasis that *"over-scales when only one product matches"*.
 
 Evidence: `dreative-testbed` VERDICTS.md, rounds 202608110146, 202608110800,
-202608111359. The 202608110800 verdict was transcribed by hand after its `runs/`
-artifacts were lost to a commit-before-archive ordering bug; its wording is the
-reviewer's own but it cannot be re-examined against the build.
+202608111359. The 202608110800 verdict was transcribed by hand; its wording is
+the reviewer's own.
+
+Correction (2026-08-12): this entry originally blamed a commit-before-archive
+ordering bug and said the build could not be re-examined. Both were wrong. The
+archiver runs before any delete and refuses to delete if the copy is not on
+disk, and a verdict submitted after archiving is synced back by `saveVerdict`,
+so neither ordering loses anything. The build is intact in
+`archive/202608110800/`. What actually happened is narrower: the reviewer judged
+the pair live, committed, and pulled on another machine, where `runs/` is
+gitignored and therefore empty — so the review UI had no pair to submit against
+and the verdict had to be typed into VERDICTS.md by hand, leaving no structured
+record to sync. The constraint is *submit the verdict before moving machines*,
+not an ordering defect. Recorded because a misdiagnosed bug in a lesson file
+outlives the round that produced it.
 
 Cost or trade-off: The interaction baseline is now a blocker on Efficient, which
 previously had no motion obligation at all — accepted, because it is a handful
