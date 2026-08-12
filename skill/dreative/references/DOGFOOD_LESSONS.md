@@ -388,3 +388,64 @@ if the signature component stops being named as the confusing part. Refuted if
 the arm now reads as uniformly fade-y, generic, or indistinguishable from the
 control — which would mean the baseline layer displaced the distinctiveness
 rather than supporting it.
+
+### DL-012 / proposed / 2026-08-12
+
+Observed failure: A full system review found the corrective loop itself failing,
+independently of any single round. Cumulative blind record across DL-010 and
+DL-011 is 6-5 on eleven pairs — indistinguishable from the control — while the
+rulebook grew every round. DL-010 diagnosed "too restrained" and added floors;
+DL-011 diagnosed "too cramped" and added three more blockers, against DL-010's
+own instruction to prefer advisories. That is one variable overshooting in both
+directions, tuned on n≈3 verdicts from one reviewer across two product
+archetypes.
+
+Root cause: two, and the second is the load-bearing one.
+
+1. **The system was almost entirely prohibitive.** Thirty-odd rules and a slop
+   catalogue described what not to ship; `exemplars/PRINCIPLES.md` explained what holds
+   but deliberately declines to prescribe, and no file handed the builder
+   anything concrete to build with — not one typeface, palette construction, or
+   composition. Prohibition reliably removes the generated look, which is the
+   one thing the record shows Dreative does. It cannot produce the memorable
+   thing, which is the one thing the record shows it lacks.
+2. **Enforcing positives mechanically converts design into arrangement.** Every
+   positive floor was Goodharted within one round: the signature requirement by
+   a chart, the motion floor by one qualifying transition, "be ambitious" by
+   element count. The failure mode the whole system risks is a builder that has
+   stopped asking *"what would look best?"* and started asking *"what
+   arrangement passes all these checks?"* — and an arrangement that passes is
+   not a design anyone chose.
+
+Change: Added `exemplars/MATERIALS.md` — real type pairings, palette
+constructions, compositions, depth treatments, a copyable ambient-motion
+grammar, and signature shapes by product kind, each indexed by its condition and
+cost, explicitly a shelf rather than a style and tested by no check. Added a
+`What the checks are for` section at the top of `SKILL.md` stating that blockers
+are defects only, that everything taste-shaped is an advisory meaning *go look*,
+that the thresholds are unvalidated, and that satisfying an advisory without
+improving the page is a failure nothing will catch. Demoted the motion-breadth
+floor and the signature viewport-area floor to advisories, and deleted the
+4px text-crowding count outright. Added an explicit licence to remove checks.
+
+Evidence: The 6-5 cumulative record, the three documented Goodhart events in
+DL-009/010/011, and the SLOP #5 contradiction that DL-011 recorded as an
+accepted cost — a breadth floor satisfiable by the uniform fade-up the same
+system calls its most common offender. This validates the diagnosis of the
+corrective loop; the materials library and the demotions are untested.
+
+Cost or trade-off: Three enforcement points are now advisory, so a genuinely
+flat route and a token signature component can reach a human reviewer. Accepted:
+that is what the reviewer is for, and the blockers those replaced were being
+satisfied without the underlying quality anyway. The materials library adds
+context and carries a real risk of becoming a new Dreative house style — the
+draw-across-entries rule is the only guard, and it is a rule the browser cannot
+check.
+
+Recheck condition: The next full round, run with no rule changes at all. Look
+for reviewers naming a specific material decision — a typeface, a composition,
+a colour construction — as what they liked. Refuted if Dreative builds start
+resembling each other across unrelated products, which means the shelf became a
+style and the file should be cut back to conditions rather than instances.
+Do not add another rule in response to whatever this round shows; the record
+says one-more-rule is the mistake, three times now.

@@ -53,6 +53,43 @@ So: breadth of small motion, not count of big moments. A signature component
 about the product, not a chart about the product. And ambition measured in
 resolution, not in elements per section.
 
+## What the checks are for
+
+Read this before the workflow, because it governs everything below it.
+
+The single worst outcome for this skill is a build where the question stopped
+being *"what would look best?"* and became *"what arrangement passes all these
+checks?"* A page assembled to satisfy a threshold is a page nobody chose. It is
+also, specifically, how this system has failed before: told to have a signature
+component, it produced a chart; told to have motion, it fired one qualifying
+transition; told to be ambitious, it added elements until the route was cramped.
+Every one of those satisfied the rule and lost the round.
+
+So the checks are deliberately not a definition of good work:
+
+- **Blockers are defects, not taste.** Something is a blocker only when it is
+  broken in a way any human would call broken and no arrangement of a good page
+  can trip: a route that 500s, text colliding, content overflowing its viewport,
+  unreadable type, a clipped sticky element, a console error, a reveal that
+  fires after the reader has already scrolled past, a promise the contract made
+  that does not resolve on the page. Nothing about how good it looks.
+- **Everything taste-shaped is an advisory**, and an advisory means *go look at
+  it* — not *raise the number*. Motion breadth, density, scannability, signature
+  size and subject are all advisories, because in every case the browser is
+  measuring a proxy and the reviewer was responding to something else.
+- **Numbers in this system are unvalidated.** Where a threshold exists it was
+  invented by whoever wrote the check. Treat it as the trigger for a look, and
+  say so if you disagree with what it flagged; a defended judgement beats a
+  satisfied threshold.
+- **Satisfying an advisory without improving the page is a failure**, even
+  though nothing will catch it. Fading every region in uniformly clears the
+  motion advisory and is slop by `exemplars/SLOP.md` #5. Deleting words clears
+  the density advisory and can gut the section. If the honest fix is nothing,
+  do nothing and say why.
+
+Design first, then check. The check is the last thing that happens to a page,
+never the thing that shapes it.
+
 ## Workflow
 
 1. Inspect the real repository: framework, routes, content, behavior, assets,
@@ -188,8 +225,12 @@ lifted onto a competitor's page. A command-line card on a developer tool, a
 triage clock on a clinic page: something whose form comes from what the product
 actually does. Name it in the brief with the one sentence explaining why only
 this product could have it, and bind its selector in the Showcase contract,
-where final smoke checks that it resolves, renders, and is large enough to
-carry the route.
+where final smoke checks that it resolves and renders. Whether it is large
+enough to carry the route is an advisory you answer by looking; a small
+component can still be the thing a reader remembers, and a viewport-area
+percentage is exactly the kind of number a page gets arranged around.
+`exemplars/MATERIALS.md` §6 lists signature shapes that have worked by product
+kind — as stock to choose from, never a menu to pick the passing option off.
 
 This is a positive requirement, and it is the one most often missing. Removing
 generic components is not the same as making a specific one. A page can pass
@@ -237,9 +278,11 @@ reviewer can see it is generic. Skipping it because it is generic is how a
 route with two beautiful mechanisms is still described as having no animation.
 
 Final smoke hovers and focuses the interactive elements it can find and blocks a
-route where none of them respond. It also samples every major region and blocks
-Recommended and Showcase when motion is confined to a small fraction of the
-route: a signature moment on an otherwise dead page does not clear the floor.
+route where **none** of them respond — the zero case, which is a page that was
+never given this layer at all. How far the layer spreads is an advisory that
+asks you to look at the route, not a ratio to clear: the same number goes up if
+you fade every region in uniformly, which is slop by `exemplars/SLOP.md` #5.
+Build the layer because the page should answer the person using it.
 
 **2. Signature moments — few, expensive, product-meaning.** Here the old rule
 still holds: prefer few well-executed motions over many decorative ones, and
@@ -270,8 +313,11 @@ every section can be understood at a glance before it is read.
 requirement, builds answer it by adding — more stats, more copy, more panels,
 more tightly packed — and reviewers call the result cramped, wordy, and messy
 while preferring a control with a third of the content. Advisories fire for a
-section carrying too many words, ten or more competing statistic blocks, or text
-blocks pressed within a few pixels of each other.
+section carrying too many words or ten or more competing statistic blocks. Both
+thresholds were invented and neither has been validated; they mark a section
+worth a second look, and the right response is sometimes to leave it alone and
+say why. A pixel-gap crowding count used to live here and was removed —
+"cramped" is perceptual, and a spacing number is arrangeable.
 
 Ambition is resolution, not element count. One idea rendered precisely beats
 four crammed into the same band. Before adding an element to a section, delete
@@ -390,7 +436,15 @@ lift one source's combined type, palette, composition, and signature motion.
 Never design “X-like.” GSAP and Lenis are capabilities, not aesthetics.
 Read `exemplars/SLOP.md` before committing to a visual system; it lists the
 default shapes that make generated frontends recognisable as generated. Read
-`exemplars/PRINCIPLES.md` for what to build instead, which is the harder half.
+`exemplars/PRINCIPLES.md` for what to build instead, which is the harder half,
+and `exemplars/MATERIALS.md` for actual stock to build it out of — real type
+pairings, palette constructions, compositions, depth treatments, and the ambient
+transition grammar, each indexed by the condition it belongs to.
+
+Materials are a shelf, not a style. Take one row from type, a different one's
+palette construction, another's composition; taking a whole column reproduces
+this system's own failure one level up, as a Dreative average replacing the
+generic one. If the product wants something not on the shelf, build that.
 Record reference mode as `none`, `supplied`, or `scout`. `scout` requires at
 least two traceable candidates with real URLs/files and rights status;
 `supplied` requires the configured supplied references. Final smoke resolves
@@ -520,6 +574,13 @@ by catching a failure a human reviewer would also have called a failure, on a
 project that had not been used to invent the check. Prefer an advisory that
 prompts a look over a blocker that encodes taste as pass/fail.
 
+Removing a check is as legitimate as adding one, and is usually the better move
+when the evidence is one round of one reviewer. A rule that has not caught a
+real failure since it was written is costing context and steering the builder
+toward arrangement; delete it and record why. The system has already added three
+blockers in a single change against its own advice — that was the mistake, and
+the correction was to demote them, not to add a fourth.
+
 ## Resource routing
 
 - Open redesign or external reference: `references/CREATIVE_DIRECTION.md`
@@ -529,6 +590,7 @@ prompts a look over a blocker that encodes taste as pass/fail.
 - Where to source real imagery, texture, 3D, or type: `references/MEDIA_SOURCES.md`
 - Focal media feasibility and offline production: `references/ASSET_PIPELINES.md`
 - What to build, not only what to avoid: `exemplars/PRINCIPLES.md` and `exemplars/SLOP.md`
+- Concrete type, colour, composition, depth, and ambient-motion stock: `exemplars/MATERIALS.md`
 - Relevant craft only: `skills/<name>.md`
 - Rendered correction loop: `references/VISUAL_REFINEMENT.md`
 - Opted-in evaluator handoff: project-local `.dreative/evaluation/README.md`

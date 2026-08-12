@@ -32,7 +32,7 @@ const flatRoute = shell(Array.from({ length: 8 }, (_, index) => section(index)).
 // Reveals that only fire once the section has scrolled above the viewport.
 const lateReveal = shell(Array.from({ length: 5 }, (_, index) => `<section id="s${index}"><h2>Section ${index}</h2><p>Body copy.</p><div class="reveal" style="min-height:80px">revealed</div></section>`).join(""), `const update=()=>{for(const element of document.querySelectorAll('section'))element.querySelector('.reveal').classList.toggle('shown',element.getBoundingClientRect().top<0)};addEventListener('scroll',update);update()`);
 const noAffordance = shell(`<section><h1>No feedback</h1><button class="bare">One</button><button class="bare">Two</button><button class="bare">Three</button><button class="bare">Four</button></section><section><h2>Second</h2><p>Body copy.</p></section>`, revealScript);
-const cramped = shell(`<section id="cramped"><h2>Cramped</h2>${Array.from({ length: 16 }, (_, index) => `<p style="margin:0">Statistic line ${index} pressed against the one above it.</p>`).join("")}</section><section><h2>Second</h2><p>Body copy.</p></section>`, revealScript);
+const cramped = shell(`<section id="cramped"><h2>Cramped</h2>${Array.from({ length: 12 }, (_, index) => `<div class="stat"><strong>${index * 7}%</strong><span>Competing statistic ${index}</span></div>`).join("")}</section><section><h2>Second</h2><p>Body copy.</p></section>`, revealScript);
 
 const pages = {
   "/": healthy,

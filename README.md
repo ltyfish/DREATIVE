@@ -133,6 +133,23 @@ unverified; a failed probe reports `runtime-verification-failed`.
 
 ## Design philosophy
 
+Checks are a floor for defects, never a definition of good work. Blockers cover
+only things any human would call broken — a failing route, colliding text,
+overflow, unreadable type, a console error, a reveal that fires after the reader
+has scrolled past, a contract promise that does not resolve. Everything
+taste-shaped is an advisory that means *go look at this*, not a number to raise;
+the thresholds behind them are unvalidated. A page arranged to satisfy checks is
+a page nobody chose, and that failure mode is treated as worse than a page that
+collects advisories and defends them.
+
+`exemplars/` carries the three halves of the visual system: `SLOP.md` for the
+defaults that make generated frontends recognisable, `PRINCIPLES.md` for what
+holds and under which condition, and `MATERIALS.md` for concrete stock — type
+pairings, palette constructions, compositions, depth treatments, the ambient
+transition grammar, and signature shapes by product kind. Materials are a shelf,
+not a style: draw across entries, and build something not on it when the product
+asks for that. No check tests for any of it.
+
 Dreative uses focused creative libraries as capabilities, not house styles.
 Concepts begin with product content, behavior, assets, history, and audience.
 External references are decomposed and synthesized across domains instead of

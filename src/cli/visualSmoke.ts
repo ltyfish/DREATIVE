@@ -266,7 +266,6 @@ async function verifySignature(page: Page, signature: SignatureComponent): Promi
     };
   });
   if (!observation.visible) return { blockers: [`signature component ${signature.name} is not visibly rendered`], advisories: [] };
-  if (observation.areaRatio < .05) return { blockers: [`signature component ${signature.name} occupies ${(observation.areaRatio * 100).toFixed(1)}% of the viewport and cannot carry the route's identity`], advisories: [] };
 
   const subject = locator.locator(signature.productSubjectSelector);
   if (await subject.count() !== 1)
@@ -281,13 +280,17 @@ async function verifySignature(page: Page, signature: SignatureComponent): Promi
   });
   if (subjectProblem) return { blockers: [`signature component ${signature.name} product subject ${signature.productSubject} ${subjectProblem}`], advisories: [] };
 
-  // Not a blocker: an abstract readout is the right signature for a data or
-  // developer product and the wrong one for a shop. The browser cannot tell
-  // which this is, so it asks rather than refuses.
-  return {
-    blockers: [],
-    advisories: observation.hasProductMedia ? [] : [`signature: ${signature.name} contains no image, video, or canvas of ${signature.productSubject} — confirm the component is about the thing the route sells or does, not a chart about it`],
-  };
+  // Neither of the remaining observations is a refusal. An abstract readout is
+  // the right signature for a data or developer product and the wrong one for a
+  // shop, and a small component can still be the thing you remember. The browser
+  // cannot tell either way, so it asks the builder to look instead of prescribing
+  // a size a page can be arranged to satisfy.
+  const advisories: string[] = [];
+  if (observation.areaRatio < .05)
+    advisories.push(`signature: ${signature.name} occupies ${(observation.areaRatio * 100).toFixed(1)}% of the viewport — look at whether it actually carries the route, or whether it reads as one more small element`);
+  if (!observation.hasProductMedia)
+    advisories.push(`signature: ${signature.name} contains no image, video, or canvas of ${signature.productSubject} — confirm the component is about the thing the route sells or does, not a chart about it`);
+  return { blockers: [], advisories };
 }
 
 /**
@@ -352,24 +355,11 @@ async function measureDensity(page: Page): Promise<string[]> {
         .filter((element) => element.getBoundingClientRect().height > 8).length;
       if (stats >= 10) findings.push(`${name} renders ${stats} competing statistic blocks; when everything is emphasised the reader is told nothing is`);
 
-      const blocks = Array.from(section.querySelectorAll<HTMLElement>("h2,h3,h4,p,li,dt,dd,button,a,label"))
-        .filter((element) => {
-          const rect = element.getBoundingClientRect();
-          const style = getComputedStyle(element);
-          return Boolean(element.innerText?.trim()) && rect.width > 8 && rect.height > 6 && style.visibility !== "hidden" && Number(style.opacity) > .02;
-        })
-        .slice(0, 120);
-      let crowded = 0;
-      for (let left = 0; left < blocks.length; left += 1) for (let right = left + 1; right < blocks.length; right += 1) {
-        const a = blocks[left], b = blocks[right];
-        if (a.contains(b) || b.contains(a)) continue;
-        const ar = a.getBoundingClientRect(), br = b.getBoundingClientRect();
-        const overlap = Math.max(0, Math.min(ar.right, br.right) - Math.max(ar.left, br.left));
-        if (overlap < Math.min(ar.width, br.width) * .5) continue;
-        const gap = ar.top < br.top ? br.top - ar.bottom : ar.top - br.bottom;
-        if (gap >= 0 && gap < 4) crowded += 1;
-      }
-      if (crowded >= 6) findings.push(`${name} has ${crowded} pairs of text blocks sitting within 4px of each other; the section reads as cramped rather than dense`);
+      // The 4px text-block proximity count that used to live here was removed:
+      // nobody validated the threshold, "cramped" is a perceptual judgement a
+      // pixel gap does not carry, and a spacing number is exactly the kind of
+      // rule a page gets arranged to satisfy. Real text collision is still a
+      // blocker; comfortable density is a thing to look at, not to compute.
     }
     return findings.slice(0, 6);
   });
@@ -722,10 +712,8 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
       checks.push(`motion: ${motion.moving} of ${motion.total} regions change state on approach`);
       if (motion.total > 0 && motion.moving === 0)
         blockers.push(`nothing on this route moves: ${motion.total} regions were sampled entering, centred, and leaving the viewport and none changed state. ${profile === "showcase" ? "Showcase" : "Recommended"} requires at least one authored motion.`);
-      else if (motion.total >= 6 && motion.moving / motion.total < .25)
-        blockers.push(`motion is confined to ${motion.moving} of ${motion.total} regions: the rest of the route is flat. A signature moment on a dead page still reads as "lack of animation" — spread the baseline layer across the route.`);
       else if (motion.total >= 4 && motion.moving / motion.total < .5)
-        advisories.push(`motion: only ${motion.moving} of ${motion.total} regions change on approach; blind review has repeatedly called this "clean but static"`);
+        advisories.push(`motion: only ${motion.moving} of ${motion.total} regions change on approach; blind review has repeatedly called this "clean but static". Look at the route — the answer is a pervasive hover/focus/entrance grammar, not fading every region in uniformly to raise this number.`);
       if (motion.lateReveals.length)
         blockers.push(`reveals fire after the reader has scrolled past them in ${motion.lateReveals.join(", ")}: content already on screen while the region is centred is still in its approach state, and only resolves once the region has left. Trigger against the top of the viewport, not the bottom.`);
     }

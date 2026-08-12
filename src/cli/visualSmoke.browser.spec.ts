@@ -71,10 +71,11 @@ test("Efficient is exempt from the motion floor", async () => {
   expect(result.blockers).toEqual([]);
 });
 
-test("one moving region on an otherwise flat route fails the motion breadth floor", async () => {
+test("motion breadth is an advisory to look at the route, never a threshold to satisfy", async () => {
   const result = await runVisualSmoke(`${base}/flat-route`, { profile: "recommended" });
   expect(result.blockers.join("\n")).not.toContain("nothing on this route moves");
-  expect(result.blockers.join("\n")).toContain("the rest of the route is flat");
+  expect(result.advisories.join("\n")).toContain("regions change on approach");
+  expect(result.blockers.join("\n")).not.toContain("change on approach");
 });
 
 test("reveals that fire after the section has left the viewport are blocked", async () => {
@@ -91,10 +92,10 @@ test("a route whose controls have no hover or focus state fails every profile", 
   }
 });
 
-test("a cramped section is reported as an advisory, never a blocker", async () => {
+test("an overloaded section is reported as an advisory, never a blocker", async () => {
   const result = await runVisualSmoke(`${base}/cramped`, { profile: "recommended" });
-  expect(result.advisories.join("\n")).toContain("reads as cramped rather than dense");
-  expect(result.blockers.join("\n")).not.toContain("cramped");
+  expect(result.advisories.join("\n")).toContain("competing statistic blocks");
+  expect(result.blockers.join("\n")).not.toContain("competing statistic blocks");
 });
 
 test("a signature component with no product media is advised, not blocked", async () => {
@@ -118,9 +119,12 @@ test("a missing or token signature component blocks Showcase", async () => {
   const missing = { ...contract, signature: { ...contract.signature, selector: "#nowhere" } };
   expect((await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: missing })).blockers.join("\n"))
     .toContain("signature component Readiness instrument selector #nowhere must resolve");
-  const tiny = { ...contract, signature: { ...contract.signature, selector: "#peak button" } };
-  expect((await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: tiny })).blockers.join("\n"))
-    .toContain("cannot carry the route's identity");
+  // Size is an advisory, not a floor: a small component can still be the thing
+  // you remember, and a viewport-area threshold is arrangeable.
+  const tiny = { ...contract, signature: { ...contract.signature, selector: "#peak svg", productSubjectSelector: "rect" } };
+  const tinyResult = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: tiny });
+  expect(tinyResult.advisories.join("\n")).toContain("of the viewport");
+  expect(tinyResult.blockers.join("\n")).not.toContain("of the viewport");
 });
 
 test("a decorative element cannot be declared the primary product subject", async () => {
