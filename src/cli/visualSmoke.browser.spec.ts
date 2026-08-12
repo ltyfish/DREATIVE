@@ -9,6 +9,8 @@ const contract: ShowcaseMechanismContract = {
   signature: {
     name: "Readiness instrument",
     selector: "#peak",
+    productSubjectSelector: "svg",
+    productSubject: "readiness instrument",
     whyOnlyThisProduct: "The instrument reads this product's own readiness scale; no competitor publishes it.",
   },
   referenceMode: "none",
@@ -38,7 +40,7 @@ const contract: ShowcaseMechanismContract = {
 const scrollJourney: ShowcaseMechanismContract = {
   ...contract,
   experienceType: "journey",
-  signature: { ...contract.signature, selector: "#scroll-story" },
+  signature: { ...contract.signature, selector: "#scroll-story", productSubjectSelector: ".box", productSubject: "scrolling process block" },
   assetCommitments: [],
   continuity: {
     ...contract.continuity,
@@ -67,6 +69,43 @@ test("the motion floor does not fire on a route with an ordinary scroll reveal",
 test("Efficient is exempt from the motion floor", async () => {
   const result = await runVisualSmoke(`${base}/static-route`, { profile: "efficient" });
   expect(result.blockers).toEqual([]);
+});
+
+test("one moving region on an otherwise flat route fails the motion breadth floor", async () => {
+  const result = await runVisualSmoke(`${base}/flat-route`, { profile: "recommended" });
+  expect(result.blockers.join("\n")).not.toContain("nothing on this route moves");
+  expect(result.blockers.join("\n")).toContain("the rest of the route is flat");
+});
+
+test("reveals that fire after the section has left the viewport are blocked", async () => {
+  const result = await runVisualSmoke(`${base}/late-reveal`, { profile: "recommended" });
+  expect(result.blockers.join("\n")).toContain("reveals fire after the reader has scrolled past them");
+  expect((await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: contract })).blockers.join("\n"))
+    .not.toContain("reveals fire after the reader has scrolled past them");
+});
+
+test("a route whose controls have no hover or focus state fails every profile", async () => {
+  for (const profile of ["efficient", "recommended", "showcase"] as const) {
+    const result = await runVisualSmoke(`${base}/no-affordance`, { profile, showcase: profile === "showcase" ? contract : undefined });
+    expect(result.blockers.join("\n")).toContain("no interaction baseline");
+  }
+});
+
+test("a cramped section is reported as an advisory, never a blocker", async () => {
+  const result = await runVisualSmoke(`${base}/cramped`, { profile: "recommended" });
+  expect(result.advisories.join("\n")).toContain("reads as cramped rather than dense");
+  expect(result.blockers.join("\n")).not.toContain("cramped");
+});
+
+test("a signature component with no product media is advised, not blocked", async () => {
+  const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: contract });
+  expect(result.advisories.join("\n")).toContain("confirm the component is about the thing the route sells or does");
+  expect(result.blockers).toEqual([]);
+});
+
+test("the signature component must name a product subject that actually renders", () => {
+  const unbound = { ...contract, signature: { ...contract.signature, productSubjectSelector: "" } };
+  expect(validateMechanisms("showcase", unbound).join("\n")).toContain("the product subject it operates on");
 });
 
 test("an unscannable wall of prose is reported as an advisory, never a blocker", async () => {

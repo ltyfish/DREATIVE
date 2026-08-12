@@ -100,12 +100,15 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "skills/3d.md", threeD, /Photo-to-3D reconstruction is not an available capability/i, "the 3D specialist must name photo-to-3D as a capability gap rather than an attempt");
   requireText(findings, "SKILL.md", skill, /reference mode[\s\S]*none[\s\S]*supplied[\s\S]*scout[\s\S]*traceable/i, "Showcase reference scouting must be explicit and traceable");
   requireText(findings, "SKILL.md", skill, /identity channel[\s\S]*visible media or a computed[\s\S]*distinct rendered values/i, "focal product identity must bind to rendered uniqueness evidence");
-  // Positive requirements. Blind A/B review named all three as the reason a
+  // Positive requirements. Blind A/B review named each as the reason a
   // technically cleaner build lost, and none of them can be satisfied by
   // removing something.
   requireText(findings, "SKILL.md", skill, /## The signature component[\s\S]*could not be\s+lifted onto a competitor/i, "must require one component that could only belong to this product");
-  requireText(findings, "SKILL.md", skill, /## Motion is a floor[\s\S]*blocks a route\s*where nothing at all changes/i, "must require authored motion as a floor rather than treating stillness as restraint");
-  requireText(findings, "SKILL.md", skill, /## Scannability[\s\S]*understood at a glance before it is read/i, "must require sections to be scannable, not only well written");
+  requireText(findings, "SKILL.md", skill, /## The signature component[\s\S]*about the product, not about data concerning the product/i, "the signature component must operate on the product, not be an instrument about it");
+  requireText(findings, "SKILL.md", skill, /## Two motion budgets[\s\S]*interaction baseline — required on every profile, Efficient included/i, "must fund the pervasive interaction baseline separately from signature moments");
+  requireText(findings, "SKILL.md", skill, /## Two motion budgets[\s\S]*Reveals must complete while the region is on screen/i, "must require reveals to resolve inside the viewport");
+  requireText(findings, "SKILL.md", skill, /## Scannability and density[\s\S]*understood at a glance before it is read/i, "must require sections to be scannable, not only well written");
+  requireText(findings, "SKILL.md", skill, /## Scannability and density[\s\S]*Ambition is resolution, not element count/i, "must penalise cramming as well as thinness");
   requireText(findings, "SKILL.md", skill, /## Ambition is capped by what you can verify[\s\S]*executed\s+wrong loses to a plain one executed right/i, "must cap ambition by what the build can actually verify");
   requireText(findings, "SKILL.md", skill, /A check earns its place only[\s\S]*had not been used to invent the check/i, "must keep the enforcement freeze that ended the loophole-closing loop");
   requireText(findings, "SKILL.md", skill, /no field for\s*your own account of your process[\s\S]*non-empty string is not evidence/i, "must state that builder-authored prose is not evidence");

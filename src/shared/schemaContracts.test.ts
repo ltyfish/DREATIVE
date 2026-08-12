@@ -13,6 +13,8 @@ const contract = {
   signature: {
     name: "Configuration instrument",
     selector: "#peak",
+    productSubjectSelector: ".configured-unit",
+    productSubject: "the configured unit",
     whyOnlyThisProduct: "It is driven by this product's own configuration range.",
   },
   referenceMode: "supplied",

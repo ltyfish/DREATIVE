@@ -6,27 +6,49 @@ condition is a style, and styles transplant badly.
 
 ---
 
-## Always — the three things blind review keeps punishing
+## Always — the things blind review keeps punishing
 
 These are not style advice. They come from paired A/B rounds where the same
 brief was built with and without this skill, scored without knowing which was
 which. Each one is a reason a cleaner, more restrained build lost.
 
-**Ship one component that could only belong to this product.**
+**Ship one component that could only belong to this product — and point it at
+the product.**
 Condition: always, in Recommended and Showcase. A command-line card on a
-developer tool, a roast curve on a coffee page, a triage clock on a clinic page.
-Cost: it is genuinely harder than composing a page out of known parts. Wrong
-when: never — the version of this that is wrong is a gimmick attached to a
-product it has nothing to do with, which is a different failure.
+developer tool, a triage clock on a clinic page. Cost: it is genuinely harder
+than composing a page out of known parts. Wrong when: never — but the *shape*
+that is wrong is a chart, log, or metrics panel about a product that is not
+itself data. That satisfies the requirement and loses anyway: "a graph log which
+makes things confusing and not really a ecommerce website."
 Reviewers describing what they liked about a losing build named a single
 bespoke component almost every time. Reviewers describing a winning build's
 weakness said "nothing stands out as what it is."
 
+**The ambient layer is what reads as smooth, not the best moment.**
+Condition: always, every profile. Hover, focus, press, and small regional
+entrances on everything, in one grammar, cheap and unoriginal by design. Cost:
+almost nothing — a handful of CSS transitions. Wrong when: never; this is the
+floor. The control keeps winning smoothness with only this and nothing else,
+described as "very overused and not unique" in the same breath as being
+preferred. A route with two beautiful mechanisms and nothing else responding is
+still described as having almost no animation.
+
 **A route where nothing moves reads as unfinished, not as restrained.**
-Condition: always, outside Efficient. Cost: motion has to be built and tested on
-every viewport. Wrong when: motion competes with an urgent task — and even then
-the answer is one quiet authored motion, not none. Few and well-executed beats
-many and decorative, but zero loses to both.
+Condition: always, outside Efficient — which is exempt from signature motion,
+never from the ambient layer. Cost: motion has to be built and tested on every
+viewport. Wrong when: motion competes with an urgent task — and even then the
+answer is one quiet authored motion, not none. For *signature* moments, few and
+well-executed beats many and decorative; that trade does not apply to the
+ambient layer, which should be everywhere.
+
+**Ambition is resolution, not element count.**
+Condition: whenever a requirement pushes you to add something. Cost: sections
+you were proud of get emptied out. Wrong when: the content genuinely is dense
+and the reader came for density, as in a reference table or a spec sheet.
+Given a positive requirement, builds answer it by cramming — and lose to a
+control carrying a third of the content: "cramping too much ambitions and words
+and design", "theres so much stats everywhere". Delete an element from a section
+and check whether the section got worse. Usually it did not.
 
 **Being readable is not the same as being scannable.**
 Condition: any section a visitor meets before they have decided to invest

@@ -312,3 +312,79 @@ are too high, not too low.
 This supersedes the enforcement half of DL-006, DL-007, DL-008, and DL-009.
 Their diagnoses of specific evasions were accurate; the response — one more
 deterministic rule each time — was the mistake.
+
+### DL-011 / validated / 2026-08-12
+
+Observed failure: DL-010's recheck condition fired, in both directions. Three
+verdicts on the rebuilt system (coffee-roaster 202608110146, coffee-roaster
+202608110800, devtool-docs 202608111359) went 1-2 to the skill, and the free
+text hit the stated refutation clause almost verbatim: *"cramping too much
+ambitions and words and design"*, *"theres so much stats everywhere"*, *"so
+complex, wordy, not clear presentation"*, *"messy, cramped, not tidy"*. At the
+same time the three floors bought nothing they were built to buy. Motion was
+still the named weakness of the Dreative arm in all three, including the win —
+*"everything outside the few signature moments is still flat with no
+transitions"*. The signature component was satisfied twice by an off-domain
+readout on a shop — *"a graph log which makes things confusing and not really a
+ecommerce website"*, *"the graph is hella ugly ngl"*. Scannability inverted:
+Dreative became the wordy arm and the control won on *"much less wordy and
+cleaner in separation"*.
+
+Root cause: three separate ones, all the same shape — the floor measured a
+different variable than the reviewer.
+
+1. **Motion was measured as presence, not breadth.** One qualifying transition
+   cleared the check. The reviewer's own account of why the control feels
+   smooth is an ambient layer, not a moment: *"when i scroll, theres minimal but
+   still subtle clean transition of it popping up… same goes with interacting
+   where it changes colour/background/shadow… tho very overused and not
+   unique"*. Dreative's docs actively discouraged exactly that layer —
+   `skills/motion.md` said "reject universal fade-ups, decorative hover
+   scaling" and SLOP #5 called scroll reveals the most common offender — so the
+   builder spent everything on two set-pieces and left the route inert.
+2. **Distinctiveness was easier to satisfy with data about the product than
+   with the product.** A chart is fully under the model's control and is
+   trivially unliftable; a good picture of the merchandise is not. Same
+   incentive as the fabricated prop in DL-009, one abstraction up.
+3. **A positive requirement with no ceiling is answered by adding.** Nothing in
+   the system priced density, so ambition was expressed as elements per section.
+
+Change: Split motion into two separately funded budgets. The interaction
+baseline — hover, focus, press, small regional entrances — is now required on
+every profile including Efficient, and is explicitly meant to be cheap and
+unoriginal; smoke blocks a route where no interactive element responds, and
+blocks Recommended/Showcase when motion reaches under a quarter of regions.
+Signature moments keep the old taste rules. Added a blocker for reveals that
+complete only after the region has left the viewport (reported as *"after i
+scroll pass section then there is scroll effects, so pretty weird and bad ux"*).
+Bound `productSubjectSelector`/`productSubject` on the signature component, with
+an advisory when it contains no media of that subject, and named the instrument-
+about-the-product as SLOP #12. Added density advisories — word count, ten or
+more competing statistic blocks, text blocks pressed within 4px — and SLOP #13.
+Corrected two over-readings: SLOP #4 into a ban on radius and borders (*"the ban
+of borders is so strict to the point it only uses rectangle"*) and SLOP #5 into
+a ban on the baseline layer. Added the bounded-degenerate-case rule after a
+filter emphasis that *"over-scales when only one product matches"*.
+
+Evidence: `dreative-testbed` VERDICTS.md, rounds 202608110146, 202608110800,
+202608111359. The 202608110800 verdict was transcribed by hand after its `runs/`
+artifacts were lost to a commit-before-archive ordering bug; its wording is the
+reviewer's own but it cannot be re-examined against the build.
+
+Cost or trade-off: The interaction baseline is now a blocker on Efficient, which
+previously had no motion obligation at all — accepted, because it is a handful
+of CSS transitions and it is the single thing the control wins on. The breadth
+blocker can be satisfied by fading everything in uniformly, which is slop by
+SLOP #5's older reading; the docs now say plainly that this is the floor rather
+than the answer, and the browser cannot tell the difference. Density advisories
+use thresholds nobody has validated. Three new blockers were added in one change
+against the DL-010 instruction to prefer advisories — justified only because a
+human reviewer independently called each of these three a failure in plain
+language, which is the bar `SKILL.md` sets.
+
+Recheck condition: Run a full round. Confirmed if the Dreative arm stops being
+described as lacking animation while also not being described as cramped, and
+if the signature component stops being named as the confusing part. Refuted if
+the arm now reads as uniformly fade-y, generic, or indistinguishable from the
+control — which would mean the baseline layer displaced the distinctiveness
+rather than supporting it.

@@ -1,7 +1,9 @@
 import http from "node:http";
 
 const port = 4181;
-const shell = (body, script = "", links = "") => `<!doctype html><html><head><title>Smoke fixture</title><style>html,body{margin:0}main>section{min-height:70vh;padding:32px}.box{width:120px;height:120px;background:#f60;transition:transform .01s,opacity .01s}.product-b,.product-d,.product-f{background-color:#06c}.product-c,.product-e{background-color:#6a4}.changed .box{transform:translateX(80px);opacity:.55}.reveal{opacity:.2;transition:opacity .01s,transform .01s}.reveal.shown{opacity:1;transform:translateY(-12px)}</style></head><body><main>${links}${body}</main><script>${script}</script></body></html>`;
+// `a:hover`/`button:focus` are the interaction baseline every profile now owes
+// the route. Fixtures that are meant to fail that check opt out with .bare.
+const shell = (body, script = "", links = "") => `<!doctype html><html><head><title>Smoke fixture</title><style>html,body{margin:0}main>section{min-height:70vh;padding:32px}a:not(.bare):hover,button:not(.bare):hover{background:#222;color:#fff}a:not(.bare):focus,button:not(.bare):focus{outline:2px solid #f60}.box{width:120px;height:120px;background:#f60;transition:transform .01s,opacity .01s}.product-b,.product-d,.product-f{background-color:#06c}.product-c,.product-e{background-color:#6a4}.changed .box{transform:translateX(80px);opacity:.55}.bare:focus{outline:none}.reveal{opacity:.2;transition:opacity .01s,transform .01s}.reveal.shown{opacity:1;transform:translateY(-12px)}</style></head><body><main>${links}${body}</main><script>${script}</script></body></html>`;
 const mechanisms = `<section id="before"><button>Before</button><div class="box"></div></section><section id="peak"><button>Peak</button><svg viewBox="0 0 120 120" width="120" height="120"><rect class="box" width="120" height="120" fill="#f60"/></svg></section><section id="after"><button>After</button><div class="box product-a" data-product="a" style="background-color:#f60"></div><div class="box product-b" data-product="b" style="background-color:#06c"></div></section>`;
 const sharedStateScript = `for(const section of document.querySelectorAll('section:not(#before)'))section.onclick=()=>{const stage=(Number(section.dataset.localStage||0)+1)%3;section.dataset.localStage=stage;for(const box of section.querySelectorAll('.box'))box.style.transform='translateX('+(stage*40)+'px)'};document.querySelector('#before').onclick=()=>{const stage=(Number(document.body.dataset.stage||0)+1)%3;document.body.dataset.stage=stage;for(const section of document.querySelectorAll('section')){section.dataset.sharedStage=stage;for(const box of section.querySelectorAll('.box'))box.style.transform='translateX('+(stage*40)+'px)'}}`;
 // An ordinary scroll reveal: the minimum a Recommended route needs to clear the motion floor.
@@ -24,8 +26,20 @@ const scrollMechanism = scrollScene(`${sharedStateScript};${scrollProgress}`);
 const staticScrollMechanism = scrollScene(sharedStateScript);
 const desktopOnlyScrollMechanism = `<!doctype html><html><head><title>Smoke fixture</title><style>html,body{margin:0}main>section{min-height:70vh;padding:32px}.box{width:120px;height:120px;background:#f60}@media(max-width:600px){#scroll-story .box{position:static!important}#scroll-story .box{transform:none!important}}</style></head><body><main><section id="before"><button>Before</button><div class="box"></div></section><section id="scroll-story" style="height:320vh"><h1 style="position:sticky;top:32px">Desktop-only story</h1><div class="box" style="position:sticky;top:100px"></div></section><section id="after"><button>After</button><div class="box"></div><div class="box"></div></section></main><script>${sharedStateScript};${scrollProgress}</script></body></html>`;
 
+const section = (index) => `<section id="s${index}"><h2>Section ${index}</h2><p>Ordinary body copy for section ${index}.</p></section>`;
+// One reveal across eight regions: satisfies presence, fails breadth.
+const flatRoute = shell(Array.from({ length: 8 }, (_, index) => section(index)).join(""), `const mark=document.createElement('div');mark.className='reveal';mark.textContent='revealed';document.querySelector('#s3').append(mark);new IntersectionObserver((entries)=>entries.forEach((entry)=>entry.target.classList.toggle('shown',entry.isIntersecting)),{threshold:.4}).observe(mark)`);
+// Reveals that only fire once the section has scrolled above the viewport.
+const lateReveal = shell(Array.from({ length: 5 }, (_, index) => `<section id="s${index}"><h2>Section ${index}</h2><p>Body copy.</p><div class="reveal" style="min-height:80px">revealed</div></section>`).join(""), `const update=()=>{for(const element of document.querySelectorAll('section'))element.querySelector('.reveal').classList.toggle('shown',element.getBoundingClientRect().top<0)};addEventListener('scroll',update);update()`);
+const noAffordance = shell(`<section><h1>No feedback</h1><button class="bare">One</button><button class="bare">Two</button><button class="bare">Three</button><button class="bare">Four</button></section><section><h2>Second</h2><p>Body copy.</p></section>`, revealScript);
+const cramped = shell(`<section id="cramped"><h2>Cramped</h2>${Array.from({ length: 16 }, (_, index) => `<p style="margin:0">Statistic line ${index} pressed against the one above it.</p>`).join("")}</section><section><h2>Second</h2><p>Body copy.</p></section>`, revealScript);
+
 const pages = {
   "/": healthy,
+  "/flat-route": flatRoute,
+  "/late-reveal": lateReveal,
+  "/no-affordance": noAffordance,
+  "/cramped": cramped,
   "/about": shell(`<section><h1>About this fixture</h1><p>This is a distinct route.</p></section>`),
   "/static-route": staticRoute,
   "/prose-wall": proseWall,

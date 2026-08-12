@@ -72,6 +72,13 @@ padding.
 weight deliberately: things that matter more should be bigger, closer, darker,
 or given more room. Sharp and soft can coexist if the split means something.
 
+**Not the inverse.** This entry has been over-read into a ban on rounding and
+borders, producing a page of hard rectangles — *"the ban of borders is so strict
+to the point it only uses rectangle"*. Uniform hardness is the same failure as
+uniform softness: an even texture with no structure. Radius, borders, and
+shadows are ordinary tools. The slop is applying one value to everything, in
+either direction.
+
 ## 5. Motion as garnish
 
 Fade-and-rise on every section as it scrolls into view, staggered by 100ms.
@@ -81,13 +88,24 @@ because parallax exists.
 **Tell:** removing the animation costs the user nothing. Nothing was explained,
 revealed, connected, or made easier.
 
-**Instead:** motion should do one of four jobs — show causality, maintain
-continuity across a change, direct attention to something that just became
-relevant, or communicate the physical nature of the subject. If it does none of
-those, it is decoration on a page that is already asking a lot of the user.
+**Instead:** a *signature* motion should do one of four jobs — show causality,
+maintain continuity across a change, direct attention to something that just
+became relevant, or communicate the physical nature of the subject. If it does
+none of those, it is decoration on a page that is already asking a lot of the
+user.
 
-Scroll-triggered reveals are the most common offender because they are trivially
-easy to add to every section at once. That is exactly why they read as generated.
+**Read this entry narrowly.** It is about garnish standing in for a signature
+moment. It is not about the interaction baseline — hover, focus, press, and
+small regional entrances — which is required on every route and is supposed to
+be cheap and unoriginal. Blind review is explicit that the ambient layer is what
+reads as smooth, generic or not, and that a page with two strong mechanisms and
+nothing else responding reads as having no animation at all. Fading every
+section in is slop when it is the *only* motion on the page; it is the floor when
+something specific happens on top of it.
+
+The tell that distinguishes them: remove the motion and ask whether the page
+feels *unexplained* (a failed signature moment) or *unresponsive* (a missing
+baseline). Only the first is decoration.
 
 ## 6. Copy that says nothing
 
@@ -176,6 +194,47 @@ horizontal scrollbar nobody noticed.
 **Instead:** treat 390px as its own composition with its own order of
 importance. Some things should be removed there, not stacked. Check 320px when
 density is high.
+
+## 12. The instrument about the product
+
+A chart, roast curve, log stream, terminal readout, telemetry panel, or metrics
+dashboard, on a page whose job is to sell an object, book an appointment, or be
+read. It is bespoke, it is undeniably specific to the product, and it satisfies
+every requirement to build something a competitor could not lift.
+
+**Why it happens:** it is the shape a model reaches for when told to make
+something that could only belong to this product. Data *about* a thing is
+infinitely easier to invent than a good picture *of* the thing, and it looks
+like engineering.
+
+**Tell:** the component is the most elaborate thing on a page whose primary task
+is something else entirely. Ask what the visitor came to do; if the instrument
+neither performs that task nor makes it easier, it is decoration with a schema.
+Blind review: *"a graph log which makes things confusing and not really a
+ecommerce website"*, *"the graph is hella ugly ngl"*.
+
+**Instead:** point the specificity at the subject. The signature component on a
+shop should operate on the merchandise; on a clinic, on the appointment; on a
+publication, on the text. A readout is the right answer when the product *is*
+data or developer tooling — then it is not an instrument about the product, it
+is the product.
+
+## 13. Ambition as density
+
+Every section carries a headline, a deck, three stats, a caption, a badge, and a
+diagram. Nothing is empty. Every band is doing something.
+
+**Why it happens:** given a requirement to be ambitious, adding is measurable and
+subtracting is not. A packed page also looks like more work was done.
+
+**Tell:** you cannot say what any single section is *for* in four words. Blind
+review: *"cramping too much ambitions and words and design"*, *"theres so much
+stats everywhere"*, *"messy, cramped, not tidy"* — losing to a control with a
+third of the content.
+
+**Instead:** ambition is resolution, not element count. One idea per band,
+rendered precisely, with real space around it. Delete an element from a section
+and check whether the section actually got worse; usually it did not.
 
 ---
 

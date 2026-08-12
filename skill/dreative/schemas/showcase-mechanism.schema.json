@@ -11,12 +11,14 @@
     "experienceType": { "enum": ["journey", "interface"] },
     "signature": {
       "type": "object",
-      "description": "The one component on this route that could not be lifted onto a competitor's page. Verified to resolve, render, and occupy at least 5% of the viewport.",
+      "description": "The one component on this route that could not be lifted onto a competitor's page. Verified to resolve, render, and occupy at least 5% of the viewport. It must be about the product itself, not a chart, log, or metrics panel about the product — that is the right signature only when the product is data or developer tooling.",
       "additionalProperties": false,
-      "required": ["name", "selector", "whyOnlyThisProduct"],
+      "required": ["name", "selector", "productSubjectSelector", "productSubject", "whyOnlyThisProduct"],
       "properties": {
         "name": { "type": "string", "minLength": 1 },
         "selector": { "type": "string", "minLength": 1 },
+        "productSubjectSelector": { "type": "string", "minLength": 1, "description": "Selector, inside the signature component, for the thing the component operates on: the item for sale, the document being read, the appointment being booked. Verified to resolve once, render at readable size, and not be aria-hidden decoration." },
+        "productSubject": { "type": "string", "minLength": 1, "description": "Plain name of that subject." },
         "whyOnlyThisProduct": { "type": "string", "minLength": 1 }
       }
     },

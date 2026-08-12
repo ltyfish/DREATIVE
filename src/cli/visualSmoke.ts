@@ -27,10 +27,19 @@ export interface MechanismContractEntry {
  * lifted onto a competitor's page. Blind A/B review repeatedly named its
  * absence as the reason a technically cleaner build lost, so it is a declared,
  * rendered obligation rather than a rule against generic components.
+ *
+ * `productSubjectSelector` was added after the 2026-08-11 round, where the
+ * requirement was satisfied twice by an abstract readout — a roast graph and a
+ * log stream on a page whose job was selling coffee. The reviewer called the
+ * widget "confusing and not really an ecommerce website". Binding the subject
+ * does not prove relevance, but it forces the builder to name what the
+ * component is about and lets the browser confirm that subject renders.
  */
 export interface SignatureComponent {
   name: string;
   selector: string;
+  productSubjectSelector: string;
+  productSubject: string;
   whyOnlyThisProduct: string;
 }
 
@@ -244,57 +253,206 @@ async function exerciseMechanism(page: Page, entry: MechanismContractEntry): Pro
     : null;
 }
 
-async function verifySignature(page: Page, signature: SignatureComponent): Promise<string[]> {
+async function verifySignature(page: Page, signature: SignatureComponent): Promise<{ blockers: string[]; advisories: string[] }> {
   const locator = page.locator(signature.selector);
-  if (await locator.count() !== 1) return [`signature component ${signature.name} selector ${signature.selector} must resolve to exactly one element`];
+  if (await locator.count() !== 1) return { blockers: [`signature component ${signature.name} selector ${signature.selector} must resolve to exactly one element`], advisories: [] };
   const observation = await locator.evaluate((element) => {
     const rect = element.getBoundingClientRect();
     const style = getComputedStyle(element);
     return {
       visible: style.display !== "none" && style.visibility !== "hidden" && Number(style.opacity) > .02,
       areaRatio: (rect.width * rect.height) / Math.max(1, innerWidth * innerHeight),
+      hasProductMedia: Boolean(element.querySelector("img,picture,video,canvas,[data-dreative-3d]")),
     };
   });
-  if (!observation.visible) return [`signature component ${signature.name} is not visibly rendered`];
-  if (observation.areaRatio < .05) return [`signature component ${signature.name} occupies ${(observation.areaRatio * 100).toFixed(1)}% of the viewport and cannot carry the route's identity`];
-  return [];
+  if (!observation.visible) return { blockers: [`signature component ${signature.name} is not visibly rendered`], advisories: [] };
+  if (observation.areaRatio < .05) return { blockers: [`signature component ${signature.name} occupies ${(observation.areaRatio * 100).toFixed(1)}% of the viewport and cannot carry the route's identity`], advisories: [] };
+
+  const subject = locator.locator(signature.productSubjectSelector);
+  if (await subject.count() !== 1)
+    return { blockers: [`signature component ${signature.name} product subject ${signature.productSubjectSelector} must resolve to exactly one element inside ${signature.selector}`], advisories: [] };
+  const subjectProblem = await subject.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    const style = getComputedStyle(element);
+    if (element.getAttribute("aria-hidden") === "true") return "is aria-hidden decoration";
+    if (rect.width < 24 || rect.height < 24) return "is too small to read as the subject";
+    if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) <= .02) return "is not visibly rendered";
+    return null;
+  });
+  if (subjectProblem) return { blockers: [`signature component ${signature.name} product subject ${signature.productSubject} ${subjectProblem}`], advisories: [] };
+
+  // Not a blocker: an abstract readout is the right signature for a data or
+  // developer product and the wrong one for a shop. The browser cannot tell
+  // which this is, so it asks rather than refuses.
+  return {
+    blockers: [],
+    advisories: observation.hasProductMedia ? [] : [`signature: ${signature.name} contains no image, video, or canvas of ${signature.productSubject} — confirm the component is about the thing the route sells or does, not a chart about it`],
+  };
 }
 
 /**
- * Measures whether anything on the route actually moves. Blind review named a
- * motion deficit in almost every losing build and in several winning ones, so
- * this is a floor, not a ceiling: one moving region is enough to clear it.
+ * The pervasive, deliberately unoriginal transition layer: hover, focus, and
+ * press feedback on the things a user can touch. Blind review named this as the
+ * reason the control "always seems smooth" — *"when i scroll, theres minimal but
+ * still subtle clean transition… same goes with interacting where it changes
+ * colour/background/shadow"* — while the Dreative arm spent its whole motion
+ * budget on two signature moments and left everything else flat. Cheap and
+ * uniform is the point; this layer is not where distinctiveness comes from.
  */
-async function measureMotion(page: Page, documentHeight: number, viewportHeight: number): Promise<{ moving: number; total: number }> {
+async function measureInteractionAffordance(page: Page): Promise<{ responding: number; total: number }> {
+  const selectors = await page.evaluate(() => Array.from(document.querySelectorAll<HTMLElement>("main a[href],main button,main [role=button],main summary,main input,main select,main [tabindex]:not([tabindex='-1'])"))
+    .filter((element) => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return rect.width >= 16 && rect.height >= 12 && style.display !== "none" && style.visibility !== "hidden" && Number(style.opacity) > .02;
+    })
+    .slice(0, 8)
+    .map((element, index) => { const id = `affordance-${index}`; element.dataset.dreativeAffordanceId = id; return `[data-dreative-affordance-id=${JSON.stringify(id)}]`; }));
+  const read = (selector: string): Promise<string> => page.locator(selector).evaluate((element) => {
+    const style = getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    return JSON.stringify([style.color, style.backgroundColor, style.backgroundImage, style.borderColor, style.borderWidth, style.boxShadow, style.outlineWidth, style.transform, style.opacity, style.filter, style.textDecorationLine, style.letterSpacing, Math.round(rect.width), Math.round(rect.height)]);
+  });
+  let responding = 0;
+  for (const selector of selectors) {
+    // Short explicit timeouts: an element that is not hoverable within a beat
+    // is one this check simply skips, never one the whole run waits 30s on.
+    const locator = page.locator(selector);
+    await locator.scrollIntoViewIfNeeded({ timeout: 1500 }).catch(() => undefined);
+    await twoFrames(page);
+    const resting = await read(selector);
+    await locator.hover({ timeout: 1500 }).catch(() => undefined);
+    await page.waitForTimeout(60);
+    if (await read(selector) !== resting) { responding += 1; await page.mouse.move(0, 0); continue; }
+    await page.mouse.move(0, 0);
+    await locator.focus({ timeout: 1500 }).catch(() => undefined);
+    await page.waitForTimeout(60);
+    if (await read(selector) !== resting) responding += 1;
+    await locator.evaluate((element) => (element as HTMLElement).blur()).catch(() => undefined);
+  }
+  return { responding, total: selectors.length };
+}
+
+/**
+ * The inverse of the scannability advisory, and the one the 2026-08-11 round
+ * demanded: the Dreative arm lost on *"cramping too much ambitions and words and
+ * design"*, *"so much stats everywhere"*, and *"messy, cramped, not tidy"*.
+ * Ambition is not element count, and none of these are refusals — they ask the
+ * builder to look at a section a reviewer has repeatedly called overloaded.
+ */
+async function measureDensity(page: Page): Promise<string[]> {
+  return page.evaluate(() => {
+    const findings: string[] = [];
+    for (const section of Array.from(document.querySelectorAll<HTMLElement>("main section, main article"))) {
+      const name = section.id || section.className?.split(/\s+/)[0] || section.tagName.toLowerCase();
+      const words = (section.innerText ?? "").trim().split(/\s+/).filter(Boolean).length;
+      if (words > 420) findings.push(`${name} carries ${words} words; blind review calls a dense route "wordy" far more often than "thorough"`);
+
+      const stats = Array.from(section.querySelectorAll<HTMLElement>("[class*=stat],[class*=metric],[class*=kpi],[class*=figure],dl > dd"))
+        .filter((element) => element.getBoundingClientRect().height > 8).length;
+      if (stats >= 10) findings.push(`${name} renders ${stats} competing statistic blocks; when everything is emphasised the reader is told nothing is`);
+
+      const blocks = Array.from(section.querySelectorAll<HTMLElement>("h2,h3,h4,p,li,dt,dd,button,a,label"))
+        .filter((element) => {
+          const rect = element.getBoundingClientRect();
+          const style = getComputedStyle(element);
+          return Boolean(element.innerText?.trim()) && rect.width > 8 && rect.height > 6 && style.visibility !== "hidden" && Number(style.opacity) > .02;
+        })
+        .slice(0, 120);
+      let crowded = 0;
+      for (let left = 0; left < blocks.length; left += 1) for (let right = left + 1; right < blocks.length; right += 1) {
+        const a = blocks[left], b = blocks[right];
+        if (a.contains(b) || b.contains(a)) continue;
+        const ar = a.getBoundingClientRect(), br = b.getBoundingClientRect();
+        const overlap = Math.max(0, Math.min(ar.right, br.right) - Math.max(ar.left, br.left));
+        if (overlap < Math.min(ar.width, br.width) * .5) continue;
+        const gap = ar.top < br.top ? br.top - ar.bottom : ar.top - br.bottom;
+        if (gap >= 0 && gap < 4) crowded += 1;
+      }
+      if (crowded >= 6) findings.push(`${name} has ${crowded} pairs of text blocks sitting within 4px of each other; the section reads as cramped rather than dense`);
+    }
+    return findings.slice(0, 6);
+  });
+}
+
+/**
+ * Measures how much of the route actually moves, and whether the movement
+ * happens where the reader can see it.
+ *
+ * Presence alone was the 2026-08-10 floor and it bought nothing: "lack of
+ * animation" stayed the named weakness of the Dreative arm in every verdict of
+ * the next round, including the one it won, because a single qualifying
+ * transition cleared the check while *"everything outside the few signature
+ * moments is still flat"*. Breadth is the variable the reviewer was actually
+ * responding to, so it is measured separately from presence.
+ *
+ * `lateReveals` catches a defect the same round reported in plain words:
+ * *"after i scroll pass section then there is scroll effects, so pretty weird
+ * and bad ux"*. A region is late when its state is identical entering and
+ * centred, and only differs once it has started leaving the viewport.
+ */
+async function measureMotion(page: Page, documentHeight: number, viewportHeight: number): Promise<{ moving: number; total: number; lateReveals: string[] }> {
   const regions = await page.evaluate(() => Array.from(document.querySelectorAll<HTMLElement>("main > *, main section, main header"))
     .filter((element) => element.getBoundingClientRect().height > 80)
     .slice(0, 24)
-    .map((element, index) => { const id = `motion-${index}`; element.dataset.dreativeMotionId = id; return id; }));
+    .map((element, index) => {
+      const id = `motion-${index}`;
+      element.dataset.dreativeMotionId = id;
+      return { id, name: element.id || element.className?.split(/\s+/)[0] || `${element.tagName.toLowerCase()}#${index}` };
+    }));
   // Deliberately viewport-independent: every child is sampled with geometry
   // relative to the region, so scrolling a static page past the probe produces
   // an identical signature and is correctly reported as no motion.
-  const signature = (selector: string): Promise<string> => page.locator(selector).evaluate((root) => {
+  // Per element, so lateness can be judged for the elements the reader could
+  // actually see: `onScreen` says whether this element was in the viewport at
+  // this stop, `state` is its viewport-independent appearance.
+  const signature = (selector: string): Promise<{ onScreen: boolean; state: string }[]> => page.locator(selector).evaluate((root) => {
     const rootRect = root.getBoundingClientRect();
-    return JSON.stringify(Array.from(root.querySelectorAll<HTMLElement>("*")).slice(0, 40).map((element) => {
+    return Array.from(root.querySelectorAll<HTMLElement>("*")).slice(0, 40).map((element) => {
       const rect = element.getBoundingClientRect();
       const style = getComputedStyle(element);
-      return [Math.round(rect.x - rootRect.x), Math.round(rect.y - rootRect.y), Math.round(rect.width), Math.round(rect.height), style.transform, style.opacity, style.filter, style.clipPath, style.backgroundImage, style.color, style.backgroundColor];
-    }));
+      const onScreenHeight = Math.max(0, Math.min(rect.bottom, innerHeight) - Math.max(rect.top, 0));
+      return {
+        // Substantially on screen, not merely peeking past an edge: an element
+        // at the very bottom of the viewport has not had its turn yet.
+        onScreen: rect.width > 2 && rect.height > 2 && onScreenHeight / rect.height >= .6,
+        state: JSON.stringify([Math.round(rect.x - rootRect.x), Math.round(rect.y - rootRect.y), Math.round(rect.width), Math.round(rect.height), style.transform, style.opacity, style.filter, style.clipPath, style.backgroundImage, style.color, style.backgroundColor]),
+      };
+    });
   });
   let moving = 0;
-  for (const id of regions) {
-    const selector = `[data-dreative-motion-id=${JSON.stringify(id)}]`;
+  const lateReveals: string[] = [];
+  for (const region of regions) {
+    const selector = `[data-dreative-motion-id=${JSON.stringify(region.id)}]`;
     const top = await page.locator(selector).evaluate((element) => element.getBoundingClientRect().top + scrollY);
-    const signatures = new Set<string>();
+    // entering (region top near the viewport bottom), centred, then leaving.
+    const stops: { y: number; elements: { onScreen: boolean; state: string }[] }[] = [];
     for (const offset of [viewportHeight * .9, viewportHeight * .3, -viewportHeight * .35]) {
-      await page.evaluate((y) => scrollTo(0, y), Math.max(0, Math.min(documentHeight - viewportHeight, top - offset)));
+      const y = Math.max(0, Math.min(documentHeight - viewportHeight, top - offset));
+      await page.evaluate((scrollY) => scrollTo(0, scrollY), y);
       await twoFrames(page);
       await page.waitForTimeout(150);
-      signatures.add(await signature(selector));
+      stops.push({ y, elements: await signature(selector) });
     }
-    if (signatures.size > 1) moving += 1;
+    const [entering, centred, leaving] = stops;
+    if (new Set(stops.map((stop) => stop.elements.map((element) => element.state).join("|"))).size > 1) moving += 1;
+    // Only meaningful when the three stops are genuinely different scroll
+    // positions; at the top or bottom of a short document they clamp together.
+    const distinctStops = new Set(stops.map((stop) => stop.y)).size === 3;
+    const sameLength = new Set(stops.map((stop) => stop.elements.length)).size === 1;
+    // An element already on screen while the region is centred, still in the
+    // same state it held before it had entered, that only changes once the
+    // region has scrolled past. The element must have been off screen at the
+    // entering stop: without that baseline there is no "approach state" to
+    // compare against, and a reveal that simply un-reveals on exit would read
+    // as a late one. An element that resolves as it enters is correct and is
+    // never counted, which is why `onScreen` is required at the centred stop.
+    if (distinctStops && sameLength && centred.elements.some((element, index) =>
+      element.onScreen && !entering.elements[index].onScreen
+      && element.state === entering.elements[index].state && element.state !== leaving.elements[index].state))
+      lateReveals.push(region.name);
   }
-  return { moving, total: regions.length };
+  return { moving, total: regions.length, lateReveals };
 }
 
 /**
@@ -545,16 +703,37 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
 
   if (config.label === "desktop") {
     advisories.push(...(await measureScannability(page)).map((item) => `scannability: ${item}`));
+    advisories.push(...(await measureDensity(page)).map((item) => `density: ${item}`));
+
+    // Every profile owes the route this layer, Efficient included: it is the
+    // cheapest craft on the page and the control keeps winning smoothness with
+    // nothing else.
+    if (!config.reducedMotion) {
+      const affordance = await measureInteractionAffordance(page);
+      checks.push(`interaction baseline: ${affordance.responding} of ${affordance.total} interactive elements respond to hover or focus`);
+      if (affordance.total >= 3 && affordance.responding === 0)
+        blockers.push(`no interaction baseline: ${affordance.total} interactive elements were hovered and focused and none changed appearance. Every profile owes the route a designed hover, focus, and press state; this is the layer blind review reads as "smooth".`);
+      else if (affordance.total >= 4 && affordance.responding < affordance.total / 2)
+        advisories.push(`interaction baseline: only ${affordance.responding} of ${affordance.total} interactive elements respond to hover or focus; the layer has to be pervasive to register as craft`);
+    }
+
     if (profile !== "efficient" && !config.reducedMotion) {
       const motion = await measureMotion(page, audit.documentHeight, audit.viewportHeight);
       checks.push(`motion: ${motion.moving} of ${motion.total} regions change state on approach`);
       if (motion.total > 0 && motion.moving === 0)
         blockers.push(`nothing on this route moves: ${motion.total} regions were sampled entering, centred, and leaving the viewport and none changed state. ${profile === "showcase" ? "Showcase" : "Recommended"} requires at least one authored motion.`);
-      else if (motion.total >= 4 && motion.moving < 2)
+      else if (motion.total >= 6 && motion.moving / motion.total < .25)
+        blockers.push(`motion is confined to ${motion.moving} of ${motion.total} regions: the rest of the route is flat. A signature moment on a dead page still reads as "lack of animation" — spread the baseline layer across the route.`);
+      else if (motion.total >= 4 && motion.moving / motion.total < .5)
         advisories.push(`motion: only ${motion.moving} of ${motion.total} regions change on approach; blind review has repeatedly called this "clean but static"`);
+      if (motion.lateReveals.length)
+        blockers.push(`reveals fire after the reader has scrolled past them in ${motion.lateReveals.join(", ")}: content already on screen while the region is centred is still in its approach state, and only resolves once the region has left. Trigger against the top of the viewport, not the bottom.`);
     }
+
     if (contract) {
-      blockers.push(...await verifySignature(page, contract.signature));
+      const signature = await verifySignature(page, contract.signature);
+      blockers.push(...signature.blockers);
+      advisories.push(...signature.advisories);
       await page.goto(url, { waitUntil: "domcontentloaded" }); await twoFrames(page);
       blockers.push(...await verifyContinuity(page, contract));
       blockers.push(...await verifySources(page, contract));
@@ -606,8 +785,8 @@ export function validateMechanisms(profile: DeliveryProfile, contract?: Showcase
   if (!["journey", "interface"].includes(contract.experienceType)) errors.push("Showcase experienceType must be journey or interface");
 
   const signature = contract.signature;
-  if (!signature || ![signature.name, signature.selector, signature.whyOnlyThisProduct].every((value) => typeof value === "string" && value.trim()))
-    errors.push("Showcase requires one signature component with a name, selector, and the reason it could not appear on a competitor's page");
+  if (!signature || ![signature.name, signature.selector, signature.productSubjectSelector, signature.productSubject, signature.whyOnlyThisProduct].every((value) => typeof value === "string" && value.trim()))
+    errors.push("Showcase requires one signature component with a name, selector, the product subject it operates on (selector and plain name), and the reason it could not appear on a competitor's page");
 
   if (!["none", "supplied", "scout"].includes(contract.referenceMode)) errors.push("Showcase referenceMode must be none, supplied, or scout");
   if (!Array.isArray(contract.referenceAdoptions)) errors.push("Showcase referenceAdoptions must be an array");

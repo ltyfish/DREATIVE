@@ -264,7 +264,17 @@ forms, fallbacks, and evidence targets. Do not force a generic architecture.
 Name the **signature component** here: the one element on this route that could
 not be lifted onto a competitor's page, and the one sentence saying why. It is
 the requirement most often missed, and removing generic components does not
-satisfy it.
+satisfy it. Name the product subject it operates on, too — the item for sale,
+the document being read, the appointment being booked. A chart, log, or metrics
+panel *about* the product satisfies the letter of this requirement and has twice
+lost the round; it is the right answer only when the product is itself data or
+developer tooling.
+
+Name the **interaction baseline** as a separate line item, on every profile
+including Efficient: the hover, focus, press, and regional-entrance grammar that
+applies to the whole route. It is deliberately cheap and unoriginal, it is not
+part of the signature-moment budget, and it is the thing blind review reads as
+smoothness. Do not fund a second set-piece before it exists.
 
 For every focal subject, decide the medium and where the asset actually comes
 from before writing focal code. Read `references/MEDIA_SOURCES.md` for where to
