@@ -17,8 +17,11 @@ Dreative has been measured against an identical brief built without it. Read
 this before you build, because it says where the skill helps and where it has
 been losing:
 
-- It reliably removes the generated look — the repeated rounded cards, the
-  stock gradient, the same five sections every product gets.
+- It reliably removes the generated look — one value applied to everything, the
+  stock gradient, the same five sections every product gets. Note *one value
+  applied to everything*: a page of hard rectangles is the same failure as a
+  page of identical rounded cards. Radius, borders and shadows are ordinary
+  tools; see SLOP #4.
 - It has lost, repeatedly, on **too little motion**, **no single component that
   could only belong to this product**, and **prose and tables where the reader
   needed something scannable**.
