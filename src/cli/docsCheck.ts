@@ -86,6 +86,7 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   // Fabricated product imagery was the sharpest single complaint in blind
   // review, in both arms. "Evaluate external media" is only actionable if the
   // builder is told where to look.
+  requireText(findings, "SKILL.md", skill, /Go and look at real pages, and at real images and icons[\s\S]*whole pages, not components[\s\S]*godly\.website/i, "must send scouting at whole shipped pages rather than component galleries");
   requireText(findings, "SKILL.md", skill, /MEDIA_SOURCES\.md/, "must route focal media to concrete sources rather than only requiring that external options be evaluated");
   requireText(findings, "references/MEDIA_SOURCES.md", contents.get("references/MEDIA_SOURCES.md") ?? "", /router, not a library[\s\S]*no bundled assets/i, "media sources must stay a router; bundling assets recreates the averaging failure");
   requireText(findings, "references/MEDIA_SOURCES.md", contents.get("references/MEDIA_SOURCES.md") ?? "", /licence covers your use[\s\S]*subject is truthful[\s\S]*attribute it/i, "media sources must require licence, truthfulness, and attribution checks before use");

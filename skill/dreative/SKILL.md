@@ -362,6 +362,24 @@ and `exemplars/MATERIALS.md` for actual stock to build it out of — real type
 pairings, palette constructions, compositions, depth treatments, and the ambient
 transition grammar, each indexed by the condition it belongs to.
 
+**Go and look at real pages, and at real images and icons.** Blind review has
+now twice named the absence of outsourced material as the single worst thing
+about a Dreative build — *"it lacks outsource images, icons etc"*, *"it really
+needs to learn to outsource, find reference and good materials"* — and the agent
+logs for both rounds show `references/MEDIA_SOURCES.md` and
+`references/REFERENCE_ADOPTION.md` were never opened. Open them. A page built
+entirely out of text and CSS is a choice you have to defend, not a default.
+
+When you scout, look at **whole pages, not components**. The question a
+reference answers is what sections a page like this has, in what order, at what
+sizes, and what it leaves out — not what its buttons look like. Component and
+animation galleries answer the second question only, and reaching for them
+first is how a build ends up as the default stack wearing nicer parts.
+[Godly](https://godly.website/) is a usable free source of whole shipped sites,
+filterable by style; a real product in the same category is better still. Study
+two or three, name what is structurally different between them, and decide
+which structure this product wants. Then, and only then, go looking for parts.
+
 Materials are a shelf, not a style. Take one row from type, a different one's
 palette construction, another's composition; taking a whole column reproduces
 this system's own failure one level up, as a Dreative average replacing the
