@@ -65,6 +65,12 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
 
   const skill = contents.get("SKILL.md") ?? "";
   const plan = contents.get("PLAN.md") ?? "";
+  // Showcase and the evaluator handoff were lifted out of SKILL.md on 2026-08-16 so
+  // that Recommended and Efficient runs stop paying to read them. The contracts are
+  // unchanged; only the file that has to hold them moved.
+  const showcase = contents.get("references/SHOWCASE.md") ?? "";
+  const evaluation = contents.get("references/EVALUATION_HANDOFF.md") ?? "";
+  const refinement = contents.get("references/VISUAL_REFINEMENT.md") ?? "";
   requireText(findings, "SKILL.md", skill, /design-builder/i, "must define Dreative as a frontend design-builder");
   requireText(findings, "SKILL.md", skill, /CREATIVE_DIRECTION\.md/, "must route open-ended concept work through creative synthesis");
   requireText(findings, "SKILL.md", skill, /project-native|product truth/i, "must derive concepts from the real product");
@@ -75,13 +81,13 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /encoding|mojibake|broken glyphs/i, "must check visible text integrity");
   requireText(findings, "SKILL.md", skill, /DREATIVE_CHECKS_PASSED/, "must retain fail-closed deterministic checks");
   requireText(findings, "SKILL.md", skill, /visual smoke is mandatory for every/i, "must make visual smoke mandatory for substantial delivery");
-  requireText(findings, "SKILL.md", skill, /shared-state continuity[\s\S]*authored-sequence continuity[\s\S]*before\/peak\/after/i, "must support state or authored-sequence Showcase continuity");
-  requireText(findings, "SKILL.md", skill, /Recommended baseline[\s\S]*two perceptible[\s\S]*media opportunities/i, "Showcase must bind its delta and product-native media decision");
-  requireText(findings, "SKILL.md", skill, /journey[\s\S]*scroll-authored\s+choreography only when[\s\S]*Smooth scrolling[\s\S]*does not qualify/i, "journey-style Showcase must use scroll choreography only when the treatment requires it");
+  requireText(findings, "references/SHOWCASE.md", showcase, /shared-state continuity[\s\S]*authored-sequence continuity[\s\S]*before\/peak\/after/i, "must support state or authored-sequence Showcase continuity");
+  requireText(findings, "references/SHOWCASE.md", showcase, /Recommended baseline[\s\S]*two perceptible[\s\S]*media opportunities/i, "Showcase must bind its delta and product-native media decision");
+  requireText(findings, "references/SHOWCASE.md", showcase, /journey[\s\S]*scroll-authored\s+choreography only when[\s\S]*Smooth scrolling[\s\S]*does not qualify/i, "journey-style Showcase must use scroll choreography only when the treatment requires it");
   requireText(findings, "SKILL.md", skill, /exemplars\/SLOP\.md/, "must route the visual system through the slop catalogue");
   requireText(findings, "SKILL.md", skill, /exemplars\/PRINCIPLES\.md/, "must route the visual system through positive principles, not only the slop catalogue");
   requireText(findings, "SKILL.md", skill, /calmer and faster|damaged by it/i, "must allow restraint as a first-class direction");
-  requireText(findings, "SKILL.md", skill, /desktop[\s\S]*390px[\s\S]*320px mobile[\s\S]*text[\s\S]*collisions/i, "Showcase must exercise desktop, 390px, and 320px mechanisms and sample collisions");
+  requireText(findings, "references/SHOWCASE.md", showcase, /desktop[\s\S]*390px[\s\S]*320px mobile[\s\S]*text[\s\S]*collisions/i, "Showcase must exercise desktop, 390px, and 320px mechanisms and sample collisions");
   requireText(findings, "SKILL.md", skill, /hero, Peak, and[\s\S]*post-Peak[\s\S]*external media[\s\S]*procedural/i, "Showcase must make external-first focal asset decisions across the route");
   // Fabricated product imagery was the sharpest single complaint in blind
   // review, in both arms. "Evaluate external media" is only actionable if the
@@ -100,7 +106,7 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "skills/3d.md", threeD, /Prefer the pre-rendered view[\s\S]*Reserve live WebGL/i, "the 3D specialist must default realistic props to pre-rendered output");
   requireText(findings, "skills/3d.md", threeD, /Photo-to-3D reconstruction is not an available capability/i, "the 3D specialist must name photo-to-3D as a capability gap rather than an attempt");
   requireText(findings, "SKILL.md", skill, /reference mode[\s\S]*none[\s\S]*supplied[\s\S]*scout[\s\S]*traceable/i, "Showcase reference scouting must be explicit and traceable");
-  requireText(findings, "SKILL.md", skill, /identity channel[\s\S]*visible media or a computed[\s\S]*distinct rendered values/i, "focal product identity must bind to rendered uniqueness evidence");
+  requireText(findings, "references/SHOWCASE.md", showcase, /identity channel[\s\S]*visible media or a computed[\s\S]*distinct rendered values/i, "focal product identity must bind to rendered uniqueness evidence");
   // Positive requirements. The one that survived the 2026-08-16 cut is the
   // interaction baseline: it is the only one a blind reviewer ever responded to.
   requireText(findings, "SKILL.md", skill, /## Distinctiveness[\s\S]*could not be lifted onto a competitor/i, "must keep distinctiveness as a goal the builder owns");
@@ -111,12 +117,12 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /There are no taste advisories left/i, "must state that the taste-advisory tier is gone");
   requireText(findings, "SKILL.md", skill, /## Ambition is capped by what you can verify[\s\S]*executed\s+wrong loses to a plain one executed right/i, "must cap ambition by what the build can actually verify");
   requireText(findings, "SKILL.md", skill, /A check earns its place only[\s\S]*had not been used to invent the check/i, "must keep the enforcement freeze that ended the loophole-closing loop");
-  requireText(findings, "SKILL.md", skill, /no field for\s*your own account of your process[\s\S]*non-empty string is not evidence/i, "must state that builder-authored prose is not evidence");
+  requireText(findings, "references/SHOWCASE.md", showcase, /no field for\s*your own account of your process[\s\S]*non-empty string is not evidence/i, "must state that builder-authored prose is not evidence");
   requireText(findings, "SKILL.md", skill, /VISUAL_REFINEMENT\.md/, "must route completion through the rendered screenshot correction loop");
-  requireText(findings, "SKILL.md", skill, /preflight --probe-browser.*preview-url/i, "must require launch plus preview-navigation evidence before browser verification");
+  requireText(findings, "references/VISUAL_REFINEMENT.md", refinement, /preflight --probe-browser.*preview-url/i, "must require launch plus preview-navigation evidence before browser verification");
   requireText(findings, "SKILL.md", skill, /\.dreative\/context\.json/, "must preserve durable project memory");
   requireText(findings, "SKILL.md", skill, /\.dreative\/evaluation\/README\.md/, "must preserve opt-in evaluator routing");
-  requireText(findings, "SKILL.md", skill, /never hidden chain-of-thought/i, "must keep evaluator records free of hidden reasoning");
+  requireText(findings, "references/EVALUATION_HANDOFF.md", evaluation, /never hidden chain-of-thought/i, "must keep evaluator records free of hidden reasoning");
   requireText(findings, "SKILL.md", skill, /experiential weight[\s\S]*advisory[\s\S]*visual inspection/i, "journey balance must prompt perceptual review without pretending to certify taste");
   requireText(findings, "PLAN.md", plan, /explicit request for a compact evaluator handoff/i, "must document the opt-in evaluator handoff");
   requireText(findings, "PLAN.md", plan, /exact branch and commit[\s\S]*stale untracked legacy/i, "evaluator handoff must identify source and reject stale legacy evidence");
@@ -141,8 +147,8 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "PLAN.md", plan, /visibly and structurally distinct from Recommended/i, "Showcase must remain visibly distinct from Recommended");
   requireText(findings, "PLAN.md", plan, /Showcase implementation attempted:[\s\S]*Independent visual verdict:\s*awaiting user review[\s\S]*ask the user/i, "Showcase must reserve the visual verdict for the user");
   requireText(findings, "PLAN.md", plan, /Not pursued:/i, "Showcase must disclose material rejected or replaced treatments");
-  requireText(findings, "SKILL.md", skill, /Triggers may be scroll[\s\S]*time[\s\S]*media playback[\s\S]*route transition/i, "cinematic mechanisms must support honest non-interactive triggers");
-  requireText(findings, "SKILL.md", skill, /When the route compares items[\s\S]*reads as repeated cards/i, "comparison verification must be explicitly conditional");
+  requireText(findings, "references/SHOWCASE.md", showcase, /Triggers may be scroll[\s\S]*time[\s\S]*media playback[\s\S]*route transition/i, "cinematic mechanisms must support honest non-interactive triggers");
+  requireText(findings, "references/SHOWCASE.md", showcase, /When the route compares items[\s\S]*reads as repeated cards/i, "comparison verification must be explicitly conditional");
   requireText(findings, "SKILL.md", skill, /DOGFOOD_LESSONS\.md[\s\S]*never promote a same-run proposal to validated/i, "dogfood changes must preserve the persistent learning protocol");
   requireText(findings, "references/DOGFOOD_LESSONS.md", contents.get("references/DOGFOOD_LESSONS.md") ?? "", /proposed[\s\S]*validated[\s\S]*rejected[\s\S]*superseded/i, "dogfood lessons must preserve explicit evidence states");
   requireText(findings, "PLAN.md", plan, /Every substantial final handoff[\s\S]*human taste verdict:\s*awaiting user review/i, "substantial design work must reserve taste acceptance for the user");

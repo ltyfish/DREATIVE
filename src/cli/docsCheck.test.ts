@@ -63,7 +63,9 @@ test("docs-check rejects package-only browser verification", (t) => {
   const skillDir = path.join(root, "dreative");
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   fs.cpSync(path.resolve("skill", "dreative"), skillDir, { recursive: true });
-  const file = path.join(skillDir, "SKILL.md");
+  // The probe requirement moved to VISUAL_REFINEMENT.md when SKILL.md stopped
+  // duplicating it; mutate the file that actually owns the contract now.
+  const file = path.join(skillDir, "references", "VISUAL_REFINEMENT.md");
   fs.writeFileSync(file, fs.readFileSync(file, "utf8").replace(/preflight --probe-browser/g, "preflight"));
   const report = runDocsCheck(skillDir);
   assert.ok(report.findings.some((finding) => finding.check === "delivery-contract"));

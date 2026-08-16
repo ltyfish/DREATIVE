@@ -17,18 +17,27 @@ Dreative has been measured against the same brief built without it, blind, over
 eighteen pairs. Read this before you build, because it is the honest account and
 it is not flattering:
 
-- **The record is level.** Roughly nine wins, seven losses, two ties, and no
-  detectable benefit since the rebuild. The arm with the skill routinely takes
-  five to seven times as long as the control.
+- **The record is level, with one recent upturn.** Roughly eleven wins, seven
+  losses, two ties. On 2026-08-16 the skill took both scenarios overall, and for
+  the first time won `craft` and `fit` rather than only distinctiveness and
+  restraint — *"genuinely look like a website done by someone"*. Do not read that
+  as solved; it is two pairs.
+- **Cost is the unfixed failure.** The arm with the skill routinely takes five to
+  seven times as long as the control, and in that same round one session ran past
+  the harness's 25-minute cap and was killed mid-work. Reading is where that goes:
+  prefer not opening a reference to opening it speculatively, and never open a
+  file this document says applies to a direction you were not given.
 - **It reliably removes the generated look** — one value applied to everything,
   the stock gradient, the same five sections every product gets. Note *one value
   applied to everything*: a page of hard rectangles is the same failure as a page
   of identical rounded cards. Radius, borders and shadows are ordinary tools; see
   SLOP #4.
-- **It loses on `fit`, `hierarchy`, and `craft`** — not on distinctiveness. The
-  recurring complaint is not that the page is plain. It is *"harder to
-  understand"*, *"everything just doesn't fit right"*, *"cramped"*, *"tables and
-  text everywhere"*. Legibility is where rounds are lost.
+- **It loses on `hierarchy and pacing`** — never on distinctiveness, and as of
+  2026-08-16 no longer on fit or craft. Pacing is the one criterion the control
+  has won in every single round. The recurring complaint is not that the page is
+  plain. It is *"harder to understand"*, *"cramped"*, *"tables and text
+  everywhere"*, *"too text heavy with nothing summarized"*. Legibility is where
+  rounds are lost, and the fix is in *Ambition is resolution* below.
 - **Positive requirements got gamed every time one was added.** Told to have a
   signature component, it produced a chart on a page selling coffee; told to have
   motion, it fired one qualifying transition; told to be ambitious, it added
@@ -118,18 +127,9 @@ never the thing that shapes it.
    visual peak, continuity owner, and mobile transformation. Reveal the full
    brief only on request. Do not wait for its reveal or approval; proceed to
    build.
-   If the project already contains `.dreative/evaluation/README.md`, treat that
-   as an explicit opt-in review contract: read it and update its designated
-   current-run decision record with the prompt, selected direction, concise
-   rationale, implementation promise, and later material decision changes.
-   Identify the exact current branch and commit (or explicitly say `uncommitted`
-   until one exists), and update them after the final commit. Treat only files
-   designated by that README as evaluator input. Legacy `.dreative` critic,
-   verify, certification, trace, or evidence files are not current evidence;
-   remove stale untracked copies before handoff so they cannot be mistaken for
-   the submitted build.
-   Record inspectable conclusions, never hidden chain-of-thought, private
-   exploration, raw transcripts, or discarded scratch work.
+   Only if the project already contains `.dreative/evaluation/README.md`,
+   read `references/EVALUATION_HANDOFF.md` and follow it. Its absence is the
+   normal case and needs nothing from you.
 5. Read `references/CREATIVE_EXECUTION.md` before adding an advanced runtime.
    Load only the relevant specialty and zero or one relevant native foundation
    initially. Zero is valid; add another only when a separate named mechanism
@@ -151,22 +151,16 @@ never the thing that shapes it.
    views. DOM or accessibility snapshots do not replace pixel inspection. Run production
    build plus existing test/typecheck/lint scripts. Substantial work requires
    `dreative finalize --codex --profile <direction> --visual-smoke-url <preview-url>`
-   to print `DREATIVE_CHECKS_PASSED`. Showcase contracts must be portable
-   tracked files; ignored,
-   untracked, missing, absolute-machine, or inline-only evidence blocks
-   completion. Visual smoke is mandatory for every substantial delivery.
+   to print `DREATIVE_CHECKS_PASSED`. Visual smoke is mandatory for every
+   substantial delivery.
    Compare the final product against the current brief and user choices. Claim
    completion only when every promised route, section, treatment, behavior, and
    review pass is implemented and verified; otherwise continue or report the
    exact blockers.
    Update `.dreative/context.json` only with durable decisions, real tested
    states, and unresolved issues; it is memory, never completion evidence.
-   For an opted-in `.dreative/evaluation/` package, also update its designated
-   review record with what actually shipped, observable verification results,
-   corrections, limitations, and current screenshot paths. Follow the local
-   package's size and naming rules. Never create or accumulate evaluation files
-   in projects that did not opt in, and never route prototypes, bundles, caches,
-   traces, browser profiles, or raw evidence into the review package.
+   For an opted-in `.dreative/evaluation/` package, follow the completion half
+   of `references/EVALUATION_HANDOFF.md`.
    Report builder-observed facts and limitations only; never award the build a
    reviewer verdict or self-authored Pass. Every substantial design delivery,
    regardless of direction, ends as `Implementation complete; human taste
@@ -244,6 +238,38 @@ preferring a control with a third of the content. Nothing measures either one
 any more. Density and scannability were advisories with invented thresholds,
 they never stopped the cramming, and they are gone. Look at the page.
 
+### The two-layer read
+
+`hierarchy and pacing` is the one criterion this skill has lost in *every*
+recorded round, to a control carrying a third of the content. The reviewer's
+account of why is consistent and specific: *"hard to follow cause it has more
+details"*, *"too text heavy with nothing summarized"*, *"a table with all text is
+hard to follow"*, and — about the control — *"is clean and makes me wanna
+learn"*. Losing this is not a consequence of being more ambitious. It is a
+consequence of putting one layer on the page where there should be two.
+
+Design every section to be read twice. The first pass is the heading plus one
+visual element that carries the section's point on its own — a mark, a figure, a
+diagram, a single number, an image, a state. The second pass is the prose and
+detail, for the reader who now wants it. A reader who stops after the first pass
+should still have got the point. Detail is not the problem; **undifferentiated**
+detail is, and the fix is a layer above it rather than less of it.
+
+So, concretely, against the failures actually observed:
+
+- **A table is the wrong default.** Prose in cells is the densest, flattest,
+  least scannable form available, and it has been named in two rounds. Use one
+  when the reader's real task is comparing values across a fixed set of columns.
+  Otherwise the same content wants a different form.
+- **Give the shape of the data its own form.** Opening hours are a week, so they
+  want the shape of a week; a sequence wants steps; a comparison wants position.
+  A bar chart standing in for a calendar was called hard to understand.
+- **Cut the section's word count in half before adding anything to it.** The
+  control keeps winning this criterion with less. Compression is the design work
+  here, not a budget imposed on it.
+- **Nothing about this is a check.** No threshold, no ratio, no count. Look at
+  the rendered section and ask what a reader gets in three seconds.
+
 ## Ambition is capped by what you can verify
 
 Match ambition to what you can actually confirm renders correctly. If you cannot
@@ -255,83 +281,17 @@ This is not permission to downgrade for convenience. It is a requirement to
 prove the ambitious version before it becomes the delivered version, and to say
 plainly what you could not verify.
 
-Before relying on the rendered correction loop, distinguish Playwright package
-presence, browser executable detection, and a verified browser workflow. When
-the project CLI is available, serve the real preview and run
-`dreative preflight --probe-browser <preview-url>`. Only successful browser
-launch plus preview navigation proves screenshot, console, performance,
-viewport, or reduced-motion verification is available. If the probe fails,
-repair the environment or report rendered review as blocked; never promote
-package or executable detection into browser evidence.
+Package presence and executable detection are not browser evidence. Only a real
+launch plus navigation to the served preview proves the correction loop is
+available; `references/VISUAL_REFINEMENT.md` has the probe and what a failure
+blocks.
 
 ## Showcase
 
-For Showcase, the delivered route must be visibly and structurally distinct
-from Recommended. A conventional long page with one isolated spectacle does
-not fulfill the highest-ceiling promise. Before implementation, bind the
-difference: state the Recommended baseline, at least two perceptible
-Showcase-only qualities, and two product-native media opportunities with
-use/reject reasons.
-
-In the final response state `Showcase implementation attempted:` followed by the
-concrete mechanisms, media, and distributed experience actually shipped, plus
-`Independent visual verdict: awaiting user review`. Ask the user to inspect the
-supplied desktop, mobile, and motion views. Also state `Not pursued:` for any
-materially considered or promised advanced treatment that was rejected,
-downgraded, or replaced, with the product or prototype reason. Do not list
-irrelevant technologies merely to prove they were omitted.
-
-Showcase must implement one connected experience system. Continuity may be a
-meaningful shared state, or an authored physical/cinematic/material sequence
-spanning before the central peak, the peak, and after it. A travelling object,
-match cut, evolving camera, process curve, film frame, or material
-transformation can carry the experience without inventing a user-controlled
-variable. Independent widgets arranged in sequence do not establish continuity.
-
-Record the executable contract using `schemas/showcase-mechanism.schema.json`.
-It is deliberately small. Every field in it is either exercised against the
-rendered page or is a short prompt a human reviewer reads. There is no field for
-your own account of your process, because a non-empty string is not evidence and
-checking one only teaches you to write longer strings.
-
-Declare each real signature mechanism with its stage, selector, primary product
-subject and selector, trigger, media mode, mobile transformation, and the
-concrete visible change. Decorative or `aria-hidden` elements cannot be named as
-the primary subject. Continuity remains canonical in the
-continuity contract. The mechanism list is evidence routing,
-not a required widget count. Hover is unavailable on touch, so a mechanism that
-exists only on hover needs a stated mobile equivalent rather than a prohibition.
-
-Triggers may be scroll, click, hover, drag, time, media playback, page load,
-route transition, or none for a static authored handoff. Time and media triggers
-expose sampled progression; load, route, and none declare one resolved
-observable state rather than inventing interaction. When the premise is a
-journey, process, or transformation, declare it as `journey`. Use scroll-authored
-choreography only when the selected treatment depends on scroll controlling time
-or space; a cinematic sequence, direct manipulation, or authored edit may own the
-journey instead. Smooth scrolling alone does not qualify.
-
-Final visual smoke exercises each trigger on desktop, 390px, and 320px mobile,
-samples text collisions through the route, and observes a visible geometry,
-style, media, content, or state change. A written `mobileTransformation` promise
-does not pass when the actual mobile mechanism is static or missing. Scroll
-mechanisms are sampled across their region for real state change and for the
-subject staying legible while it happens. Browser checks prove that material
-states change; whether the change is meaningful, coherent, or tasteful is left
-to human review and reported as such.
-
-For shared-state continuity, name the state, source selector, and affected
-regions; final smoke exercises the source and requires the change to reach
-before, peak, and after regions as visible rendering, not as data attributes or
-hidden text. For authored-sequence continuity, name the motif and its visible
-before/peak/after handoffs.
-
-When the route compares items, declare the comparison region and at least one
-identity channel bound to genuinely visible media or a computed style
-difference: `src`, background image/color, border radius, or clip path. The
-browser verifies distinct rendered values across items, because a collection
-whose items render identically reads as repeated cards no matter what the class
-names say. Text and `data-*` values are supporting identifiers only.
+Only when the user selected Showcase, read `references/SHOWCASE.md`: the
+structural distinction it owes Recommended, the one connected experience system,
+the mechanism contract, what final smoke exercises, and the completion
+disclosure. On Recommended and Efficient it does not apply, so do not open it.
 
 ## Creative decisions
 
@@ -363,12 +323,19 @@ pairings, palette constructions, compositions, depth treatments, and the ambient
 transition grammar, each indexed by the condition it belongs to.
 
 **Go and look at real pages, and at real images and icons.** Blind review has
-now twice named the absence of outsourced material as the single worst thing
-about a Dreative build — *"it lacks outsource images, icons etc"*, *"it really
-needs to learn to outsource, find reference and good materials"* — and the agent
-logs for both rounds show `references/MEDIA_SOURCES.md` and
+now three times named the absence of outsourced material as the single worst
+thing about a Dreative build — *"it lacks outsource images, icons etc"*, *"it
+really needs to learn to outsource, find reference and good materials"* — and the
+agent logs show `references/MEDIA_SOURCES.md` and
 `references/REFERENCE_ADOPTION.md` were never opened. Open them. A page built
 entirely out of text and CSS is a choice you have to defend, not a default.
+
+The 2026-08-16 round measured what actually ships: across two builds, one
+443KB unoptimised photograph and zero icons. Sourcing imagery is a hunt that
+sometimes fails; an icon set is a package install that does not. If a route ends
+up with no external visual material at all, that is the cheapest and most
+reliable thing you skipped, and `references/MEDIA_SOURCES.md` no longer warns
+you off it — that warning was wrong and was removed for causing this.
 
 When you scout, look at **whole pages, not components**. The question a
 reference answers is what sections a page like this has, in what order, at what
@@ -457,19 +424,16 @@ Every interactive element needs designed hover, focus, press, and disabled
 states, in one grammar across the route. This is not polish deferred to the end;
 it is the first motion work, and it applies on every profile.
 
-Any emphasis that scales, highlights, or isolates a selected item must be
-bounded at both degenerate cases — every item matching, and exactly one item
-matching. An effect tuned for the middle case blows up on the single match. A rest may be still, but must
-retain a concept-bearing relationship through continuity, an evolving visual
-variable, meaningful tactile state, media treatment, or authored handoff;
-default layout is not authored rest. Keep the primary task obvious.
+A rest may be still, but must retain a concept-bearing relationship through
+continuity, an evolving visual variable, meaningful tactile state, media
+treatment, or authored handoff; default layout is not authored rest. Keep the
+primary task obvious.
 
 Do not concentrate nearly all experiential weight in one isolated set-piece.
 Inspect the route as a sequence and require a meaningful development,
 consequence, or resolution outside the primary peak when the page length and
-concept warrant it. Automated intensity counts may flag a lopsided map, but
-they are advisory: captured states, visual inspection, user feedback, and a
-real refinement decide whether the journey feels balanced.
+concept warrant it. Any count of that is advisory; visual inspection and user
+feedback decide whether the journey feels balanced.
 
 Every prominent decorative line, grid, overlay, shape, persistent element, or
 visual motif must have a perceptible role in product meaning, hierarchy,
@@ -532,7 +496,8 @@ day, then deleted the whole tier. Adding was the mistake every time.
 - Concrete type, colour, composition, depth, and ambient-motion stock: `exemplars/MATERIALS.md`
 - Relevant craft only: `skills/<name>.md`
 - Rendered correction loop: `references/VISUAL_REFINEMENT.md`
-- Opted-in evaluator handoff: project-local `.dreative/evaluation/README.md`
+- Showcase direction only: `references/SHOWCASE.md`
+- Opted-in evaluator handoff: `references/EVALUATION_HANDOFF.md`, then project-local `.dreative/evaluation/README.md`
 - Chosen mechanism only: zero or one matching native foundation initially
 - Focused mechanism lookup only: `llms.txt` or `dreative catalogue`
 

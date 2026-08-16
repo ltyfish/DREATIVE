@@ -120,15 +120,24 @@ capability gap to raise with the user rather than route around.
 
 ## Icons
 
-**Read this as a warning before a list.** A route built from one icon set looks
-like every other route built from that set, and blind review has called out
-icon-and-card pages as the generated-looking arm. Icons are a solved,
-homogeneous category — which makes them the easy path and the convergent one.
+This section used to open with a warning against icons. That warning was wrong,
+and it was costing rounds. On 2026-08-16 blind review named the *absence* of
+icons and visual marks as the worst thing about the build, for the second round
+running, while both builds carried zero icons. The warning was being obeyed.
 
-When a set is genuinely right: **Lucide** (ISC), **Heroicons**, **Phosphor**, and
-**Tabler** (MIT) are all permissively licensed and well-drawn. Prefer drawing the
-two or three marks that are actually about your product and using a set for the
-generic remainder, rather than the reverse.
+The slop is not the icon. The slop is the uniform grid of one-icon-per-rounded-
+card, every icon the same size, weight, and colour, each one restating the
+heading beside it — `exemplars/SLOP.md` #4. An icon that does a job a word does
+worse is craft, and text-heavy routes need those jobs done: marking the type of
+a thing in a list, distinguishing rows a reader is scanning, anchoring a step in
+a sequence, standing in for a state.
+
+**Lucide** (ISC), **Heroicons**, **Phosphor**, and **Tabler** (MIT) are all
+permissively licensed and well-drawn; installing one is a package, not a hunt,
+which makes it the most reliable visual material available to you. Take a set
+for the generic remainder and draw the two or three marks that are actually
+about your product. Vary size and weight by role rather than shipping one
+uniform tray of them.
 
 ## When nothing fits
 
