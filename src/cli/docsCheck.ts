@@ -100,15 +100,14 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "skills/3d.md", threeD, /Photo-to-3D reconstruction is not an available capability/i, "the 3D specialist must name photo-to-3D as a capability gap rather than an attempt");
   requireText(findings, "SKILL.md", skill, /reference mode[\s\S]*none[\s\S]*supplied[\s\S]*scout[\s\S]*traceable/i, "Showcase reference scouting must be explicit and traceable");
   requireText(findings, "SKILL.md", skill, /identity channel[\s\S]*visible media or a computed[\s\S]*distinct rendered values/i, "focal product identity must bind to rendered uniqueness evidence");
-  // Positive requirements. Blind A/B review named each as the reason a
-  // technically cleaner build lost, and none of them can be satisfied by
-  // removing something.
-  requireText(findings, "SKILL.md", skill, /## The signature component[\s\S]*could not be\s+lifted onto a competitor/i, "must require one component that could only belong to this product");
-  requireText(findings, "SKILL.md", skill, /## The signature component[\s\S]*about the product, not about data concerning the product/i, "the signature component must operate on the product, not be an instrument about it");
-  requireText(findings, "SKILL.md", skill, /## Two motion budgets[\s\S]*interaction baseline — required on every profile, Efficient included/i, "must fund the pervasive interaction baseline separately from signature moments");
-  requireText(findings, "SKILL.md", skill, /## Two motion budgets[\s\S]*Reveals must complete while the region is on screen/i, "must require reveals to resolve inside the viewport");
-  requireText(findings, "SKILL.md", skill, /## Scannability and density[\s\S]*understood at a glance before it is read/i, "must require sections to be scannable, not only well written");
-  requireText(findings, "SKILL.md", skill, /## Scannability and density[\s\S]*Ambition is resolution, not element count/i, "must penalise cramming as well as thinness");
+  // Positive requirements. The one that survived the 2026-08-16 cut is the
+  // interaction baseline: it is the only one a blind reviewer ever responded to.
+  requireText(findings, "SKILL.md", skill, /## Distinctiveness[\s\S]*could not be lifted onto a competitor/i, "must keep distinctiveness as a goal the builder owns");
+  requireText(findings, "SKILL.md", skill, /## Distinctiveness[\s\S]*This is a goal, not a quota/i, "distinctiveness must not become a quota again");
+  requireText(findings, "SKILL.md", skill, /## Motion[\s\S]*interaction baseline is required on every profile, Efficient included/i, "must require the pervasive interaction baseline on every profile");
+  requireText(findings, "SKILL.md", skill, /## Motion[\s\S]*Reveals must complete while the region is on screen/i, "must require reveals to resolve inside the viewport");
+  requireText(findings, "SKILL.md", skill, /## Ambition is resolution, not element count[\s\S]*delete one and see whether the section got worse/i, "must price density without measuring it");
+  requireText(findings, "SKILL.md", skill, /There are no taste advisories left/i, "must state that the taste-advisory tier is gone");
   requireText(findings, "SKILL.md", skill, /## Ambition is capped by what you can verify[\s\S]*executed\s+wrong loses to a plain one executed right/i, "must cap ambition by what the build can actually verify");
   requireText(findings, "SKILL.md", skill, /A check earns its place only[\s\S]*had not been used to invent the check/i, "must keep the enforcement freeze that ended the loophole-closing loop");
   requireText(findings, "SKILL.md", skill, /no field for\s*your own account of your process[\s\S]*non-empty string is not evidence/i, "must state that builder-authored prose is not evidence");
@@ -117,8 +116,6 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /\.dreative\/context\.json/, "must preserve durable project memory");
   requireText(findings, "SKILL.md", skill, /\.dreative\/evaluation\/README\.md/, "must preserve opt-in evaluator routing");
   requireText(findings, "SKILL.md", skill, /never hidden chain-of-thought/i, "must keep evaluator records free of hidden reasoning");
-  requireText(findings, "SKILL.md", skill, /Experience Map[\s\S]*more animated[\s\S]*change layout[\s\S]*keep static/i, "must expose plain-language section-level Experience Map controls");
-  requireText(findings, "SKILL.md", skill, /input state[\s\S]*start and end states[\s\S]*mechanism owner[\s\S]*evidence target/i, "must compile Experience Map rows into implementation obligations");
   requireText(findings, "SKILL.md", skill, /experiential weight[\s\S]*advisory[\s\S]*visual inspection/i, "journey balance must prompt perceptual review without pretending to certify taste");
   requireText(findings, "PLAN.md", plan, /explicit request for a compact evaluator handoff/i, "must document the opt-in evaluator handoff");
   requireText(findings, "PLAN.md", plan, /exact branch and commit[\s\S]*stale untracked legacy/i, "evaluator handoff must identify source and reject stale legacy evidence");
@@ -134,8 +131,8 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   for (const choice of ["Recommended", "Efficient", "Showcase"])
     requireText(findings, "PLAN.md", plan, new RegExp(`\\b${choice}\\b`, "i"), `missing concise ${choice} approach`);
   requireText(findings, "PLAN.md", plan, /show detailed plan/i, "must offer detail on request");
-  requireText(findings, "PLAN.md", plan, /editable Experience Map[\s\S]*use Dreative's recommended approach/i, "must present and confirm the recommended section journey");
-  requireText(findings, "PLAN.md", plan, /second approval/i, "must avoid a second approval gate");
+  requireText(findings, "PLAN.md", plan, /Stage 3: removed[\s\S]*Do not reintroduce a section-table gate/i, "must record that the Experience Map gate was removed, not quietly drop it");
+  requireText(findings, "PLAN.md", plan, /Do not generate another\s+approval or contract gate/i, "must avoid a second approval gate");
   for (const choice of ["References", "Treatments", "Sourced images", "Generated images", "Packages", "Prototype", "Review depth", "Fast", "Lean", "Full Audit"])
     requireText(findings, "PLAN.md", plan, new RegExp(`\\b${choice}\\b`, "i"), `detailed planning is missing ${choice}`);
   requireText(findings, "PLAN.md", plan, /no minimum technology\s+count/i, "Showcase must not use a technology-count proxy");

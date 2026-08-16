@@ -71,11 +71,11 @@ test("Efficient is exempt from the motion floor", async () => {
   expect(result.blockers).toEqual([]);
 });
 
-test("motion breadth is an advisory to look at the route, never a threshold to satisfy", async () => {
+test("motion breadth is not measured at all: only the zero case blocks", async () => {
   const result = await runVisualSmoke(`${base}/flat-route`, { profile: "recommended" });
   expect(result.blockers.join("\n")).not.toContain("nothing on this route moves");
-  expect(result.advisories.join("\n")).toContain("regions change on approach");
   expect(result.blockers.join("\n")).not.toContain("change on approach");
+  expect(result.advisories.join("\n")).not.toContain("change on approach");
 });
 
 test("reveals that fire after the section has left the viewport are blocked", async () => {
@@ -92,15 +92,18 @@ test("a route whose controls have no hover or focus state fails every profile", 
   }
 });
 
-test("an overloaded section is reported as an advisory, never a blocker", async () => {
+// Density and scannability were advisories with invented thresholds. They never
+// stopped the cramming they were written for, and eighteen blind pairs showed no
+// benefit from the tier, so nothing measures either one now.
+test("an overloaded section is not measured", async () => {
   const result = await runVisualSmoke(`${base}/cramped`, { profile: "recommended" });
-  expect(result.advisories.join("\n")).toContain("competing statistic blocks");
+  expect(result.advisories.join("\n")).not.toContain("competing statistic blocks");
   expect(result.blockers.join("\n")).not.toContain("competing statistic blocks");
 });
 
-test("a signature component with no product media is advised, not blocked", async () => {
+test("a signature component with no product media is neither advised nor blocked", async () => {
   const result = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: contract });
-  expect(result.advisories.join("\n")).toContain("confirm the component is about the thing the route sells or does");
+  expect(result.advisories.join("\n")).not.toContain("confirm the component is about");
   expect(result.blockers).toEqual([]);
 });
 
@@ -109,9 +112,9 @@ test("the signature component must name a product subject that actually renders"
   expect(validateMechanisms("showcase", unbound).join("\n")).toContain("the product subject it operates on");
 });
 
-test("an unscannable wall of prose is reported as an advisory, never a blocker", async () => {
+test("an unscannable wall of prose is not measured", async () => {
   const result = await runVisualSmoke(`${base}/prose-wall`, { profile: "recommended" });
-  expect(result.advisories.join("\n")).toContain("scannable breaks");
+  expect(result.advisories.join("\n")).not.toContain("scannable breaks");
   expect(result.blockers.join("\n")).not.toContain("scannable breaks");
 });
 
@@ -119,11 +122,11 @@ test("a missing or token signature component blocks Showcase", async () => {
   const missing = { ...contract, signature: { ...contract.signature, selector: "#nowhere" } };
   expect((await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: missing })).blockers.join("\n"))
     .toContain("signature component Readiness instrument selector #nowhere must resolve");
-  // Size is an advisory, not a floor: a small component can still be the thing
-  // you remember, and a viewport-area threshold is arrangeable.
+  // Size is not measured in either direction. A small component can still be the
+  // thing you remember, and a viewport-area number is arrangeable.
   const tiny = { ...contract, signature: { ...contract.signature, selector: "#peak svg", productSubjectSelector: "rect" } };
   const tinyResult = await runVisualSmoke(`${base}/`, { profile: "showcase", showcase: tiny });
-  expect(tinyResult.advisories.join("\n")).toContain("of the viewport");
+  expect(tinyResult.advisories.join("\n")).not.toContain("of the viewport");
   expect(tinyResult.blockers.join("\n")).not.toContain("of the viewport");
 });
 

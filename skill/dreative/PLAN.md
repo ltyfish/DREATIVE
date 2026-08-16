@@ -1,11 +1,11 @@
 # Planning protocol
 
-Planning has three required, blocking user-facing stages—direction, compact
-configuration, and the Experience Map—plus a blocking prototype review whenever Prototype is selected
+Planning has two required, blocking user-facing stages—direction and compact
+configuration—plus a blocking prototype review whenever Prototype is selected
 and produced, and an optional reveal of the detailed Creative Decision Brief.
 The reveal is optional; creating and using the complete private brief is not.
-Keep private exploration private. Do not edit implementation files until all
-three stages have an explicit user response. Never silently apply recommended settings.
+Keep private exploration private. Do not edit implementation files until both
+stages have an explicit user response. Never silently apply recommended settings.
 
 ## Stage 1: direction
 
@@ -144,37 +144,17 @@ is a decision and a rendered thing the user looked at; captures, recordings,
 storyboards, frame counts, and fidelity labels are not required and are not
 treated as proof of anything.
 
-## Stage 3: editable Experience Map
+## Stage 3: removed
 
-After configuration, turn the recommended concept into a short section-level
-proposal the user can understand without design or animation terminology.
-Include every major page or section, Dreative's recommended role, craft
-intensity from 1–5, a plain journey rhythm (`Rest`, `Build`, `Peak`, or
-`Release`), user agency (`Watch`, `Influence`, or `Control`), and its connection
-to the surrounding journey. Explain once that 5 means flagship craft and a
-meaningful transformation where appropriate; it does not mean continuous or
-maximal animation. Users may choose 5 everywhere while the route retains one
-Peak and deliberate quiet sections. Add one to three
-targeted recommendations explaining where stronger treatment will help and
-where it would create competition.
-
-End with:
-
-> Reply **use Dreative's recommended approach** or name section changes:
-> **more animated**, **calmer**, **change layout**, **change interaction**,
-> **keep static**, or add an instruction.
-
-Wait for the reply. After acceptance, privately compile every row into
-`schemas/experience-map.schema.json`: role, input state, visible start and end
-states, mechanism owner, connection, desktop, mobile, reduced-motion, and
-evidence target. This working map is a promise-to-implementation bridge, not an
-approval receipt or a claim of visual quality. Journey-balance arithmetic is
-advisory and must lead to screenshot comparison, not a taste score.
-This is the user's concrete design decision, not a second approval artifact.
+The editable Experience Map was a third blocking gate. It was removed on
+2026-08-16: a clean blind round showed the arms it produced were the same
+sections in the same order as a build with no skill at all, and the gate never
+fired in unattended runs anyway. Do not reintroduce a section-table gate. Decide
+the page shape in the private brief below and build it.
 
 ## Stage 4: private Creative Decision Brief and optional reveal
 
-After direction, configuration, and the Experience Map are resolved, always complete this entire
+After direction and configuration are resolved, always complete this entire
 project-specific brief privately before implementation. It is the working
 blueprint for section allocation, treatments, assets, signature mechanisms,
 continuity, mobile transformation, runtime ownership, fallbacks, and review.
@@ -265,9 +245,10 @@ Selection is a delivery promise, not checkbox coverage: every
 selected treatment needs a named owner and perceptible contribution, although
 one coherent mechanism may serve several treatments.
 
-Start from the accepted Experience Map. Preserve every row's role and intensity
-intent while privately adding executable states, owners, handoffs, responsive
-forms, fallbacks, and evidence targets. Do not force a generic architecture.
+Decide the page's sections here — which sections exist, in what order, and why
+this product needs those and not the default five. Then add executable states,
+owners, handoffs, responsive forms, fallbacks, and evidence targets. Do not
+force a generic architecture.
 
 Name the **signature component** here: the one element on this route that could
 not be lifted onto a competitor's page, and the one sentence saying why. It is
@@ -342,7 +323,7 @@ Not pursued: <material advanced treatment rejected or replaced, and why>
 Omit `Not pursued:` only when no material treatment was rejected or replaced.
 Ask the user for the independent visual verdict; Codex cannot author it.
 
-After the explicit Experience Map reply, implement. Do not generate another
+After the explicit configuration reply, implement. Do not generate another
 approval or contract gate. The prototype-review pause above and a small
 integrated experience checkpoint are the only exceptions.
 

@@ -461,3 +461,83 @@ resembling each other across unrelated products, which means the shelf became a
 style and the file should be cut back to conditions rather than instances.
 Do not add another rule in response to whatever this round shows; the record
 says one-more-rule is the mistake, three times now.
+
+### DL-013 / validated / 2026-08-16
+
+Observed failure: The positive-requirement programme does not work, and the
+round that was supposed to vindicate it refuted it cleanly.
+
+Two blind pairs were built on 2026-08-15 with the skill frozen and the Experience
+Map change (`2c4b4ee`) installed — the first round in six weeks run with no rule
+edits mid-flight. devtool-docs tied; civic-clinic went to the control on `fit`,
+`hierarchy`, and `craft` with `distinct` a tie. Cumulative record 9-7-2 on
+eighteen pairs; 3-4-1 since the rebuild.
+
+Three findings, in order of importance:
+
+1. **Structure did not move.** `2c4b4ee` required the page shape to be a stated
+   decision before the map. The built code: devtool-docs shipped the identical
+   section list in the identical order in both arms (`top, install, quickstart,
+   config, commands, errors, footer`). civic-clinic differed by one swap —
+   services and hours — plus the assurances folded into the status panel. The
+   Dreative arm's brief claimed re-composition in detail ("the page is an answer
+   sheet, not a landing page… the three questions in the order they ask them").
+   The prose was self-report; the architecture was the control's.
+2. **The reviewer could not tell rounds apart.** *"looks exactly the same
+   before"*, *"basically the same as previous run"*, *"same remark as previous
+   round"*, three times across two scenarios. DL-011 added three blockers and
+   DL-012 added a materials library, and the output was perceptually invariant
+   across both. Rule changes are not reaching the rendered page.
+3. **The control is doing the design reasoning unaided, seven times faster.**
+   With no skill, it computed live status from the hours table, caught that the
+   original hardcoded "open now" is wrong six days a week, reorganised by the
+   three questions a patient arrives with, and demoted the booking form — in 2.9
+   minutes against the Dreative arm's 21.3. The skill's contribution was
+   elaboration on top of a page the base model already composes, and the
+   elaboration is what lost: *"harder to understand"*, *"everything just doesn't
+   fit right"*.
+
+Change made: deleted, rather than tuned.
+
+- Reverted `2c4b4ee`, then removed the Experience Map gate entirely — from
+  `SKILL.md` (workflow steps 4 and 5), `PLAN.md` (Stage 3), and the docs-check
+  assertions. Planning is now two gates, direction and configuration. The
+  schema and validator remain in `src/shared/` unused; deleting them changes no
+  output and was left as separate cleanup.
+- Removed the mandatory signature component. `SKILL.md` keeps distinctiveness as
+  a stated goal with the failure modes attached, explicitly "a goal, not a
+  quota", including permission to conclude no such component belongs. A
+  *declared* signature is still verified to resolve and render, because that is a
+  contract promise, not taste.
+- **Deleted the entire advisory tier**: motion breadth, density, scannability,
+  signature viewport area, signature product media. `measureDensity` and
+  `measureScannability` are gone from `visualSmoke.ts`; the three browser tests
+  that asserted the advisories now assert their absence.
+- Blockers that remain are zero cases and defects only: no interactive element
+  responding at all, nothing moving at all, late reveals, collisions, overflow,
+  sticky clipping, unreadable type, runtime errors, failed routes, unresolved
+  contract promises.
+
+Kept: the interaction baseline, on every profile. It is the only positive
+requirement a blind reviewer ever responded to — after it was added, "lacks
+animation" stopped appearing, and that is the sole confirmed effect in the whole
+record.
+
+Evidence: Eighteen blind pairs; the section-order comparison of the built code
+in both arms of both 2026-08-15 rounds; both agent logs; four verdicts in which
+the reviewer volunteered that the builds were indistinguishable from the previous
+round.
+
+Cost or trade-off: A flat, cramped, or unscannable route now reaches the human
+reviewer with nothing flagged. Accepted — the advisories never stopped any of
+those failures, and the reviewer named all three anyway. Removing the Experience
+Map removes the only artifact that made section decisions inspectable; the
+private brief now carries that, unverified.
+
+Recheck condition: The next round tests whether a smaller skill does better,
+worse, or the same. **The same is the important outcome**: if a skill with an
+advisory tier and a skill without one produce indistinguishable verdicts, the
+checks were never the active ingredient, and what remains to test is whether the
+skill contributes anything the base model does not already do. Run the arms with
+the same scenario twice before concluding anything from one pair. Do not respond
+to the result with a new rule — that response has now failed four times.

@@ -13,48 +13,39 @@ artifact or a performance of following instructions.
 
 ## What blind review actually shows
 
-Dreative has been measured against an identical brief built without it. Read
-this before you build, because it says where the skill helps and where it has
-been losing:
+Dreative has been measured against the same brief built without it, blind, over
+eighteen pairs. Read this before you build, because it is the honest account and
+it is not flattering:
 
-- It reliably removes the generated look — one value applied to everything, the
-  stock gradient, the same five sections every product gets. Note *one value
-  applied to everything*: a page of hard rectangles is the same failure as a
-  page of identical rounded cards. Radius, borders and shadows are ordinary
-  tools; see SLOP #4.
-- It has lost, repeatedly, on **too little motion**, **no single component that
-  could only belong to this product**, and **prose and tables where the reader
-  needed something scannable**.
-- Restraint is not free. Removing spectacle also removes the thing people
+- **The record is level.** Roughly nine wins, seven losses, two ties, and no
+  detectable benefit since the rebuild. The arm with the skill routinely takes
+  five to seven times as long as the control.
+- **It reliably removes the generated look** — one value applied to everything,
+  the stock gradient, the same five sections every product gets. Note *one value
+  applied to everything*: a page of hard rectangles is the same failure as a page
+  of identical rounded cards. Radius, borders and shadows are ordinary tools; see
+  SLOP #4.
+- **It loses on `fit`, `hierarchy`, and `craft`** — not on distinctiveness. The
+  recurring complaint is not that the page is plain. It is *"harder to
+  understand"*, *"everything just doesn't fit right"*, *"cramped"*, *"tables and
+  text everywhere"*. Legibility is where rounds are lost.
+- **Positive requirements got gamed every time one was added.** Told to have a
+  signature component, it produced a chart on a page selling coffee; told to have
+  motion, it fired one qualifying transition; told to be ambitious, it added
+  elements until the route was cramped. Each satisfied the rule and lost.
+- **One requirement demonstrably worked**: the pervasive, cheap, unoriginal
+  interaction layer — hover, focus, and scroll-in feedback on everything. After
+  it was added, reviewers stopped saying the builds lacked animation. It is the
+  only positive requirement that survived the 2026-08-16 cut, and the reason it
+  survived is that it changed what a reviewer said.
+- **Restraint is not free.** Removing spectacle also removes the thing people
   remember. Subtracting is the start of the work, not the end of it.
 
-The round after those were turned into requirements found a fourth thing, and
-it is the most important sentence in this file. What makes the control read as
-smooth and crafted is not its best moment. It is a **pervasive, cheap, entirely
-unoriginal transition layer** — hover, focus, and scroll-in feedback on
-everything — while the Dreative arm spent its whole budget on two signature
-moments and left the rest of the page dead:
-
-> *"when i scroll, theres minimal but still subtle clean transition of it
-> popping up… same goes with interacting where it changes colour/background/
-> shadow… tho very overused and not unique"* — on the control, which won
-> smoothness
->
-> *"everything outside the few signature moments is still flat with no
-> transitions"* — on the Dreative build, which won overall and was still called
-> short of animation
-
-The same round produced the first losses on the opposite failure. Given a
-positive requirement, the builds became **cramped, wordy, and overloaded** —
-*"cramping too much ambitions and words and design"*, *"so much stats
-everywhere"*, *"messy, cramped, not tidy"* — and the signature component
-requirement was twice satisfied by an abstract readout on a page that was
-selling something: *"a graph log which makes things confusing and not really a
-ecommerce website"*.
-
-So: breadth of small motion, not count of big moments. A signature component
-about the product, not a chart about the product. And ambition measured in
-resolution, not in elements per section.
+On 2026-08-16 the mandatory signature component, the motion-breadth floor, and
+the density and scannability advisories were removed, along with the Experience
+Map gate, after a clean round showed the builds were structurally identical to
+the control and the reviewer could not tell rounds apart. The conclusion on
+record: more rules did not produce better pages. Design the page.
 
 ## What the checks are for
 
@@ -62,33 +53,26 @@ Read this before the workflow, because it governs everything below it.
 
 The single worst outcome for this skill is a build where the question stopped
 being *"what would look best?"* and became *"what arrangement passes all these
-checks?"* A page assembled to satisfy a threshold is a page nobody chose. It is
-also, specifically, how this system has failed before: told to have a signature
-component, it produced a chart; told to have motion, it fired one qualifying
-transition; told to be ambitious, it added elements until the route was cramped.
-Every one of those satisfied the rule and lost the round.
+checks?"* A page assembled to satisfy a threshold is a page nobody chose, and
+that is exactly how this system has failed before.
 
 So the checks are deliberately not a definition of good work:
 
-- **Blockers are defects, not taste.** Something is a blocker only when it is
-  broken in a way any human would call broken and no arrangement of a good page
-  can trip: a route that 500s, text colliding, content overflowing its viewport,
-  unreadable type, a clipped sticky element, a console error, a reveal that
-  fires after the reader has already scrolled past, a promise the contract made
-  that does not resolve on the page. Nothing about how good it looks.
-- **Everything taste-shaped is an advisory**, and an advisory means *go look at
-  it* — not *raise the number*. Motion breadth, density, scannability, signature
-  size and subject are all advisories, because in every case the browser is
-  measuring a proxy and the reviewer was responding to something else.
-- **Numbers in this system are unvalidated.** Where a threshold exists it was
-  invented by whoever wrote the check. Treat it as the trigger for a look, and
-  say so if you disagree with what it flagged; a defended judgement beats a
-  satisfied threshold.
-- **Satisfying an advisory without improving the page is a failure**, even
-  though nothing will catch it. Fading every region in uniformly clears the
-  motion advisory and is slop by `exemplars/SLOP.md` #5. Deleting words clears
-  the density advisory and can gut the section. If the honest fix is nothing,
-  do nothing and say why.
+- **Blockers are defects, and nothing else.** Something is a blocker only when it
+  is broken in a way any human would call broken and no arrangement of a good
+  page can trip: a route that 500s, text colliding, content overflowing its
+  viewport, unreadable type, a clipped sticky element, a console error, a reveal
+  that fires after the reader has already scrolled past, a promise the contract
+  made that does not resolve on the page, an interaction layer or a route that
+  does not move *at all*. Nothing about how good it looks.
+- **There are no taste advisories left.** Motion breadth, density, scannability,
+  and signature size were all advisories measuring a proxy while the reviewer was
+  responding to something else. They never caught the failure they were written
+  for. Judging whether the page reads well is your job and there is no number for
+  it.
+- **Do not add one back.** A check that encodes taste steers the builder toward
+  arrangement. If you find a real failure the checks miss, say so plainly in the
+  handoff; do not close it with a rule.
 
 Design first, then check. The check is the last thing that happens to a page,
 never the thing that shapes it.
@@ -123,38 +107,8 @@ never the thing that shapes it.
    and mobile and stop for the user's response before integrating it. A general
    instruction to continue is not prototype acceptance. If a prototype turns
    out to be cheaper as a real route, build the real route.
-4. After configuration, present a compact, project-specific **Experience Map**
-   before editing code. Show every major page or section with Dreative's
-   recommended role, craft intensity from 1–5, simple journey rhythm
-   (`Rest`, `Build`, `Peak`, or `Release`), user agency (`Watch`, `Influence`,
-   or `Control`), and connection to the surrounding journey. Intensity is the
-   section's quality and transformation ambition, not an instruction to keep it
-   moving. A user may choose 5 for every section while Dreative preserves a
-   clear Peak through the rhythm field. Lead with
-   `Use Dreative's recommended approach`; let the user change a row with
-   `more animated`, `calmer`, `change layout`, `change interaction`,
-   `keep static`, or a plain-language instruction. Add one to three targeted
-   recommendations about where more motion would strengthen the journey and
-   where it would create competition. Ask the user to confirm the recommended
-   map or list changes. This is the concrete design proposal, not another set of
-   abstract global dials.
-5. Compile the accepted map into the obligations defined by
-   `schemas/experience-map.schema.json`: section role, input state, visible
-   start and end states, mechanism owner, connection, desktop behavior, mobile
-   behavior, reduced-motion behavior, and evidence target. Rows assigned
-   meaningful Influence/Control agency or an explicit transformation additionally
-   name a real selector, trigger, owned properties, and meaningful outcome so
-   rendered verification can exercise the promise. Intensity 5 may instead be
-   exceptional composition, imagery, typography, pacing, or material craft; it
-   does not itself require interaction. A route normally has one clear Peak,
-   because two competing peaks usually means neither lands; depart from that
-   when the content genuinely has two arcs, and say why — the map accepts it and
-   raises an advisory rather than refusing. The schema makes promises traceable;
-   it is not an approval artifact and does not prove taste. Let architecture fit
-   the promised complexity; do not impose a generic scene registry, timeline
-   controller, or folder structure.
-6. Only after the user has explicitly resolved direction, configuration, and
-   Experience Map, privately complete the full project-specific Creative
+4. Only after the user has explicitly resolved direction and configuration,
+   privately complete the full project-specific Creative
    Decision Brief defined in `PLAN.md`. Always create and use this working
    blueprint even when the user does not ask to see it; update it when
    repository or prototype evidence changes. State only a short build brief by
@@ -176,29 +130,29 @@ never the thing that shapes it.
    the submitted build.
    Record inspectable conclusions, never hidden chain-of-thought, private
    exploration, raw transcripts, or discarded scratch work.
-7. Read `references/CREATIVE_EXECUTION.md` before adding an advanced runtime.
+5. Read `references/CREATIVE_EXECUTION.md` before adding an advanced runtime.
    Load only the relevant specialty and zero or one relevant native foundation
    initially. Zero is valid; add another only when a separate named mechanism
    genuinely requires it.
-8. Finish the real route, including post-hero sections and mobile composition.
+6. Finish the real route, including post-hero sections and mobile composition.
    Implement every selected treatment in its named section or state and make
    its contribution perceptible. Preserve required behavior and fix scoped
    defects. Before materially changing the brief, ask the user unless they
    explicitly delegated the decision; technical fallbacks must preserve the
    chosen concept and delivery direction.
-9. For Showcase and other experience-led builds, pause after the primary peak,
+7. For Showcase and other experience-led builds, pause after the primary peak,
    its most important downstream development, and their connecting handoff work
    at desktop and mobile. Show this small integrated checkpoint to the user and
-   ask whether the experiential distribution matches the accepted map before
+   ask whether the experiential distribution matches the stated brief before
    polishing the full route.
-10. Read `references/VISUAL_REFINEMENT.md`. Inspect screenshots of the rendered
+8. Read `references/VISUAL_REFINEMENT.md`. Inspect screenshots of the rendered
    full page at desktop and 390px, exercise the primary journey and motion
    states, correct visible failures, and recapture the affected and full-page
    views. DOM or accessibility snapshots do not replace pixel inspection. Run production
    build plus existing test/typecheck/lint scripts. Substantial work requires
    `dreative finalize --codex --profile <direction> --visual-smoke-url <preview-url>`
-   to print `DREATIVE_CHECKS_PASSED`. Showcase contracts and the required
-   project-local Experience Map must be portable tracked files; ignored,
+   to print `DREATIVE_CHECKS_PASSED`. Showcase contracts must be portable
+   tracked files; ignored,
    untracked, missing, absolute-machine, or inline-only evidence blocks
    completion. Visual smoke is mandatory for every substantial delivery.
    Compare the final product against the current brief and user choices. Claim
@@ -221,76 +175,52 @@ never the thing that shapes it.
    finished, Showcase-quality, or taste-approved until the user replies with
    that verdict; technical checks may be complete while taste acceptance is not.
 
-## The signature component
+## Distinctiveness
 
-Every Recommended and Showcase route ships one component that could not be
-lifted onto a competitor's page. A command-line card on a developer tool, a
-triage clock on a clinic page: something whose form comes from what the product
-actually does. Name it in the brief with the one sentence explaining why only
-this product could have it, and bind its selector in the Showcase contract,
-where final smoke checks that it resolves and renders. Whether it is large
-enough to carry the route is an advisory you answer by looking; a small
-component can still be the thing a reader remembers, and a viewport-area
-percentage is exactly the kind of number a page gets arranged around.
-`exemplars/MATERIALS.md` §6 lists signature shapes that have worked by product
-kind — as stock to choose from, never a menu to pick the passing option off.
+A page should have something on it that could not be lifted onto a competitor's
+page — a command-line card on a developer tool, a triage clock on a clinic page:
+something whose form comes from what the product actually does. Removing generic
+components is not the same as making a specific one. A page can be entirely
+clean and still be forgettable.
 
-This is a positive requirement, and it is the one most often missing. Removing
-generic components is not the same as making a specific one. A page can pass
-every restraint check and still be forgettable because nothing on it is
-recognisably about this product.
+This is a goal, not a quota. It was a requirement for four rounds and was
+satisfied twice by an abstract readout — a roast curve and a log stream on pages
+whose job was selling coffee — which reviewers called confusing and off-topic
+while preferring the control's plain product cards. If you build one, it must be
+about the product, not about data concerning the product, and it must serve the
+route's primary task rather than compete with it. If the honest answer for this
+product is that no such component belongs, do not invent one.
 
-**It must be about the product, not about data concerning the product.** The
-requirement has now been satisfied twice by an abstract readout — a roast curve
-and a log stream on a page whose job was selling coffee — and both times the
-reviewer called it confusing, ugly, and off-topic while preferring the control's
-plain product cards. A chart, graph, log stream, terminal, or metrics panel is
-the right signature component when the product *is* data or developer tooling.
-On a shop, a service, a clinic, or a publication it is an instrument pointed at
-the wrong subject.
+Bound every emphasis mechanism at its degenerate case. A filter that scales up
+the matching item looked "super cool" until one filter matched a single product,
+which then blew up while everything else collapsed. Design for one match and for
+all matches before shipping the effect.
 
-Bind `productSubjectSelector` and `productSubject` to the thing the component
-operates on — the item for sale, the document being read, the appointment being
-booked. Final smoke confirms that subject resolves inside the component and
-renders at readable size, and raises an advisory when the component contains no
-image, video, or canvas of it. Two further rules the same round produced:
+`exemplars/MATERIALS.md` is the stock to draw on — type pairings, palette
+constructions, compositions, depth treatments, signature shapes by product kind.
+Draw across entries; never take a whole column. No check tests for any of it.
 
-- The signature component must serve the route's primary task, not compete with
-  it. If the page sells something, the clearest path to buying it must not be
-  the second most prominent thing on screen.
-- Emphasis mechanisms must be bounded at their degenerate case. A filter that
-  scales up the matching item looked "super cool" until one filter matched a
-  single product, which then blew up while everything else collapsed. Design
-  for one match and for all matches before shipping the effect.
+## Motion
 
-## Two motion budgets
-
-Motion is two separate obligations and they are funded separately. Building the
-second while skipping the first is the specific mistake that keeps losing.
-
-**1. The interaction baseline — required on every profile, Efficient included.**
+**The interaction baseline is required on every profile, Efficient included.**
 Every element a user can touch has a designed hover, focus, and press state.
 Every major region has a small entrance. Colour, background, shadow, underline,
-a few pixels of movement; 120–200ms; the same grammar everywhere on the route.
+a few pixels of movement; 120-200ms; the same grammar everywhere on the route.
 
-This layer is supposed to be cheap and unoriginal. It is not where
-distinctiveness comes from and it should not try to be. It is what makes a page
-feel responsive to the person using it, and blind review reads its absence as
-the page being unfinished — while reading its presence as craft even when the
-reviewer can see it is generic. Skipping it because it is generic is how a
-route with two beautiful mechanisms is still described as having no animation.
+This layer is meant to be cheap and unoriginal. It is not where distinctiveness
+comes from and should not try to be. Blind review reads its absence as the page
+being unfinished, and reads its presence as craft even when the reviewer can see
+it is generic. It is the one positive requirement in this file that measurably
+changed what reviewers said, which is why it survived the 2026-08-16 cut.
 
-Final smoke hovers and focuses the interactive elements it can find and blocks a
-route where **none** of them respond — the zero case, which is a page that was
-never given this layer at all. How far the layer spreads is an advisory that
-asks you to look at the route, not a ratio to clear: the same number goes up if
-you fade every region in uniformly, which is slop by `exemplars/SLOP.md` #5.
-Build the layer because the page should answer the person using it.
+Final smoke blocks a route where **none** of the interactive elements respond,
+and a route where **nothing** moves at all. Those are zero cases. There is no
+breadth ratio to clear: the same number rises if you fade every region in
+uniformly, which is slop by `exemplars/SLOP.md` #5.
 
-**2. Signature moments — few, expensive, product-meaning.** Here the old rule
-still holds: prefer few well-executed motions over many decorative ones, and
-remove any automatic loop whose removal changes neither understanding nor task
-outcome. Budget these; do not budget the baseline.
+Beyond the baseline, prefer few well-executed motions over many decorative ones,
+and remove any automatic loop whose removal changes neither understanding nor
+task outcome.
 
 Reveals must complete while the region is on screen. A reveal whose end state
 arrives only after the reader has scrolled past fires behind them and reads as
@@ -301,30 +231,18 @@ not the bottom, and account for a section taller than one screen.
 Do not treat stillness as automatically the more tasteful answer. Reviewers read
 an unmoving route as unfinished more often than as restrained.
 
-## Scannability and density
+## Ambition is resolution, not element count
 
-Both directions of this fail, and Dreative has now lost rounds to each.
+One idea rendered precisely beats four crammed into the same band. Before adding
+an element to a section, delete one and see whether the section got worse.
 
-**Too little structure:** a section a reader has to read in full to understand is
-a design failure, even when the prose is good. Final smoke raises an advisory for
-any section that is a long block of text with almost nothing to land on. The
-remedy is yours — subheads, figures, a table with real structure, a diagram,
-cards where cards genuinely help. Do not add cards reflexively; do check that
-every section can be understood at a glance before it is read.
-
-**Too much:** the more recent and now more common failure. Given a positive
-requirement, builds answer it by adding — more stats, more copy, more panels,
-more tightly packed — and reviewers call the result cramped, wordy, and messy
-while preferring a control with a third of the content. Advisories fire for a
-section carrying too many words or ten or more competing statistic blocks. Both
-thresholds were invented and neither has been validated; they mark a section
-worth a second look, and the right response is sometimes to leave it alone and
-say why. A pixel-gap crowding count used to live here and was removed —
-"cramped" is perceptual, and a spacing number is arrangeable.
-
-Ambition is resolution, not element count. One idea rendered precisely beats
-four crammed into the same band. Before adding an element to a section, delete
-one and see whether the section got worse.
+Both directions of this have lost rounds. A section a reader has to read in full
+to understand is a design failure even when the prose is good. So is a section
+answering a requirement by adding — more stats, more copy, more panels, more
+tightly packed — which reviewers have called cramped, wordy, and messy while
+preferring a control with a third of the content. Nothing measures either one
+any more. Density and scannability were advisories with invented thresholds,
+they never stopped the cramming, and they are gone. Look at the page.
 
 ## Ambition is capped by what you can verify
 
@@ -379,8 +297,8 @@ checking one only teaches you to write longer strings.
 Declare each real signature mechanism with its stage, selector, primary product
 subject and selector, trigger, media mode, mobile transformation, and the
 concrete visible change. Decorative or `aria-hidden` elements cannot be named as
-the primary subject. Section role and continuity remain canonical in the
-Experience Map and continuity contract. The mechanism list is evidence routing,
+the primary subject. Continuity remains canonical in the
+continuity contract. The mechanism list is evidence routing,
 not a required widget count. Hover is unavailable on touch, so a mechanism that
 exists only on hover needs a stated mobile equivalent rather than a prohibition.
 
@@ -573,16 +491,16 @@ checklist compliance as a substitute for editing code or correcting the
 rendered interface. `DREATIVE_CHECKS_PASSED` certifies commands only, not taste.
 
 Do not add a gate because a build once evaded one. A check earns its place only
-by catching a failure a human reviewer would also have called a failure, on a
-project that had not been used to invent the check. Prefer an advisory that
-prompts a look over a blocker that encodes taste as pass/fail.
+by catching a defect a human reviewer would also have called broken, on a
+project that had not been used to invent the check. Taste does not become a
+check, in either form — the advisory tier was tried for four rounds and removed
+on 2026-08-16 because it caught nothing and still steered the builder.
 
-Removing a check is as legitimate as adding one, and is usually the better move
-when the evidence is one round of one reviewer. A rule that has not caught a
-real failure since it was written is costing context and steering the builder
+Removing a check is more legitimate than adding one. A rule that has not caught
+a real failure since it was written is costing context and steering the builder
 toward arrangement; delete it and record why. The system has already added three
-blockers in a single change against its own advice — that was the mistake, and
-the correction was to demote them, not to add a fourth.
+blockers in a single change against its own advice, then demoted two the same
+day, then deleted the whole tier. Adding was the mistake every time.
 
 ## Resource routing
 

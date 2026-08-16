@@ -27,11 +27,10 @@ loop until repaired or replaced by another confirmed browser adapter.
    experience does not make that role perceptible. Compare hero-grade media
    reused across major sections and require visible evolution in crop, state,
    material, meaning, or interaction unless a distinct composition is used.
-   Review the Experience Map as a sequence: compare the primary peak with at
+   Review the route as a sequence: compare the primary peak with at
    least one development or consequence away from it and inspect their handoff.
    Flag when one section owns nearly all salient motion, media change, or
-   compositional transformation. Intensity arithmetic is only a prompt for this
-   comparison, never a visual verdict. Inspect optical typography explicitly:
+   compositional transformation. Inspect optical typography explicitly:
    headline wrapping, cap-height and baseline relationships, tiny or
    low-contrast supporting copy, visual-anchor alignment, negative-space
    balance, and section-to-section rhythm.

@@ -16,12 +16,13 @@ finished art direction or a long effect menu.
 1. Direction: Recommended, Efficient, or Showcase.
 2. Compact configuration: Fast/Lean/Full Audit, references, sources, packages,
    and prototype policy.
-3. Editable Experience Map: Dreative shows recommended section roles,
-   intensity, and handoffs; the user accepts the defaults or changes individual
-   sections in plain language.
-4. Private implementation blueprint: each accepted row compiles into visible
-   start/end, ownership, responsive, fallback, and review obligations; the full
-   Creative Decision Brief is shown only on request.
+3. Private implementation blueprint: the page's sections are decided here, with
+   visible start/end, ownership, responsive, fallback, and review obligations;
+   the full Creative Decision Brief is shown only on request.
+
+A third gate, an editable Experience Map, was removed on 2026-08-16 after blind
+review showed the pages it produced had the same sections in the same order as
+builds with no skill at all.
 
 Recommended is the direction the agent judges best for the inspected product.
 Efficient is the most token- and implementation-efficient direction. Showcase
@@ -136,11 +137,14 @@ unverified; a failed probe reports `runtime-verification-failed`.
 Checks are a floor for defects, never a definition of good work. Blockers cover
 only things any human would call broken — a failing route, colliding text,
 overflow, unreadable type, a console error, a reveal that fires after the reader
-has scrolled past, a contract promise that does not resolve. Everything
-taste-shaped is an advisory that means *go look at this*, not a number to raise;
-the thresholds behind them are unvalidated. A page arranged to satisfy checks is
-a page nobody chose, and that failure mode is treated as worse than a page that
-collects advisories and defends them.
+has scrolled past, a contract promise that does not resolve, an interaction
+layer or a route that does not move at all.
+
+Nothing taste-shaped is checked. Motion breadth, density, scannability, and
+signature size were advisories for four rounds; they measured proxies, never
+caught the failures they were written for, and were deleted on 2026-08-16. A page
+arranged to satisfy checks is a page nobody chose, and that failure mode is
+treated as worse than a page no check has an opinion about.
 
 `exemplars/` carries the three halves of the visual system: `SLOP.md` for the
 defaults that make generated frontends recognisable, `PRINCIPLES.md` for what

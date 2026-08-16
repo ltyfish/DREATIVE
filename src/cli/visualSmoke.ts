@@ -253,23 +253,24 @@ async function exerciseMechanism(page: Page, entry: MechanismContractEntry): Pro
     : null;
 }
 
-async function verifySignature(page: Page, signature: SignatureComponent): Promise<{ blockers: string[]; advisories: string[] }> {
+/**
+ * A declared signature component is a promise the contract made, so it has to
+ * resolve and render — that is a defect check. Whether the page ought to have
+ * one at all is not checked any more: the requirement was removed on 2026-08-16
+ * after four rounds in which it was satisfied by whatever passed.
+ */
+async function verifySignature(page: Page, signature: SignatureComponent): Promise<string[]> {
   const locator = page.locator(signature.selector);
-  if (await locator.count() !== 1) return { blockers: [`signature component ${signature.name} selector ${signature.selector} must resolve to exactly one element`], advisories: [] };
-  const observation = await locator.evaluate((element) => {
-    const rect = element.getBoundingClientRect();
+  if (await locator.count() !== 1) return [`signature component ${signature.name} selector ${signature.selector} must resolve to exactly one element`];
+  const visible = await locator.evaluate((element) => {
     const style = getComputedStyle(element);
-    return {
-      visible: style.display !== "none" && style.visibility !== "hidden" && Number(style.opacity) > .02,
-      areaRatio: (rect.width * rect.height) / Math.max(1, innerWidth * innerHeight),
-      hasProductMedia: Boolean(element.querySelector("img,picture,video,canvas,[data-dreative-3d]")),
-    };
+    return style.display !== "none" && style.visibility !== "hidden" && Number(style.opacity) > .02;
   });
-  if (!observation.visible) return { blockers: [`signature component ${signature.name} is not visibly rendered`], advisories: [] };
+  if (!visible) return [`signature component ${signature.name} is not visibly rendered`];
 
   const subject = locator.locator(signature.productSubjectSelector);
   if (await subject.count() !== 1)
-    return { blockers: [`signature component ${signature.name} product subject ${signature.productSubjectSelector} must resolve to exactly one element inside ${signature.selector}`], advisories: [] };
+    return [`signature component ${signature.name} product subject ${signature.productSubjectSelector} must resolve to exactly one element inside ${signature.selector}`];
   const subjectProblem = await subject.evaluate((element) => {
     const rect = element.getBoundingClientRect();
     const style = getComputedStyle(element);
@@ -278,19 +279,8 @@ async function verifySignature(page: Page, signature: SignatureComponent): Promi
     if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) <= .02) return "is not visibly rendered";
     return null;
   });
-  if (subjectProblem) return { blockers: [`signature component ${signature.name} product subject ${signature.productSubject} ${subjectProblem}`], advisories: [] };
-
-  // Neither of the remaining observations is a refusal. An abstract readout is
-  // the right signature for a data or developer product and the wrong one for a
-  // shop, and a small component can still be the thing you remember. The browser
-  // cannot tell either way, so it asks the builder to look instead of prescribing
-  // a size a page can be arranged to satisfy.
-  const advisories: string[] = [];
-  if (observation.areaRatio < .05)
-    advisories.push(`signature: ${signature.name} occupies ${(observation.areaRatio * 100).toFixed(1)}% of the viewport — look at whether it actually carries the route, or whether it reads as one more small element`);
-  if (!observation.hasProductMedia)
-    advisories.push(`signature: ${signature.name} contains no image, video, or canvas of ${signature.productSubject} — confirm the component is about the thing the route sells or does, not a chart about it`);
-  return { blockers: [], advisories };
+  if (subjectProblem) return [`signature component ${signature.name} product subject ${signature.productSubject} ${subjectProblem}`];
+  return [];
 }
 
 /**
@@ -334,35 +324,6 @@ async function measureInteractionAffordance(page: Page): Promise<{ responding: n
     await locator.evaluate((element) => (element as HTMLElement).blur()).catch(() => undefined);
   }
   return { responding, total: selectors.length };
-}
-
-/**
- * The inverse of the scannability advisory, and the one the 2026-08-11 round
- * demanded: the Dreative arm lost on *"cramping too much ambitions and words and
- * design"*, *"so much stats everywhere"*, and *"messy, cramped, not tidy"*.
- * Ambition is not element count, and none of these are refusals — they ask the
- * builder to look at a section a reviewer has repeatedly called overloaded.
- */
-async function measureDensity(page: Page): Promise<string[]> {
-  return page.evaluate(() => {
-    const findings: string[] = [];
-    for (const section of Array.from(document.querySelectorAll<HTMLElement>("main section, main article"))) {
-      const name = section.id || section.className?.split(/\s+/)[0] || section.tagName.toLowerCase();
-      const words = (section.innerText ?? "").trim().split(/\s+/).filter(Boolean).length;
-      if (words > 420) findings.push(`${name} carries ${words} words; blind review calls a dense route "wordy" far more often than "thorough"`);
-
-      const stats = Array.from(section.querySelectorAll<HTMLElement>("[class*=stat],[class*=metric],[class*=kpi],[class*=figure],dl > dd"))
-        .filter((element) => element.getBoundingClientRect().height > 8).length;
-      if (stats >= 10) findings.push(`${name} renders ${stats} competing statistic blocks; when everything is emphasised the reader is told nothing is`);
-
-      // The 4px text-block proximity count that used to live here was removed:
-      // nobody validated the threshold, "cramped" is a perceptual judgement a
-      // pixel gap does not carry, and a spacing number is exactly the kind of
-      // rule a page gets arranged to satisfy. Real text collision is still a
-      // blocker; comfortable density is a thing to look at, not to compute.
-    }
-    return findings.slice(0, 6);
-  });
 }
 
 /**
@@ -443,24 +404,6 @@ async function measureMotion(page: Page, documentHeight: number, viewportHeight:
       lateReveals.push(region.name);
   }
   return { moving, total: regions.length, lateReveals };
-}
-
-/**
- * Blind review repeatedly preferred the arm that used cards and icons over the
- * arm that used prose and tables, describing the latter as "hard to
- * understand" and "no clear separation". This does not mandate cards; it flags
- * a section a reader cannot scan, and leaves the remedy to the designer.
- */
-async function measureScannability(page: Page): Promise<string[]> {
-  return page.evaluate(() => Array.from(document.querySelectorAll<HTMLElement>("main section, main article"))
-    .map((element) => {
-      const words = (element.innerText ?? "").trim().split(/\s+/).filter(Boolean).length;
-      const breaks = element.querySelectorAll("h2,h3,h4,li,img,svg,video,canvas,tr,button,[class*=card],[class*=tile],[class*=stat]").length;
-      const name = element.id || element.className?.split(/\s+/)[0] || element.tagName.toLowerCase();
-      return words > 180 && breaks < 3 ? `${name} is ${words} words with ${breaks} scannable breaks; a reader has to read it to understand it` : "";
-    })
-    .filter(Boolean)
-    .slice(0, 5));
 }
 
 /**
@@ -692,9 +635,6 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
   if (collisionSamples.size) blockers.push(`${config.label}: text collision detected during scroll: ${[...collisionSamples].join(", ")}`);
 
   if (config.label === "desktop") {
-    advisories.push(...(await measureScannability(page)).map((item) => `scannability: ${item}`));
-    advisories.push(...(await measureDensity(page)).map((item) => `density: ${item}`));
-
     // Every profile owes the route this layer, Efficient included: it is the
     // cheapest craft on the page and the control keeps winning smoothness with
     // nothing else.
@@ -703,8 +643,6 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
       checks.push(`interaction baseline: ${affordance.responding} of ${affordance.total} interactive elements respond to hover or focus`);
       if (affordance.total >= 3 && affordance.responding === 0)
         blockers.push(`no interaction baseline: ${affordance.total} interactive elements were hovered and focused and none changed appearance. Every profile owes the route a designed hover, focus, and press state; this is the layer blind review reads as "smooth".`);
-      else if (affordance.total >= 4 && affordance.responding < affordance.total / 2)
-        advisories.push(`interaction baseline: only ${affordance.responding} of ${affordance.total} interactive elements respond to hover or focus; the layer has to be pervasive to register as craft`);
     }
 
     if (profile !== "efficient" && !config.reducedMotion) {
@@ -712,16 +650,12 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
       checks.push(`motion: ${motion.moving} of ${motion.total} regions change state on approach`);
       if (motion.total > 0 && motion.moving === 0)
         blockers.push(`nothing on this route moves: ${motion.total} regions were sampled entering, centred, and leaving the viewport and none changed state. ${profile === "showcase" ? "Showcase" : "Recommended"} requires at least one authored motion.`);
-      else if (motion.total >= 4 && motion.moving / motion.total < .5)
-        advisories.push(`motion: only ${motion.moving} of ${motion.total} regions change on approach; blind review has repeatedly called this "clean but static". Look at the route — the answer is a pervasive hover/focus/entrance grammar, not fading every region in uniformly to raise this number.`);
       if (motion.lateReveals.length)
         blockers.push(`reveals fire after the reader has scrolled past them in ${motion.lateReveals.join(", ")}: content already on screen while the region is centred is still in its approach state, and only resolves once the region has left. Trigger against the top of the viewport, not the bottom.`);
     }
 
     if (contract) {
-      const signature = await verifySignature(page, contract.signature);
-      blockers.push(...signature.blockers);
-      advisories.push(...signature.advisories);
+      blockers.push(...await verifySignature(page, contract.signature));
       await page.goto(url, { waitUntil: "domcontentloaded" }); await twoFrames(page);
       blockers.push(...await verifyContinuity(page, contract));
       blockers.push(...await verifySources(page, contract));
