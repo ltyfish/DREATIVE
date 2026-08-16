@@ -124,18 +124,8 @@ never the thing that shapes it.
    instruction to continue is not prototype acceptance. If a prototype turns
    out to be cheaper as a real route, build the real route.
 4. After configuration, present a compact, project-specific **Experience Map**
-   before editing code. **First decide what the sections are.** The map is not
-   an annotation of the section list the brief or the existing page hands you;
-   deriving that list unchanged and then styling it is the single failure blind
-   review has caught most often — the build ends up structurally identical to
-   one made without this skill, differing only in card chrome, and a reader
-   sees that as the same design. Say in one line what the page's shape is and
-   why this product wants it: what a visitor needs first, what can be one
-   section instead of three, what deserves a full screen, what does not belong
-   on the page at all, and whether a stack of full-width bands is genuinely
-   right here or merely the default. A section you kept because it was already
-   there is a decision you have not made. Then show every major page or section
-   with Dreative's recommended role, craft intensity from 1–5, simple journey rhythm
+   before editing code. Show every major page or section with Dreative's
+   recommended role, craft intensity from 1–5, simple journey rhythm
    (`Rest`, `Build`, `Peak`, or `Release`), user agency (`Watch`, `Influence`,
    or `Control`), and connection to the surrounding journey. Intensity is the
    section's quality and transformation ambition, not an instruction to keep it
@@ -453,16 +443,6 @@ default shapes that make generated frontends recognisable as generated. Read
 and `exemplars/MATERIALS.md` for actual stock to build it out of — real type
 pairings, palette constructions, compositions, depth treatments, and the ambient
 transition grammar, each indexed by the condition it belongs to.
-
-When you scout, look at **whole pages, not components**. The question a
-reference answers is what sections a page like this has, in what order, at what
-sizes, and what it leaves out — not what its buttons look like. Component and
-animation galleries answer the second question only, and reaching for them
-first is how a build ends up as the default stack wearing nicer parts.
-[Godly](https://godly.website/) is a usable free source of whole shipped sites,
-filterable by style; a real product in the same category is better still. Study
-two or three, name what is structurally different between them, and decide
-which structure this product wants. Then, and only then, go looking for parts.
 
 Materials are a shelf, not a style. Take one row from type, a different one's
 palette construction, another's composition; taking a whole column reproduces
