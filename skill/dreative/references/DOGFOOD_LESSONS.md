@@ -541,3 +541,52 @@ checks were never the active ingredient, and what remains to test is whether the
 skill contributes anything the base model does not already do. Run the arms with
 the same scenario twice before concluding anything from one pair. Do not respond
 to the result with a new rule — that response has now failed four times.
+
+### DL-014 / validated / 2026-08-16
+
+Observed failure: **The measurement could not see what DL-013 claimed to measure.**
+
+DL-013 read the 2026-08-15 round as "Dreative reskins the control's page
+architecture rather than re-composing it". Checked against the fixtures: the
+scenario baseline `scenarios/civic-clinic/App.jsx` already contains the exact
+section list both arms shipped — `status, hours, services, visit, languages,
+book, footer` — and the control's output matches the baseline's order exactly.
+devtool-docs was identical in both arms and identical to its baseline.
+
+Both arms reskinned, because both were handed the composition. A designed
+baseline cannot show a structural difference in either direction, so DL-013's
+structural finding was an artifact of the harness, not a fact about the skill.
+The rest of DL-013 stands: the deletions were justified by the record and by the
+Goodhart history, not by that one comparison.
+
+Root cause: planning guidance is advice, and implementation pressure beats it.
+Once the model is editing React it has an existing component tree, familiar
+patterns, and cheap local edits available; "reorder these sections and improve
+the styling" satisfies the spirit of a structural plan at a fraction of the
+cost. Nothing required the final DOM to match the stated plan, and — importantly
+— nothing should. Forcing obedience to the plan is another rule, and there is no
+evidence that more radical re-composition produces better pages. The control
+reasons about structure competently on its own; the Experience Map was
+overriding something that usually did not need overriding.
+
+Change: fixed the harness, not the skill. Scenarios now support
+`baseline: "content-only"`: `content.jsx` becomes the run's `App.jsx` and
+`styles.css` is empty, carrying every fact and behaviour of the designed
+baseline as flat unstyled markup with no sections, ids, nav, cards, table, or
+meaningful order, with a brief that says to decide what sections the page has.
+Both active scenarios switched. Documented in the testbed repository, in its baselines note.
+
+Evidence: byte-level comparison of `scenarios/*/App.jsx` against both arms'
+built `src/App.jsx` in rounds 202608160401 and 202608160436.
+
+Cost or trade-off: content-only is a harder task for both arms, so scores may
+fall on both sides; results must never be compared across baselines, only within
+a round. It also removes the "improve an existing product" framing, which is the
+real-world case the skill is for — so keep the designed fixtures and alternate,
+rather than treating content-only as the only truth.
+
+Recheck condition: On the next content-only round, compare the two arms' section
+lists directly. If they now differ and Dreative's is better reasoned, the skill
+does contribute architecture and the previous rounds were measuring the wrong
+thing. If they still converge, the skill's contribution is surface only, and
+that is worth knowing before any further work on it.
