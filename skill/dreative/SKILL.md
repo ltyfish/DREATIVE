@@ -24,9 +24,11 @@ and it is not flattering:
   that as solved; it is four pairs and four changes shipped together.
 - **Cost is the unfixed failure.** The arm with the skill routinely takes five to
   seven times as long as the control, and in that same round one session ran past
-  the harness's 25-minute cap and was killed mid-work. Reading is where that goes:
-  prefer not opening a reference to opening it speculatively, and never open a
-  file this document says applies to a direction you were not given.
+  the harness's 25-minute cap and was killed mid-work. Reading is where that goes.
+  Never open a file this document says applies to a direction you were not
+  given, and never survey the references before starting. That is not licence to
+  skip the one that applies at the moment you reach it — see *Resource routing*,
+  where each line names a moment rather than a topic.
 - **It reliably removes the generated look** — one value applied to everything,
   the stock gradient, the same five sections every product gets. Note *one value
   applied to everything*: a page of hard rectangles is the same failure as a page
@@ -495,19 +497,33 @@ day, then deleted the whole tier. Adding was the mistake every time.
 
 ## Resource routing
 
-- Open redesign or external reference: `references/CREATIVE_DIRECTION.md`
-- Dreative dogfood or workflow change: `references/DOGFOOD_LESSONS.md` and `skills/learning.md`
-- Named adoption list or library/reference comparison: `references/REFERENCE_ADOPTION.md`
-- Advanced runtime: `references/CREATIVE_EXECUTION.md`
-- Where to source real imagery, texture, 3D, or type: `references/MEDIA_SOURCES.md`
-- Focal media feasibility and offline production: `references/ASSET_PIPELINES.md`
-- What to build, not only what to avoid: `exemplars/PRINCIPLES.md` and `exemplars/SLOP.md`
-- Concrete type, colour, composition, depth, and ambient-motion stock: `exemplars/MATERIALS.md`
-- Relevant craft only: `skills/<name>.md`
-- Rendered correction loop: `references/VISUAL_REFINEMENT.md`
-- Showcase direction only: `references/SHOWCASE.md`
-- Opted-in evaluator handoff: `references/EVALUATION_HANDOFF.md`, then project-local `.dreative/evaluation/README.md`
-- Chosen mechanism only: zero or one matching native foundation initially
-- Focused mechanism lookup only: `llms.txt` or `dreative catalogue`
+Each line is a moment, not a topic. Open the file when you reach the work it
+names — not as a survey before you start, and not at all if you never reach it.
+Cost is real and reading speculatively is how a session hits the cap, but the
+opposite failure is now the more common one: skipping the file at the exact
+moment it applied, and building the generic version of that decision instead.
+If you are at the moment, open it.
+
+- Before choosing a concept for an open redesign: `references/CREATIVE_DIRECTION.md`
+- Before naming or comparing real sites and libraries: `references/REFERENCE_ADOPTION.md`
+- Before deciding what a section's focal image or object actually is: `references/MEDIA_SOURCES.md`
+- Before producing focal media offline (frames, sequences, renders): `references/ASSET_PIPELINES.md`
+- Before installing or wiring any runtime: `references/CREATIVE_EXECUTION.md`
+- Before the first transition, reveal, or scroll behaviour: `skills/motion.md`
+- Before any canvas, shader, or spatial subject: `skills/3d.md`
+- Before a control that holds state: `skills/interaction.md`
+- Before sourcing or treating an image: `skills/media.md`
+- When the direction is a sequence, an environment, or one risky moment:
+  `skills/cinematic.md`, `skills/immersive.md`, `skills/experimental.md`
+- When finish and typography are the point: `skills/refined.md`
+- While laying out any route, and again at 390px: `skills/ux.md`, `skills/mobile.md`
+- While choosing type, colour, composition, depth, or ambient motion: `exemplars/MATERIALS.md`
+- While deciding what to build rather than what to avoid: `exemplars/PRINCIPLES.md` and `exemplars/SLOP.md`
+- While correcting the rendered page: `references/VISUAL_REFINEMENT.md`
+- When the Showcase direction was chosen: `references/SHOWCASE.md`
+- When changing Dreative itself: `references/DOGFOOD_LESSONS.md` and `skills/learning.md`
+- When the evaluator handoff is opted in: `references/EVALUATION_HANDOFF.md`, then project-local `.dreative/evaluation/README.md`
+- After the mechanism is chosen: zero or one matching native foundation
+- For a focused mechanism lookup only: `llms.txt` or `dreative catalogue`
 
 Never browse the catalogue to invent the concept.
