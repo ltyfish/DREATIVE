@@ -14,14 +14,14 @@ artifact or a performance of following instructions.
 ## What blind review actually shows
 
 Dreative has been measured against the same brief built without it, blind, over
-eighteen pairs. Read this before you build, because it is the honest account and
-it is not flattering:
+twenty-four pairs. Read this before you build, because it is the honest account
+and it is not flattering:
 
-- **The record is level, with one recent upturn.** Roughly eleven wins, seven
-  losses, two ties. On 2026-08-16 the skill took both scenarios overall, and for
-  the first time won `craft` and `fit` rather than only distinctiveness and
-  restraint — *"genuinely look like a website done by someone"*. Do not read that
-  as solved; it is two pairs.
+- **The record is ahead, and recently improving.** Roughly fourteen wins, eight
+  losses, two ties, with five of the last six going to the skill. On 2026-08-17
+  it took both scenarios and won `craft`, `fit`, and — for the first time —
+  `hierarchy and pacing`: *"not really slop compared to design A"*. Do not read
+  that as solved; it is four pairs and four changes shipped together.
 - **Cost is the unfixed failure.** The arm with the skill routinely takes five to
   seven times as long as the control, and in that same round one session ran past
   the harness's 25-minute cap and was killed mid-work. Reading is where that goes:
@@ -32,21 +32,30 @@ it is not flattering:
   applied to everything*: a page of hard rectangles is the same failure as a page
   of identical rounded cards. Radius, borders and shadows are ordinary tools; see
   SLOP #4.
-- **It loses on `hierarchy and pacing`** — never on distinctiveness, and as of
-  2026-08-16 no longer on fit or craft. Pacing is the one criterion the control
-  has won in every single round. The recurring complaint is not that the page is
-  plain. It is *"harder to understand"*, *"cramped"*, *"tables and text
-  everywhere"*, *"too text heavy with nothing summarized"*. Legibility is where
-  rounds are lost, and the fix is in *Ambition is resolution* below.
+- **`hierarchy and pacing` was the standing loss for every round until
+  2026-08-17.** The complaint was never that the page was plain — it was *"harder
+  to understand"*, *"cramped"*, *"tables and text everywhere"*, *"too text heavy
+  with nothing summarized"*. It went to the skill for the first time under the
+  two-layer read in *Ambition is resolution* below. One round; assume it is still
+  the weak criterion and keep reading that section.
+- **The current standing loss is ambition.** *"Worst thing about the winner is
+  lack of animation"* is now the closing note on verdicts the skill **won**, in
+  both scenarios of the most recent round — the reviewer wanting a signature
+  moment from a build they otherwise liked, and naming motion design, scroll
+  effects, and 3D as what they were looking for. This is the criterion to worry
+  about now, and it is the one restraint cannot satisfy.
 - **Positive requirements got gamed every time one was added.** Told to have a
   signature component, it produced a chart on a page selling coffee; told to have
   motion, it fired one qualifying transition; told to be ambitious, it added
   elements until the route was cramped. Each satisfied the rule and lost.
-- **One requirement demonstrably worked**: the pervasive, cheap, unoriginal
-  interaction layer — hover, focus, and scroll-in feedback on everything. After
-  it was added, reviewers stopped saying the builds lacked animation. It is the
-  only positive requirement that survived the 2026-08-16 cut, and the reason it
-  survived is that it changed what a reviewer said.
+- **One requirement demonstrably worked, and its limit is now visible**: the
+  pervasive, cheap, unoriginal interaction layer — hover, focus, and scroll-in
+  feedback on everything. It is the only positive requirement that survived the
+  2026-08-16 cut, and it survived because it changed what a reviewer said. But
+  *"lacks animation"* came back on 2026-08-17 with the baseline shipping and
+  praised as *"smooth and clean for its theme"*. So the baseline buys a page that
+  feels answerable and nothing more. It is the floor, and it is not the answer to
+  a reviewer asking to be shown something.
 - **Restraint is not free.** Removing spectacle also removes the thing people
   remember. Subtracting is the start of the work, not the end of it.
 

@@ -103,7 +103,12 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   const threeD = contents.get("skills/3d.md") ?? "";
   requireText(findings, "skills/3d.md", threeD, /Where the object comes from[\s\S]*licensed or CC0 model[\s\S]*MEDIA_SOURCES\.md/i, "the 3D specialist must route the object to a real source before geometry");
   requireText(findings, "skills/3d.md", threeD, /Lighting and material are the work/i, "the 3D specialist must treat lighting and material as the actual difficulty");
-  requireText(findings, "skills/3d.md", threeD, /Prefer the pre-rendered view[\s\S]*Reserve live WebGL/i, "the 3D specialist must default realistic props to pre-rendered output");
+  // Was: assert the file says "prefer pre-rendered, reserve live WebGL". That
+  // pinned a default into a build gate, so the one file meant to enable
+  // ambitious spatial work could only ever argue against it. The property worth
+  // holding is that the two mediums are presented as a decision with stated
+  // costs — not which way the decision goes. (2026-08-17)
+  requireText(findings, "skills/3d.md", threeD, /Choosing live or pre-rendered[\s\S]*Neither is the safe choice/i, "the 3D specialist must present live and pre-rendered as a deliberate choice, not a default");
   requireText(findings, "skills/3d.md", threeD, /Photo-to-3D reconstruction is not an available capability/i, "the 3D specialist must name photo-to-3D as a capability gap rather than an attempt");
   requireText(findings, "SKILL.md", skill, /reference mode[\s\S]*none[\s\S]*supplied[\s\S]*scout[\s\S]*traceable/i, "Showcase reference scouting must be explicit and traceable");
   requireText(findings, "references/SHOWCASE.md", showcase, /identity channel[\s\S]*visible media or a computed[\s\S]*distinct rendered values/i, "focal product identity must bind to rendered uniqueness evidence");
