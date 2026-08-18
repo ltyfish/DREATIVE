@@ -138,6 +138,12 @@ never the thing that shapes it.
    visual peak, continuity owner, and mobile transformation. Reveal the full
    brief only on request. Do not wait for its reveal or approval; proceed to
    build.
+   Before you write the signature behavior and the experience arc into that
+   brief, read the craft file for what they are made of: `skills/motion.md`
+   whenever the arc moves, `skills/3d.md` whenever the subject is an object in
+   space. Deciding the ambition is the moment, not writing the first
+   transition — by then the ambition has already been set to whatever came to
+   hand.
    Only if the project already contains `.dreative/evaluation/README.md`,
    read `references/EVALUATION_HANDOFF.md` and follow it. Its absence is the
    normal case and needs nothing from you.
@@ -509,8 +515,8 @@ If you are at the moment, open it.
 - Before deciding what a section's focal image or object actually is: `references/MEDIA_SOURCES.md`
 - Before producing focal media offline (frames, sequences, renders): `references/ASSET_PIPELINES.md`
 - Before installing or wiring any runtime: `references/CREATIVE_EXECUTION.md`
-- Before the first transition, reveal, or scroll behaviour: `skills/motion.md`
-- Before any canvas, shader, or spatial subject: `skills/3d.md`
+- While naming the signature behaviour and the experience arc, at step 4:
+  `skills/motion.md`, and `skills/3d.md` when the subject is an object in space
 - Before a control that holds state: `skills/interaction.md`
 - Before sourcing or treating an image: `skills/media.md`
 - When the direction is a sequence, an environment, or one risky moment:
