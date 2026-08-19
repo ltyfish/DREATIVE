@@ -31,100 +31,114 @@ Record the real URL or file path, the licence, and the rights status. Final
 smoke resolves local files and requests remote URLs, so an invented source fails
 rather than passing quietly.
 
-## Photography, blanket-licensed
+## The open web is the source; this file is a shortlist
 
-Free for commercial use under the platform's own licence, no per-item check, no
-attribution required. Common restriction: you may not sell the unaltered file or
-rebuild a competing stock service.
+Nothing here is a whitelist. You can fetch any page and any file on the open
+internet, and the right image is often on a manufacturer's press kit, a
+university department page, a museum's own site, a maker's build log, or a
+photographer's portfolio — none of which have an API. The list below exists
+because these are *reliable* entry points with clear licences, not because they
+are the only permitted ones.
 
-- **Unsplash** — the widest general set. Strong on landscape, interiors,
-  atmosphere, workspaces, food. Weak on specific manufactured products, which is
-  exactly where fabrication tempts you.
-- **Pexels** — overlapping catalogue, better on people and short video clips.
-  Identifiable people carry the usual model-release limits: fine as atmosphere,
-  risky implying endorsement.
+The constraint on taking something is the licence and the truthfulness of the
+subject, never whether it arrived through an API. What you may not do is fetch
+something with unclear rights and ship it anyway, or invent the subject because
+searching two endpoints came back empty.
 
-Both skew toward a recognisable contemporary stock aesthetic. That aesthetic is
-itself a convergence risk — crop hard, grade deliberately, and avoid the frames
-that were popular enough to feel familiar.
+## Photography, keyless and verified
 
-## Reachable without a key
+Checked 2026-08-19 with plain `curl`, no key, real results returned.
 
-Ranked by quality this file puts photography first, but a headless build can
-only take what it can fetch, so the ladder gets traversed by reachability
-instead — and on 2026-08-19 that silently cost a page its hero. Checked that
-day, no key, plain `curl`:
+- **Openverse** — `api.openverse.org`. The first stop for photography: searches
+  CC-licensed and public-domain work across Flickr, Wikimedia, and museum
+  collections at once. Filter by licence, then verify on the source record.
+- **Flickr Creative Commons search** — no key needed for the HTML search; filter
+  to the commercial-use licences. Deeper and far less generic than stock, and
+  strong on exactly the amateur macro and process photography that stock is weak
+  on.
+- **Wikimedia Commons** — `commons.wikimedia.org/w/api.php`, and files fetch
+  directly from `upload.wikimedia.org`. Enormous and uneven. Many files are
+  CC BY-SA, which is share-alike and requires attribution; that obligation
+  travels into your page. Send a real `User-Agent` or it will refuse you.
+- **Internet Archive** — `archive.org/advancedsearch.php`. Everything and
+  anything, rights from public domain to fully reserved. Never assume.
 
-| Source | Keyless | Note |
-|---|---|---|
-| Openverse | yes | searches Flickr, Wikimedia, and museum sets at once |
-| Wikimedia Commons | yes | `w/api.php`, uneven, check the per-file licence |
-| The Met | yes | `collectionapi.metmuseum.org`, follow the redirect |
-| Poly Haven | yes | `api.polyhaven.com` — HDRIs, textures, **models** |
-| ambientCG | yes | `ambientcg.com/api/v2` |
-| **Unsplash** | **no** | `401`, key required |
-| **Pexels** | **no** | key required — and it answers **HTTP 200 with a 401 body**, so a status-code check calls it reachable and the empty result reads as "nothing exists" |
-| Smithsonian, Library of Congress, Rijksmuseum | no | `403`/`403`/`410`; the Rijksmuseum endpoint is retired |
+Stock-library aesthetics are a convergence risk wherever you find them — crop
+hard, grade deliberately, and avoid the frames popular enough to feel familiar.
 
-Do not conclude that a subject has no imagery because the first two entries
-under *Photography* returned nothing — they are the two that need a key. Search
-the keyless set before concluding anything, and note that Poly Haven and the Met
-are keyless, which makes a licensed model or a museum object often the *easiest*
-material to get rather than the hardest.
+## Sources that need a key you do not have
 
-If the best material genuinely sits behind a key, that is a capability gap to
-name for the user, exactly as in *When nothing fits*. It is never a reason to
-fabricate the subject.
+**Unsplash** (`401`) and **Pexels** both require an API key. They hold the widest
+general photography set, so their absence is a real gap and not a judgement
+about their quality.
 
-## Archives and museums, public domain
+**Pexels answers HTTP 200 with a 401 body.** A status-code check calls it
+reachable and its empty result then reads as *"this subject has no imagery"* —
+which is how a page ends up with a fabricated hero. Read the body, not the code.
+
+If photography is what the route needs and the keyless set cannot supply it, say
+so and ask the user whether they have an Unsplash or Pexels key, exactly as in
+*When nothing fits*. A missing key is a capability gap to raise, never a reason
+to invent the subject.
+
+
+## Archives and museums, keyless and verified
 
 Slower to search and far more distinctive. This is where a page stops looking
 like everyone else's page. Best for editorial, heritage, scientific, material,
-and process subjects.
+process, and *object* subjects — and because these are keyless while stock
+photography is not, a museum object is often the easiest real material to get
+rather than the hardest.
 
-- **Smithsonian Open Access** — millions of CC0 items across science, history,
-  and design. Objects, specimens, and technical material.
-- **The Metropolitan Museum Open Access** — CC0 for its public-domain works.
-  Excellent for texture, textile, ceramic, and printed material.
-- **Rijksmuseum** — very high-resolution public-domain scans, unusually good
-  reproduction quality.
-- **NYPL Digital Collections** and **Library of Congress** — maps, ephemera,
-  photographs, printed matter. Rights vary per item and are stated per item.
-- **Public Domain Review** — curated rather than comprehensive; useful when you
-  want something with character and do not yet know what.
+All checked 2026-08-19, no key, real results returned.
+
+- **The Met** — `collectionapi.metmuseum.org`, CC0 for its public-domain works.
+  Excellent for texture, textile, ceramic, metalwork, instruments, and printed
+  matter. Follow the redirect.
+- **Art Institute of Chicago** — `api.artic.edu`, generous public-domain set with
+  high-quality IIIF imagery.
+- **Cleveland Museum of Art** — `openaccess-api.clevelandart.org`, CC0 open
+  access, strong on objects and craft.
+- **Wellcome Collection** — `api.wellcomecollection.org`, scientific, medical,
+  and technical illustration and photography, mostly CC.
+- **NASA image library** — `images-api.nasa.gov`. Generally free to use but must
+  not imply endorsement, and third-party material inside NASA pages is
+  separately restricted.
 
 Licences here range from CC0 to "no known restrictions" to genuinely restricted.
 Check the individual record, not the collection.
 
-## Aggregators, mixed licences
+Removed 2026-08-19 because they no longer answer without a key: Smithsonian Open
+Access (`403`), Library of Congress (`403`), Rijksmuseum (`410`, endpoint
+retired). Their collections are still worth browsing by hand on the open web —
+they are just not routes a build can rely on unattended.
 
-- **Openverse** — searches CC-licensed and public-domain work across Flickr,
-  Wikimedia, and museum collections in one place. Filter by licence, then verify
-  on the source record.
-- **Wikimedia Commons** — enormous and uneven. Many files are CC BY-SA, which is
-  share-alike and requires attribution; that obligation travels into your page.
-- **Internet Archive** — everything and anything, with rights ranging from public
-  domain to fully reserved. Never assume.
 
 ## Government and scientific
 
 Generally public domain in the US, and often the only truthful source for
-technical or environmental subjects.
+technical or environmental subjects. Browsed on the open web rather than through
+an API — see the note at the top of this file; none of these need one.
 
-- **NASA** — imagery is generally free to use but must not imply endorsement,
-  and some third-party material inside NASA pages is separately restricted.
 - **NOAA**, **USGS**, **USDA** — climate, terrain, agriculture, materials.
 - **ESA** and other national agencies use their own terms; check rather than
   assuming they match NASA.
 
-## Texture, HDRI, and 3D
 
-- **Poly Haven** — CC0 HDRIs, PBR textures, and models. The default answer for
-  lighting a real 3D subject.
-- **ambientCG** — CC0 materials and textures, strong on surfaces.
-- **Sketchfab** — mixed; filter to downloadable CC licences and verify per model.
-  Licensed models often beat procedural geometry for realistic physical subjects,
-  which is the case the contract asks you to evaluate.
+## Texture, HDRI, and 3D — keyless and verified
+
+All checked 2026-08-19, no key, real results returned. **This whole tier is
+keyless while stock photography is not**, which is worth knowing before you
+conclude that a real object is out of reach.
+
+- **Poly Haven** — `api.polyhaven.com`. CC0 HDRIs, PBR textures, and models. The
+  default answer for lighting a real 3D subject.
+- **ambientCG** — `ambientcg.com/api/v2`. CC0 materials and textures, strong on
+  surfaces.
+- **Sketchfab** — `api.sketchfab.com/v3/search`, searchable without a key; filter
+  to downloadable CC licences and verify per model. Licensed models often beat
+  procedural geometry for realistic physical subjects, which is the case the
+  contract asks you to evaluate.
 
 Route production work — optimisation, baking, fallback sequences — through
 `ASSET_PIPELINES.md`.
