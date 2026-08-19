@@ -69,27 +69,43 @@ the focal thing is, not after you have decided to produce frames.
 The failure this replaces is building the subject in SVG because no single
 photograph of it existed.
 
-**1 — Get 36 real views.** Either a licensed CC0 model turned in Blender, or a
-real analogue subject you already sourced. Confirm the licence covers derivative
-frames before rendering.
+**1 — Get the frames.** Confirm the tool before writing the command; checked
+2026-08-19 on the reference machine, **`blender`, `ffmpeg`, `cwebp` and
+ImageMagick were all absent**, and on Windows `convert` resolves to the
+filesystem utility, which is not ImageMagick and must never be called as if it
+were. `sharp` installs from npm and works. So the reliable route is a set of
+real still photographs, not a render.
 
 ```bash
-# from a licensed model: 36 views, one every 10 degrees
-blender -b movement.blend -P turntable.py -- --frames 36 --out frames/
-
-# or from a sourced clip of the real analogue
-ffmpeg -i source/movement.mov -vf "fps=12,scale=1280:-2" frames/frame-%04d.webp
+# reliable: a sourced set of real views, resized and re-encoded with sharp
+npm i sharp
 ```
+
+```js
+import sharp from "sharp";
+const frames = await fs.readdir("source/views");            // 24-36 real views
+for (const [i, f] of frames.entries()) {
+  await sharp(`source/views/${f}`)
+    .resize({ width: 1280, withoutEnlargement: true })
+    .webp({ quality: 72 })
+    .toFile(`public/seq/frame-${String(i).padStart(4, "0")}.webp`);
+}
+```
+
+Only if you have confirmed the executable exists:
+
+```bash
+ffmpeg -i source/movement.mov -vf "fps=12,scale=1280:-2" frames/frame-%04d.webp
+blender -b movement.blend -P turntable.py -- --frames 36 --out frames/
+```
+
+If neither tool is present and no photographic set exists, that is a capability
+gap to name — not a reason to construct the subject.
 
 **2 — Make it affordable.** 36 frames at 1280px is a hero-sized payload; treat
-it as one.
-
-```bash
-for f in frames/*.webp; do cwebp -q 72 -resize 1280 0 "$f" -o "public/seq/$(basename $f)"; done
-# mobile derivative at 640px, and half the frames
-```
-
-Write an explicit manifest. Verify first, middle, and last frame by eye.
+it as one. Emit a 640px derivative and a half-length set for mobile from the
+same sharp pass. Write an explicit manifest. Verify first, middle, and last
+frame by eye.
 
 **3 — Scrub it from one progress value.** Preload before the section can be
 reached, then drive frame index from the same authored progress that drives
