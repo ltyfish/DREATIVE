@@ -139,6 +139,33 @@ for the generic remainder and draw the two or three marks that are actually
 about your product. Vary size and weight by role rather than shipping one
 uniform tray of them.
 
+## When the subject itself cannot be photographed
+
+The common case, and the one that produces the worst pages: the product is new,
+unreleased, fictional, or yours alone, so no photograph of *it* exists anywhere.
+Searching for it returns the surrounding world and not the thing. A build that
+treats this as "sourcing failed" falls back to constructing the subject out of
+SVG and gradients, which blind review has now named as the worst thing on the
+page twice — *"it looks like it creates it self"*.
+
+Sourcing did not fail. You searched for the wrong noun.
+
+- **Source the real analogue, not the fiction.** No photograph exists of your
+  calibre; thousands exist of real movements, benches, loupes, jewels, and
+  swarf, and they are true material rather than a fabricated claim about your
+  product. The same move works everywhere: the process, the material, the
+  domain, the environment, the hands doing the work.
+- **Source a licensed model rather than modelling the object.** For a physical
+  subject this is usually right and rarely chosen — `../skills/3d.md` ranks it
+  first for that reason.
+- **Take a set, not a picture.** Twelve frames of one subject are motion
+  material; one frame is an illustration. Decide this while searching, because
+  it changes what you search for — see `ASSET_PIPELINES.md`.
+
+Construction is still correct for anything not pretending to be a photograph:
+schematics, diagrams, data objects, abstract form. The defect is never that
+geometry was drawn. It is geometry drawn to read as a real object, that fails to.
+
 ## When nothing fits
 
 Say so. Name the exact capability gap, recommend one concrete route to it — a
