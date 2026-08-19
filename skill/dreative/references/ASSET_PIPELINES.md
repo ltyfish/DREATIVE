@@ -69,12 +69,24 @@ the focal thing is, not after you have decided to produce frames.
 The failure this replaces is building the subject in SVG because no single
 photograph of it existed.
 
-**1 — Get the frames.** Confirm the tool before writing the command; checked
-2026-08-19 on the reference machine, **`blender`, `ffmpeg`, `cwebp` and
-ImageMagick were all absent**, and on Windows `convert` resolves to the
-filesystem utility, which is not ImageMagick and must never be called as if it
-were. `sharp` installs from npm and works. So the reliable route is a set of
-real still photographs, not a render.
+**1 — Get the frames.** Probe for the tool; never assume one either way, in
+either direction. This file cannot know what is installed where it runs, and a
+list of what was present once goes stale exactly the way a source list does.
+
+```bash
+command -v blender ffmpeg cwebp magick
+node -e "try{require.resolve('sharp');console.log('sharp ok')}catch{console.log('no sharp')}"
+```
+
+**On Windows, `convert` resolves to the filesystem utility, not ImageMagick.**
+It answers `command -v`, so a presence check passes and the call then does
+something unrelated. Probe `magick`, never `convert`.
+
+What to expect rather than rely on: on the 2026-08-19 reference machine none of
+`blender`, `ffmpeg`, `cwebp` or ImageMagick were installed, and `sharp`
+installed cleanly from npm. So plan for a set of real still photographs as the
+likely route, and treat a render as the branch you take only after the probe
+comes back positive.
 
 ```bash
 # reliable: a sourced set of real views, resized and re-encoded with sharp
