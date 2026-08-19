@@ -48,6 +48,34 @@ Both skew toward a recognisable contemporary stock aesthetic. That aesthetic is
 itself a convergence risk — crop hard, grade deliberately, and avoid the frames
 that were popular enough to feel familiar.
 
+## Reachable without a key
+
+Ranked by quality this file puts photography first, but a headless build can
+only take what it can fetch, so the ladder gets traversed by reachability
+instead — and on 2026-08-19 that silently cost a page its hero. Checked that
+day, no key, plain `curl`:
+
+| Source | Keyless | Note |
+|---|---|---|
+| Openverse | yes | searches Flickr, Wikimedia, and museum sets at once |
+| Wikimedia Commons | yes | `w/api.php`, uneven, check the per-file licence |
+| The Met | yes | `collectionapi.metmuseum.org`, follow the redirect |
+| Poly Haven | yes | `api.polyhaven.com` — HDRIs, textures, **models** |
+| ambientCG | yes | `ambientcg.com/api/v2` |
+| **Unsplash** | **no** | `401`, key required |
+| **Pexels** | **no** | key required — and it answers **HTTP 200 with a 401 body**, so a status-code check calls it reachable and the empty result reads as "nothing exists" |
+| Smithsonian, Library of Congress, Rijksmuseum | no | `403`/`403`/`410`; the Rijksmuseum endpoint is retired |
+
+Do not conclude that a subject has no imagery because the first two entries
+under *Photography* returned nothing — they are the two that need a key. Search
+the keyless set before concluding anything, and note that Poly Haven and the Met
+are keyless, which makes a licensed model or a museum object often the *easiest*
+material to get rather than the hardest.
+
+If the best material genuinely sits behind a key, that is a capability gap to
+name for the user, exactly as in *When nothing fits*. It is never a reason to
+fabricate the subject.
+
 ## Archives and museums, public domain
 
 Slower to search and far more distinctive. This is where a page stops looking
