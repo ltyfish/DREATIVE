@@ -204,9 +204,14 @@ Sourcing did not fail. You searched for the wrong noun.
   material; one frame is an illustration. Decide this while searching, because
   it changes what you search for — see `ASSET_PIPELINES.md`.
 
-Construction is still correct for anything not pretending to be a photograph:
-schematics, diagrams, data objects, abstract form. The defect is never that
-geometry was drawn. It is geometry drawn to read as a real object, that fails to.
+A drawn schematic is a companion to real material, never a substitute for it.
+Calling the output a diagram does not settle the question — the build that
+sourced four real movement photographs, looked at them, deleted them, and
+shipped a drawn plate labelled "a technical schematic, not a photograph" made
+exactly the decision this section exists to prevent, and had a defensible
+argument for it. If the analogue is photographable and you drew instead, that is
+the failure, whatever the drawing is called. Draw the diagram as well, once the
+real material is on the page.
 
 ## When nothing fits
 
