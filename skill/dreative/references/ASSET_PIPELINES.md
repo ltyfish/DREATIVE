@@ -82,11 +82,12 @@ node -e "try{require.resolve('sharp');console.log('sharp ok')}catch{console.log(
 It answers `command -v`, so a presence check passes and the call then does
 something unrelated. Probe `magick`, never `convert`.
 
-What to expect rather than rely on: on the 2026-08-19 reference machine none of
-`blender`, `ffmpeg`, `cwebp` or ImageMagick were installed, and `sharp`
-installed cleanly from npm. So plan for a set of real still photographs as the
-likely route, and treat a render as the branch you take only after the probe
-comes back positive.
+What to expect rather than rely on: `sharp` installs cleanly from npm
+everywhere it has been tried, and `ffmpeg` is common but far from universal —
+the 2026-08-19 reference machine had neither it nor `blender`, `cwebp` or
+ImageMagick. So a set of real still photographs is always a route you can take,
+and a decode or a render is the branch you take after the probe comes back
+positive, never before.
 
 ```bash
 # reliable: a sourced set of real views, resized and re-encoded with sharp
@@ -111,8 +112,13 @@ ffmpeg -i source/movement.mov -vf "fps=12,scale=1280:-2" frames/frame-%04d.webp
 blender -b movement.blend -P turntable.py -- --frames 36 --out frames/
 ```
 
-If neither tool is present and no photographic set exists, that is a capability
-gap to name — not a reason to construct the subject.
+If the probe comes back negative, say so in one line and recommend the install
+rather than working around it silently — `ffmpeg` is a single package, it is
+the difference between a scrubbed sequence and a still, and the person running
+the build is usually able to add it. Then carry on with the photographic route
+in the same session; do not block on the answer. If neither tool is present and
+no photographic set exists either, that is a capability gap to name — not a
+reason to construct the subject.
 
 **2 — Make it affordable.** 36 frames at 1280px is a hero-sized payload; treat
 it as one. Emit a 640px derivative and a half-length set for mobile from the

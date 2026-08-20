@@ -515,8 +515,9 @@ If you are at the moment, open it.
 - Before choosing a concept for an open redesign: `references/CREATIVE_DIRECTION.md`
 - Before naming or comparing real sites and libraries: `references/REFERENCE_ADOPTION.md`
 - Before deciding what a section's focal image or object actually is:
-  `references/MEDIA_SOURCES.md`, and `references/ASSET_PIPELINES.md` when that
-  thing moves — a scrubbed sequence is a sourcing decision, not a later one
+  `references/MEDIA_SOURCES.md`, and `references/ASSET_PIPELINES.md` before
+  concluding the focal thing is static — a scrubbed sequence is a sourcing
+  decision, not a later one
 - Before installing or wiring any runtime: `references/CREATIVE_EXECUTION.md`
 - While naming the signature behaviour and the experience arc, at step 4:
   `skills/motion.md`, and `skills/3d.md` before concluding the subject is not
