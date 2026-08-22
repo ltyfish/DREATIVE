@@ -19,6 +19,21 @@ Escalate an unavailable capability before lowering the accepted ceiling.
 Optimize format, dimensions, loading priority, and below-fold laziness. Do not
 repeat one hero image through unrelated sections.
 
+Three treatments that make sourced imagery part of the design rather than
+decoration on top of it:
+
+- **Sample the palette from the subject.** Pull the page's colour out of the
+  actual product photograph, material, or environment. Condition: anything with
+  real focal media. It makes the page feel photographed rather than themed, and
+  it requires the imagery to exist first — which is the correct order anyway.
+- **Duotone the media.** Photography mapped to two brand values so
+  mixed-quality sourced imagery becomes one system. Condition: several images
+  from different sources. Cost: destroys product colour fidelity — never on
+  merchandise a customer is buying.
+- **Photographic ground.** A heavily darkened or blurred photograph as the
+  field a section sits on, rather than an image placed inside it. Condition: the
+  section needs atmosphere more than it needs the image read in detail.
+
 Reject generic stock, untreated rectangles, fake product photography,
 placeholder media, and imagery whose crop or contrast fails on mobile. A
 realistic subject assembled from gradients and ellipses is entry 10 in
