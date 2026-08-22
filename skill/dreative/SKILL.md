@@ -204,6 +204,11 @@ not about data concerning the product, and it must serve the route's primary
 task rather than compete with it. If the honest answer for this product is that
 no such component belongs, do not invent one.
 
+Distinctness does not have to live in one designated place. A route can be
+specific because every section is given the form its content actually wants —
+and a page that does that throughout beats one carrying a single showpiece
+surrounded by defaults. Nothing here reserves a section for being different.
+
 Bound every emphasis mechanism at its degenerate case. A filter that scales up
 the matching item looked "super cool" until one filter matched a single product,
 which then blew up while everything else collapsed. Design for one match and for
@@ -275,6 +280,15 @@ detail is, and the fix is a layer above it rather than less of it.
 - **Give the shape of the data its own form.** Opening hours are a week, so they
   want the shape of a week; a sequence wants steps; a comparison wants position.
   A bar chart standing in for a calendar was called hard to understand.
+- **The form can be an interactive one, and reviewers keep asking for that.**
+  Cards that open, a slideshow, a stepped reveal, a chart where the data is
+  genuinely data, a table that is actually designed rather than defaulted to.
+  Four consecutive verdicts have named this — *"could be represented and design
+  better for user experience, rn its just like a generic table"*, *"slide show,
+  animating cards, revealing etc"*. These are not a menu to pick from to satisfy
+  something, and none of them is owed to any particular section. They are simply
+  forms that exist, and reaching for a table before considering them is the
+  habit being described.
 - **Cut the section's word count in half before adding anything to it.**
   Compression is the design work here, not a budget imposed on it.
 - **Nothing about this is a check.** No threshold, no ratio, no count. Look at
