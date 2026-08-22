@@ -34,8 +34,17 @@ const lateReveal = shell(Array.from({ length: 5 }, (_, index) => `<section id="s
 const noAffordance = shell(`<section><h1>No feedback</h1><button class="bare">One</button><button class="bare">Two</button><button class="bare">Three</button><button class="bare">Four</button></section><section><h2>Second</h2><p>Body copy.</p></section>`, revealScript);
 const cramped = shell(`<section id="cramped"><h2>Cramped</h2>${Array.from({ length: 12 }, (_, index) => `<div class="stat"><strong>${index * 7}%</strong><span>Competing statistic ${index}</span></div>`).join("")}</section><section><h2>Second</h2><p>Body copy.</p></section>`, revealScript);
 
+// A page whose sections are not wrapped in <main>. A real caliber-movement run shipped
+// exactly this, the region query matched nothing, and the motion floor silently passed a
+// route it had never sampled. The fixture exists so that hole cannot reopen unnoticed.
+const mainlessRoute = shell(Array.from({ length: 5 }, (_, index) => section(index)).join(""), revealScript).replace("<main>", "").replace("</main>", "");
+
 const pages = {
   "/": healthy,
+  "/mainless": mainlessRoute,
+  // Nothing tall enough to sample anywhere in the document: the case that used to read as
+  // a pass because `total > 0` was false.
+  "/unsamplable": `<!doctype html><html><head><title>Unsamplable</title></head><body><p style="height:12px">x</p></body></html>`,
   "/flat-route": flatRoute,
   "/late-reveal": lateReveal,
   "/no-affordance": noAffordance,

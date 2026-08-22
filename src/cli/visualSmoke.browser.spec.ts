@@ -66,6 +66,17 @@ test("the motion floor does not fire on a route with an ordinary scroll reveal",
   expect(result.blockers.join("\n")).not.toContain("nothing on this route moves");
 });
 
+test("a route with no <main> is still sampled rather than silently exempted", async () => {
+  const result = await runVisualSmoke(`${base}/mainless`, { profile: "recommended" });
+  expect(result.checks.join("\n")).not.toContain("motion: 0 of 0 regions");
+  expect(result.blockers.join("\n")).not.toContain("could not be measured");
+});
+
+test("a route the motion floor cannot sample at all blocks rather than passes", async () => {
+  const result = await runVisualSmoke(`${base}/unsamplable`, { profile: "recommended" });
+  expect(result.blockers.join("\n")).toContain("could not be measured");
+});
+
 test("Efficient is exempt from the motion floor", async () => {
   const result = await runVisualSmoke(`${base}/static-route`, { profile: "efficient" });
   expect(result.blockers).toEqual([]);

@@ -343,14 +343,22 @@ async function measureInteractionAffordance(page: Page): Promise<{ responding: n
  * centred, and only differs once it has started leaving the viewport.
  */
 async function measureMotion(page: Page, documentHeight: number, viewportHeight: number): Promise<{ moving: number; total: number; lateReveals: string[] }> {
-  const regions = await page.evaluate(() => Array.from(document.querySelectorAll<HTMLElement>("main > *, main section, main header"))
-    .filter((element) => element.getBoundingClientRect().height > 80)
+  // The fallback is not cosmetic. A caliber-movement run shipped its whole page without a
+  // <main>, so this matched nothing, `total` was 0, the guard below read 0 > 0 as false and
+  // the floor never fired — a route escaped the motion check by its choice of wrapper
+  // element. Sectioning is a structural decision the floor has no business rewarding.
+  const regions = await page.evaluate(() => {
+    const sample = (selector: string) => Array.from(document.querySelectorAll<HTMLElement>(selector))
+      .filter((element) => element.getBoundingClientRect().height > 80);
+    const found = sample("main > *, main section, main header");
+    return (found.length ? found : sample("body > *:not(script):not(style), body section, body header"))
     .slice(0, 24)
     .map((element, index) => {
       const id = `motion-${index}`;
       element.dataset.dreativeMotionId = id;
       return { id, name: element.id || element.className?.split(/\s+/)[0] || `${element.tagName.toLowerCase()}#${index}` };
-    }));
+    });
+  });
   // Deliberately viewport-independent: every child is sampled with geometry
   // relative to the region, so scrolling a static page past the probe produces
   // an identical signature and is correctly reported as no motion.
@@ -648,7 +656,9 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
     if (profile !== "efficient" && !config.reducedMotion) {
       const motion = await measureMotion(page, audit.documentHeight, audit.viewportHeight);
       checks.push(`motion: ${motion.moving} of ${motion.total} regions change state on approach`);
-      if (motion.total > 0 && motion.moving === 0)
+      if (motion.total === 0)
+        blockers.push(`the motion floor could not be measured: no region taller than 80px was found under <main> or <body>, so nothing was sampled. An unmeasurable route is not a passing one — give the page real sectioning elements.`);
+      else if (motion.moving === 0)
         blockers.push(`nothing on this route moves: ${motion.total} regions were sampled entering, centred, and leaving the viewport and none changed state. ${profile === "showcase" ? "Showcase" : "Recommended"} requires at least one authored motion.`);
       if (motion.lateReveals.length)
         blockers.push(`reveals fire after the reader has scrolled past them in ${motion.lateReveals.join(", ")}: content already on screen while the region is centred is still in its approach state, and only resolves once the region has left. Trigger against the top of the viewport, not the bottom.`);
