@@ -14,13 +14,12 @@ create three genuinely different concepts before assigning them to delivery
 levels. They must differ in experience structure or interaction logic, not
 only color, type, and effort.
 
-Concepts come from the product, never from a shelf. Once a concept exists,
-`exemplars/MATERIALS.md` is where you get the specific type pairing, palette
-construction, composition, and depth treatment to execute it — read the
-condition attached to each entry and reject the ones that do not match this
-product. Draw across entries rather than adopting one whole; and if what the
-product wants is not on the shelf, build that instead. Nothing in that file is
-a requirement and no check tests for it.
+Concepts come from the product, never from a shelf. Decide the type pairing,
+palette construction, composition, and depth treatment from what this product is
+and does. A catalogue of ready-made combinations was tried here and removed: it
+went five rounds without a reviewer ever naming one of its decisions, while
+costing context on every turn and risking a Dreative house style in place of the
+generic one.
 
 Show exactly:
 
@@ -263,9 +262,8 @@ Name the **interaction baseline** as a separate line item, on every profile
 including Efficient: the hover, focus, press, and regional-entrance grammar that
 applies to the whole route. It is deliberately cheap and unoriginal, it is not
 part of the signature-moment budget, and it is the thing blind review reads as
-smoothness. Do not fund a second set-piece before it exists.
-`exemplars/MATERIALS.md` §4 has a copyable starting grammar; tune its values and
-pick one hover behaviour for the whole route rather than mixing four.
+smoothness. Do not fund a second set-piece before it exists. Pick one hover
+behaviour for the whole route rather than mixing four.
 
 For every focal subject, decide the medium and where the asset actually comes
 from before writing focal code. Read `references/MEDIA_SOURCES.md` for where to

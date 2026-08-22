@@ -146,13 +146,13 @@ caught the failures they were written for, and were deleted on 2026-08-16. A pag
 arranged to satisfy checks is a page nobody chose, and that failure mode is
 treated as worse than a page no check has an opinion about.
 
-`exemplars/` carries the three halves of the visual system: `SLOP.md` for the
-defaults that make generated frontends recognisable, `PRINCIPLES.md` for what
-holds and under which condition, and `MATERIALS.md` for concrete stock — type
-pairings, palette constructions, compositions, depth treatments, the ambient
-transition grammar, and signature shapes by product kind. Materials are a shelf,
-not a style: draw across entries, and build something not on it when the product
-asks for that. No check tests for any of it.
+`exemplars/` carries the two halves of the visual system: `SLOP.md` for the
+defaults that make generated frontends recognisable, and `PRINCIPLES.md` for
+what holds and under which condition. A third file, `MATERIALS.md`, held
+ready-made stock — type pairings, palette constructions, compositions — and was
+removed on 2026-08-22: five rounds without a reviewer ever naming one of its
+decisions, against a real risk of a Dreative house style replacing the generic
+one and a real cost in context on every turn. No check tests for any of it.
 
 Dreative uses focused creative libraries as capabilities, not house styles.
 Concepts begin with product content, behavior, assets, history, and audience.

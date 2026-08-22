@@ -429,7 +429,7 @@ Root cause: two, and the second is the load-bearing one.
    arrangement passes all these checks?"* — and an arrangement that passes is
    not a design anyone chose.
 
-Change: Added `exemplars/MATERIALS.md` — real type pairings, palette
+Change: Added exemplars/MATERIALS.md (removed 2026-08-22, see DL-020) — real type pairings, palette
 constructions, compositions, depth treatments, a copyable ambient-motion
 grammar, and signature shapes by product kind, each indexed by its condition and
 cost, explicitly a shelf rather than a style and tested by no check. Added a
@@ -590,3 +590,52 @@ lists directly. If they now differ and Dreative's is better reasoned, the skill
 does contribute architecture and the previous rounds were measuring the wrong
 thing. If they still converge, the skill's contribution is surface only, and
 that is worth knowing before any further work on it.
+
+DL-020 / proposed / 2026-08-22
+Observed failure: A single build spent roughly $6 and was killed by the session
+limit before it finished refining. Two same-input runs of one scenario cost
+$11.86 between them and neither shipped. Separately, the routing list fired
+unreliably: one of those runs never opened the file for correcting the rendered
+page, for 390px, for a stateful control, or for treating an image, while doing
+all four.
+
+Root cause: two halves of one problem. The skill occupied roughly 40k tokens of
+a context that is re-read on every turn, so about a third of the bill was the
+skill re-presenting itself; and the routing list sat at the *bottom* of the
+longest file in it, read once at turn 3, roughly 120k tokens before the moments
+it routes. One run also re-read six files it had already opened, for about 12k
+tokens of pure duplication.
+
+Change: three edits, shipped together as one cost intervention.
+1. `Resource routing` moved from the last section of `SKILL.md` to the first
+   after the intro, rewritten as a table, with an explicit note that the
+   most-missed moments arrive after the first build compiles.
+2. An explicit read-once rule: a file already in the conversation is still in
+   effect and must not be reopened.
+3. exemplars/MATERIALS.md deleted. Its confirmation condition — a reviewer
+   naming a specific material decision — failed five consecutive rounds while it
+   cost about 3.3k tokens of every turn it was read into, twice in one run. This
+   is the rule in `SKILL.md` about removing a check that never caught anything,
+   applied to the skill itself. Its second risk was always that a shared shelf
+   becomes a Dreative house style, which is the generic look one level up.
+
+Evidence: token accounting from `agent.jsonl` for round 202608220534, both arms:
+context 20.2k at turn 1 (harness, not ours), 31.1k after `SKILL.md`, ~56k by
+turn 13, 158k at the kill. Cost $5.81 and $6.05. Duplicate reads visible in
+`reads.json` as counts of 2. The routing misses are provable from the artefact:
+12 `useState` and 6 handlers with `skills/interaction.md` unread, a captured
+`mobile-full.png` with `skills/mobile.md` and `skills/ux.md` unread.
+
+Cost or trade-off: three variables moved at once, so a single following round
+cannot attribute an improvement to any one of them. That is accepted
+deliberately — the cost problem is what is stopping rounds from finishing at
+all, and finishing is a precondition for measuring anything else. The trim also
+removed round-by-round history from `SKILL.md`; that history lives in the
+project's own changelog and is not needed by a builder mid-build.
+
+Recheck condition: on the next round, three numbers. Does the run finish inside
+the session limit; is the peak context materially below 158k; and does
+`reads.json` show `VISUAL_REFINEMENT.md`, `ux.md`, `mobile.md` and
+`interaction.md` opened when the artefact shows those moments were reached. If
+the routing misses persist with the list at the top, position was not the
+constraint and the theory is wrong — say so rather than moving it again.
