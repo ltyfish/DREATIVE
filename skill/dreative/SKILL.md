@@ -29,7 +29,7 @@ moment, open it — including late in the build, when this list is far behind yo
 |---|---|
 | Choosing a concept for an open redesign | `references/CREATIVE_DIRECTION.md` |
 | Naming or comparing real sites and libraries | `references/REFERENCE_ADOPTION.md` |
-| Deciding what a section's focal image or object is | `references/MEDIA_SOURCES.md`, and `references/ASSET_PIPELINES.md` before concluding the focal thing is static — a scrubbed sequence is a sourcing decision, not a later one |
+| Deciding what a section's focal image or object is | `references/MEDIA_SOURCES.md` for where it comes from, and `references/ASSET_PIPELINES.md` for what form it takes. Both, here — what the focal thing is made of and whether it moves are one decision, and a scrubbed sequence is a sourcing decision, not a later one |
 | Installing or wiring any runtime | `references/CREATIVE_EXECUTION.md` |
 | Naming the signature behaviour and the experience arc, at step 4 | `skills/motion.md`, and `skills/3d.md` before concluding the subject is not spatial |
 | Building a control that holds state | `skills/interaction.md` |
