@@ -56,37 +56,45 @@ test("a healthy Showcase route passes every browser-measured check", async () =>
   expect(result.blockers).toEqual([]);
 });
 
-test("a route where nothing moves fails the Recommended motion floor", async () => {
+// Motion is recorded and never blocked. A count of moving regions is not a defect
+// reading — it rises with a uniform fade over every section and falls for one authored
+// sequence — and as a gate it bought exactly the cheapest pass: add a reveal, clear the
+// floor, leave the material alone, and spend a fix-and-recheck cycle doing it.
+test("a route where nothing moves records the count and blocks nothing", async () => {
   const result = await runVisualSmoke(`${base}/static-route`, { profile: "recommended" });
-  expect(result.blockers.join("\n")).toContain("nothing on this route moves");
-});
-
-test("the motion floor does not fire on a route with an ordinary scroll reveal", async () => {
-  const result = await runVisualSmoke(`${base}/prose-wall`, { profile: "recommended" });
+  expect(result.checks.join("\n")).toContain("regions change state on approach");
   expect(result.blockers.join("\n")).not.toContain("nothing on this route moves");
+  expect(result.advisories.join("\n")).not.toContain("motion");
 });
 
 test("a route with no <main> is still sampled rather than silently exempted", async () => {
   const result = await runVisualSmoke(`${base}/mainless`, { profile: "recommended" });
   expect(result.checks.join("\n")).not.toContain("motion: 0 of 0 regions");
+});
+
+test("a route that cannot be sampled says so in the checks instead of blocking", async () => {
+  const result = await runVisualSmoke(`${base}/unsamplable`, { profile: "recommended" });
+  expect(result.checks.join("\n")).toContain("motion: not sampled");
   expect(result.blockers.join("\n")).not.toContain("could not be measured");
 });
 
-test("a route the motion floor cannot sample at all blocks rather than passes", async () => {
-  const result = await runVisualSmoke(`${base}/unsamplable`, { profile: "recommended" });
-  expect(result.blockers.join("\n")).toContain("could not be measured");
-});
-
-test("Efficient is exempt from the motion floor", async () => {
+test("Efficient records no motion line at all", async () => {
   const result = await runVisualSmoke(`${base}/static-route`, { profile: "efficient" });
   expect(result.blockers).toEqual([]);
+  expect(result.checks.join("\n")).not.toContain("regions change state on approach");
 });
 
-test("motion breadth is not measured at all: only the zero case blocks", async () => {
+test("motion breadth is not measured at all: no ratio blocks or advises", async () => {
   const result = await runVisualSmoke(`${base}/flat-route`, { profile: "recommended" });
-  expect(result.blockers.join("\n")).not.toContain("nothing on this route moves");
   expect(result.blockers.join("\n")).not.toContain("change on approach");
   expect(result.advisories.join("\n")).not.toContain("change on approach");
+});
+
+// The one motion reading that survives as a blocker: a reveal that resolves only after
+// the reader has scrolled past is broken the way a missing image is broken.
+test("a late reveal still blocks", async () => {
+  const result = await runVisualSmoke(`${base}/late-reveal`, { profile: "recommended" });
+  expect(result.blockers.join("\n")).toContain("after the reader has scrolled past");
 });
 
 test("reveals that fire after the section has left the viewport are blocked", async () => {

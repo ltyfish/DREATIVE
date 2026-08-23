@@ -655,11 +655,21 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
 
     if (profile !== "efficient" && !config.reducedMotion) {
       const motion = await measureMotion(page, audit.documentHeight, audit.viewportHeight);
-      checks.push(`motion: ${motion.moving} of ${motion.total} regions change state on approach`);
-      if (motion.total === 0)
-        blockers.push(`the motion floor could not be measured: no region taller than 80px was found under <main> or <body>, so nothing was sampled. An unmeasurable route is not a passing one — give the page real sectioning elements.`);
-      else if (motion.moving === 0)
-        blockers.push(`nothing on this route moves: ${motion.total} regions were sampled entering, centred, and leaving the viewport and none changed state. ${profile === "showcase" ? "Showcase" : "Recommended"} requires at least one authored motion.`);
+      // Recorded, never blocked. A count of moving regions is not a defect measurement:
+      // it rises with one fade-up applied to every section — the thing this skill calls
+      // slop — and falls for a single authored sequence that carries a whole page. Made a
+      // gate, it teaches the cheapest possible pass: the builder adds a uniform reveal,
+      // clears the floor, and never returns to the material. That is the opposite of the
+      // work, and it costs a fix-and-recheck cycle to produce. The number stays because it
+      // is worth knowing afterwards, on our side, about a build nobody is still editing.
+      checks.push(
+        motion.total === 0
+          ? `motion: not sampled — no region taller than 80px under <main> or <body>`
+          : `motion: ${motion.moving} of ${motion.total} regions change state on approach`,
+      );
+      // A late reveal is the exception, and stays a blocker because it is not a taste
+      // reading: content sitting invisible while the reader is looking straight at it is
+      // broken in the way a missing image is broken.
       if (motion.lateReveals.length)
         blockers.push(`reveals fire after the reader has scrolled past them in ${motion.lateReveals.join(", ")}: content already on screen while the region is centred is still in its approach state, and only resolves once the region has left. Trigger against the top of the viewport, not the bottom.`);
     }

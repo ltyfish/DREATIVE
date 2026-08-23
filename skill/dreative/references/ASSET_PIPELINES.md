@@ -1,189 +1,44 @@
 # Asset production pipelines
 
-Use offline work when it produces better fidelity, smaller runtime cost, or a
-more reliable mobile fallback than live simulation. Never invent an available
-tool. Confirm the executable, source assets, output rights, and target browser
-support first.
+Two decisions live here: what is in the frame, and what that material is made to
+do. The recipes below serve those and are the least important part of the file.
 
 ## The subject is sourced, never manufactured
 
-Everything below is production — resizing, encoding, packing, exporting. None of
-it decides what is in the frame, and that decision is the one that fails. When a
-page shows a physical thing, that thing arrives as real material: a photograph,
-a frame, a scan, a render of an actual model. A gradient, a dot pattern, or a
-stack of CSS layers standing in for a surface is not a cheaper version of the
-material — it is a different, worse thing, and it reads that way at full size
-next to a price.
+A physical thing arrives as real material — a photograph, a frame, a scan, a
+render of an actual model. A gradient, a dot pattern, or a stack of CSS layers
+standing in for a surface is not a cheaper version of it; it is a different,
+worse thing, and it reads that way at full size next to a price.
 
-This holds hardest exactly where it is most tempting: the small tile, the
-swatch, the thumbnail in a card. Small does not mean it can be drawn. If a
-sourced view of a variant exists, or can be sourced, the tile shows it. Whenever
-no material for a surface exists and none can be sourced, say so and choose a
-form that does not require it — a named description, a detail crop of the shared
-subject, a typographic treatment — rather than inventing the surface. Naming the
-gap is a real answer here; drawing over it is not.
+This holds hardest where it is most tempting: the small tile, the swatch, the
+thumbnail in a card. Small does not mean it can be drawn. Where no material
+exists and none can be sourced, say so and choose a form that does not need it —
+a named description, a detail crop of the shared subject, a typographic
+treatment. Naming the gap is a real answer; drawing over it is not.
 
-## Responsive image set with Sharp
+## Decide what the material is made to do
 
-```js
-import sharp from "sharp";
-
-for (const width of [640, 1280, 1920]) {
-  await sharp("source/product.png")
-    .resize({ width, withoutEnlargement: true })
-    .avif({ quality: 58 })
-    .toFile(`public/media/product-${width}.avif`);
-}
-```
-
-Keep the original outside the client bundle, preserve a licensed source record,
-and verify crops at desktop and 390px. Generate a WebP/JPEG fallback when the
-target browser matrix requires it.
-
-## Poster, web video, and frame sequence with FFmpeg
-
-```bash
-ffmpeg -i source/film.mov -vf "scale='min(1920,iw)':-2" -c:v libvpx-vp9 -crf 34 -b:v 0 -an public/media/film.webm
-ffmpeg -i source/film.mov -vf "thumbnail,scale=1600:-2" -frames:v 1 public/media/film-poster.jpg
-ffmpeg -i source/turntable.mov -vf "fps=24,scale=1280:-2" public/media/turntable/frame-%04d.webp
-```
-
-Do not run an unbounded frame sequence. Generate an explicit manifest, verify
-the first/middle/last frame, simulate a missing frame, and create smaller mobile
-derivatives. For transparent video, provide a normal poster or opaque fallback
-before relying on codec/alpha support.
-
-## Sprite atlas and displacement material
-
-Use Sharp to normalize frame dimensions and pack only when atlas lookup reduces
-requests without creating an oversized first load. Generate displacement,
-normal, or depth maps from licensed project material, keep them linear where the
-shader expects data rather than color, and inspect banding at the real crop.
-
-## Blender or supplied model to glTF
-
-Before runtime integration:
-
-1. Remove hidden geometry and unused materials.
-2. Apply transforms and choose an intentional origin and real-world scale.
-3. Bake lighting/detail that does not need to remain dynamic.
-4. Export glTF/GLB with only required animations.
-5. Run a current glTF validator and an approved optimizer such as gltf-transform
-   or gltfpack when available.
-6. Measure decoded texture memory and draw calls on the target mobile device.
-7. Produce a poster, turntable, or frame-sequence fallback from the same camera.
-
-The 3D fallback must preserve the product view or explanation, not merely show a
-generic gradient.
-
-## Sourced material as motion substrate
-
-The rotating can, the assembling photograph, the process that runs as you
-scroll. None of these are motion techniques applied to a page; each one is real
-material plus a progress value. The material and the motion are the same
-decision, which is why this file is routed at the moment you decide what the
-focal thing is, not after you have decided to produce frames.
-
-This is the moving case of the sourcing rule above: the answer to "no single
-photograph shows this" is still real material, driven, rather than a constructed
-subject.
-
-The failure worth naming is not a low motion count. It is material that arrives
-sourced, resized, credited — and then sits in an `<img>` doing nothing, while
-the page's motion is a fade-up applied to a `querySelectorAll` list. Six
+Sourced, resized, credited — and then sitting in an `<img>` doing nothing, while
+the page's motion is a fade applied to a `querySelectorAll` list. Six
 photographs treated that way are six decorations. One photograph that carries
 the explanation is the page.
-
-### Decide what this material can be made to do
 
 What you have decides what is reachable, and nothing here is a default. A
 coherent set of views of one object can be scrubbed. A single photograph can be
 crossed, cropped along a path, displaced by depth, held while the frame moves
-through it, masked into type, split and reassembled, or lit differently as the
-section progresses. A clip can be sampled, slowed, or windowed. Two states of
-the same object can trade places. The same material supports different answers
-in different sections, and the right one is usually specific to the subject —
-what this thing does when it runs, what a buyer is trying to see, what part of
-it is worth holding still while everything else moves.
+through it, masked into type, split and reassembled, or lit differently as a
+section progresses. A clip can be sampled, slowed, or windowed. Two real states
+can trade places. The right answer is usually specific to the subject — what
+this thing does when it runs, what a buyer is trying to see, what is worth
+holding still while everything else moves.
 
 Those are the obvious ones, which means the good answer is often not among them.
-Treat the list as evidence that the space is wide, not as a menu. What separates
-craft from effect is that the material underneath is real and the form was
-chosen for this subject — not that a particular technique was used.
+The list is evidence the space is wide, not a menu. What separates craft from
+effect is that the material is real and the form was chosen for this subject.
 
-The frame sequence below is worked end to end because it is the most
-mechanically involved and the easiest to get wrong, not because it is the
-answer. Read it for how progress drives material; take the same idea to whatever
-form the subject actually wants.
-
-**1 — Get the frames.** Probe for the tool; never assume one either way, in
-either direction. This file cannot know what is installed where it runs, and a
-list of what was present once goes stale exactly the way a source list does.
-
-```bash
-command -v blender ffmpeg cwebp magick
-node -e "try{require.resolve('sharp');console.log('sharp ok')}catch{console.log('no sharp')}"
-```
-
-**On Windows, `convert` resolves to the filesystem utility, not ImageMagick.**
-It answers `command -v`, so a presence check passes and the call then does
-something unrelated. Probe `magick`, never `convert`.
-
-What to expect rather than rely on: `sharp` installs cleanly from npm
-everywhere it has been tried, and `ffmpeg` is common but far from universal —
-the 2026-08-19 reference machine had neither it nor `blender`, `cwebp` or
-ImageMagick. So a decode or a render is the branch you take after the probe
-comes back positive, never before.
-
-The other half of the question is the material, and it fails more often than the
-tooling does. A scrubbed sequence needs a coherent set of views *of the same
-object*, and for a specific or one-off subject that set frequently does not
-exist and cannot be sourced — what is available is a handful of real
-photographs of related things. That is not a dead end and it is not a licence to
-construct the subject; it is the point where the form has to change. Drive one
-photograph instead of scrubbing thirty, and choose which of the forms above the
-material actually supports.
-
-```bash
-# reliable: a sourced set of real views, resized and re-encoded with sharp
-npm i sharp
-```
-
-```js
-import sharp from "sharp";
-const frames = await fs.readdir("source/views");            // 24-36 real views
-for (const [i, f] of frames.entries()) {
-  await sharp(`source/views/${f}`)
-    .resize({ width: 1280, withoutEnlargement: true })
-    .webp({ quality: 72 })
-    .toFile(`public/seq/frame-${String(i).padStart(4, "0")}.webp`);
-}
-```
-
-Only if you have confirmed the executable exists:
-
-```bash
-ffmpeg -i source/movement.mov -vf "fps=12,scale=1280:-2" frames/frame-%04d.webp
-blender -b movement.blend -P turntable.py -- --frames 36 --out frames/
-```
-
-If the probe comes back negative, say so in one line and recommend the install
-rather than working around it silently — `ffmpeg` is a single package, it is
-the difference between a scrubbed sequence and a still, and the person running
-the build is usually able to add it. Then carry on with the photographic route
-in the same session; do not block on the answer. If neither tool is present and
-no photographic set exists either, that is a capability gap to name — not a
-reason to construct the subject.
-
-**2 — Make it affordable.** 36 frames at 1280px is a hero-sized payload; treat
-it as one. Emit a 640px derivative and a half-length set for mobile from the
-same sharp pass. Write an explicit manifest. Verify first, middle, and last
-frame by eye.
-
-**3 — Scrub it from one progress value.** Preload before the section can be
-reached, then drive frame index from the same authored progress that drives
-every other element in the section — `../skills/motion.md` on why independent
-triggers drift.
+**The mechanism is one engine.** Preload, one authored value, one index into
+material, redraw only on change — the same whether the index picks a frame, a
+crop, a depth offset, a mask position, or a blend between two real states.
 
 ```js
 const imgs = manifest.map(src => Object.assign(new Image(), { src }));
@@ -195,27 +50,83 @@ function onProgress(p) {                    // p is 0..1 for the section
 }
 ```
 
-Reduced motion gets one authored still, not a switched-off section. Mobile gets
-the shorter set or the still, chosen deliberately.
+`p` is any authored value, and its source is a design decision too: scroll
+position, a click-advanced step, a drag, a timer, playback time. A section the
+reader controls reads differently from one that runs at them. Drive it from the
+same value as everything else in the section — `../skills/motion.md` on why
+independent triggers drift. Reduced motion gets one authored still, not a
+switched-off section; mobile gets the shorter set or the still, deliberately.
 
-**The mechanism, not the recipe.** Preload, one progress value, one index into
-material, redraw only on change. That is the whole of it, and it is the same
-whether the index picks a frame, a crop, a depth offset, a mask position, or a
-blend between two real states. Having built it once for a sequence, build it for
-whatever the subject wanted instead.
+**Material availability fails more often than tooling.** A scrubbed sequence
+needs a coherent set of views *of the same object*, and for a one-off subject
+that set often cannot be sourced — what exists is a few real photographs of
+related things. That is where the form changes, not where the subject gets
+constructed: drive one photograph instead of scrubbing thirty.
+
+## Producing the files
+
+Probe before assuming, in either direction. **On Windows `convert` is the
+filesystem utility, not ImageMagick** — it answers `command -v` and then does
+something unrelated. Probe `magick`.
+
+```bash
+command -v blender ffmpeg cwebp magick
+node -e "try{require.resolve('sharp');console.log('sharp ok')}catch{console.log('no sharp')}"
+```
+
+`sharp` installs from npm everywhere it has been tried; `ffmpeg` is common but
+not universal. A decode or a render is the branch you take *after* a positive
+probe. On a negative probe, recommend the install in one line rather than
+working around it silently, then carry on with the photographic route in the
+same session — do not block on the answer.
+
+```js
+import sharp from "sharp";
+for (const width of [640, 1280, 1920]) {
+  await sharp("source/product.png")
+    .resize({ width, withoutEnlargement: true })
+    .avif({ quality: 58 })
+    .toFile(`public/media/product-${width}.avif`);
+}
+```
+
+```bash
+ffmpeg -i source/film.mov -vf "scale='min(1920,iw)':-2" -c:v libvpx-vp9 -crf 34 -b:v 0 -an public/media/film.webm
+ffmpeg -i source/film.mov -vf "thumbnail,scale=1600:-2" -frames:v 1 public/media/film-poster.jpg
+ffmpeg -i source/turntable.mov -vf "fps=12,scale=1280:-2" public/media/seq/frame-%04d.webp
+blender -b movement.blend -P turntable.py -- --frames 36 --out frames/
+```
+
+Keep originals outside the client bundle, preserve the licence record, verify
+crops at desktop and 390px, and add a WebP/JPEG fallback where the browser
+matrix needs one. A frame set is a hero-sized payload: emit a 640px derivative
+and a half-length mobile set from the same pass, write an explicit manifest, and
+check first, middle, and last frame by eye. Never run an unbounded sequence.
+Transparent video needs an opaque poster before you rely on alpha support.
+
+Depth, normal, and displacement maps come from licensed project material and
+stay linear where the shader expects data rather than colour; check banding at
+the real crop. Atlas frames only when the lookup saves requests without bloating
+first load.
+
+**Model to glTF:** strip hidden geometry and unused materials, apply transforms
+with an intentional origin and real-world scale, bake what need not stay
+dynamic, export only required animations, run a validator and an optimizer
+(`gltf-transform`, `gltfpack`) when available, measure decoded texture memory
+and draw calls on a real phone, and produce a poster or frame-sequence fallback
+from the same camera. That fallback preserves the product view, not a gradient.
 
 ## Acceptance
 
-Record only durable asset paths and roles in `.dreative/context.json`. Validate
-dimensions, codec/format, missing-asset behavior, mobile selection, loading
+Record durable asset paths and roles in `.dreative/context.json`. Validate
+dimensions, codec/format, missing-asset behaviour, mobile selection, loading
 order, and visual match to the intended section. Delete intermediate exports
-from the shipped client bundle.
+from the shipped bundle.
 
-Those checks are all mechanical, and a drawn stand-in passes every one of them.
-So check the material too, and treat this one as a blocker: every surface a
-buyer is choosing between shows sourced material. A CSS or SVG stand-in for a
-physical finish, colourway, or texture ships only when the gap was named and no
-material could be sourced — never as the default because the tile was small.
-Before shipping any drawn surface, list what is already in the asset directory:
-the run that failed this had the photograph on disk and painted a gradient
-anyway.
+Those are mechanical, and a drawn stand-in passes every one. So check the
+material too, and treat this as a blocker: every surface a buyer is choosing
+between shows sourced material. A CSS or SVG stand-in for a physical finish,
+colourway, or texture ships only when the gap was named and nothing could be
+sourced. Before shipping any drawn surface, list what is already in the asset
+directory — the run that failed this had the photograph on disk and painted a
+gradient anyway.

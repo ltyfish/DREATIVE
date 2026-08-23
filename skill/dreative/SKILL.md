@@ -29,7 +29,8 @@ moment, open it — including late in the build, when this list is far behind yo
 |---|---|
 | Choosing a concept for an open redesign | `references/CREATIVE_DIRECTION.md` |
 | Naming or comparing real sites and libraries | `references/REFERENCE_ADOPTION.md` |
-| Deciding what a section's focal image or object is | `references/MEDIA_SOURCES.md` for where it comes from, and `references/ASSET_PIPELINES.md` for what form it takes. Both, here — what the focal thing is made of and whether it moves are one decision, and a scrubbed sequence is a sourcing decision, not a later one |
+| Deciding what a section's focal image or object is | `references/MEDIA_SOURCES.md` — where it comes from and what each licence permits |
+| Deciding what that focal material *does* — before writing the section | `references/ASSET_PIPELINES.md`. Its own moment, because pairing it with the line above got it skipped: five files pointed a build at it, it opened none of them, and shipped six sourced photographs sitting still |
 | Installing or wiring any runtime | `references/CREATIVE_EXECUTION.md` |
 | Naming the signature behaviour and the experience arc, at step 4 | `skills/motion.md`, and `skills/3d.md` before concluding the subject is not spatial |
 | Building a control that holds state | `skills/interaction.md` |
@@ -227,10 +228,12 @@ comes from and should not try to be. Blind review reads its absence as the page
 being unfinished, and reads its presence as craft even when the reviewer can see
 it is generic.
 
-Final smoke blocks a route where **none** of the interactive elements respond,
-and a route where **nothing** moves at all. Those are zero cases. There is no
-breadth ratio to clear: the same number rises if you fade every region in
-uniformly, which is slop by `exemplars/SLOP.md` #5.
+Final smoke blocks a route where **none** of the interactive elements respond.
+That is a zero case. It reports how many regions move and blocks nothing on the
+number, because a count is not a quality: it rises if you fade every region in
+uniformly, which is slop by `exemplars/SLOP.md` #5, and it falls for one
+authored sequence that carries the page. Nothing is owed to that figure — do not
+add a reveal to move it.
 
 Beyond the baseline, prefer few well-executed motions over many decorative ones,
 and remove any automatic loop whose removal changes neither understanding nor
