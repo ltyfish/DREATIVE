@@ -5,6 +5,24 @@ more reliable mobile fallback than live simulation. Never invent an available
 tool. Confirm the executable, source assets, output rights, and target browser
 support first.
 
+## The subject is sourced, never manufactured
+
+Everything below is production — resizing, encoding, packing, exporting. None of
+it decides what is in the frame, and that decision is the one that fails. When a
+page shows a physical thing, that thing arrives as real material: a photograph,
+a frame, a scan, a render of an actual model. A gradient, a dot pattern, or a
+stack of CSS layers standing in for a surface is not a cheaper version of the
+material — it is a different, worse thing, and it reads that way at full size
+next to a price.
+
+This holds hardest exactly where it is most tempting: the small tile, the
+swatch, the thumbnail in a card. Small does not mean it can be drawn. If a
+sourced view of a variant exists, or can be sourced, the tile shows it. Whenever
+no material for a surface exists and none can be sourced, say so and choose a
+form that does not require it — a named description, a detail crop of the shared
+subject, a typographic treatment — rather than inventing the surface. Naming the
+gap is a real answer here; drawing over it is not.
+
 ## Responsive image set with Sharp
 
 ```js
@@ -66,8 +84,9 @@ scroll. None of these are motion techniques applied to a page; each one is a
 same decision, which is why this file is routed at the moment you decide what
 the focal thing is, not after you have decided to produce frames.
 
-The failure this replaces is building the subject in SVG because no single
-photograph of it existed.
+This is the moving case of the sourcing rule above: no single photograph of the
+whole process exists, and the answer is still real frames rather than a
+constructed subject.
 
 **1 — Get the frames.** Probe for the tool; never assume one either way, in
 either direction. This file cannot know what is installed where it runs, and a
@@ -156,3 +175,12 @@ Record only durable asset paths and roles in `.dreative/context.json`. Validate
 dimensions, codec/format, missing-asset behavior, mobile selection, loading
 order, and visual match to the intended section. Delete intermediate exports
 from the shipped client bundle.
+
+Those checks are all mechanical, and a drawn stand-in passes every one of them.
+So check the material too, and treat this one as a blocker: every surface a
+buyer is choosing between shows sourced material. A CSS or SVG stand-in for a
+physical finish, colourway, or texture ships only when the gap was named and no
+material could be sourced — never as the default because the tile was small.
+Before shipping any drawn surface, list what is already in the asset directory:
+the run that failed this had the photograph on disk and painted a gradient
+anyway.
