@@ -69,16 +69,9 @@ choices. The prototype choice must always appear and be confirmed; for
 Showcase, clearly state that `Required` means prototyping the riskiest signature
 mechanism before integrating the route.
 
-**When no one can reply.** Both gates assume a conversation. In a
-non-interactive session — a scripted or scheduled run, or a request that
-explicitly authorised proceeding without confirmation — waiting is not
-caution, it is a session spent producing nothing. Print the same two blocks so
-the decisions stay inspectable, state in one line that you are proceeding on
-the recommended settings because no reply is available, and build. Do not
-invent an approval, and do not silently upgrade scope: an unattended run takes
-the recommendations exactly as displayed, and anything the user did name still
-binds. A gate exists to stop you assuming what someone wanted, not to stop you
-working when there is no one to ask.
+When the request already authorised proceeding without confirmation, show the
+block and build on the recommendations rather than waiting; anything the user
+did name still binds.
 
 ### Review depth
 

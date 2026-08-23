@@ -178,10 +178,10 @@ More rules did not produce better pages. Design the page.
    failures, and recapture the affected and full-page views. DOM or
    accessibility snapshots do not replace pixel inspection. Run production build
    plus existing test/typecheck/lint scripts. Substantial work requires
-   `dreative finalize --profile <direction> --visual-smoke-url <preview-url>`
-   to print `DREATIVE_CHECKS_PASSED`. Add `--codex` only when running under
-   Codex; it selects the host's install layout and is wrong everywhere else.
-   Visual smoke is mandatory for every substantial delivery.
+   `dreative finalize --claude|--codex --profile <direction> --visual-smoke-url <preview-url>`
+   to print `DREATIVE_CHECKS_PASSED`. Name your own host: the flag selects which
+   install layout is verified, and Dreative refuses to guess when it cannot
+   detect one. Visual smoke is mandatory for every substantial delivery.
    Compare the final product against the current brief and user choices. Claim
    completion only when every promised route, section, treatment, behavior, and
    review pass is implemented and verified; otherwise continue or report the
