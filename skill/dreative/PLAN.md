@@ -69,6 +69,17 @@ choices. The prototype choice must always appear and be confirmed; for
 Showcase, clearly state that `Required` means prototyping the riskiest signature
 mechanism before integrating the route.
 
+**When no one can reply.** Both gates assume a conversation. In a
+non-interactive session — a scripted or scheduled run, or a request that
+explicitly authorised proceeding without confirmation — waiting is not
+caution, it is a session spent producing nothing. Print the same two blocks so
+the decisions stay inspectable, state in one line that you are proceeding on
+the recommended settings because no reply is available, and build. Do not
+invent an approval, and do not silently upgrade scope: an unattended run takes
+the recommendations exactly as displayed, and anything the user did name still
+binds. A gate exists to stop you assuming what someone wanted, not to stop you
+working when there is no one to ask.
+
 ### Review depth
 
 - Fast — production build and one focused desktop/mobile primary-flow pass.
@@ -276,7 +287,13 @@ have, say so and name one concrete route to it — a tool, a supplied asset, or 
 explicit treatment change — rather than quietly substituting geometry. Local
 assets must exist in the repository and be tracked; remote assets must load.
 
-Then write `schemas/showcase-mechanism.schema.json` using the operational rules
+Then write the project's own mechanism contract to
+`.dreative/showcase-mechanism.json`, validated against the packaged schema at
+`schemas/showcase-mechanism.schema.json` — the schema is a definition that
+ships with the skill and is never edited. The contract file is tracked in the
+repository and passed to `dreative finalize --mechanism-contract`, which is
+what makes it worth writing: every field in it is exercised against the
+rendered page. Fill it using the operational rules
 in `SKILL.md`: the signature component, the Recommended baseline, perceptible
 Showcase differences, media decisions, and the mechanisms the browser will
 exercise. The connected experience system must carry either meaningful shared

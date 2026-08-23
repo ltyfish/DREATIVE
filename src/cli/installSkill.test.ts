@@ -85,10 +85,20 @@ test("active installation contains only routed skill resources", () => {
   // Derived from the package, never hard-coded. This assertion previously
   // listed reference names by hand, so MEDIA_SOURCES.md shipped in the package,
   // was silently dropped by the installer, and the test agreed with the bug.
+  // Maintainer-only material is the one deliberate exception, and it is named here so a
+  // future reference cannot be dropped silently the way MEDIA_SOURCES.md once was: adding
+  // a reference still ships it, and removing one from the install has to be written down.
+  const maintainerOnly = ["references/DOGFOOD_LESSONS.md"];
   assert.deepEqual(
     Object.keys(manifest.files).filter((file) => file.startsWith("references/")).sort(),
-    fs.readdirSync(path.join(sourceDir, "references")).filter((name) => name.endsWith(".md")).map((name) => `references/${name}`).sort(),
+    fs.readdirSync(path.join(sourceDir, "references")).filter((name) => name.endsWith(".md"))
+      .map((name) => `references/${name}`).filter((file) => !maintainerOnly.includes(file)).sort(),
   );
+  for (const file of maintainerOnly) {
+    assert.equal(fs.existsSync(path.join(sourceDir, file)), true, `${file} must still ship in the package`);
+    assert.equal(Object.keys(manifest.files).includes(file), false, `${file} must not reach an installed skill`);
+    assert.equal(fs.existsSync(path.join(installationDirectory(root, "codex"), file)), false);
+  }
   for (const active of ["SKILL.md", "PLAN.md", "references/CREATIVE_DIRECTION.md", "references/CREATIVE_EXECUTION.md", "agents/openai.yaml"])
     assert.equal(Object.hasOwn(manifest.files, active), true, active);
 });

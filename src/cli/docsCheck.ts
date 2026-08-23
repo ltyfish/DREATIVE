@@ -154,7 +154,10 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "PLAN.md", plan, /Not pursued:/i, "Showcase must disclose material rejected or replaced treatments");
   requireText(findings, "references/SHOWCASE.md", showcase, /Triggers may be scroll[\s\S]*time[\s\S]*media playback[\s\S]*route transition/i, "cinematic mechanisms must support honest non-interactive triggers");
   requireText(findings, "references/SHOWCASE.md", showcase, /When the route compares items[\s\S]*reads as repeated cards/i, "comparison verification must be explicitly conditional");
-  requireText(findings, "SKILL.md", skill, /DOGFOOD_LESSONS\.md[\s\S]*never promote a same-run proposal to validated/i, "dogfood changes must preserve the persistent learning protocol");
+  requireText(findings, "SKILL.md", skill, /DOGFOOD_LESSONS\.md[\s\S]*never\s+promote\s+a\s+same-run\s+proposal\s+to\s+validated/i, "dogfood changes must preserve the persistent learning protocol");
+  // The record of why Dreative changed is maintainer evidence, and a build that can read
+  // which round failed is being handed the test rather than the lesson.
+  requireText(findings, "SKILL.md", skill, /DOGFOOD_LESSONS\.md[\s\S]*not\s+(?:part of an installed skill|installed)/i, "SKILL.md must say the lesson record is not installed");
   requireText(findings, "references/DOGFOOD_LESSONS.md", contents.get("references/DOGFOOD_LESSONS.md") ?? "", /proposed[\s\S]*validated[\s\S]*rejected[\s\S]*superseded/i, "dogfood lessons must preserve explicit evidence states");
   requireText(findings, "PLAN.md", plan, /Every substantial final handoff[\s\S]*human taste verdict:\s*awaiting user review/i, "substantial design work must reserve taste acceptance for the user");
   requireText(findings, "PLAN.md", plan, /token-.+efficient|least tokens/i, "Efficient must optimize token use");

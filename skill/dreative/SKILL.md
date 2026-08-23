@@ -30,7 +30,7 @@ moment, open it — including late in the build, when this list is far behind yo
 | Choosing a concept for an open redesign | `references/CREATIVE_DIRECTION.md` |
 | Naming or comparing real sites and libraries | `references/REFERENCE_ADOPTION.md` |
 | Deciding what a section's focal image or object is | `references/MEDIA_SOURCES.md` — where it comes from and what each licence permits |
-| Deciding what that focal material *does* — before writing the section | `references/ASSET_PIPELINES.md`. Its own moment, because pairing it with the line above got it skipped: five files pointed a build at it, it opened none of them, and shipped six sourced photographs sitting still |
+| Deciding what that focal material *does* — before writing the section | `references/ASSET_PIPELINES.md`. Sourcing an image and deciding what it does are two decisions, and the second one is the one that gets skipped |
 | Installing or wiring any runtime | `references/CREATIVE_EXECUTION.md` |
 | Naming the signature behaviour and the experience arc, at step 4 | `skills/motion.md`, and `skills/3d.md` before concluding the subject is not spatial |
 | Building a control that holds state | `skills/interaction.md` |
@@ -41,7 +41,7 @@ moment, open it — including late in the build, when this list is far behind yo
 | Deciding what to build rather than what to avoid | `exemplars/PRINCIPLES.md` and `exemplars/SLOP.md` |
 | **Correcting the rendered page**, at the first screenshot | `references/VISUAL_REFINEMENT.md` |
 | Showcase was the chosen direction | `references/SHOWCASE.md` |
-| Changing Dreative itself | `references/DOGFOOD_LESSONS.md` and `skills/learning.md` |
+| Changing Dreative itself | `skills/learning.md`, and `references/DOGFOOD_LESSONS.md` in the Dreative repository — it is maintainer evidence and is deliberately not installed |
 | The evaluator handoff is opted in | `references/EVALUATION_HANDOFF.md`, then project-local `.dreative/evaluation/README.md` |
 | A focused mechanism lookup only | `llms.txt` or `dreative catalogue` |
 
@@ -64,8 +64,9 @@ checks?"* A page assembled to satisfy a threshold is a page nobody chose.
   page can trip: a route that 500s, text colliding, content overflowing its
   viewport, unreadable type, a clipped sticky element, a console error, a reveal
   that fires after the reader has already scrolled past, a promise the contract
-  made that does not resolve on the page, an interaction layer or a route that
-  does not move *at all*. Nothing about how good it looks.
+  made that does not resolve on the page, an interaction layer where nothing
+  responds to being touched *at all*. Nothing about how good it looks, and
+  nothing about how much of the page moves.
 - **There are no taste advisories left.** Motion breadth, density, scannability
   and signature size all measured a proxy while the reviewer was responding to
   something else. Judging whether the page reads well is your job and there is
@@ -76,32 +77,33 @@ checks?"* A page assembled to satisfy a threshold is a page nobody chose.
 Design first, then check. The check is the last thing that happens to a page,
 never the thing that shapes it.
 
-## What blind review actually shows
+## What actually loses
 
-Measured against the same brief built without the skill, blind, over
-twenty-seven pairs. The operative findings:
+These are the failures worth carrying into a build, stated as what they are
+rather than as where they were found:
 
-- **Cost is the unfixed failure.** The skill arm routinely takes five to seven
-  times as long as the control, and sessions have been killed mid-work at the
-  cap. Reading is where that goes — which is why the routing list is a set of
-  moments and each file is opened once.
-- **The standing loss is ambition.** *"Worst thing about the winner is lack of
-  animation"* is the closing note on verdicts the skill **won**, and
-  section-to-section transitions have been asked for in four consecutive rounds.
-  This is the criterion to worry about, and the one restraint cannot satisfy.
-- **Positive requirements got gamed every time one was added.** Told to have a
-  signature component, it produced a chart on a page selling coffee; told to
-  have motion, it fired one qualifying transition; told to be ambitious, it
-  added elements until the route was cramped. Each satisfied the rule and lost.
-- **The interaction baseline is the one requirement that measurably worked**, and
-  its limit is visible: it buys a page that feels answerable and nothing more.
-- **It reliably removes the generated look**, but note *one value applied to
-  everything*: a page of hard rectangles is the same failure as a page of
-  identical rounded cards. See SLOP #4.
-- **Restraint is not free.** Removing spectacle also removes the thing people
-  remember. Subtracting is the start of the work, not the end of it.
-- **Fabricated props lose.** Reviewers have repeatedly named a drawn stand-in for
-  a real object as the worst thing on an otherwise strong page.
+- **Reading is the expensive part.** A design pass that opens every file it
+  might need costs several times what the same build costs without one, and a
+  session that runs out of room ships nothing. Open a file at its moment, once.
+- **Ambition is the standing weakness, and restraint cannot fix it.** A page can
+  be clean, correct, defensible, and still be the one nobody remembers. Missing
+  animation and flat section-to-section handoffs are the notes that survive even
+  on work that is otherwise strong.
+- **A positive requirement gets satisfied literally and loses anyway.** Asked
+  for a signature component, a build produces a data readout about the product
+  rather than the product; asked for motion, one qualifying transition; asked
+  for ambition, more elements until the route is cramped. If you find yourself
+  satisfying a requirement rather than designing, you are already losing.
+- **A page that does not respond to being touched reads as unfinished**, however
+  good its set-pieces are. This is the cheapest thing on this list to fix and
+  the most reliable.
+- **One value applied to everything is a generated look of its own.** A page of
+  hard rectangles is the same failure as a page of identical rounded cards.
+  See SLOP #4.
+- **Subtracting is the start of the work.** Removing spectacle also removes what
+  people remember, so removal alone is never the finished design.
+- **A drawn stand-in for a real object is the sharpest single defect.** It gets
+  named as the worst thing on pages that are otherwise good.
 
 More rules did not produce better pages. Design the page.
 
@@ -112,9 +114,13 @@ More rules did not produce better pages. Design the page.
    `.dreative/context.json` exists, validate and read it as fallible working
    memory; reconcile stale statements against the current product.
    When changing Dreative itself or running a Dreative dogfood, read
-   `references/DOGFOOD_LESSONS.md` and `skills/learning.md` first. Update the
-   lesson record only for repeatable failures or later independently validated
-   corrections; never promote a same-run proposal to validated.
+   `skills/learning.md` first, and `references/DOGFOOD_LESSONS.md` from the
+   Dreative repository — it is maintainer evidence, so it is not part of an
+   installed skill. Update the lesson record only for repeatable failures or
+   later independently validated corrections; never promote a same-run proposal
+   to validated. A lesson only reaches the skill once it has been generalised
+   into a design failure any project could have: what went wrong in one run is
+   evidence, and shipping the run itself teaches the test instead of the craft.
 2. For every open design or redesign, run the planning protocol in `PLAN.md`
    before implementation: read `references/CREATIVE_DIRECTION.md`, privately
    synthesize divergent project-native concepts, then show Recommended,
@@ -172,9 +178,10 @@ More rules did not produce better pages. Design the page.
    failures, and recapture the affected and full-page views. DOM or
    accessibility snapshots do not replace pixel inspection. Run production build
    plus existing test/typecheck/lint scripts. Substantial work requires
-   `dreative finalize --codex --profile <direction> --visual-smoke-url <preview-url>`
-   to print `DREATIVE_CHECKS_PASSED`. Visual smoke is mandatory for every
-   substantial delivery.
+   `dreative finalize --profile <direction> --visual-smoke-url <preview-url>`
+   to print `DREATIVE_CHECKS_PASSED`. Add `--codex` only when running under
+   Codex; it selects the host's install layout and is wrong everywhere else.
+   Visual smoke is mandatory for every substantial delivery.
    Compare the final product against the current brief and user choices. Claim
    completion only when every promised route, section, treatment, behavior, and
    review pass is implemented and verified; otherwise continue or report the

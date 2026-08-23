@@ -22,13 +22,21 @@ const hash = (value: Buffer | string) => crypto.createHash("sha256").update(valu
 const canonical = (value: unknown) => JSON.stringify(value, Object.keys(value as object).sort());
 const ACTIVE_ROOT_FILES = new Set(["SKILL.md", "PLAN.md", "llms.txt"]);
 /**
- * Whole directories, never a hand-maintained file list. An allowlist of
- * reference names silently dropped every reference added after it was written —
- * MEDIA_SOURCES.md shipped in the package and never reached an installed skill,
- * so the guidance existed and no agent could read it. Deleting a file is how a
- * file stops being installed.
+ * Maintainer material that lives in the Dreative repository and must never
+ * reach an installed skill. This is a deny list on purpose: an allowlist of
+ * names is what silently dropped MEDIA_SOURCES.md once, because a file added
+ * after the list was written was simply never mentioned. A deny list can only
+ * ever drop what it names, so a new reference still ships by default.
+ *
+ * The record of why Dreative changed is evidence for changing Dreative. It is
+ * not design guidance, no user of the skill has a reason to read it, and a
+ * build that reads which test round failed is being taught the test rather
+ * than the lesson. Anything in here that turned out to be a general design
+ * failure belongs in the craft file that owns it, stated as the failure.
  */
+const MAINTAINER_ONLY_FILES = new Set(["references/DOGFOOD_LESSONS.md"]);
 function activeSkillFile(relative: string, selectedSkills: Set<string>): boolean {
+  if (MAINTAINER_ONLY_FILES.has(relative)) return false;
   if (ACTIVE_ROOT_FILES.has(relative)) return true;
   if (relative.startsWith("skills/")) return selectedSkills.has(path.basename(relative, ".md"));
   return ["agents/", "frameworks/", "systems/", "schemas/", "exemplars/", "references/"]

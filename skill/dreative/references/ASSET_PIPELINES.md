@@ -128,5 +128,5 @@ material too, and treat this as a blocker: every surface a buyer is choosing
 between shows sourced material. A CSS or SVG stand-in for a physical finish,
 colourway, or texture ships only when the gap was named and nothing could be
 sourced. Before shipping any drawn surface, list what is already in the asset
-directory — the run that failed this had the photograph on disk and painted a
-gradient anyway.
+directory: the usual version of this failure is a build that sourced the right
+photograph, resized it, and then drew the tile by hand anyway.
