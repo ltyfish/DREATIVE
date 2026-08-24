@@ -31,6 +31,54 @@ Record the real URL or file path, the licence, and the rights status. Final
 smoke resolves local files and requests remote URLs, so an invented source fails
 rather than passing quietly.
 
+## The ladder, and what drawing is actually for
+
+Rank the material before choosing a form, and take the highest rung the subject
+and the licence allow:
+
+1. **A photograph of the thing, or of its real analogue** — including a set of
+   views, which is motion material rather than an illustration.
+2. **A licensed model, or frames rendered from one.** Keyless and verified
+   sources for both are listed above; for a physical product this rung is
+   usually right and is rarely the one chosen.
+3. **Real surface material** — a photographed or scanned texture, a PBR set, an
+   HDRI. Poly Haven and ambientCG are CC0 and need no key.
+4. **Drawn construction** — CSS, SVG, canvas geometry standing in for a physical
+   thing. This is the fallback. Reaching it means rungs 1–3 were searched and
+   came back empty, and that is a sentence you should be able to write.
+
+The rungs are not interchangeable, and the reason is physical. Real material
+carries texture, grain, depth of field, the way light falls across a surface and
+changes as it moves. Drawn geometry carries none of that: flat fills, invented
+colour, edges that are too clean, gradients standing in for light. That is what
+"cheap" and "unreal" mean when a reviewer says them — not that the drawing was
+badly made, but that nothing in it was ever lit or photographed. Adding more
+paths does not fix it, and a build made mostly of authored vector reads that way
+however good each piece is.
+
+It also costs the page its motion. Material is what there is to animate: a
+sequence to scrub, a surface to relight, a crop to travel through, depth to
+displace, a real state to trade for another. A flat vector gives you position,
+scale and opacity — which is why routes built out of it come back described as
+having no transitions and nothing happening between sections, however many
+elements move.
+
+**Drawing is for notation, and it is good at that job.** Diagrams, callouts,
+annotation and measurement over a photograph, charts, icons, marks, typographic
+and graphic devices — none of these are pretending to be material, and there is
+no limit on them. Icons in particular are the most reliable visual material
+available to you (see *Icons*). The line is not vector versus raster, it is
+whether the drawn thing is standing in for something physical that exists in the
+world and could have been sourced.
+
+**When you do land on rung 4**, say so rather than shipping it as if it were a
+choice, and make the fallback carry real material where it can: a photographed
+texture as the fill, real colour sampled from the subject rather than invented,
+one honest flat treatment instead of a fake-dimensional one. A drawn thing that
+admits it is drawn is far better than one that fails at looking real. And it
+does not take the focal moment on its own — see *Where it lands is the same
+decision*.
+
 ## Decide what the material does, while you are still searching
 
 Sourced, resized, credited — and then sitting in an `<img>` doing nothing, while

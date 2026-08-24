@@ -11,8 +11,9 @@ project file when new assets are introduced.
 
 For Showcase focal physical subjects, evaluate external material first:
 supplied/sourced imagery, generated media, licensed textured models, or
-pre-rendered sequences. DOM/CSS/SVG fabrication is a deliberate graphic
-decision, not the automatic fallback. Record why it is artistically stronger;
+pre-rendered sequences. DOM/CSS/SVG fabrication is the bottom rung of
+`../references/MEDIA_SOURCES.md`'s ladder, taken when the ones above it were
+searched and came back empty. Record why it is artistically stronger;
 speed, familiarity, token cost, and missing tooling are not artistic reasons.
 Escalate an unavailable capability before lowering the accepted ceiling.
 

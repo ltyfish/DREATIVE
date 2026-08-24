@@ -43,6 +43,20 @@ function requireText(
   if (!pattern.test(content)) findings.push({ check: "delivery-contract", file, message });
 }
 
+/**
+ * The inverse, for a sentence that has already been deleted once and cost a round when it
+ * came back: a permission written next to the prohibition it cancels (DL-019).
+ */
+function forbidText(
+  findings: DocsCheckFinding[],
+  file: string,
+  content: string,
+  pattern: RegExp,
+  message: string,
+) {
+  if (pattern.test(content)) findings.push({ check: "delivery-contract", file, message });
+}
+
 export function runDocsCheck(skillDir: string): DocsCheckReport {
   const findings: DocsCheckFinding[] = [];
   const files = walk(skillDir).filter((file) => /\.(md|json)$/i.test(file));
@@ -100,6 +114,12 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   // five rounds, behind five pointers, so it was folded into the file that is actually
   // opened at that moment (2026-08-24). Pinned here so it cannot drift back out.
   requireText(findings, "references/MEDIA_SOURCES.md", contents.get("references/MEDIA_SOURCES.md") ?? "", /Decide what the material does[\s\S]*Where it lands is the same decision[\s\S]*wrong way round/i, "media sources must own what the material does and where on the page it lands");
+  // Drawn construction outranked nothing and was chosen anyway, five rounds running. The
+  // ladder makes it the bottom rung and says what drawing is for instead (2026-08-24).
+  requireText(findings, "references/MEDIA_SOURCES.md", contents.get("references/MEDIA_SOURCES.md") ?? "", /The ladder, and what drawing is actually for[\s\S]*Drawn construction[\s\S]*This is the fallback[\s\S]*Drawing is for notation/i, "media sources must rank material and place drawn construction at the bottom of it");
+  // DL-019 deleted this permission from MEDIA_SOURCES.md on 2026-08-20; it survived in
+  // SLOP.md, which is read nearly every round, and blessed the drawn plate again.
+  forbidText(findings, "exemplars/SLOP.md", contents.get("exemplars/SLOP.md") ?? "", /legitimate answer\s*\n?\s*when the result is genuinely the better image[\s\S]*not pretending to be a photograph/i, "the fabricated-prop entry must not re-bless construction for anything 'not pretending to be a photograph'");
   // A realistic subject faked out of gradients has cost more verdicts than any
   // other single defect, and it is the failure the 3D specialist exists to route
   // around rather than dress up.

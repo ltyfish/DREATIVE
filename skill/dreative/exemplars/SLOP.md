@@ -171,12 +171,14 @@ markup, and the code looks impressive in the diff.
 is without telling them; if they hesitate, it failed. The colours are also
 usually a give-away — invented rather than sampled from the real material.
 
-**Instead:** source a photograph, a licensed model, or a pre-rendered view. See
-`../references/MEDIA_SOURCES.md`. Procedural fabrication is a legitimate answer
-when the result is genuinely the better image — a diagram, a schematic, a
-stylised mark, anything that is not pretending to be a photograph. It is not a
-legitimate answer for "I needed a picture of the product and did not look for
-one."
+**Instead:** source a photograph, a licensed model, a pre-rendered view, or at
+least a real texture — `../references/MEDIA_SOURCES.md` ranks them and every rung
+above drawing is keyless. Drawing is for notation: a chart, an icon, a mark, a
+diagram or annotation **over** real material. Calling the output a schematic does
+not settle the question, because the build that sourced four real photographs,
+deleted them, and shipped a drawn plate labelled "a technical schematic" was using
+exactly that sentence. If the thing could have been photographed and you drew it
+instead, that is this entry, whatever the drawing is called.
 
 This is the most expensive entry in this list. Blind reviewers describe an
 otherwise strong page as ruined by it — *"the lighthouse image is soo bad omg"*,
