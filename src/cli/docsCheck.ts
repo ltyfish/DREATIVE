@@ -96,6 +96,10 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   requireText(findings, "SKILL.md", skill, /MEDIA_SOURCES\.md/, "must route focal media to concrete sources rather than only requiring that external options be evaluated");
   requireText(findings, "references/MEDIA_SOURCES.md", contents.get("references/MEDIA_SOURCES.md") ?? "", /router, not a library[\s\S]*no bundled assets/i, "media sources must stay a router; bundling assets recreates the averaging failure");
   requireText(findings, "references/MEDIA_SOURCES.md", contents.get("references/MEDIA_SOURCES.md") ?? "", /licence covers your use[\s\S]*subject is truthful[\s\S]*attribute it/i, "media sources must require licence, truthfulness, and attribution checks before use");
+  // ASSET_PIPELINES.md carried the role-and-placement decision and was read zero times in
+  // five rounds, behind five pointers, so it was folded into the file that is actually
+  // opened at that moment (2026-08-24). Pinned here so it cannot drift back out.
+  requireText(findings, "references/MEDIA_SOURCES.md", contents.get("references/MEDIA_SOURCES.md") ?? "", /Decide what the material does[\s\S]*Where it lands is the same decision[\s\S]*wrong way round/i, "media sources must own what the material does and where on the page it lands");
   // A realistic subject faked out of gradients has cost more verdicts than any
   // other single defect, and it is the failure the 3D specialist exists to route
   // around rather than dress up.

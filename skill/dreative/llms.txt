@@ -13,8 +13,8 @@ The compiled registry is `dist/shared/creativeCatalog.js`. Source and examples
 are in `systems/runtime.js`, `systems/NATIVE_FOUNDATIONS.md`, and
 `systems/demo.html`. Advanced runtime selection is in
 `references/CREATIVE_EXECUTION.md`; where to source real imagery, texture, 3D,
-or type is in `references/MEDIA_SOURCES.md`; build-time media work is in
-`references/ASSET_PIPELINES.md`. The system set is an implementation lookup
+or type — and what the material is then made to do — is in
+`references/MEDIA_SOURCES.md`. The system set is an implementation lookup
 after a project-native concept has been chosen. It must never supply the concept
 or a named site's house style.
 

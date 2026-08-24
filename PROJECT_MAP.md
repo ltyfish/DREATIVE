@@ -28,8 +28,9 @@
   selection and ownership.
 - `skill/dreative/references/VISUAL_REFINEMENT.md` — screenshot, critique,
   correction, and recapture loop.
-- `skill/dreative/references/ASSET_PIPELINES.md` — bounded Sharp, FFmpeg, and
-  glTF production workflows.
+- `skill/dreative/references/MEDIA_SOURCES.md` — where real material comes from,
+  what it is made to do, where it lands on the page, and the Sharp/FFmpeg/glTF
+  production recipes (absorbed `ASSET_PIPELINES.md`, 2026-08-24).
 - `skill/dreative/systems/runtime.js` and `systems/demo.html` — executable
   native foundations and their browser fixture.
 - `skill/dreative/llms.txt` and `src/shared/creativeCatalog.ts` — searchable

@@ -37,4 +37,4 @@ the shape got applied before the argument existed.
 
 Read `../references/CREATIVE_EXECUTION.md`, then the one matching system in
 `../systems/NATIVE_FOUNDATIONS.md` or pipeline in
-`../references/ASSET_PIPELINES.md`.
+`../references/MEDIA_SOURCES.md`.

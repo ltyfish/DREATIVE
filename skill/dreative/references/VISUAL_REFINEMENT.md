@@ -27,6 +27,12 @@ loop until repaired or replaced by another confirmed browser adapter.
    experience does not make that role perceptible. Compare hero-grade media
    reused across major sections and require visible evolution in crop, state,
    material, meaning, or interaction unless a distinct composition is used.
+   In each section, name what the eye lands on first and whether that thing is
+   real material or something you drew. Sourced photographs relegated to a strip,
+   a card grid, or a below-fold gallery beneath a drawn focal figure is the
+   inversion blind review reads as "it is all SVG" — correct it by swapping what
+   holds the section, not by drawing more. Check the crop at 390px too: a frame
+   whose subject is unreadable there is decoration on a phone.
    Review the route as a sequence: compare the primary peak with at
    least one development or consequence away from it and inspect their handoff.
    Flag when one section owns nearly all salient motion, media change, or

@@ -271,8 +271,8 @@ behaviour for the whole route rather than mixing four.
 
 For every focal subject, decide the medium and where the asset actually comes
 from before writing focal code. Read `references/MEDIA_SOURCES.md` for where to
-look and what each licence permits, and `references/ASSET_PIPELINES.md` for
-turning what you find into shippable output. Evaluate external media before
+look, what each licence permits, what the material is made to do, and where on
+the page it lands. Evaluate external media before
 fabricating a realistic physical subject out of CSS or SVG; fabricated product
 imagery is the single failure blind reviewers have called out most sharply, and
 "evaluated external options" means you searched. If the selected fidelity needs a capability you do not
