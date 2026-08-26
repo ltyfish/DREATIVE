@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dreative.local/schemas/creative-catalog.schema.json",
+  "title": "Dreative native foundation registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["systems", "packageProfiles"],
+  "properties": {
+    "systems": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 20,
+      "items": { "$ref": "#/$defs/system" }
+    },
+    "packageProfiles": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/packageProfile" }
+    }
+  },
+  "$defs": {
+    "strings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "system": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id", "name", "aliases", "summary", "suitableTreatments",
+        "packageProfiles", "implementation", "implementationExport", "guide",
+        "useWhen", "rejectWhen", "mobileTranslation", "reducedMotionStrategy",
+        "semanticFallback", "cleanup", "performanceBudget", "browserTest",
+        "visualExample", "risk"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "name": { "type": "string", "minLength": 1 },
+        "aliases": { "$ref": "#/$defs/strings" },
+        "summary": { "type": "string", "minLength": 1 },
+        "suitableTreatments": { "$ref": "#/$defs/strings" },
+        "packageProfiles": { "$ref": "#/$defs/strings" },
+        "implementation": { "type": "string", "pattern": "^systems/" },
+        "implementationExport": { "type": "string", "minLength": 1 },
+        "guide": { "type": "string", "pattern": "^systems/" },
+        "useWhen": { "type": "string", "minLength": 1 },
+        "rejectWhen": { "type": "string", "minLength": 1 },
+        "mobileTranslation": { "type": "string", "minLength": 1 },
+        "reducedMotionStrategy": { "type": "string", "minLength": 1 },
+        "semanticFallback": { "type": "string", "minLength": 1 },
+        "cleanup": { "$ref": "#/$defs/strings" },
+        "performanceBudget": { "$ref": "#/$defs/strings" },
+        "browserTest": { "$ref": "#/$defs/strings" },
+        "visualExample": { "type": "string", "pattern": "^systems/" },
+        "risk": { "enum": ["low", "medium", "high"] }
+      }
+    },
+    "packageProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "packageName", "importForm", "useWhen", "rejectWhen", "cleanup", "optional"],
+      "properties": {
+        "id": { "type": "string" },
+        "packageName": { "type": "string" },
+        "importForm": { "type": "string" },
+        "useWhen": { "type": "string" },
+        "rejectWhen": { "type": "string" },
+        "cleanup": { "$ref": "#/$defs/strings" },
+        "optional": { "type": "boolean" },
+        "buildTimeOnly": { "type": "boolean" }
+      }
+    }
+  }
+}

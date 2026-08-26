@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dreative.local/schemas/project-context.schema.json",
+  "title": "Dreative durable project context",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "status", "productPurpose", "creativeFingerprint", "protectedContracts", "runtimeOwners", "importantAssets", "testedStates", "deliberateDecisions", "outstandingVisualIssues"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "status": { "enum": ["draft", "current"] },
+    "productPurpose": { "type": "string" },
+    "creativeFingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["premise", "composition", "typeVoice", "materialAndMedia", "motionAndInteraction", "continuity"],
+      "properties": {
+        "premise": { "type": "string" },
+        "composition": { "type": "string" },
+        "typeVoice": { "type": "string" },
+        "materialAndMedia": { "type": "string" },
+        "motionAndInteraction": { "type": "string" },
+        "continuity": { "type": "string" }
+      }
+    },
+    "protectedContracts": { "type": "array", "items": { "type": "string" } },
+    "runtimeOwners": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scroll", "animation", "spatial"],
+      "properties": {
+        "scroll": { "type": "string" },
+        "animation": { "type": "string" },
+        "spatial": { "type": "string" }
+      }
+    },
+    "importantAssets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "role", "status"],
+        "properties": {
+          "path": { "type": "string" },
+          "role": { "type": "string" },
+          "status": { "enum": ["available", "missing", "replace"] }
+        }
+      }
+    },
+    "testedStates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["route", "viewport", "checks"],
+        "properties": {
+          "route": { "type": "string" },
+          "viewport": { "type": "string" },
+          "checks": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "deliberateDecisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["decision", "reason"],
+        "properties": {
+          "decision": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "outstandingVisualIssues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["route", "issue", "priority"],
+        "properties": {
+          "route": { "type": "string" },
+          "issue": { "type": "string" },
+          "priority": { "enum": ["high", "medium", "low"] }
+        }
+      }
+    }
+  }
+}

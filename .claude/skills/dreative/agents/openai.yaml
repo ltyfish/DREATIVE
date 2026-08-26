@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dreative"
+  short_description: "Build distinctive production frontends"
+  default_prompt: "Use $dreative to plan, build, and visually refine a distinctive production frontend for this project."
