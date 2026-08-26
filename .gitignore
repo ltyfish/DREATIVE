@@ -8,3 +8,4 @@ playwright-report/
 .claude/settings.local.json
 CLAUDE.md
 AGENTS.md
+.claude/skills/
