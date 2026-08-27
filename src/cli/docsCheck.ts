@@ -85,7 +85,25 @@ export function runDocsCheck(skillDir: string): DocsCheckReport {
   const showcase = contents.get("references/SHOWCASE.md") ?? "";
   const evaluation = contents.get("references/EVALUATION_HANDOFF.md") ?? "";
   const refinement = contents.get("references/VISUAL_REFINEMENT.md") ?? "";
-  requireText(findings, "SKILL.md", skill, /design-builder/i, "must define Dreative as a frontend design-builder");
+  requireText(findings, "SKILL.md", skill, /design-builder/i, "must define Dreative as a design-builder");
+  // 2026-08-27: Dreative is a motion specialist. A round on the general skill produced a
+  // page whose entire motion layer was transforms on DOM boxes, with nothing downloaded
+  // for it, because nothing in the contract said the material was the decision.
+  requireText(findings, "SKILL.md", skill, /motion design-builder/i, "must define Dreative as a motion specialist, not a general frontend builder");
+  requireText(findings, "SKILL.md", skill, /not\*{0,2} a generic website builder[\s\S]*does not compete on clean\s+modern/i, "must decline the generic clean-modern target this skill exists to beat");
+  requireText(findings, "SKILL.md", skill, /Do not produce market\s*\n?\s*positioning, business rationale/i, "must keep business and positioning advice out of scope");
+  requireText(findings, "SKILL.md", skill, /MOTION_MATERIAL\.md/, "must route signature motion to real, sourced, drivable material");
+  requireText(findings, "references/MOTION_MATERIAL.md", contents.get("references/MOTION_MATERIAL.md") ?? "", /What is the thing, and what does it do in time[\s\S]*What can actually be driven[\s\S]*Get it on disk before you write the section/i, "motion material must name the event, rank drivable material, and require the files before the section");
+  requireText(findings, "references/MOTION_MATERIAL.md", contents.get("references/MOTION_MATERIAL.md") ?? "", /ffmpeg[\s\S]*frame sequence[\s\S]*look at the frames/i, "motion material must carry a real production pipeline and require inspecting the output");
+  // The placeholder that renders correctly is never replaced. This is the failure the
+  // 2026-08-27 testbed round produced, and reviewing it can only make it smoother.
+  requireText(findings, "SKILL.md", skill, /## Build the real thing first[\s\S]*Do not build a simple version and plan to make it good later/i, "must forbid building a simplified version intended for later upgrade");
+  requireText(findings, "SKILL.md", skill, /## Build the real thing first[\s\S]*No placeholder motion[\s\S]*No placeholder material[\s\S]*No deferred ambition/i, "the anti-placeholder rule must name motion, material, and deferred ambition");
+  requireText(findings, "SKILL.md", skill, /## Build the real thing first[\s\S]*hardest, most uncertain, most material-dependent\s*\n?\s*part first[\s\S]*fix the errors as they come/i, "must require building the hardest mechanism first and fixing errors forward");
+  requireText(findings, "SKILL.md", skill, /## Motion[\s\S]*the seams[\s\S]*signature moments[\s\S]*made of real material/i, "the motion contract must fund seams and material-backed signature moments, not only the baseline");
+  requireText(findings, "PLAN.md", plan, /motion ceilings/i, "the three directions must differ by motion ceiling rather than effort tier");
+  requireText(findings, "PLAN.md", plan, /prototype is the\s*\n?\s*real mechanism[\s\S]*never a simplified draft/i, "the prototype must be the real mechanism at full fidelity");
+  requireText(findings, "references/REFERENCE_ADOPTION.md", contents.get("references/REFERENCE_ADOPTION.md") ?? "", /## Motion research, specifically[\s\S]*Watch the work run[\s\S]*never the combined look/i, "reference adoption must route motion scouting at running work while refusing house-style imitation");
   requireText(findings, "SKILL.md", skill, /CREATIVE_DIRECTION\.md/, "must route open-ended concept work through creative synthesis");
   requireText(findings, "SKILL.md", skill, /project-native|product truth/i, "must derive concepts from the real product");
   requireText(findings, "SKILL.md", skill, /do not narrate|not.*substitute/i, "must reject performative checklist compliance");

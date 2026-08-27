@@ -3,6 +3,31 @@
 Motion explains hierarchy, causality, continuity, and state. It is a way of
 saying something about the subject, not a finish applied after the saying.
 
+This is the core craft file of a motion skill, not a specialty. Open it on every
+build, before the brief.
+
+## Motion is a material problem before it is a code problem
+
+The animation code is the easy half and it is nearly always where a build spends
+its effort. What separates a route that feels alive from one that is competently
+eased is what is being moved: real frames, real footage, a real model, a real
+surface, a real state. Decide that first —
+`../references/MOTION_MATERIAL.md` — and have the files on disk before the
+section that uses them exists.
+
+The tell that this went wrong is a build whose motion is a `querySelectorAll`
+list receiving staggered transforms. Every element moves; nothing happens.
+
+## Build it real on the first pass
+
+Do not write a placeholder transition where a real mechanism belongs, intending
+to upgrade it. Once the placeholder renders correctly, replacing it becomes a
+rewrite nobody performs, and review of a placeholder can only make it a smoother
+placeholder. Start with the hardest, most material-dependent moment on the
+route, at full intended fidelity, and fix the errors forward. Errors are the
+normal cost. A retreat is legitimate only after a real attempt failed on the
+rendered page, and it gets said out loud.
+
 ## Two budgets, funded separately
 
 **The interaction baseline is required and should be boring.** Hover, focus,
@@ -34,7 +59,19 @@ it as decoration reliably.
 
 Sometimes the honest answer is that the subject does nothing worth watching. A
 page whose job is to be read quickly is finished at the baseline layer, and
-stopping there is a decision you made, not a budget you failed to spend.
+stopping there is a decision you made, not a budget you failed to spend. It is
+also the answer this skill reaches for when it is avoiding work, so you should
+be able to say what you searched for and what the subject genuinely does not do.
+
+## The seams carry more than the set-pieces
+
+Between two sections is where most routes go flat. Independent reveals joined by
+scroll position produce a page that a reader describes as having no transitions,
+however much is animating inside each band. Give the joins something: a subject
+that persists and changes state, a value that continues across the boundary, a
+frame that resolves as the next one opens, a colour or scale relationship that
+hands over. One authored handoff between two sections buys more than a second
+set-piece inside one of them.
 
 ## Runtime
 
@@ -78,4 +115,6 @@ fade-ups that avoids every failure above and says nothing, because avoiding
 failures was the whole plan.
 
 Read `../references/CREATIVE_EXECUTION.md` before adding a runtime, and one
-matching recipe only after the mechanism is chosen.
+matching recipe only after the mechanism is chosen. Read
+`../references/MOTION_MATERIAL.md` before writing the section, because what you
+can build is decided by what you managed to download.

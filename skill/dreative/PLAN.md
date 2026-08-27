@@ -23,26 +23,42 @@ generic one.
 
 Show exactly:
 
+The three levels are **motion ceilings**, not effort tiers and not business
+options. They differ in how much of the route is authored in time and how
+expensive its material is — never in whether the page moves at all.
+
 1. **Recommended — <project-native concept>**
-   The direction most likely to produce the strongest product for this
-   audience, content, and implementation reality.
+   The strongest motion-led experience this subject, its available material, and
+   this codebase can actually carry. A real signature moment made of real
+   material, authored seams between sections, and the interaction baseline
+   throughout.
 
 2. **Efficient — <focused concept>**
-   The highest-value improvement using the least tokens and implementation cost,
-   preserving the current structure, assets, and stack where useful.
+   The highest-value motion work using the least tokens and implementation cost,
+   preserving the current structure, assets, and stack where useful. One
+   authored moment plus the full interaction baseline, rather than a spread of
+   small effects. Efficient is a narrower scope, not a flatter page.
 
 3. **Showcase — <flagship concept>**
-   The highest creative and technical ceiling. Any treatment is available, but
-   select only those that materially strengthen the premise. Its delivered
-   route must be visibly and structurally distinct from Recommended; a long
-   conventional page with one isolated spectacle is insufficient.
+   The highest creative and technical ceiling. Sourced footage, frame sequences,
+   3D, shaders, and scroll-authored choreography are all available; select only
+   what materially strengthens the premise. Its delivered route must be
+   visibly and structurally distinct from Recommended; a long conventional page
+   with one isolated spectacle is insufficient.
 
-Each option must name its premise, composition, material/type voice, meaningful
-media or interaction, and product fit. Do not mention reference brands as the
-concept. Do not offer three versions of the same editorial landing page.
+Each option must name its premise, the event in the subject it makes visible,
+the material that shows it and where that material comes from, its composition
+and type voice, its motion grammar, and its product fit. Do not mention
+reference brands as the concept. Do not offer three versions of the same
+editorial landing page. Do not offer three intensities of the same scroll fade —
+if the three differ only in how much moves, none of them is a concept.
 Each must be the strongest honest design for its stated constraint: Efficient
 is not deliberately weak, Recommended is not a diluted Showcase, and Showcase
 must genuinely reach the highest coherent creative and technical ceiling.
+
+Nothing in these options is a business proposal. Do not present conversion
+impact, positioning, market rationale, or audience segments; present what the
+reader will see happen.
 
 End with:
 
@@ -109,6 +125,11 @@ explicitly approves the rejection.
 
 Efficient defaults to existing assets. Recommended chooses best-fit media.
 Showcase permits maximum useful sourced/generated imagery, video, and 3D.
+
+Sourcing here means motion material, not only stills: frame sequences, footage,
+models, HDRIs, depth maps. Read `references/MOTION_MATERIAL.md` for where it
+comes from and what to run over it, and get the files on disk before writing the
+section that drives them.
 Mark specific user-requested assets as user-required. They must ship visibly,
 or be rejected only after the user explicitly approves the rejection. Broad
 permission to source media does not make every possible asset user-required.
@@ -135,7 +156,12 @@ result would change the build. Show it rendered at desktop and mobile, say what
 it does and does not yet prove, and stop for the user's response before
 integrating. A general instruction to continue is not acceptance.
 
-Keep the prototype cheap in ceremony and honest in fidelity. If it is easier to
+Keep the prototype cheap in ceremony and **full in fidelity**. A prototype is the
+real mechanism, built against real downloaded material, seen running — it is
+never a simplified draft of the mechanism, and never a placeholder transition
+standing where the mechanism will go. A stripped-down version answers the wrong
+question: it tells you whether the easy thing works, which you already knew.
+See `SKILL.md`, *Build the real thing first*. If it is easier to
 build the real route than to build an artifact about the route, build the real
 route. Do not manufacture a second comparison build unless a named decision is
 still unresolved and the alternatives differ in medium, interaction model,
@@ -269,8 +295,15 @@ part of the signature-moment budget, and it is the thing blind review reads as
 smoothness. Do not fund a second set-piece before it exists. Pick one hover
 behaviour for the whole route rather than mixing four.
 
+Name every **signature moment** here as four things: the event in the subject,
+the material that shows it, that material's real source, and the single authored
+value that drives it. A moment missing any of the four is not planned yet, and
+planning it as "an animated reveal" is how the route ships as fades. Name the
+**seams** too: what carries across each major section boundary.
+
 For every focal subject, decide the medium and where the asset actually comes
-from before writing focal code. Read `references/MEDIA_SOURCES.md` for where to
+from before writing focal code. Read `references/MOTION_MATERIAL.md` for
+drivable material and its production pipeline, and `references/MEDIA_SOURCES.md` for where to
 look, what each licence permits, what the material is made to do, and where on
 the page it lands. Evaluate external media before
 fabricating a realistic physical subject out of CSS or SVG; fabricated product

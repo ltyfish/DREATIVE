@@ -49,6 +49,37 @@ inline selectors resolve, `none` fields agree, and licensed 3D uses a 3D medium.
 - **Bklit**: specialist data-visualization input only for products whose real
   data and decisions require charts. It is not a general visual-style source.
 
+## Motion research, specifically
+
+Composition galleries answer what a page looks like. They cannot answer what it
+*does*, and a motion build scouted only from stills will reproduce a still.
+Watch the work run.
+
+- **Awwwards** (Sites of the Day, and the Animation filter), **FWA**, and
+  **Godly** filtered to motion-led work: whole shipped experiences you can open
+  and scroll. Study one for a minute with your hand on the wheel, then write
+  down what actually happened — what the material was, what drove it, how many
+  distinct events there were on the route, and what the page did at the seams
+  between sections.
+- **Studio sites that ship their own work** — Unseen, Active Theory, Resn,
+  Locomotive, Basement, Hello Monday and their peers. These are the clearest
+  available evidence of what a motion ceiling looks like in production, and they
+  are worth opening precisely because the ceiling is hard to imagine from
+  descriptions.
+- **Codrops** and **Awwwards case studies** for how a specific mechanism was
+  built, after you know which mechanism you want.
+
+Two rules survive contact with all of these. Extract the *mechanic and the
+pacing* — what is driven, by what input, over what distance, how many beats —
+never the combined look. And never name a studio as the concept: "make it feel
+like X" is the imitation failure with an extra step, and this file's
+independence test in `CREATIVE_DIRECTION.md` rejects it.
+
+What these references are genuinely for is calibration. The standing failure in
+this skill's record is not bad taste, it is aiming low — building the version
+that was easy to reach and calling it the design. Looking at three shipped
+motion sites before you write the brief is the cheapest correction available.
+
 ## Conditional component and mechanism sources
 
 Uilora, Origin UI/Kit, Lukacho UI, Sprrrint, Skiper UI, Watermelon UI,

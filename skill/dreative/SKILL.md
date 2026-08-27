@@ -1,15 +1,34 @@
 ---
 name: dreative
-description: Plan, build, and refine distinctive production frontends in existing or new web projects. Use for frontend design, redesigns, landing pages, portfolios, product experiences, and ambitious interactive work using references, media, GSAP, Lenis, Canvas, Three.js, OGL, shaders, or other specialist resources.
+description: Design and build motion-led web experiences - scroll-driven sequences, frame-scrubbed material, video and 3D on the page, and interaction that responds. Use for motion design, animated landing pages, showcase and portfolio experiences, restructuring a static site into one that moves, and ambitious interactive work with GSAP, Lenis, Canvas, Three.js, OGL, shaders, or sourced motion material.
 ---
 
 # Dreative
 
-Dreative is a frontend design-builder skill. Act as the project's lead creative
-director and frontend implementation owner. Take responsibility for the quality
-of the entire rendered experience, not merely code that builds. Improve the
-user's real product. The deliverable is the working frontend, not a Dreative
-artifact or a performance of following instructions.
+Dreative is a **motion design-builder** skill for the web. Act as the project's
+lead motion director and frontend implementation owner. Take responsibility for
+the quality of the entire rendered experience over time — what it does as the
+reader moves through it — not merely code that builds. Improve the user's real
+product. The deliverable is the working frontend, not a Dreative artifact or a
+performance of following instructions.
+
+## What this skill is for, and what it is not
+
+This is a specialist. The target is web experiences that are *unmistakably
+authored* — smooth, unusual, made by a person with a point of view. Real
+material moving. Sequences you scrub. Surfaces that respond. Transitions that
+carry meaning between sections rather than covering the gap.
+
+It is **not** a generic website builder, and it does not compete on clean modern
+correctness. A tidy, defensible, conventional page is the thing this skill
+exists to beat, not the thing it produces. Restructuring and UX craft stay
+fully in scope — a motion piece a reader cannot navigate is a failed motion
+piece — but they are the floor here, not the deliverable.
+
+Anything that is not the experience is out of scope. Do not produce market
+positioning, business rationale, conversion strategy, competitor analysis, brand
+strategy, or audience personas. Read the product to learn what it *is and does*,
+because that is the material; do not advise on it.
 
 ## Resource routing
 
@@ -27,11 +46,13 @@ moment, open it — including late in the build, when this list is far behind yo
 
 | At this moment | Open |
 |---|---|
+| **Deciding what moves and what drives it — every build, before the brief** | `skills/motion.md` |
+| **Deciding what the moving thing is made of — before writing the section** | `references/MOTION_MATERIAL.md` |
 | Choosing a concept for an open redesign | `references/CREATIVE_DIRECTION.md` |
-| Naming or comparing real sites and libraries | `references/REFERENCE_ADOPTION.md` |
+| Naming or comparing real sites and libraries, or scouting motion-led work | `references/REFERENCE_ADOPTION.md` |
 | Deciding what a section's focal image or object is | `references/MEDIA_SOURCES.md` — where it comes from, what it does, and where on the page it lands. Sourcing an image and deciding what it does are two decisions, and the second one is the one that gets skipped |
 | Installing or wiring any runtime | `references/CREATIVE_EXECUTION.md` |
-| Naming the signature behaviour and the experience arc, at step 4 | `skills/motion.md`, and `skills/3d.md` before concluding the subject is not spatial |
+| Before concluding the subject is not spatial | `skills/3d.md` |
 | Building a control that holds state | `skills/interaction.md` |
 | Sourcing or treating an image | `skills/media.md` |
 | The direction is a sequence, an environment, or one risky moment | `skills/cinematic.md`, `skills/immersive.md`, `skills/experimental.md` |
@@ -106,6 +127,52 @@ rather than as where they were found:
 
 More rules did not produce better pages. Design the page.
 
+## Build the real thing first
+
+**Do not build a simple version and plan to make it good later.** This is the
+failure that costs this skill more rounds than any other, and it is not a
+scheduling mistake — it decides the outcome at the first commit.
+
+What it looks like from inside: the sequence is the plan, so you put a CSS
+transition there "to get the layout working", intending to swap it. The section
+renders. It is fine. Now the swap is a rewrite of something that already works,
+against a build that is running low on room, and every later review produces a
+tweak instead of the replacement. The page ships as the placeholder. The review
+pass did not fail — it was never able to succeed, because reviewing a bridge
+only ever tells you the bridge could be smoother.
+
+The specific bans:
+
+- **No placeholder motion.** Do not write a fade, a translate, or a stub
+  transition where a real mechanism belongs. If the section is the frame
+  sequence, the first thing you write in that section is the frame sequence,
+  against real downloaded frames.
+- **No placeholder material.** Do not fill a focal slot with a gradient, a
+  drawn stand-in, a solid block, or a stock rectangle "for now". Source the
+  material before the section exists — `references/MOTION_MATERIAL.md`.
+- **No "minimum viable" pass.** There is no phase of this build where the page
+  is deliberately plain. The route grows section by section at full intended
+  fidelity, not layer by layer from a flat draft.
+- **No deferred ambition.** "Ship it working, then enhance" is how the enhanced
+  version does not happen.
+
+What replaces it: **build the hardest, most uncertain, most material-dependent
+part first, at full intended fidelity, and fix the errors as they come.** Errors
+are expected and are the normal cost of this. A broken frame scrubber on day one
+is a good position; a smooth fade on day one is a lost round. Work forward
+through the failure — wrong path, decode error, drift, jank, a sequence that
+scrubs backwards — rather than retreating to the version that cannot fail.
+
+Retreat is a real option exactly once, and only under `Ambition is capped by
+what you can verify`: you attempted the real mechanism, you could not get it
+correct on the rendered page, and you say so plainly. That is a different act
+from never attempting it. Do not describe a mechanism you did not build as
+having been "simplified".
+
+The prototype step exists to *choose* the mechanism, not to be the cheap version
+of it. A prototype that is a stripped-down draft of the real thing has already
+made this mistake.
+
 ## Workflow
 
 1. Inspect the real repository: framework, routes, content, behavior, assets,
@@ -154,11 +221,17 @@ More rules did not produce better pages. Design the page.
    transformation. Reveal the full brief only on request; do not wait for
    approval of it.
    Before you write the signature behavior and the experience arc into that
-   brief, read the craft file for what they are made of: `skills/motion.md`
-   whenever the arc moves, and `skills/3d.md` before concluding the subject is
-   not spatial — that conclusion is the one it exists to decide, so reaching it
-   without opening the file is how a spatial subject ships flat or fabricated.
-   Deciding the ambition is the moment, not writing the first transition.
+   brief, read the craft files for what they are made of: `skills/motion.md`
+   always — this is a motion skill and the arc always moves — then
+   `references/MOTION_MATERIAL.md` to decide what the moving thing is physically
+   made of and where it will be downloaded from, and `skills/3d.md` before
+   concluding the subject is not spatial. That last conclusion is the one the
+   file exists to decide, so reaching it without opening it is how a spatial
+   subject ships flat or fabricated. Deciding the ambition is the moment, not
+   writing the first transition.
+   The brief must name, for every signature moment: the event in the subject,
+   the material that shows it, its real source, and the single authored value
+   that drives it. A moment with no named material is not yet a moment.
    Only if the project already contains `.dreative/evaluation/README.md`, read
    `references/EVALUATION_HANDOFF.md` and follow it. Its absence is the normal
    case and needs nothing from you.
@@ -231,6 +304,29 @@ which then blew up while everything else collapsed. Design for one match and for
 all matches before shipping the effect.
 
 ## Motion
+
+Motion is the deliverable here, not a finish on one. It has three layers, and
+they are funded separately.
+
+**Layer 1 — the interaction baseline.** Cheap, uniform, required. Below.
+
+**Layer 2 — the seams.** What happens between sections. A route where each
+section reveals independently and the joins are scroll position is the flat
+result reviewers describe as "no transitions, nothing happening between
+sections", even when every region animates. Author the handoffs: something
+carries across, changes state, or resolves as one section becomes the next.
+This layer is the difference between a page with animation on it and a page
+that moves, and it is the one most often absent.
+
+**Layer 3 — the signature moments.** Few, expensive, and made of real material.
+Each one needs an event in the subject and something sourced that shows it —
+`references/MOTION_MATERIAL.md`. Position, opacity and scale applied to DOM
+boxes is not a signature moment however well it is timed; it is the transport
+layer, and a route whose ceiling is transforms has no ceiling.
+
+A route that is nothing but layer 1 is finished only when the honest answer is
+that the subject does nothing worth watching. On this skill that answer is rare
+and should be argued for, not defaulted to.
 
 **The interaction baseline is required on every profile, Efficient included.**
 Every element a user can touch has a designed hover, focus, press, and disabled
@@ -351,6 +447,12 @@ as choosing a set-piece, not a downgrade to justify. Restraint still owes the
 route a signature component, the interaction baseline, and authored motion; calm
 is not the same as empty, and a calm page that does not respond to being used is
 not calm, it is inert.
+
+Restraint has to be *chosen for the reader*, and it is the easiest decision on
+this page to reach for dishonestly. If the reason you are calm is that the
+ambitious version looked like work, that is not restraint, it is the placeholder
+build wearing a justification — see `Build the real thing first`. A user who
+invoked a motion skill has already told you which way the doubt resolves.
 
 Treat references as ingredients. Extract individual principles — rhythm,
 hierarchy, material, transition logic, interaction — not a complete house style.

@@ -238,6 +238,31 @@ third of the content.
 rendered precisely, with real space around it. Delete an element from a section
 and check whether the section actually got worse; usually it did not.
 
+## 14. The bridge that became the build
+
+The brief said the hero scrubs forty frames of the machine running. What is on
+the page is the hero image with a scale transform and an opacity ramp. Nobody
+decided that. A placeholder went in "to get the layout working", it rendered
+correctly, and it was never replaced.
+
+**Why it happens:** the simple version is always available and always works, and
+once it works, replacing it is a rewrite of functioning code rather than the
+next step of the build. Review then arrives at a page with no defects and
+produces a tweak. The plan is never formally abandoned, which is why it survives
+into the handoff as if it shipped.
+
+**Tell:** the motion on the route is entirely position, opacity and scale, and
+nothing in the repository was downloaded for it — no frames, no clip, no model,
+no manifest. The brief names a mechanism the code does not contain. The handoff
+says "simplified" about something never attempted.
+
+**Instead:** build the hardest, most material-dependent moment first, against
+real downloaded files, at full intended fidelity, and fix errors forward. A
+broken scrubber on the first pass is a better position than a smooth fade. If
+the real mechanism was attempted and could not be made correct on the rendered
+page, retreat and say so explicitly — that is a different act from never
+building it.
+
 ---
 
 ## Using this file

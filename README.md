@@ -1,10 +1,18 @@
 # Dreative
 
-Dreative is a frontend design-builder skill for coding agents. It acts as a
-creative director, resource guide, implementation system, and visual refiner:
-it develops a project-native direction, selects useful capabilities such as
-GSAP, Lenis, Canvas, Three.js/OGL, and sourced/generated media, builds in the
-real application, and corrects the complete rendered experience.
+Dreative is a **motion** design-builder skill for coding agents. It acts as a
+motion director, resource guide, implementation system, and visual refiner: it
+develops a project-native direction, sources the real material the motion is
+made of — frame sequences, footage, models, HDRIs — selects the capability that
+drives it (GSAP, Lenis, Canvas, Three.js/OGL, shaders), builds in the real
+application, and corrects the complete rendered experience.
+
+It is deliberately not a generic website builder. Clean, conventional,
+business-strategy frontend work is out of scope; restructuring and UX craft
+stay in scope as the floor the motion is built on. Two rules carry most of the
+difference: the material is decided and downloaded before the section that
+drives it exists, and the real mechanism is built at full fidelity on the first
+pass rather than as a placeholder intended for later upgrade.
 
 Its execution library is intentionally small: twelve executable native
 foundations with source, a functional fixture, explicit fallback and cleanup
