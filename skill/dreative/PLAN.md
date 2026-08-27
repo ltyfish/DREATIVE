@@ -23,21 +23,18 @@ generic one.
 
 Show exactly:
 
-The three levels are **motion ceilings**, not effort tiers and not business
-options. They differ in how much of the route is authored in time and how
-expensive its material is — never in whether the page moves at all.
+The three levels differ in scope and ceiling — how much of the route is
+redesigned, how much of it is authored in time, and how expensive its material
+is. They are not three intensities of one style.
 
 1. **Recommended — <project-native concept>**
-   The strongest motion-led experience this subject, its available material, and
-   this codebase can actually carry. A real signature moment made of real
-   material, authored seams between sections, and the interaction baseline
-   throughout.
+   The direction most likely to produce the strongest product for this
+   audience, content, and implementation reality.
 
 2. **Efficient — <focused concept>**
-   The highest-value motion work using the least tokens and implementation cost,
-   preserving the current structure, assets, and stack where useful. One
-   authored moment plus the full interaction baseline, rather than a spread of
-   small effects. Efficient is a narrower scope, not a flatter page.
+   The highest-value improvement using the least tokens and implementation cost,
+   preserving the current structure, assets, and stack where useful. Efficient
+   is a narrower scope, not a flatter page.
 
 3. **Showcase — <flagship concept>**
    The highest creative and technical ceiling. Sourced footage, frame sequences,
@@ -46,19 +43,15 @@ expensive its material is — never in whether the page moves at all.
    visibly and structurally distinct from Recommended; a long conventional page
    with one isolated spectacle is insufficient.
 
-Each option must name its premise, the event in the subject it makes visible,
-the material that shows it and where that material comes from, its composition
-and type voice, its motion grammar, and its product fit. Do not mention
+Each option must name its premise, composition, material/type voice, meaningful
+media or interaction, and product fit. Where the concept moves, name the event
+in the subject it makes visible and the material that shows it. Do not mention
 reference brands as the concept. Do not offer three versions of the same
-editorial landing page. Do not offer three intensities of the same scroll fade —
-if the three differ only in how much moves, none of them is a concept.
-Each must be the strongest honest design for its stated constraint: Efficient
-is not deliberately weak, Recommended is not a diluted Showcase, and Showcase
-must genuinely reach the highest coherent creative and technical ceiling.
-
-Nothing in these options is a business proposal. Do not present conversion
-impact, positioning, market rationale, or audience segments; present what the
-reader will see happen.
+editorial landing page, and do not offer three intensities of the same scroll
+fade. Each must be the strongest honest design for its stated constraint:
+Efficient is not deliberately weak, Recommended is not a diluted Showcase, and
+Showcase must genuinely reach the highest coherent creative and technical
+ceiling.
 
 End with:
 
@@ -295,11 +288,12 @@ part of the signature-moment budget, and it is the thing blind review reads as
 smoothness. Do not fund a second set-piece before it exists. Pick one hover
 behaviour for the whole route rather than mixing four.
 
-Name every **signature moment** here as four things: the event in the subject,
-the material that shows it, that material's real source, and the single authored
-value that drives it. A moment missing any of the four is not planned yet, and
-planning it as "an animated reveal" is how the route ships as fades. Name the
-**seams** too: what carries across each major section boundary.
+Where the route has a **signature moment that moves**, name it here as four
+things: the event in the subject, the material that shows it, that material's
+real source, and the single authored value that drives it. A moment missing any
+of the four is not planned yet, and planning it as "an animated reveal" is how
+the route ships as fades. Name the **seams** too: what carries across each major
+section boundary.
 
 For every focal subject, decide the medium and where the asset actually comes
 from before writing focal code. Read `references/MOTION_MATERIAL.md` for

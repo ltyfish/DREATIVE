@@ -3,8 +3,9 @@
 Motion explains hierarchy, causality, continuity, and state. It is a way of
 saying something about the subject, not a finish applied after the saying.
 
-This is the core craft file of a motion skill, not a specialty. Open it on every
-build, before the brief.
+This is the deepest specialty in the skill and the one whose absence is named
+most often in review. Open it when the arc moves — which is most builds — and
+open it before the brief is written, not after the first transition.
 
 ## Motion is a material problem before it is a code problem
 

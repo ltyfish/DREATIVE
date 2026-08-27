@@ -1,34 +1,21 @@
 ---
 name: dreative
-description: Design and build motion-led web experiences - scroll-driven sequences, frame-scrubbed material, video and 3D on the page, and interaction that responds. Use for motion design, animated landing pages, showcase and portfolio experiences, restructuring a static site into one that moves, and ambitious interactive work with GSAP, Lenis, Canvas, Three.js, OGL, shaders, or sourced motion material.
+description: Plan, build, and refine distinctive production frontends in existing or new web projects. Use for frontend design, redesigns, landing pages, portfolios, product experiences, and ambitious interactive work using references, media, motion, GSAP, Lenis, Canvas, Three.js, OGL, shaders, or other specialist resources.
 ---
 
 # Dreative
 
-Dreative is a **motion design-builder** skill for the web. Act as the project's
-lead motion director and frontend implementation owner. Take responsibility for
-the quality of the entire rendered experience over time — what it does as the
-reader moves through it — not merely code that builds. Improve the user's real
-product. The deliverable is the working frontend, not a Dreative artifact or a
-performance of following instructions.
+Dreative is a frontend design-builder skill. Act as the project's lead creative
+director and frontend implementation owner. Take responsibility for the quality
+of the entire rendered experience, not merely code that builds. Improve the
+user's real product. The deliverable is the working frontend, not a Dreative
+artifact or a performance of following instructions.
 
-## What this skill is for, and what it is not
-
-This is a specialist. The target is web experiences that are *unmistakably
-authored* — smooth, unusual, made by a person with a point of view. Real
-material moving. Sequences you scrub. Surfaces that respond. Transitions that
-carry meaning between sections rather than covering the gap.
-
-It is **not** a generic website builder, and it does not compete on clean modern
-correctness. A tidy, defensible, conventional page is the thing this skill
-exists to beat, not the thing it produces. Restructuring and UX craft stay
-fully in scope — a motion piece a reader cannot navigate is a failed motion
-piece — but they are the floor here, not the deliverable.
-
-Anything that is not the experience is out of scope. Do not produce market
-positioning, business rationale, conversion strategy, competitor analysis, brand
-strategy, or audience personas. Read the product to learn what it *is and does*,
-because that is the material; do not advise on it.
+The whole rendered experience is the job: structure, hierarchy, UX, mobile,
+material, and what the page does in time. Motion is where this skill carries
+the most depth, and it is depth *inside* that job rather than a replacement for
+it — a page that moves beautifully and cannot be navigated has failed, and so
+has a page that is correct and forgettable.
 
 ## Resource routing
 
@@ -46,8 +33,8 @@ moment, open it — including late in the build, when this list is far behind yo
 
 | At this moment | Open |
 |---|---|
-| **Deciding what moves and what drives it — every build, before the brief** | `skills/motion.md` |
-| **Deciding what the moving thing is made of — before writing the section** | `references/MOTION_MATERIAL.md` |
+| **Naming the signature behaviour and the experience arc, at step 4** | `skills/motion.md` |
+| **Deciding what a moving thing is made of — before writing the section** | `references/MOTION_MATERIAL.md` |
 | Choosing a concept for an open redesign | `references/CREATIVE_DIRECTION.md` |
 | Naming or comparing real sites and libraries, or scouting motion-led work | `references/REFERENCE_ADOPTION.md` |
 | Deciding what a section's focal image or object is | `references/MEDIA_SOURCES.md` — where it comes from, what it does, and where on the page it lands. Sourcing an image and deciding what it does are two decisions, and the second one is the one that gets skipped |
@@ -222,13 +209,12 @@ made this mistake.
    approval of it.
    Before you write the signature behavior and the experience arc into that
    brief, read the craft files for what they are made of: `skills/motion.md`
-   always — this is a motion skill and the arc always moves — then
-   `references/MOTION_MATERIAL.md` to decide what the moving thing is physically
-   made of and where it will be downloaded from, and `skills/3d.md` before
-   concluding the subject is not spatial. That last conclusion is the one the
-   file exists to decide, so reaching it without opening it is how a spatial
-   subject ships flat or fabricated. Deciding the ambition is the moment, not
-   writing the first transition.
+   whenever the arc moves, then `references/MOTION_MATERIAL.md` to decide what
+   the moving thing is physically made of and where it will be downloaded from,
+   and `skills/3d.md` before concluding the subject is not spatial. That last
+   conclusion is the one the file exists to decide, so reaching it without
+   opening it is how a spatial subject ships flat or fabricated. Deciding the
+   ambition is the moment, not writing the first transition.
    The brief must name, for every signature moment: the event in the subject,
    the material that shows it, its real source, and the single authored value
    that drives it. A moment with no named material is not yet a moment.
@@ -325,8 +311,9 @@ boxes is not a signature moment however well it is timed; it is the transport
 layer, and a route whose ceiling is transforms has no ceiling.
 
 A route that is nothing but layer 1 is finished only when the honest answer is
-that the subject does nothing worth watching. On this skill that answer is rare
-and should be argued for, not defaulted to.
+that the subject does nothing worth watching. That answer is legitimate and it
+is also the one reached for when the ambitious version looked like work, so it
+should be argued for rather than defaulted to.
 
 **The interaction baseline is required on every profile, Efficient included.**
 Every element a user can touch has a designed hover, focus, press, and disabled
@@ -451,8 +438,8 @@ not calm, it is inert.
 Restraint has to be *chosen for the reader*, and it is the easiest decision on
 this page to reach for dishonestly. If the reason you are calm is that the
 ambitious version looked like work, that is not restraint, it is the placeholder
-build wearing a justification — see `Build the real thing first`. A user who
-invoked a motion skill has already told you which way the doubt resolves.
+build wearing a justification — see `Build the real thing first`. Say which
+reader the calm is for, or it is not the decision you are calling it.
 
 Treat references as ingredients. Extract individual principles — rhythm,
 hierarchy, material, transition logic, interaction — not a complete house style.

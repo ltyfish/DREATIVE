@@ -31,7 +31,8 @@
 - `skill/dreative/references/MOTION_MATERIAL.md` — what motion is physically made
   of, where drivable material (frame sequences, footage, models, depth) comes
   from, the ffmpeg/blender production pipeline, and the one engine that drives
-  all of it. Added 2026-08-27 with the motion re-specialization.
+  all of it. Added 2026-08-27; the motion re-specialization it arrived with was
+  reverted the same day, this file was not.
 - `skill/dreative/references/MEDIA_SOURCES.md` — where real material comes from,
   what it is made to do, where it lands on the page, and the Sharp/FFmpeg/glTF
   production recipes (absorbed `ASSET_PIPELINES.md`, 2026-08-24).

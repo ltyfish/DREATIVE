@@ -19,8 +19,8 @@ export const DELIVERY_PROFILES: readonly DeliveryProfile[] = [
   {
     id: "recommended",
     label: "Recommended",
-    promise: "The strongest motion-led experience this specific product, its available material, and this codebase can actually carry.",
-    scope: "A complete, coherent redesign built around a real signature moment made of sourced material, authored handoffs between sections, and a route-wide interaction baseline.",
+    promise: "The direction the agent believes will produce the strongest result for this specific product.",
+    scope: "A complete, coherent redesign with the treatments and mechanisms that genuinely improve the concept, authored handoffs between sections, and a route-wide interaction baseline.",
     treatments: "Agent-selected; UX, Mobile, and the interaction baseline always apply. Author the seams between sections before funding a second signature moment.",
     review: "lean",
     prototype: "auto",
@@ -32,7 +32,7 @@ export const DELIVERY_PROFILES: readonly DeliveryProfile[] = [
     id: "efficient",
     label: "Efficient",
     promise: "The most token-efficient and implementation-efficient direction: a narrower scope, not a flatter page.",
-    scope: "One authored motion moment plus the full interaction baseline, using the existing structure, assets, and stack wherever possible.",
+    scope: "Small, high-value changes using the existing structure, assets, and stack wherever possible, including the cheap interaction baseline the route is missing.",
     treatments: "UX, Mobile, Refined, and a designed hover/focus/press state on everything interactive; add another treatment only to fix the scoped experience. Efficient is exempt from signature motion, never from the interaction baseline — it is the cheapest craft on the page.",
     review: "fast",
     prototype: "skip",
@@ -43,7 +43,7 @@ export const DELIVERY_PROFILES: readonly DeliveryProfile[] = [
   {
     id: "showcase",
     label: "Showcase",
-    promise: "The absolute highest coherent motion and technical ceiling, visibly distinct from Recommended.",
+    promise: "The absolute highest coherent creative and technical ceiling, visibly distinct from Recommended.",
     scope: "A flagship experience whose ambition is distributed beyond one isolated spectacle, using the strongest coherent combination of sourced footage, frame sequences, 3D, shaders, scroll-authored choreography, and responsive craft — distributed as resolution per section, not elements per section.",
     treatments: "UX and Mobile always apply; every other treatment is selected only when it strengthens the premise. There is no minimum count.",
     review: "full-audit",
@@ -60,7 +60,7 @@ export function renderDeliveryBrief(recommendation: DeliveryProfileId = "recomme
     ...DELIVERY_PROFILES.filter((profile) => profile.id !== recommendation),
   ];
   return [
-    "Choose a motion direction:",
+    "Choose a redesign direction:",
     "",
     ...ordered.flatMap((profile, index) => [
       `${index + 1}. ${profile.label}${profile.id === recommendation ? " — recommended" : ""}`,
@@ -121,7 +121,7 @@ export function renderDetailedPlanGuide(profileId: DeliveryProfileId): string {
     "3. Reference synthesis — each adopted principle, deliberate differences, and the complete-fingerprint independence check.",
     `4. Workflow/resources — Fast/Lean/Full Audit, Skip/Auto/Required, references, sources, packages, and detected capability; recommend ${profile.review} + ${profile.prototype} for ${profile.label}.`,
     `5. Treatment guide and section allocation — project-specific use, cost, risk, insufficiency, post-hero peak, and continuity owner. ${profile.treatments}`,
-    "Signature moments — for each, the event in the subject, the material that shows it, that material's real source, and the one authored value that drives it; plus what carries across each section seam.",
+    "Signature moments that move — for each, the event in the subject, the material that shows it, that material's real source, and the one authored value that drives it; plus what carries across each section seam.",
     "6. Build architecture — signature mechanism, runtime ownership, component/asset pipeline, mobile and semantic fallbacks, accessibility, and performance.",
     "7. Observable review, risks, fallbacks, and one editable decision reply.",
     "Visible execution map — experience arc, section ownership, post-hero peak, continuity owner, and mobile transformation in roughly ten lines.",
