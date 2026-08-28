@@ -155,6 +155,19 @@ searched, and what came back. Then change the *form* rather than the subject:
 drive one photograph instead of scrubbing thirty, hold a frame while type moves
 through it, cut between two real states.
 
+The other half of that answer is the driver. A rig built to index into a
+sequence will happily index into anything — six unrelated stills, one per stage,
+swapped on scroll. It runs, it passes smoke, and it reads as a slideshow,
+because the material underneath it has no continuity for the index to expose.
+So when the set is not one subject, retire the index along with the sequence.
+Something that stays put and is worked on — one photograph driven, a frame held
+while type moves through it, two real states traded — beats an indexing driver
+with nothing to index, which is the most convincing-looking way to ship nothing.
+Check this on the files, before the section exists: same subject, compatible
+light, a state that progresses. `MEDIA_SOURCES.md`, *One subject, or a different
+form*, is the same check from the sourcing side, along with the grading and
+compositing that make separately sourced material read as one shoot.
+
 What is not an answer is constructing the subject out of gradients and animating
 that. A fabricated prop in motion is the same defect as a fabricated prop at
 rest, moving.

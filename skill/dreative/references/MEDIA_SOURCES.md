@@ -110,6 +110,40 @@ that set often cannot be sourced — what exists is a few real photographs of
 related things. That is where the form changes, not where the subject gets
 constructed: drive one photograph instead of scrubbing thirty.
 
+### One subject, or a different form
+
+A set only reads as one thing if it is one thing. Six photographs of six
+different objects, indexed one per stage, do not become a sequence by being
+placed in the same slot and swapped on scroll — they become a slideshow of
+strangers, and the reader sees that immediately even when each individual
+photograph is real, licensed and well shot. The same applies across variants: a
+different object per finish, per colourway, per plan tier says the variants are
+unrelated products.
+
+This is the failure that survives every check, because sourcing succeeded.
+Real material, correct credits, an authored progress value, a working index —
+and a page a reviewer calls depressing, because nothing on it is ever the same
+thing twice.
+
+**Tell:** the stages differ in era, machine, lighting and finish rather than in
+state; a caption has to say *reference photograph* or *similar to*; the subject
+changes size and orientation between adjacent steps; the page never shows the
+product twice.
+
+So before the section is written, check the set for continuity, not just for
+count: same subject, same or compatible lighting, a state that actually
+progresses from one item to the next. Sourcing twelve views of one movement is
+worth far more than one view each of twelve movements.
+
+**When continuity cannot be sourced, the form changes — the slots do not get
+filled anyway.** Drive one photograph through the whole passage and let type,
+annotation and crop carry the stages over it. Hold one real image and move the
+frame through it. Trade two real states of one subject. Or drop the indexed
+form entirely and present the pieces as what they are — a plate of references,
+sized and captioned as reference, with the section's argument carried by
+notation drawn over them. All four are honest. An index into unrelated material
+is the one option that is not.
+
 ### Where it lands is the same decision
 
 A photograph in a secondary slot, under a section whose focal element you drew,
@@ -340,6 +374,57 @@ exactly the decision this section exists to prevent, and had a defensible
 argument for it. If the analogue is photographable and you drew instead, that is
 the failure, whatever the drawing is called. Draw the diagram as well, once the
 real material is on the page.
+
+## Sourced material arrives mismatched
+
+Material found in the world was lit by different people on different days. Put
+four such images on one page untouched and they read as stock even though every
+one of them is real: warm brass next to cold steel, a black studio sweep next to
+a grey museum table, one subject filling the frame and the next lost in it. The
+page then has a palette and the images have their own, and the eye reads the
+difference as cheapness.
+
+Processing them into one image system is part of the material work, not a
+finishing pass. What that usually means:
+
+- **One light and one grade.** Match black point and white point across the set,
+  then push them toward a common temperature — or commit to a duotone or a
+  single-channel treatment keyed to the page's palette, which reconciles
+  anything and is often the stronger answer for mixed archival sources.
+- **One subject scale and one crop discipline.** Decide how much of the frame
+  the subject occupies and hold it across the set. Crop to the same aspect
+  family. A tighter crop of the same photograph is usually more use than the
+  whole of it.
+- **Grain, halation, a paper or screen substrate, a consistent vignette** —
+  applied to the set rather than to one image, these make separately sourced
+  material read as one shoot.
+- **Composite rather than place.** Two sources cut together, a subject lifted
+  onto the page's own ground, one image masked into type, a channel of one
+  driving the displacement of another. Canvas and WebGL are for this as much as
+  for motion; a shader that grades and displaces a still is a page's whole look.
+
+Do it as a build step over the files on disk, so the treated set is what ships
+and the pipeline is repeatable:
+
+```bash
+# grade toward one temperature and one contrast, then duotone the set
+magick source/*.jpg -auto-level -modulate 100,88,102 -set filename:f "%t" public/media/%[filename:f].webp
+magick public/media/plate.webp \( +clone -colorspace gray \) -delete 0 \
+  -level 4%,96% +level-colors "#0b0a08","#e8dccb" public/media/plate-duo.webp
+
+# fixed subject scale and one aspect family across a set
+magick source/stage-3.jpg -resize 2000x2000^ -gravity center -extent 1600x1000 public/media/stage-3.webp
+
+# grain and a soft halation, applied to the whole set, not one image
+magick public/media/stage-3.webp \( +clone -blur 0x18 -evaluate multiply 0.35 \) \
+  -compose screen -composite -attenuate 0.5 +noise Gaussian public/media/stage-3-fin.webp
+```
+
+`sharp` covers the same ground when ImageMagick is absent (`.normalise()`,
+`.tint()`, `.linear()`, `.composite()`); a canvas pass at build time or a
+fragment shader at runtime covers what neither can. Keep the untreated
+originals and the licence record, and check the treated set together at one
+size before it goes anywhere near the page.
 
 ## Producing the files
 

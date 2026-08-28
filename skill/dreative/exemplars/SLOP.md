@@ -263,6 +263,33 @@ the real mechanism was attempted and could not be made correct on the rendered
 page, retreat and say so explicitly — that is a different act from never
 building it.
 
+## 15. The set that is not one thing
+
+The section walks six stages of the product and each stage shows a different
+object: a different machine, a different era, a different studio, a different
+light. Three variants of one item are three separate photographs of three
+separate items. Every image is real, licensed and credited, and a caption
+somewhere has to admit *reference photograph*.
+
+**Why it happens:** sourcing is scored as a count. Six slots asked for six
+images and six images were found, each one individually a good result. Nothing
+in the build ever asks whether they are the same subject, and the rig that
+indexes them does not care.
+
+**Tell:** the page never shows its own product twice. Adjacent steps differ in
+era and finish rather than in state, so the transition between them carries no
+information. Mixed sources sit at their own colour temperatures against a page
+palette none of them share.
+
+**Instead:** treat continuity as part of the material, checked on the files
+before the section is written — twelve views of one subject beat one view each
+of twelve. Where the set cannot be made continuous, change the form rather than
+filling the slots: drive one real photograph through the whole passage, hold a
+frame and move type and annotation over it, trade two real states, or present
+the pieces plainly as references and let drawn notation carry the argument.
+And grade what you do ship into one light, one subject scale, one crop family —
+separately sourced material reads as stock until it is processed into a set.
+
 ---
 
 ## Using this file
