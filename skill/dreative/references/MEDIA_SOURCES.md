@@ -40,7 +40,9 @@ and the licence allow:
    views, which is motion material rather than an illustration.
 2. **A licensed model, or frames rendered from one.** Keyless and verified
    sources for both are listed above; for a physical product this rung is
-   usually right and is rarely the one chosen.
+   usually right and is rarely the one chosen. It is also the rung that fixes a
+   bad archive: your framing, your light, a guaranteed-continuous set, any
+   resolution — see *A real photograph is not automatically a good one*.
 3. **Real surface material** — a photographed or scanned texture, a PBR set, an
    HDRI. Poly Haven and ambientCG are CC0 and need no key.
 4. **Drawn construction** — CSS, SVG, canvas geometry standing in for a physical
@@ -222,6 +224,57 @@ Checked 2026-08-19 with plain `curl`, no key, real results returned.
 
 Stock-library aesthetics are a convergence risk wherever you find them — crop
 hard, grade deliberately, and avoid the frames popular enough to feel familiar.
+
+## A real photograph is not automatically a good one
+
+The ladder ranks material by kind. It says nothing about quality, and the
+keyless sources skew hard toward one kind of picture: the **record shot** — an
+object photographed to document that it exists, flat-lit or on-camera-flashed,
+centred, everything equally sharp, shot by a curator or a hobbyist against
+whatever was behind it. That is the right photograph for a catalogue and the
+wrong one for a page, and a build that only checks the licence ships a page of
+them. It reads exactly as it is: real, truthful, and nobody's best work.
+
+What separates a photograph you can build on:
+
+- **The light is doing something.** A direction, a falloff, a highlight that
+  travels along an edge. Flat frontal light kills every surface it touches, and
+  no amount of grading puts it back.
+- **The subject separates from its ground.** Depth of field, tonal contrast, or
+  a considered background — not the object lost in a field of similar clutter.
+- **The sharpness is where the meaning is**, not spread evenly across the frame.
+- **It survives your crop.** Find the crop you actually need first, then check
+  resolution and framing *there*. A 3000px file whose subject occupies 400px is
+  a 400px photograph.
+- **It is not the frame everyone else found.** The top result for the obvious
+  query is on a hundred other pages.
+
+Judge these by opening the file and looking at it, at the size the page will use.
+A thumbnail in a search result and a licence line are not an inspection, and this
+is the step most often skipped between finding an image and shipping it.
+
+**When the archive only has record shots — and for most specific products, that
+is what it has — make the photograph instead of settling for one.** This is
+rung 2 and it is still the least chosen rung, which is odd, because it is the
+one that hands you everything the archives cannot: your own framing, your own
+light, a set that is guaranteed continuous, any resolution you want, and no
+attribution obligation travelling into the page.
+
+```bash
+# a licensed CC model, lit by a real HDRI, rendered to exactly the views you need
+# (api.sketchfab.com/v3/search for the model; polyhaven.com for the HDRI)
+blender -b subject.blend -P shoot.py -- --hdri studio.hdr --views 48 --out frames/
+```
+
+A model you found, lit properly and rendered to your own frames, outranks a
+sharper photograph of a different object every time — it is the same subject in
+every frame, in the light you chose. Three-point lights and a grey background
+give it away instantly; a real HDRI is the whole difference, and Poly Haven's are
+CC0. The same logic covers a product's own press kit, a maker's build log, a
+museum's high-resolution download of the actual object, and photographing or
+screen-recording the thing yourself where that is possible. Generated frames of
+the real thing beat sourced frames of a different thing, and made frames of the
+real thing beat record shots of it.
 
 ## Sources that need a key you do not have
 

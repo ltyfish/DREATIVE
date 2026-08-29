@@ -302,10 +302,20 @@ Two allocations to make explicitly, because they are the ones that get skipped:
   frame before the action, a detail at ten times life size — rather than
   discovering later that the only thing on disk is the hero.
 
-Whatever the route's ambition is, it is spread across the page or it is not
-ambition. Three sections that each do one real thing beat one spectacular
-section and six placeholders, and a build that finds itself short should reduce
-what it promised rather than fund the first section and coast.
+**This is a floor, not an equal share.** A page where every section is as loud as
+the peak has no peak, costs a fortune to load, and is the density failure in
+`exemplars/SLOP.md` under another name. What every section owes is that it was *decided* and
+that what holds it is real — a photograph chosen for this seat, a surface, a state,
+notation over one of those, or type set deliberately. What one section owes on top
+of that is to be the thing the page was built for. Quiet is a composition; unfunded
+is an omission, and the difference is whether you can say what the section holds and
+why that is enough for it.
+
+The consequence, when the budget will not stretch: reduce what the peak promised
+until the floor is paid for. A route with three sections that each hold something
+real and one of them singing beats a route with one aria and six empty rooms — and
+a build that discovers it is short has found a scope decision, not a licence to fund
+the first section and coast.
 
 Three things about material apply to every build, whichever reference you open
 next, so they are here rather than only there:
@@ -317,7 +327,10 @@ next, so they are here rather than only there:
    unlimited for **notation** — diagrams, annotation over a photograph, charts,
    icons, marks. It is the fallback when it stands in for something physical
    that exists and could have been sourced, and reaching it is a sentence you
-   should be able to write.
+   should be able to write. A real photograph is not automatically a good
+   one: the keyless archives are full of record shots — flat-lit, centred,
+   everything equally sharp — and where that is all they hold, rendering your own
+   frames from a licensed model under a real HDRI is the rung that fixes it.
 2. **Real material takes the focal seat of the section it belongs to.** A
    photograph in a side slot under a figure you drew is a page made of drawings
    with photographs attached — the inversion blind review calls "it's all SVG".
