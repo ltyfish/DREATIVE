@@ -27,7 +27,9 @@ proceed to picking an easing curve.
 
 ## What can actually be driven
 
-Ranked by what the material gives you, not by difficulty:
+Ranked by what the material gives you, not by difficulty. This ranks the **material**;
+the *form* it takes is a separate decision made against the subject, and the
+forms are worked out at equal depth further down:
 
 1. **A frame sequence of one subject.** The strongest and the most reliably
    overlooked. 24-60 frames of the same object rotating, opening, running,
@@ -123,23 +125,13 @@ from the same pass, never as an afterthought. Keep originals out of the client
 bundle and keep the licence record with the derivative. Never run an unbounded
 sequence extraction.
 
-### One engine drives all of it
+### One authored value drives all of it
 
-```js
-const frames = manifest.map((src) => Object.assign(new Image(), { src }));
-await Promise.all(frames.map((f) => f.decode().catch(() => {})));
-
-let current = -1;
-function onProgress(p) {                 // p is 0..1, authored, one source
-  const i = Math.min(frames.length - 1, Math.round(p * (frames.length - 1)));
-  if (i !== current) { current = i; ctx.drawImage(frames[i], 0, 0, w, h); }
-}
-```
-
-The index can select a frame, a video `currentTime`, a model rotation, a crop
-offset, a mask position, or a blend between two real states. Same engine. What
-changes is the material — which is why the material is the decision and the code
-is not.
+Whatever form the section takes, it runs off **one** value. That value can select a
+frame, a video `currentTime`, a model rotation, a crop offset, a mask position, a
+displacement amount, a particle's progress home, or a blend between two real states —
+see *Forms, at equal weight* below for each of those written out. What changes between
+them is the material and the form; the single source of progress does not.
 
 Drive everything in a section from that one value. Independent triggers drift,
 and drifted triggers are the commonest way a good sequence reads as broken.
@@ -147,6 +139,165 @@ and drifted triggers are the commonest way a good sequence reads as broken.
 Preload before the section is reachable, decode off the critical path, and give
 reduced motion **one authored still that was chosen** — not the sequence with
 the animation switched off.
+
+## Forms, at equal weight
+
+The ladder above ranks **material**. It does not rank **form**, and the two are
+separate decisions — the same sixty frames can be scrubbed, dissolved, masked
+into a word, sampled into a field of particles, or cut into a sequence that
+plays itself. What follows are several forms worked to the same depth, because a
+form with a code sample beside five forms named in a list is not a choice, it is
+a default with decoration. None of these is recommended over the others. The
+subject picks.
+
+Each one assumes the material is already on disk and already treated.
+
+### Scrub an index
+
+The reader's position selects a frame. Best when the subject has a real
+progression the reader benefits from controlling — an assembly, a rotation, a
+state changing over a known interval.
+
+```js
+const frames = manifest.map((src) => Object.assign(new Image(), { src }))
+await Promise.all(frames.map((f) => f.decode().catch(() => {})))
+let current = -1
+function onProgress(p) {                          // one authored value, 0..1
+  const i = Math.min(frames.length - 1, Math.round(p * (frames.length - 1)))
+  if (i !== current) { current = i; ctx.drawImage(frames[i], 0, 0, w, h) }
+}
+```
+
+Its failure is specific and common: a sequence whose frames all look alike reads
+as a still that flickers. If two adjacent stops in the reader's journey select
+frames that show the same thing, the index is not carrying the argument and
+another form is doing more with the same material.
+
+### Displace one photograph by its depth
+
+One still plus a depth map is a volume: the reader moves and the near pixels
+travel further than the far ones. Depth maps come with the material from a
+photogrammetry set or a render, and can be generated from a single photograph
+offline. This is the form that makes a *single* good photograph carry a whole
+section, which is why it matters when a set cannot be sourced.
+
+```glsl
+// fragment: colour sampled at an offset proportional to depth and to input
+uniform sampler2D uImage, uDepth;
+uniform vec2 uShift;                 // from pointer, scroll, or gyro
+void main() {
+  float d = texture2D(uDepth, vUv).r;
+  vec2 uv = vUv + uShift * (d - 0.5) * 0.06;
+  gl_FragColor = texture2D(uImage, uv);
+}
+```
+
+Without a depth map, a hand-cut two- or three-plane separation (subject, mid,
+ground) as PNGs with alpha does most of the same work and costs an hour in an
+image editor. That is a real technique, not a downgrade.
+
+### Put the material inside the type
+
+The word is the window. Real footage or a real photograph shows only where the
+letterforms are, so the type stops being a label on the material and becomes the
+way you see it.
+
+```css
+.headline {
+  background: url(/media/movement.webm) center / cover;   /* or an image */
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* video needs an element: position it behind and mask instead */
+.masked { mask-image: url(/media/word.svg); mask-size: contain; }
+```
+
+Scale is the whole craft here — the type has to be large enough that the
+material inside it is legible as material, which usually means far larger than
+the layout wanted. The reverse also works: the type as a hole cut in an opaque
+plate, showing the material through it.
+
+### Stage the material physically
+
+Instead of the image filling a rectangle, give it a body: a frame, a plate, a
+strip of film, a card held at an angle, a stack that shuffles, a slide carousel
+that advances with a mechanical step, a page that turns. The material stays
+still and the *thing holding it* moves, which is often more convincing than
+moving the image, and it works with as few as three photographs.
+
+```css
+/* one frame of a stack, offset and lit like a physical object */
+.plate { transform: rotate(var(--tilt)) translateZ(var(--z));
+         box-shadow: 0 var(--lift) calc(var(--lift) * 2) rgb(0 0 0 / .45);
+         transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+.stack { perspective: 1400px; transform-style: preserve-3d; }
+```
+
+Weight and shadow do the work. A frame that moves without its shadow moving
+reads as a sticker; a plate that lifts and darkens the one beneath it reads as
+an object.
+
+### Sample the material into a field
+
+Read the pixels of a real photograph and use them to seed something that moves —
+particles that carry the image's own colours, a flow field weighted by its
+luminance, a dissolve that scatters and reassembles the actual subject. The
+image is not illustrated by the effect; the effect is *made of* the image, which
+is what separates this from a generic particle background.
+
+```js
+const { data } = ctx.getImageData(0, 0, w, h)
+const parts = []
+for (let y = 0; y < h; y += 4) for (let x = 0; x < w; x += 4) {
+  const i = (y * w + x) * 4
+  if (data[i + 3] < 40) continue
+  parts.push({ hx: x, hy: y, x: Math.random() * w, y: Math.random() * h,
+               c: `rgb(${data[i]} ${data[i + 1]} ${data[i + 2]})` })
+}
+// then ease x,y toward hx,hy on one authored value; scatter on the way out
+```
+
+Bound the particle count against the real device, and give the resting state the
+photograph itself rather than an approximation of it.
+
+### Cut it, and let the cut be the design
+
+Editing is a design act, not a preprocessing step. A clip trimmed to the exact
+half-second where the thing happens, slowed at the moment of contact, reversed
+so it assembles instead of falling, or cut hard against the type is doing work
+that no runtime parameter can add afterwards.
+
+```bash
+ffmpeg -ss 00:00:07.2 -t 1.6 -i src.mov -an beat.mov       # the exact moment
+ffmpeg -i beat.mov -filter:v "setpts=3.2*PTS" -an slow.mov  # hold on contact
+ffmpeg -i beat.mov -vf reverse -an assemble.mov             # falling -> building
+ffmpeg -i slow.mov -vf "crop=ih*0.75:ih,scale=900:-2" -c:v libvpx-vp9 -crf 32 -b:v 0 -an public/media/beat.webm
+```
+
+Then the runtime can be almost nothing: play once on entry, hold the last frame,
+tie `currentTime` to the reader. A well-cut two-second clip beats a badly chosen
+sixty-frame scrub, and it is a tenth of the payload.
+
+### Trade two real states
+
+Two photographs of the same subject in two genuine conditions — lit and unlit,
+open and closed, before and after, dry and wet — and a transition that makes the
+difference legible: a wipe along the axis the change happens on, a hard cut on a
+click, a circular reveal under the cursor, a slider the reader drags. Cheap,
+sourceable when nothing else is, and it carries information rather than
+atmosphere.
+
+```js
+el.style.clipPath = `inset(0 ${100 - p * 100}% 0 0)`   // p is the same authored value
+```
+
+---
+
+Nothing above is a list to work through, and a page does not become better by
+containing more of them. One form, chosen because it is what this subject does
+and executed to the end, is the target. The reason to know all of them is that
+the first form you think of is usually the one you used last time.
 
 ## When the material is not there
 

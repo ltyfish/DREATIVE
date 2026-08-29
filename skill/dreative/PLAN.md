@@ -272,6 +272,66 @@ this product needs those and not the default five. Then add executable states,
 owners, handoffs, responsive forms, fallbacks, and evidence targets. Do not
 force a generic architecture.
 
+**The page has a material budget, and it is not the hero's.** Allocate it here,
+across the sections you just named, before any of them is written. The failure
+this prevents is a route where one moment is fully realised — sourced,
+treated, driven — and every other section is a table, a card row, a stat strip,
+or a shape someone drew, because the material decision was made once for the
+peak and never made again. That page reads as empty and unfinished no matter how
+good the peak is, and the peak cannot rescue it: a reader who has scrolled past
+four unfunded sections has already decided what this is.
+
+So for **every** section, name what physically holds it — a photograph, a
+sequence, a clip, a surface, a real state, a drawn notation over one of those, or
+type alone. Type alone is a legitimate answer, deliberately chosen, and a page
+where one section is silent so the next can be loud is composed. A page where
+five sections are silent because nobody budgeted for them is not, and the tell is
+that you cannot say what any of them was supposed to hold.
+
+Two allocations to make explicitly, because they are the ones that get skipped:
+
+- **The sections that carry obligation** — specifications, prices, hours,
+  tiers, comparisons, contact. These arrive as content and leave as tables, and
+  a table is a legitimate form only when it was chosen against the alternatives:
+  the same rows against the real surface they describe, at the scale they
+  describe, or annotated over the object, or held by one photograph that makes
+  the number mean something. Deciding this early is what stops the page from
+  ending in four grey rectangles.
+- **The reserve.** Material found for the peak is usually the same shoot the
+  rest of the page needs. Budget the outtakes deliberately — a second crop, the
+  frame before the action, a detail at ten times life size — rather than
+  discovering later that the only thing on disk is the hero.
+
+Whatever the route's ambition is, it is spread across the page or it is not
+ambition. Three sections that each do one real thing beat one spectacular
+section and six placeholders, and a build that finds itself short should reduce
+what it promised rather than fund the first section and coast.
+
+Three things about material apply to every build, whichever reference you open
+next, so they are here rather than only there:
+
+1. **Rank the material and take the highest rung the subject and the licence
+   allow** — a photograph of the thing (a *set* of views is motion material),
+   then a licensed model or frames rendered from one, then real surface material
+   (texture, PBR, HDRI), and only then drawn construction. Drawing is
+   unlimited for **notation** — diagrams, annotation over a photograph, charts,
+   icons, marks. It is the fallback when it stands in for something physical
+   that exists and could have been sourced, and reaching it is a sentence you
+   should be able to write.
+2. **Real material takes the focal seat of the section it belongs to.** A
+   photograph in a side slot under a figure you drew is a page made of drawings
+   with photographs attached — the inversion blind review calls "it's all SVG".
+3. **A sourced set is processed into one image system before it ships**: one
+   light and grade, one subject scale and crop family, applied to the set rather
+   than to one image. Separately sourced material reads as stock until it is
+   treated. And a set indexed as one subject has to *be* one subject.
+
+`references/MEDIA_SOURCES.md` carries all three in full, with the sources, the
+licence rules, and the processing recipes; `references/MOTION_MATERIAL.md`
+carries drivable material, the production pipeline, and the forms at equal
+weight. Open both when the route has any focal subject at all.
+
+
 Name the **signature component** here: the one element on this route that could
 not be lifted onto a competitor's page, and the one sentence saying why. It is
 the requirement most often missed, and removing generic components does not
@@ -296,10 +356,7 @@ the route ships as fades. Name the **seams** too: what carries across each major
 section boundary.
 
 For every focal subject, decide the medium and where the asset actually comes
-from before writing focal code. Read `references/MOTION_MATERIAL.md` for
-drivable material and its production pipeline, and `references/MEDIA_SOURCES.md` for where to
-look, what each licence permits, what the material is made to do, and where on
-the page it lands. Evaluate external media before
+from before writing focal code. Evaluate external media before
 fabricating a realistic physical subject out of CSS or SVG; fabricated product
 imagery is the single failure blind reviewers have called out most sharply, and
 "evaluated external options" means you searched. If the selected fidelity needs a capability you do not

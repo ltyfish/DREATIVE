@@ -40,11 +40,19 @@ loop until repaired or replaced by another confirmed browser adapter.
    headline wrapping, cap-height and baseline relationships, tiny or
    low-contrast supporting copy, visual-anchor alignment, negative-space
    balance, and section-to-section rhythm.
-4. Exercise motion at entry, midpoint, reversal, and release. Inspect reduced
+4. Inventory the whole route by section, in one pass: for each one, write what
+   physically holds it — a photograph, a sequence, a clip, a real surface, a real
+   state, notation drawn over one of those, or type alone. Then read the list.
+   One section fully realised above a run of tables, card rows and drawn figures
+   is the commonest shape of an unfinished page, and it is invisible while you
+   are looking at the peak, which is why this is a separate pass. Type alone is
+   a real answer where it was chosen; the finding is a section nobody decided.
+   Fix it by funding those sections, not by adding motion to them.
+5. Exercise motion at entry, midpoint, reversal, and release. Inspect reduced
    motion separately. Use console, network, and performance traces to explain
    defects, not to substitute for visual judgment.
-5. Fix the highest-impact findings in the real source.
-6. Recapture the affected viewport and the full page. Continue until blocking
+6. Fix the highest-impact findings in the real source.
+7. Recapture the affected viewport and the full page. Continue until blocking
    findings are cleared and the correction does not damage another viewport.
 
 At least one before/after correction cycle is required for Lean and Full Audit.
