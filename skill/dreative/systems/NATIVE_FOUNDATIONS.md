@@ -125,11 +125,26 @@ one cleanup path. `demo.html` is a functional visual fixture, not a house style.
 - Budget/cleanup: six items and 700ms life by default; remove nodes and handler.
 - Browser: density bound, coarse pointer, controls, reduced motion, cleanup.
 
+## The four that cross a section boundary
+
+`persistent-stage`, `shared-element-handoff`, `pinned-chapter` and
+`video-handoff` are the foundations that carry something across a join rather
+than animating inside one section. They are the continuity half of the budget in
+`SKILL.md` and they draw from their own slot, not the signature moment's — a
+route gets one of these *and* its set-piece, because a page whose sections are
+independent bands is the note this skill receives most often.
+
 ## Optional runtime routing
 
 - Motion: React/component-state layout, enter/exit, hover, press, and drag.
 - GSAP: coordinated, scrubbed, reversible DOM/SVG/WebGL choreography.
-- Lenis: only when velocity or DOM/WebGL synchronization is concept-critical.
+- Lenis: interpolated scroll for a route whose motion is scroll-linked. This is
+  a route-level decision made at the top of the build, not a late refinement:
+  raw scroll position steps and a smoothed one glides, and everything
+  scroll-driven is authored against whichever you chose. It takes ownership of
+  native scrolling, so anchor links, keyboard paging, focus management and
+  reduced motion become yours to get right — decline it when you will not, and
+  never bolt it on at the end.
 - PixiJS: high-density 2D sprites, filters, shaders, and generative fields.
 - Rive: supplied interactive state-machine assets; never invent capability
   without a `.riv` asset.

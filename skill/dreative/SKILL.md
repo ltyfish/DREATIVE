@@ -35,6 +35,7 @@ moment, open it — including late in the build, when this list is far behind yo
 |---|---|
 | **Naming the signature behaviour and the experience arc, at step 4** | `skills/motion.md` |
 | **Deciding what a moving thing is made of — before writing the section** | `references/MOTION_MATERIAL.md` |
+| **Deciding what carries continuity across the route**, at the same moment you name the seams | `systems/NATIVE_FOUNDATIONS.md` — `persistent-stage`, `shared-element-handoff`, `pinned-chapter`, `video-handoff` are the four that cross a section boundary, and none of them has ever been chosen by a build that did not open this file |
 | Choosing a concept for an open redesign | `references/CREATIVE_DIRECTION.md` |
 | Naming or comparing real sites and libraries, or scouting motion-led work | `references/REFERENCE_ADOPTION.md` |
 | **Before the section list hardens** — searching for material and looking at what came back | `references/MEDIA_SOURCES.md` — where it comes from, what it does, and where on the page it lands. Search wide and read one contact sheet rather than opening files one at a time; sourcing an image and deciding what it does are two decisions, and the second one is the one that gets skipped |
@@ -52,8 +53,13 @@ moment, open it — including late in the build, when this list is far behind yo
 | The evaluator handoff is opted in | `references/EVALUATION_HANDOFF.md`, then project-local `.dreative/evaluation/README.md` |
 | A focused mechanism lookup only | `llms.txt` or `dreative catalogue` |
 
-After the mechanism is chosen: zero or one matching native foundation. Never
-browse the catalogue to invent the concept.
+After the mechanism is chosen: zero or one matching native foundation for the
+signature moment, **and separately, zero or one continuity system for the
+route**. These are two different jobs and they must not compete for one slot.
+When they share a slot the signature moment wins every time — it is the more
+exciting decision — and the route ships as independent bands with one good
+set-piece in it, which is the single most repeated note this skill receives.
+Never browse the catalogue to invent the concept.
 
 The moments most often missed arrive **after the first build compiles**:
 correcting the rendered page, the 390px pass, a control that holds state, and
@@ -226,9 +232,12 @@ made this mistake.
    `references/EVALUATION_HANDOFF.md` and follow it. Its absence is the normal
    case and needs nothing from you.
 5. Read `references/CREATIVE_EXECUTION.md` before adding an advanced runtime.
-   Load only the relevant specialty and zero or one relevant native foundation
-   initially. Zero is valid; add another only when a separate named mechanism
-   genuinely requires it.
+   Load only the relevant specialty, zero or one native foundation for the
+   signature moment, and zero or one continuity system for the route. Zero of
+   either is valid and a route with no seam work is a decision you should be
+   able to defend. What is not valid is discovering at the end that the whole
+   budget went to the hero, which is what happens when both are drawn from one
+   slot.
 6. Finish the real route, including post-hero sections and mobile composition.
    Implement every selected treatment in its named section or state and make its
    contribution perceptible. Preserve required behavior and fix scoped defects.
@@ -318,6 +327,27 @@ that turns out to have been a single zoom all along, a state carried forward and
 paid off later. Whether a given join deserves that is a judgement about the
 subject — but a route where no join does is the flat result described above,
 and that is the usual outcome when the seams were never designed at all.
+
+Four mechanisms actually cross a boundary, and they are written out in
+`systems/NATIVE_FOUNDATIONS.md`. A **persistent stage** is one subject that
+outlives its section and develops through named berths, which is what a
+continuous place is made of. A **shared-element handoff** gives the same
+semantic subject to a new layout, so the thing the reader was looking at becomes
+the thing they are looking at next. A **pinned chapter** moves the frame while
+the subject holds. A **video handoff** carries information established in
+footage into the editorial that follows it. None is recommended over the others
+and the subject picks — but reveal-on-scroll is not among them, and a route
+whose entire seam vocabulary is an IntersectionObserver has not chosen at all.
+
+Interpolated scroll belongs to this layer too, and it is a decision about the
+whole route rather than an effect on one section. Motion driven by a raw scroll
+position steps; motion driven by a smoothed one glides, and that difference is
+most of what people mean when they call a page smooth. It is also the most
+commonly declined tool in this skill, because the cost is real: it takes over
+native scrolling, so anchors, keyboard paging, focus and reduced motion all
+become yours to get right, and a broken scroll is worse than a stepped one.
+Decide it deliberately at the top of the build, not as a polish pass at the end,
+because everything scroll-linked is authored against whichever one you chose.
 
 **Layer 3 — the signature moments.** Few, expensive, and made of real material.
 Each one needs an event in the subject and something sourced that shows it —

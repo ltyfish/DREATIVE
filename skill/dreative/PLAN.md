@@ -319,6 +319,18 @@ Two allocations to make explicitly, because they are the ones that get skipped:
   describe, or annotated over the object, or held by one photograph that makes
   the number mean something. Deciding this early is what stops the page from
   ending in four grey rectangles.
+- **The numbers.** A quantity — units remaining, a run size, a percentage, a
+  count of anything — has two default answers that arrive before thinking does:
+  the figure set large in the display face, and a grid of small marks, one per
+  unit. Both are legitimate and both are now reflexive; the same two-hundred-cell
+  dot grid has appeared in every round of one scenario, which is a form nobody
+  chose. The alternatives are not exotic — the quantity at its real size against
+  something whose scale a reader already knows, the number driving a piece of
+  motion rather than sitting still in the middle of a band, a figure that
+  resolves out of the material it describes, one unit shown properly with the
+  count stated beside it, or the quantity expressed as the room it takes up on
+  the page. The tell that you defaulted is that the treatment would work
+  unchanged on any other number.
 - **The reserve.** Material found for the peak is usually the same shoot the
   rest of the page needs. Budget the outtakes deliberately — a second crop, the
   frame before the action, a detail at ten times life size — rather than

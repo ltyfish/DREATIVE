@@ -66,6 +66,18 @@ thirty-six is the expected outcome, not waste. If nothing on the sheet is a
 keeper, that is a real answer too, and it arrives before a section was built
 around a picture that could not carry it.
 
+**The keepers leave the sheet already treated, in one pass.** A wide search
+hands you a wider set of *strangers*: twenty-four credits from four archives,
+each frame correct on its own and none of them lit, graded or cropped like any
+of the others. That page reads exactly as a reader describes it — *"the images
+look off, I am not sure what I am looking at"* — and it is not a sourcing
+failure, it is the missing pass afterwards. So grade the keepers toward one
+temperature and one contrast, settle on one crop family, and produce the web
+derivatives in the same command, before a single section references any of them.
+*Sourced material arrives mismatched* has the recipes. Treatment is not a polish
+step at the end of the build; it is what turns a set of finds into a shoot, and
+skipping it wastes the search that just paid for it.
+
 The sheet is also where a wrong subject dies. A movement of the wrong
 construction, a different model of the product, someone else's machine — each is
 plainly wrong beside five right ones and completely invisible on its own. Judge
