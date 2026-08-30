@@ -33,11 +33,19 @@ rather than passing quietly.
 
 ## The ladder, and what drawing is actually for
 
-Rank the material before choosing a form, and take the highest rung the subject
-and the licence allow:
+Anything the user already has outranks the whole ladder. Their photographs,
+their footage, their renders, their press kit — supplied material is truthful by
+definition, costs nothing to obtain, and is the one source that cannot be wrong
+about the subject. Ask for it before searching for a substitute, and ask again
+when the search is going badly.
+
+Otherwise rank the material before choosing a form, and take the highest rung the
+subject and the licence allow:
 
 1. **A photograph of the thing, or of its real analogue** — including a set of
-   views, which is motion material rather than an illustration.
+   views, or footage of it, which is motion material rather than an
+   illustration. A clip is the same rung as a still and often the easier one to
+   obtain for anything that moves, runs, pours, folds, or is used by a person.
 2. **A licensed model, or frames rendered from one.** Keyless and verified
    sources for both are listed above; for a physical product this rung is
    usually right and is rarely the one chosen. It is also the rung that fixes a
@@ -275,6 +283,59 @@ museum's high-resolution download of the actual object, and photographing or
 screen-recording the thing yourself where that is possible. Generated frames of
 the real thing beat sourced frames of a different thing, and made frames of the
 real thing beat record shots of it.
+
+## Video, keyless and verified
+
+Checked 2026-08-30 with plain `curl`. Footage follows exactly the order the
+ladder already sets: **supplied by the user first**, then sourced, then
+generated, then fabricated — and sourcing is where most of the value is, because
+a real five-second clip of the actual subject beats anything constructed to
+imply one. The web's best-looking pages lean on video heavily, and the usual
+reason a build reaches for a pinned CSS sequence instead is that it never
+searched for the clip.
+
+- **NASA image and video library** — `images-api.nasa.gov/search?q=…&media_type=video`.
+  Public domain, no key, genuinely cinematic material: launches, orbital
+  footage, wind tunnels, labs, hardware being built. Returns real asset URLs.
+- **Internet Archive** — `archive.org/advancedsearch.php`, and collections like
+  Prelinger for public-domain film. Enormous, uneven, rights from public domain
+  to fully reserved. Never assume; check the item.
+- **Wikimedia Commons** — search namespace 6 with `filemime:video/webm`
+  (`action=query&list=search&srsearch=filemime:video/webm <subject>&srnamespace=6`).
+  CC and public-domain clips, often the only free footage of a specific machine,
+  process, or place. Share-alike obligations travel into your page. Send a real
+  `User-Agent`.
+- **Coverr** and **Mixkit** — keyless HTML search, free for commercial use
+  without attribution; redistributing the clips as stock is not permitted.
+  Well-shot and well-graded, and the fastest route to atmosphere. They are also
+  the most seen footage on the web, so treat them the way you treat stock
+  photography: crop, grade, slow, window, or cut them into something that is
+  not the frame everyone else used.
+- **The subject's own footage.** A manufacturer's press kit, a maker's build
+  log, a lab's process reel, a factory tour — licence permitting, this is the
+  clip that is actually about your product, and it is the one nobody looks for.
+  Do not lift from platforms whose terms forbid it; ask the user instead.
+- **Record it yourself.** For software, a screen capture of the real product is
+  the truest footage there is and needs no licence at all. The same applies to
+  anything on the user's desk.
+
+**Pexels and Pixabay video need an API key** you do not have, exactly as their
+photography does. Their HTML search pages load, but treat a keyless scrape as
+unreliable rather than as a source, and raise the missing key as a capability
+gap — never as a reason to invent the subject.
+
+**Generated footage is the rung below sourcing, and it is not free.** It is
+worth it when the shot cannot exist otherwise; it is not worth it as a shortcut
+past a search you did not run. Generated frames of the real thing still beat
+sourced frames of a different thing.
+
+Cutting, retiming, and producing web derivatives is the same work as the rest of
+this file, and `MOTION_MATERIAL.md`'s pipelines cover it — including the choice
+that matters most: a clip you intend to *scrub* is usually better shipped as a
+frame sequence than as a video the browser has to seek. Ship muted, `playsinline`,
+with a real poster, a mobile encode, and an authored still for reduced motion.
+A video that autoplays with sound, arrives at 12MB, or loops behind text it makes
+unreadable is a defect however good the footage is.
 
 ## Sources that need a key you do not have
 

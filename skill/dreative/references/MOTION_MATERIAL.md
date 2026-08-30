@@ -140,6 +140,61 @@ Preload before the section is reachable, decode off the critical path, and give
 reduced motion **one authored still that was chosen** — not the sequence with
 the animation switched off.
 
+## You cannot frame what you have not looked at
+
+Every form that moves *within* an image — a zoom onto a part, a pan that travels
+to a detail, a crop that opens on one component, a mask that reveals a region, a
+callout pinned to a feature — is a claim that a particular thing sits at
+particular coordinates in a particular file. Nothing verifies that claim for
+you. Guessing it is how a section says *the barrel, then the stop-work* while
+the frame travels to an empty corner of the plate, and it is how a crosshair
+ends up marking nothing. Annotation is drawing at its best — `MEDIA_SOURCES.md`,
+*what drawing is actually for* — but only when the coordinates beneath it are
+real. A pointer to an invented location is worse than no pointer, because it is
+a confident one.
+
+So open the file and look at it, at the size the page will use, and locate the
+region before you write the transform. That is the same inspection *A real
+photograph is not automatically a good one* already asks for. This is the half
+of it that decides whether the motion is possible at all.
+
+The same check runs on the words. A caption claiming life size beside a
+magnified crop, a stat panel whose figure is not the thing in the frame, a label
+naming a component the picture does not contain — each is the mismatch above
+with the motion removed. The frame and the sentence have to be making one claim.
+
+**When the region is not there, or not there well enough** — the detail is
+twelve pixels, the crop leaves the frame, the thing the copy names is simply not
+in the picture — the answer is not a timid version of the same move, and it is
+not a standing retreat to animating the type. There is no default here. What you
+have is a real photograph and a claim to make, and those stay compatible in many
+forms:
+
+- **Go and get the frame that does contain it.** A missing detail is a sourcing
+  failure before it is a motion one, and a macro or a second view is usually one
+  more search away.
+- **Render the view nobody photographed.** Rung 2 hands you the exact framing,
+  and the travel stops being a scale on a rectangle: it becomes a camera moving
+  through real geometry, which is the version that could not have been faked.
+- **Move through the photograph instead of across it.** Displaced by a depth
+  map, one still gives real parallax — the frame advances into the picture and
+  the surfaces separate, and nothing had to be located to make that true.
+- **Move the light, not the camera.** Hold the frame still and travel a
+  specular sweep, a relight, or a graded pass across the surface. Attention
+  follows the light, and light needs no coordinates.
+- **Trade two real states in the same frame.** Off and on, closed and open, raw
+  and finished. The whole frame is the subject, so there is nothing to point at.
+- **Let the frame be consumed.** Sampled into a field, dissolved into a word,
+  torn along a real edge, resolved out of its own grain. Whole-frame operations
+  are indifferent to where anything sits inside them.
+- **Draw the notation honestly beside it.** If the claim genuinely needs a
+  location and no available image supports one, a diagram — at coordinates you
+  established by looking, next to the photograph rather than lying on top of it
+  — is notation, and notation is unlimited. Inventing the location is not.
+
+Several of those are stronger than the zoom that was originally intended, which
+is the point: the constraint is a fork in the form, not a reduction of it.
+
 ## Forms, at equal weight
 
 The ladder above ranks **material**. It does not rank **form**, and the two are

@@ -41,8 +41,8 @@ moment, open it — including late in the build, when this list is far behind yo
 | Installing or wiring any runtime | `references/CREATIVE_EXECUTION.md` |
 | Before concluding the subject is not spatial | `skills/3d.md` |
 | Building a control that holds state | `skills/interaction.md` |
-| Sourcing or treating an image | `skills/media.md` |
-| The direction is a sequence, an environment, or one risky moment | `skills/cinematic.md`, `skills/immersive.md`, `skills/experimental.md` |
+| Sourcing or treating an image or a clip, or moving within one | `skills/media.md` |
+| **Authoring the seams — any route with more than one section** | `skills/immersive.md` when the sections should read as one place, `skills/cinematic.md` when their order is the argument, `skills/experimental.md` for one risky moment |
 | Finish and typography are the point | `skills/refined.md` |
 | Laying out any route, and again at 390px | `skills/ux.md`, `skills/mobile.md` |
 | Deciding what to build rather than what to avoid | `exemplars/PRINCIPLES.md` and `exemplars/SLOP.md` |
@@ -303,6 +303,17 @@ sections", even when every region animates. Author the handoffs: something
 carries across, changes state, or resolves as one section becomes the next.
 This layer is the difference between a page with animation on it and a page
 that moves, and it is the one most often absent.
+
+Seams are authored at the scale of the viewport, not the paragraph. The weak
+version fades one band out and the next in while both stay inside their boxes,
+which is a cut dressed as a transition. What reads as one continuous place is
+something that *survives* the boundary: the same object re-framed rather than
+replaced, a frame that travels while the subject stays put, a material that was
+the ground of one section arriving as the subject of the next, a scale change
+that turns out to have been a single zoom all along, a state carried forward and
+paid off later. Whether a given join deserves that is a judgement about the
+subject — but a route where no join does is the flat result described above,
+and that is the usual outcome when the seams were never designed at all.
 
 **Layer 3 — the signature moments.** Few, expensive, and made of real material.
 Each one needs an event in the subject and something sourced that shows it —

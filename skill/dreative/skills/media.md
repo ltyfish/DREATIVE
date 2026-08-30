@@ -17,6 +17,17 @@ searched and came back empty. Record why it is artistically stronger;
 speed, familiarity, token cost, and missing tooling are not artistic reasons.
 Escalate an unavailable capability before lowering the accepted ceiling.
 
+Footage is media on the same terms and in the same order — supplied, then
+sourced, then generated — and `../references/MEDIA_SOURCES.md`, *Video, keyless
+and verified*, is where to look. For anything that moves in real life, a short
+real clip is often easier to obtain than a coherent set of stills.
+
+Before animating *inside* an image — a zoom to a part, a pan to a detail, a
+callout on a feature — confirm by looking at the file that the thing is there
+and where it is. `../references/MOTION_MATERIAL.md`, *You cannot frame what you
+have not looked at*, covers what to do when it is not; the answer is a different
+form, not a smaller one.
+
 Optimize format, dimensions, loading priority, and below-fold laziness. Do not
 repeat one hero image through unrelated sections.
 
