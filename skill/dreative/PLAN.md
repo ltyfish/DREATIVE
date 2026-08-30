@@ -267,13 +267,35 @@ Selection is a delivery promise, not checkbox coverage: every
 selected treatment needs a named owner and perceptible contribution, although
 one coherent mechanism may serve several treatments.
 
-Decide the page's sections here — which sections exist, in what order, and why
-this product needs those and not the default five. Then add executable states,
-owners, handoffs, responsive forms, fallbacks, and evidence targets. Do not
-force a generic architecture.
+**Search and look before you cut the slots.** The order matters and the wrong
+one is the default: name seven sections from the copy, then go shopping to fill
+seven seats, and every image arrives as a rectangle in a slot that was designed
+without it. A slot does not care what fills it — which is how the same picture
+holds four sections and how a clip of the wrong mechanism reaches the focal seat
+with nothing objecting.
+
+So run the search first, at breadth, and *look* at what came back before the
+section list hardens: `references/MEDIA_SOURCES.md`, *Look at forty, not four*,
+which is one contact sheet and one read rather than thirty file opens. You are
+finding out what this page can actually be made of. A route bends around a clip
+nobody expected to find; it cannot bend around one discovered after the
+architecture was committed.
+
+Then decide the page's sections — which exist, in what order, and why this
+product needs those and not the default five, **with the material you have in
+front of you**. Add executable states, owners, handoffs, responsive forms,
+fallbacks, and evidence targets. Do not force a generic architecture.
+
+Name the seams while you are naming the sections. For each join, say what
+carries across it or that it is deliberately a cut — the same object re-framed,
+a travelling frame, one section's ground becoming the next one's subject, a
+state paid off later. A route whose every join is a scroll position is the flat
+result reviewers describe, and the joins are decided here or not at all.
+`skills/immersive.md` is the file for this when the sections should read as
+one place.
 
 **The page has a material budget, and it is not the hero's.** Allocate it here,
-across the sections you just named, before any of them is written. The failure
+across the sections you are naming, before any of them is written. The failure
 this prevents is a route where one moment is fully realised — sourced,
 treated, driven — and every other section is a table, a card row, a stat strip,
 or a shape someone drew, because the material decision was made once for the
@@ -310,6 +332,17 @@ notation over one of those, or type set deliberately. What one section owes on t
 of that is to be the thing the page was built for. Quiet is a composition; unfunded
 is an omission, and the difference is whether you can say what the section holds and
 why that is enough for it.
+
+**Held is not the same as present.** A section whose photograph gains a moving
+highlight, a tinted overlay, a border that thickens, or a toggle between two
+crops has technically been funded and has not been designed: those are the
+cheapest gestures available, and a route where each section gets exactly one of
+them reads as seven shallow ideas rather than a page. It is also the predictable
+way to satisfy a floor — every seat filled, nothing worth watching. The test is
+whether a reader could say what the section showed them, not whether something
+in it moved. Where the honest answer is that a section has one photograph and
+nothing to do with it, the photograph set well and left alone beats a gesture
+applied to it.
 
 The consequence, when the budget will not stretch: reduce what the peak promised
 until the floor is paid for. A route with three sections that each hold something

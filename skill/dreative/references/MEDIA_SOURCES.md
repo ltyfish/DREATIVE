@@ -31,6 +31,80 @@ Record the real URL or file path, the licence, and the rights status. Final
 smoke resolves local files and requests remote URLs, so an invented source fails
 rather than passing quietly.
 
+## Look at forty, not four
+
+A person doing this by hand rejects thirty images in about two minutes. They
+glance, they discard, and the page they end up with is made almost entirely out
+of the ones they threw away. Their ratio of looked-at to shipped is something
+like fifty to one, and that ratio *is* the taste — not the rules they follow.
+
+For you, opening a file is the expensive operation, so the honest default drifts
+the other way: take the first licence-clean result that plausibly matches, and
+move on. That is how a route ships fifty images from two domains and ten
+credits, how the same picture ends up holding four sections, and how a clip of
+the wrong mechanism lands in the focal seat — not because anything was
+misjudged, but because nothing was ever laid beside an alternative.
+
+So batch the looking. Search wide first — several queries across several
+sources, because a sheet drawn from one domain teaches you nothing — download
+the candidates flat and numbered, tile them into one image, and read that.
+Thirty rejections for the cost of one look.
+
+```bash
+# 36 candidates -> one contact sheet, tiles in row-major order, so tile n is file n
+ffmpeg -y -i .scratch/cand/%03d.jpg   -filter_complex "scale=320:180:force_original_aspect_ratio=increase,crop=320:180,tile=6x6"   -frames:v 1 .scratch/sheet-01.png
+
+# a clip becomes a candidate by giving up one frame first
+ffmpeg -y -ss 2 -i .scratch/clips/007.webm -frames:v 1 .scratch/cand/007.jpg
+```
+
+What you are reading off the sheet is not "which is licensed" — it is which
+three or four are *keepers*: the subject is actually the thing the copy
+describes, the light is doing something, the crop you need survives, and enough
+of them share a world to be gradeable into one set. Discarding thirty-two of
+thirty-six is the expected outcome, not waste. If nothing on the sheet is a
+keeper, that is a real answer too, and it arrives before a section was built
+around a picture that could not carry it.
+
+The sheet is also where a wrong subject dies. A movement of the wrong
+construction, a different model of the product, someone else's machine — each is
+plainly wrong beside five right ones and completely invisible on its own. Judge
+the material against the copy here, in a batch, rather than one file at a time
+after the section already exists.
+
+## Prebuilt motion, and where it belongs
+
+A great deal has already been animated, rigged, or modelled by someone else, and
+some of it is free and good. Checked 2026-08-30 with plain `curl`:
+
+- **glTF Sample Assets** —
+  `raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/model-index.json`.
+  A machine-readable index of well-made, properly licensed models. Real
+  geometry, real materials, and the fastest route to something spatial on disk.
+- **Sketchfab, downloadable only** —
+  `api.sketchfab.com/v3/search?type=models&downloadable=true&q=…`. Keyless
+  search. Filter to CC licences and check each model's own terms; downloadable
+  is not the same as freely licensed.
+- **Poly Pizza** — `poly.pizza`. CC0 and CC BY low-poly models, keyless.
+  Stylised by nature, which is a look, not a substitute for a real object.
+- **three.js examples** — `threejs.org/examples/`. Not assets: working
+  implementations of mechanisms, MIT licensed, and the fastest way to see
+  whether an effect is worth building. `REFERENCE_ADOPTION.md` governs taking
+  from them.
+- **Open repositories generally.** Shader collections, effect implementations,
+  demo source. Read the licence in the repository, not on the demo page.
+- **LottieFiles** refuses plain `curl` (403). Their free animations are usable
+  but need a browser or an authenticated fetch; ask the user rather than
+  scraping around it.
+
+One line about all of this, and it matters more than the list: **prebuilt motion
+is notation and interface material, not the focal subject.** A vector loop is
+excellent for a mark, a loader, an icon, a diagram that explains a process. It
+is the same defect as a drawn prop the moment it stands in for the physical
+thing the page is selling — see the ladder below, and `../exemplars/SLOP.md` #10.
+A downloaded model of *your product* is rung 2 and is exactly right; a downloaded
+animation of a generic version of your product is rung 4 wearing motion.
+
 ## The ladder, and what drawing is actually for
 
 Anything the user already has outranks the whole ladder. Their photographs,

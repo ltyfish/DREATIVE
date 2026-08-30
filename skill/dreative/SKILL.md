@@ -37,7 +37,7 @@ moment, open it — including late in the build, when this list is far behind yo
 | **Deciding what a moving thing is made of — before writing the section** | `references/MOTION_MATERIAL.md` |
 | Choosing a concept for an open redesign | `references/CREATIVE_DIRECTION.md` |
 | Naming or comparing real sites and libraries, or scouting motion-led work | `references/REFERENCE_ADOPTION.md` |
-| Deciding what a section's focal image or object is | `references/MEDIA_SOURCES.md` — where it comes from, what it does, and where on the page it lands. Sourcing an image and deciding what it does are two decisions, and the second one is the one that gets skipped |
+| **Before the section list hardens** — searching for material and looking at what came back | `references/MEDIA_SOURCES.md` — where it comes from, what it does, and where on the page it lands. Search wide and read one contact sheet rather than opening files one at a time; sourcing an image and deciding what it does are two decisions, and the second one is the one that gets skipped |
 | Installing or wiring any runtime | `references/CREATIVE_EXECUTION.md` |
 | Before concluding the subject is not spatial | `skills/3d.md` |
 | Building a control that holds state | `skills/interaction.md` |
@@ -218,6 +218,10 @@ made this mistake.
    The brief must name, for every signature moment: the event in the subject,
    the material that shows it, its real source, and the single authored value
    that drives it. A moment with no named material is not yet a moment.
+   Search for that material **before** the section list hardens, and look at what
+   came back in one batch. Sections named first become seats to fill, and a seat
+   accepts anything; sections named against material you have already seen are
+   the only ones that can be shaped by it.
    Only if the project already contains `.dreative/evaluation/README.md`, read
    `references/EVALUATION_HANDOFF.md` and follow it. Its absence is the normal
    case and needs nothing from you.
