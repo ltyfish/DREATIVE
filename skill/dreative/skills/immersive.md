@@ -5,9 +5,20 @@ instrument, rather than a stack of unrelated bands.
 
 ## Continuity needs one owner, and it has to change
 
-Pick the single thing that persists — geometry, a transforming medium, a
-material or light that evolves, or the product's own state carried forward. One
-owner, because two competing continuities read as neither.
+Pick the single *logic* that persists. That is often a thing — geometry, the
+product's own state carried forward — but it does not have to be a thing at
+all, and the builds that read as stacked bands are usually the ones that assumed
+it did. It can be a field the whole route sits inside: grain, dither, particles,
+weather, a light that changes as the reader descends. It can be the medium —
+resolution, pixel size, focus, a render that assembles and comes apart, so each
+section is a state of one image rather than a different picture. It can be a
+camera, sections being places in one continuous move. It can be a relay, several
+subjects handing to one another, which reads as one place as long as the rule of
+the handoff holds even when the thing being handed changes.
+
+One owner means one logic, not one object. Two unrelated continuity ideas
+competing across a route read as neither; four subjects passed along one clear
+rule read as a single place.
 
 Then make it *do* something across the route. A canvas that is present in every
 section but identical in every section is not continuity; it is wallpaper with

@@ -339,6 +339,22 @@ footage into the editorial that follows it. None is recommended over the others
 and the subject picks — but reveal-on-scroll is not among them, and a route
 whose entire seam vocabulary is an IntersectionObserver has not chosen at all.
 
+Those four are packaged, not exhaustive, and continuity does not have to be an
+*object* at all. It can be a field: a grain, a dither, a particle system, a
+weather, a light that the whole route is lit by, resolving in one section and
+dissolving in the next. It can be the medium itself — pixel size, resolution,
+focus, a render that assembles and comes apart, so the reader moves through
+states of the same image rather than past different pictures. It can be a
+camera, where sections are places in one continuous move. It can be a relay,
+several subjects handing to each other, which reads as one system as long as
+the *logic* of the handoff is constant even when the thing being handed is not.
+And it can be typography at full-bleed scale, where the words are the material
+being transformed and nothing else is needed.
+
+What must not be doubled is the logic, not the object count. Two unrelated
+continuity ideas competing across the same route read as neither; four subjects
+passed along one clear rule read as one place.
+
 Interpolated scroll belongs to this layer too, and it is a decision about the
 whole route rather than an effect on one section. Motion driven by a raw scroll
 position steps; motion driven by a smoothed one glides, and that difference is

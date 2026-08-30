@@ -134,6 +134,14 @@ than animating inside one section. They are the continuity half of the budget in
 route gets one of these *and* its set-piece, because a page whose sections are
 independent bands is the note this skill receives most often.
 
+They are the packaged cases, not the boundary of the idea. Continuity carried by
+a field rather than a subject — grain, dither, particles, an evolving light, a
+resolution or focus that transforms between sections — is authored against
+`adaptive-canvas`, `kinetic-type`, or a specialist runtime, and is a continuity
+system in exactly the same sense. So is a relay in which several subjects hand to
+one another under one constant rule. Choose from the whole space; these four
+simply already exist.
+
 ## Optional runtime routing
 
 - Motion: React/component-state layout, enter/exit, hover, press, and drag.
