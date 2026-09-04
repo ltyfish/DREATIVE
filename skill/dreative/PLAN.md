@@ -293,6 +293,44 @@ nothing on it was a keeper. Either is a pass. Neither existing is not a thin
 search — it is a search whose result nobody ever looked at, and the page is
 being designed around whatever happened to be lying around.
 
+**The second half of the gate is that the material got worked.** Sourcing well and
+then shipping the downloads is a distinct failure with its own signature, and it
+is the one that produces a page described as *"nice images, but nothing is done
+with them"*. A route can look at eighty candidates, keep twenty-one, resize them
+correctly, and still arrive at a wall of `<img>` — because resizing is
+production, not treatment, and the two get confused precisely because the
+production step feels like work.
+
+So two things are decided here, beside the sheet, and both have something you can
+point at:
+
+- **The set was treated.** The file you ship is not the file you downloaded. A
+  webp derivative at 1500px is the same photograph; a graded, cropped, matched
+  set is not. The tell that this was skipped is a page whose images each look
+  correct alone and unrelated together — different light, different warmth,
+  different distance to the subject — which is exactly what a wide search hands
+  you and what *Sourced material arrives mismatched* exists to fix. Grade toward
+  one temperature and one contrast, settle a crop family, and do it in the pass
+  that produced the derivatives, because doing it later means doing it never.
+- **Something drives the material, and it exists before the sections do.** Name
+  the driver and put it in the project at the same time you put the material
+  there: a scroll driver, a sequence player, a canvas or WebGL surface, a
+  timeline library, an interpolated scroll decision, a compositing layer. It does
+  not matter which and there is no list to satisfy — what matters is that the
+  choice is made while the page is still being planned. A build that reaches the
+  writing stage with material on disk and nothing to drive it will animate it the
+  only way that costs nothing, which is one `IntersectionObserver` fading every
+  region up, and that is a page with no motion decision rather than a page that
+  chose restraint. If the honest answer is that this subject wants stillness, say
+  so and ship it still — but that is an argument you make, not a state you end up
+  in because the driver was never installed.
+
+The tell for both is the same and it is visible from the outside: the page's
+dependency list and its stylesheet. Real photographs, correctly sized, moved by a
+single fade, with no compositing, no filtering, no sequence and nothing crossing a
+boundary is not an under-motioned page — it is a page where the treatment stage
+did not happen at all.
+
 **Video is material, not a feature, and this is where it is decided.** It sits
 on rung 1 beside the still, it is usually the easier find for anything that
 moves or is used by a person, and it is the single largest difference between a

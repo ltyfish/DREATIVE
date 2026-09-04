@@ -241,6 +241,17 @@ made this mistake.
    a procedural surface is drawn construction however much real material was
    sampled into it. A route made of one sourced surface in several states passes
    every rung and shows the reader nothing.
+   The gate has a second half: the material has to be *worked*, not just found.
+   Resizing is production, not treatment — a webp derivative is the same
+   photograph. Grade and crop the keepers into one set in the pass that produces
+   the derivatives, and name the thing that will drive them — a scroll driver, a
+   sequence player, a canvas, a timeline, a compositing layer — putting it in the
+   project alongside the material rather than after the sections are written. A
+   build that reaches the writing stage with material on disk and no driver
+   installed animates it the only way that is free, which is one
+   `IntersectionObserver` fading every region up. Stillness is a legitimate
+   answer and an argument you make; it is not the state you arrive in by
+   default.
    Only if the project already contains `.dreative/evaluation/README.md`, read
    `references/EVALUATION_HANDOFF.md` and follow it. Its absence is the normal
    case and needs nothing from you.
