@@ -281,6 +281,32 @@ finding out what this page can actually be made of. A route bends around a clip
 nobody expected to find; it cannot bend around one discovered after the
 architecture was committed.
 
+This one is a gate, not an intention. Nothing downstream of it — no section
+list, no component, no CSS — is written until a sheet exists on disk and you
+have read it. The failure it stops is not laziness; it is that the search goes
+badly for ten minutes, something workable turns up on the way, and the build
+quietly proceeds on that instead, with no moment at which anyone decided to.
+A round that shipped a whole route off three downloaded files had run five
+searches, kept the third result, and never wrote a sheet. So the observable is
+a file: the sheet, or a written sentence saying what was searched and that
+nothing on it was a keeper. Either is a pass. Neither existing is not a thin
+search — it is a search whose result nobody ever looked at, and the page is
+being designed around whatever happened to be lying around.
+
+**Video is material, not a feature, and this is where it is decided.** It sits
+on rung 1 beside the still, it is usually the easier find for anything that
+moves or is used by a person, and it is the single largest difference between a
+route that has something to animate and one that has position, scale and
+opacity. There is no obligation to ship it and no section that owes you one — a
+page can be entirely still and be right. But when the direction you are building
+is motion-led, when a section turns on something happening rather than something
+being, footage is the material that makes that section possible, and reaching
+for a pinned CSS sequence instead is almost always a search that was not run.
+So put it on the sheet: a clip becomes a candidate by giving up one frame, which
+means stills and footage are judged side by side in the same look rather than
+video being a thing you remember to consider afterwards. Then cut it, retime it,
+grade it into the set — editing is part of sourcing, not a later polish.
+
 Then decide the page's sections — which exist, in what order, and why this
 product needs those and not the default five, **with the material you have in
 front of you**. Add executable states, owners, handoffs, responsive forms,

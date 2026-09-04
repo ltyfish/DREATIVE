@@ -228,6 +228,19 @@ made this mistake.
    came back in one batch. Sections named first become seats to fill, and a seat
    accepts anything; sections named against material you have already seen are
    the only ones that can be shaped by it.
+   That search is a gate: no section list and no component before a contact
+   sheet exists on disk and you have read it, or a written sentence says what was
+   searched and that nothing on it was a keeper. Judge stills and footage in the
+   same look — a clip becomes a candidate by giving up one frame. Video is never
+   required, but when a section turns on something happening rather than
+   something being, footage is what makes it possible and a drawn substitute is
+   usually an unrun search.
+   Then ask the subject question, which the material ladder does not ask for you:
+   **does the thing the copy is about appear on the page, at a size where it can
+   be read?** Textures, PBR sets and HDRIs are grounds and light, not subjects, and
+   a procedural surface is drawn construction however much real material was
+   sampled into it. A route made of one sourced surface in several states passes
+   every rung and shows the reader nothing.
    Only if the project already contains `.dreative/evaluation/README.md`, read
    `references/EVALUATION_HANDOFF.md` and follow it. Its absence is the normal
    case and needs nothing from you.

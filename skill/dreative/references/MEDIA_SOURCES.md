@@ -159,6 +159,31 @@ scale and opacity — which is why routes built out of it come back described as
 having no transitions and nothing happening between sections, however many
 elements move.
 
+**A surface is not a subject, and rung 3 is the easiest rung to hide on.** The
+ladder ranks how material was *obtained*. It does not say the page showed the
+thing it is about, and there is a build that satisfies every rung above and still
+depicts nothing: two CC0 texture maps of a knit, a shader that renders them, and
+a whole route — masthead, colourways, magnifications, the ground under the
+product — made of that one surface in different states. Rung 3 material, honestly
+sourced, correctly credited, and the garment never appears. A reader sees a
+fabric swatch page and cannot tell you what the product looks like.
+
+So ask the subject question separately from the rung question: **does the thing
+the copy is about appear on this page, photographed or rendered, at a size where
+it can be read?** A texture, a PBR set and an HDRI are grounds, fills and light —
+they are what a subject sits *in*. They are not it. If the honest answer is that
+the subject was searched for and is genuinely not obtainable, that is rung 2's
+job (license a model, light it, render the views you need) before it is a reason
+to build the page out of its material.
+
+The same test catches the disguise. A procedural surface — a shader, a canvas
+field, a generated pattern — is drawn construction whether or not a photograph
+was sampled into it, and it inherits rung 4's rules: it is a fallback, it says so,
+and it does not take the focal moment on its own. Sampling one real texture into
+it does not promote it, and neither does calling it *one subject, many states* —
+that phrase describes a continuity logic running across material that exists, not
+a licence to source one file and repeat it.
+
 **Drawing is for notation, and it is good at that job.** Diagrams, callouts,
 annotation and measurement over a photograph, charts, icons, marks, typographic
 and graphic devices — none of these are pretending to be material, and there is
