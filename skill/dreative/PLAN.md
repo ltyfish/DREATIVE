@@ -331,6 +331,24 @@ single fade, with no compositing, no filtering, no sequence and nothing crossing
 boundary is not an under-motioned page — it is a page where the treatment stage
 did not happen at all.
 
+**These are one standard, checked at one moment — not a list you clear in order.**
+The failure mode is specific and it has happened: a build satisfies whichever
+requirement is most recently in front of it and quietly abandons the one before.
+One round looked at eighty candidates, shipped twenty-one subjects, and installed
+no driver at all. The next installed a real driver and a real light and shipped
+two photographs, generating everything else. Both cleared a gate. Neither made a
+page, because the page needs the same three things true at once: material that is
+real and *of the subject*, worked into one set, with something authoring what it
+does. A build that trades one for another has not advanced — it has moved the
+hole.
+
+So read the three together before the section list hardens, and if satisfying one
+is costing you another, that is the signal to change the plan rather than the
+signal to pick a winner. The cheapest version of this check is one question with
+three parts, asked once, out loud: *what is on this page, is it the subject, and
+what makes it move?* Any of the three answered with a shrug is the same failure
+wearing different clothes.
+
 **Video is material, not a feature, and this is where it is decided.** It sits
 on rung 1 beside the still, it is usually the easier find for anything that
 moves or is used by a person, and it is the single largest difference between a

@@ -132,11 +132,19 @@ subject and the licence allow:
    views, or footage of it, which is motion material rather than an
    illustration. A clip is the same rung as a still and often the easier one to
    obtain for anything that moves, runs, pours, folds, or is used by a person.
-2. **A licensed model, or frames rendered from one.** Keyless and verified
-   sources for both are listed above; for a physical product this rung is
-   usually right and is rarely the one chosen. It is also the rung that fixes a
-   bad archive: your framing, your light, a guaranteed-continuous set, any
-   resolution — see *A real photograph is not automatically a good one*.
+2. **A licensed model, or frames rendered from one — a model you *obtained*.**
+   Keyless and verified sources for both are listed above; for a physical
+   product this rung is usually right and is rarely the one chosen. It is also
+   the rung that fixes a bad archive: your framing, your light, a
+   guaranteed-continuous set, any resolution — see *A real photograph is not
+   automatically a good one*. The word doing the work is **licensed**. Geometry
+   you authored from your own numbers — a lathe profile you typed, a primitive
+   you proportioned, a mesh you built in code — is not this rung and does not
+   become it by being three-dimensional or by being lit with a real HDRI. That
+   is rung 4 with a camera in front of it, and it fails in a way that is
+   specific and visible: authored geometry has no variation, so nine pieces from
+   one profile are nine identical pieces, while nine real ones differ in every
+   one. A reader reads that instantly and cannot say why.
 3. **Real surface material** — a photographed or scanned texture, a PBR set, an
    HDRI. Poly Haven and ambientCG are CC0 and need no key.
 4. **Drawn construction** — CSS, SVG, canvas geometry standing in for a physical

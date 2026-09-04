@@ -252,6 +252,11 @@ made this mistake.
    `IntersectionObserver` fading every region up. Stillness is a legitimate
    answer and an argument you make; it is not the state you arrive in by
    default.
+   Sourced, worked, driven is **one standard checked at one moment**, not a list
+   cleared in order. A build that satisfies whichever requirement is newest and
+   abandons the previous one has moved the hole, not filled it. Ask it as one
+   question with three parts: what is on this page, is it the subject, and what
+   makes it move.
    Only if the project already contains `.dreative/evaluation/README.md`, read
    `references/EVALUATION_HANDOFF.md` and follow it. Its absence is the normal
    case and needs nothing from you.
