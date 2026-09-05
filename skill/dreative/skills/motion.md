@@ -19,6 +19,40 @@ section that uses them exists.
 The tell that this went wrong is a build whose motion is a `querySelectorAll`
 list receiving staggered transforms. Every element moves; nothing happens.
 
+### The order, and the two things that must exist before a section does
+
+**Search, download, convert, crop, grade, and look at the frames before the
+section that uses them exists.** A section written first gets written around what
+is easy, and what is easy is a fade. This is the most reliably skipped step in
+this skill's record and it is skipped in the same way every time: the page gets
+built, it works, and then motion is applied to it as a finish.
+
+Two things are on disk before you write a section that moves, and both are
+checkable by looking at the directory:
+
+1. **Treated derivatives, not downloads.** A file byte-identical to what you
+   fetched has not been worked. Crops, grades, resizes, extracted frames,
+   generated depth, a stripped and re-encoded clip — the shipped file should
+   differ from the source because you decided something about it. A set assembled
+   from untouched originals is nine different photographers' lighting sitting
+   next to each other, and it reads as a stock grid however good each frame is.
+2. **Whatever the mechanism consumes.** A scrub needs its frames; a depth
+   displacement needs its map; a handoff needs both ends. If the mechanism's
+   material is not there, you are about to build a different mechanism and call
+   it the one you chose.
+
+**Whether footage ships is a design decision. Whether you looked is not.** Video
+must never be a required section — a page that does not want it is finished
+without it — but "there was no footage" is only an honest answer after a search,
+and the search is cheap: Wikimedia by media type, the Internet Archive, NASA and
+its peers, Coverr, Pexels, a maker's own build log. The commonest route to a
+pinned CSS sequence is that nobody ever looked for the clip. Say what you
+searched and what you found, including when the answer is nothing.
+
+`../references/MOTION_MATERIAL.md` has the sources, the `ffmpeg` and `sharp`
+recipes, and several forms worked to equal depth. Open it while you still have
+the budget to act on it.
+
 ## Build it real on the first pass
 
 Do not write a placeholder transition where a real mechanism belongs, intending
