@@ -15,6 +15,7 @@ import {
 import { printDocsCheck, runDocsCheck } from "./docsCheck.js";
 import { checkPortableArtifacts, localShowcaseArtifacts, runFinalize } from "./finalize.js";
 import { runVisualSmoke, type DeliveryProfile, type ShowcaseMechanismContract } from "./visualSmoke.js";
+import { renderLook, runLook } from "./look.js";
 import { availableSkills, checkSkillInstallation, installSkill, installationDirectory, resolveSkillSelection } from "./installSkill.js";
 import { renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
 import { renderConfigurationChoices, renderDeliveryBrief, renderDetailedPlanGuide, type DeliveryProfileId } from "../shared/deliveryProfiles.js";
@@ -56,6 +57,8 @@ const USAGE = `usage: dreative [command]
   experience-map   render or validate a project Experience Map --file map.json
                    --check | --obligations
   catalogue        search the executable creative catalogue [--query phrase] [--json]
+  look             render the page and report what a browser sees that source cannot
+                   --url URL [--out DIR]   screenshot tiles + BROKEN/OBSERVED; never fails
   visual-smoke     production-equivalent browser smoke audit --url URL --profile efficient|recommended|showcase
                    Showcase requires tracked --mechanism-contract and --experience-map files
   finalize         run deterministic checks; always requires --visual-smoke-url URL and --profile
@@ -198,6 +201,20 @@ async function main(): Promise<void> {
         console.log("Please inspect the supplied desktop, mobile, and motion views.");
         console.log("Classify the result as Showcase, Recommended, Efficient, or Needs revision.");
       }
+      return;
+    }
+    case "look": {
+      const valueAfter = (flag: string): string | undefined => { const index = args.indexOf(flag); return index >= 0 ? args[index + 1] : undefined; };
+      const url = valueAfter("--url");
+      if (!url || url.startsWith("--")) throw new Error("look requires --url of an already-running preview");
+      const outDir = path.resolve(valueAfter("--out") ?? ".dreative/look");
+      const result = await runLook(url, outDir);
+      const report = renderLook(result, outDir);
+      console.log(report);
+      fs.writeFileSync(path.join(outDir, "report.txt"), report, "utf8");
+      fs.writeFileSync(path.join(outDir, "report.json"), JSON.stringify(result, null, 2), "utf8");
+      // Deliberately no exit code. This reports; it does not judge, and a design decision
+      // must never fail somebody's build.
       return;
     }
     case "visual-smoke": {

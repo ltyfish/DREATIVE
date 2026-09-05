@@ -12,6 +12,21 @@ served preview. With the Dreative CLI, run
 `dreative preflight --probe-browser <preview-url>`. A failed probe blocks this
 loop until repaired or replaced by another confirmed browser adapter.
 
+`dreative look --url <preview-url>` does the mechanical half of this loop for you:
+it renders the route at 1440 and 390, writes screenshot tiles you can open, and
+prints two lists. **BROKEN** is output that is invalid however you feel about it
+— a viewport-sized hole, text below 12px, a page that scrolls sideways, an image
+that never loaded, a reveal that never fired. **OBSERVED** is neutral fact you
+cannot get from the source: what changes across each section on scroll, what
+does not, what responds to a pointer. It sets no exit code and blocks nothing,
+because none of it is a design judgement. An observation that a section only
+fades in is not an instruction to add motion — a fade is right in plenty of
+places; it is information you did not have while writing the code.
+
+It does not replace looking. The report cannot see composition, whether a set of
+images belong to one another, whether a section earns its height, or whether the
+thing being sold is actually shown. Open the tiles.
+
 ## Loop
 
 1. Run the production-equivalent route and exercise the primary journey.
