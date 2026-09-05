@@ -169,8 +169,25 @@ made this mistake.
 ## Workflow
 
 1. Inspect the real repository: framework, routes, content, behavior, assets,
-   dependencies, audience, visual equity, and defects. If
-   `.dreative/context.json` exists, validate and read it as fallible working
+   dependencies, audience, visual equity, and defects. **Establish here whether
+   you can see this project running, and prove it with one screenshot of the
+   route as it is now, before any design decision is made.** Serve it, open it,
+   capture it, and say in the brief which viewports you can capture and by what
+   means. If nothing on this machine can render the route, that is a finding to
+   report at the start, when the design can still be chosen around it — not a
+   discovery at delivery.
+
+   This is first because it decides what may be attempted. "Ambition is capped
+   by what you can verify" is below and is not new; what kept failing is its
+   timing. Checked after a page exists, the honest response — build the version
+   you can confirm — costs a rewrite of finished work, and it does not get made.
+   Checked before the section list hardens, it costs nothing and changes what
+   gets designed. A run that shipped a scroll-driven section it had never seen
+   had searched the filesystem for a browser, found none, and continued anyway;
+   every instruction telling it to inspect the result came later than the point
+   where that could still have mattered.
+
+   If `.dreative/context.json` exists, validate and read it as fallible working
    memory; reconcile stale statements against the current product.
    When changing Dreative itself or running a Dreative dogfood, read
    `skills/learning.md` first, and `references/DOGFOOD_LESSONS.md` from the
