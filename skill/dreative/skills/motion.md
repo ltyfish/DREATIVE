@@ -64,6 +64,39 @@ stopping there is a decision you made, not a budget you failed to spend. It is
 also the answer this skill reaches for when it is avoiding work, so you should
 be able to say what you searched for and what the subject genuinely does not do.
 
+## Calibrate against work that shipped, before you write the brief
+
+The standing failure in this skill's record is not bad taste. It is aiming low —
+building the version that was easy to reach and calling it the design. The
+cheapest available correction is to watch three motion-led sites run before the
+brief exists, and it takes minutes.
+
+Stills cannot tell you this. A composition gallery answers what a page looks
+like; a motion build scouted only from stills reproduces a still. Open the work
+and put your hand on the wheel:
+
+- **Awwwards** (Sites of the Day, and the Animation filter), **FWA**, and
+  **Godly** filtered to motion-led work — whole shipped experiences you can
+  scroll.
+- **Studio sites that ship their own work** — Unseen, Active Theory, Resn,
+  Locomotive, Basement, Hello Monday and their peers. This is the clearest
+  evidence of what a ceiling looks like in production, and the ceiling is hard
+  to imagine from a description.
+- **Codrops** and Awwwards case studies for how a specific mechanism was built,
+  *after* you know which mechanism you want.
+
+Study one for a minute, then write down what actually happened: what the
+material was, what drove it, how many distinct events there were on the route,
+and what the page did at the seams between sections. That note is worth more
+than the screenshot.
+
+Two rules survive contact with all of it. Extract the **mechanic and the
+pacing** — what is driven, by what input, over what distance, how many beats —
+never the combined look. And never name a studio as the concept: "make it feel
+like X" is imitation with an extra step, and the independence test in
+`../references/CREATIVE_DIRECTION.md` rejects it. `../references/REFERENCE_ADOPTION.md`
+governs what recording an adoption requires when you take something.
+
 ## The seams carry more than the set-pieces
 
 Between two sections is where most routes go flat. Independent reveals joined by

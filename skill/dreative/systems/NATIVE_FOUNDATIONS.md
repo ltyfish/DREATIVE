@@ -10,6 +10,15 @@ rendering, state orchestration, or smooth-scroll coordination, choose the
 appropriate established runtime instead. Every mount owns one bounded root and
 one cleanup path. `demo.html` is a functional visual fixture, not a house style.
 
+**The code is real and it is next to this file: `systems/runtime.js`.** Every
+export named below is implemented there, exercised by `systems/browser.spec.ts`
+against `demo.html`, and free of dependencies. Read the mount you are considering
+before you write your own — the cleanup, the reduced-motion form, and the
+teardown path are the parts that are tedious to get right and are already done.
+Copy it into the project and adapt it; it is a starting point you own, not a
+package to import from here. `dreative catalogue --query <mechanism>` prints the
+same set with the reject conditions attached.
+
 ## section-observer
 
 - Export: `mountSectionObserver`

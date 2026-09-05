@@ -17,7 +17,7 @@ import { checkPortableArtifacts, localShowcaseArtifacts, runFinalize } from "./f
 import { runVisualSmoke, type DeliveryProfile, type ShowcaseMechanismContract } from "./visualSmoke.js";
 import { renderLook, runLook } from "./look.js";
 import { availableSkills, checkSkillInstallation, installSkill, installationDirectory, resolveSkillSelection } from "./installSkill.js";
-import { renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
+import { CREATIVE_MECHANISMS, renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
 import { renderConfigurationChoices, renderDeliveryBrief, renderDetailedPlanGuide, type DeliveryProfileId } from "../shared/deliveryProfiles.js";
 import { initializeProjectContext, readProjectContext } from "../shared/projectContext.js";
 import { journeyBalanceAdvisories, readExperienceMap, renderExperienceMap, renderImplementationObligations, validateShowcaseExperienceMap } from "../shared/experienceMap.js";
@@ -326,7 +326,10 @@ async function main(): Promise<void> {
     case "catalogue": {
       const index = args.indexOf("--query");
       const query = index >= 0 ? args[index + 1] ?? "" : args.slice(1).filter((item) => !item.startsWith("--")).join(" ");
-      if (args.includes("--json")) console.log(JSON.stringify(searchCreativeCatalog(query), null, 2));
+      // An empty query means "everything", not "nothing". searchCreativeCatalog scores by term
+      // and returns [] when there are no terms, so the JSON path — the one an agent uses — printed
+      // an empty array while the text path printed all twelve.
+      if (args.includes("--json")) console.log(JSON.stringify(query ? searchCreativeCatalog(query) : CREATIVE_MECHANISMS, null, 2));
       else console.log(renderAgentCatalogue(query || undefined));
       return;
     }
