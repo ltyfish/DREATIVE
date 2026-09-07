@@ -201,3 +201,30 @@ test("foundation cleanup restores pre-existing DOM state and stale frame loads c
     railDragging: "prior", frame: "1", fallbackControllers: true,
   });
 });
+
+test("sequence reuses recent frames, evicts old frames, and stops loading after disposal", async ({ page }) => {
+  const loads = await page.evaluate(async () => {
+    const NativeImage = globalThis.Image;
+    const requested = [];
+    globalThis.Image = class {
+      width = 10; height = 10;
+      set src(value) { requested.push(value); queueMicrotask(() => this.onload()); }
+    };
+    const canvas = document.createElement("canvas");
+    canvas.getContext = () => ({ clearRect() {}, drawImage() {} });
+    const sequence = globalThis.dreativeFixture.systems.mountFrameSequence(canvas, {
+      frames: ["a", "b", "c"], maxCachedFrames: 2,
+    });
+    try {
+      await Promise.resolve();
+      sequence.setProgress(.5); await Promise.resolve();
+      sequence.setProgress(.5); await Promise.resolve();
+      sequence.setProgress(1); await Promise.resolve();
+      sequence.setProgress(0); await Promise.resolve();
+      sequence.destroy();
+      sequence.setProgress(.5); await Promise.resolve();
+      return requested;
+    } finally { sequence.destroy(); globalThis.Image = NativeImage; }
+  });
+  expect(loads).toEqual(["a", "b", "c", "a"]);
+});

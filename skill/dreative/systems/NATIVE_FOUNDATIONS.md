@@ -62,7 +62,10 @@ same set with the reject conditions attached.
 - Reject: a short compressed video or two stills communicate the same result.
 - Mobile/reduced: pass a smaller manifest when mounting; choose a resolved
   informative frame with `reducedFrame`.
-- Budget/cleanup: capped DPR, bounded manifest/window, clear cached image refs.
+- Budget/cleanup: capped DPR, LRU image-reference cache (12 frames by default,
+  configurable with `maxCachedFrames`), clear cached image refs. This bounds
+  retained cache entries, not browser-managed memory or concurrent in-flight
+  decodes; production scrubbing may need a coalescing decode queue.
 - Browser: missing callback, resize, start/mid/end and reduced-motion frame.
 
 ## persistent-stage

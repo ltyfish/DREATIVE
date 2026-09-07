@@ -6,6 +6,16 @@ adapters; use the capable tools already available in the host. Prefer an
 isolated browser profile. Never require access to a user's authenticated
 personal browser when a clean profile can test the product.
 
+For a motion-led slice, start this loop before the rest of the route exists.
+`dreative motion-capture --url <preview-url> --out <directory>` records normal
+desktop wheel/keyboard input, emulated mobile touch, and separate reduced-motion
+playback. It writes videos, sectional screenshots, and observed input/scroll data.
+Open the recordings or watch the live page: file existence is not inspection.
+Capture traversal is bounded and reports when it did not reach the page end.
+These are reproducible input samples, not a complete task test, a performance
+benchmark, real-phone GPU evidence, or a taste verdict. Exercise the product's
+primary task separately. Reduced-motion stills must not be scored as normal motion.
+
 Treat package presence and browser-executable detection as unverified. Before
 claiming this loop is available, verify a real launch and navigation to the
 served preview. With the Dreative CLI, run

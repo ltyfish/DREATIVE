@@ -39,7 +39,7 @@ test("default configuration asks the material choices after direction selection"
   assert.match(recommended, /Lean.+recommended/);
   assert.match(renderConfigurationChoices("showcase"), /Full Audit.+recommended/);
   assert.match(renderConfigurationChoices("efficient"), /Fast.+recommended/);
-  assert.match(recommended, /section-level Experience Map/);
+  assert.doesNotMatch(recommended, /Next, Dreative will show a section-level Experience Map/);
 });
 
 test("detailed planning is an adaptive Creative Decision Brief", () => {
@@ -48,8 +48,7 @@ test("detailed planning is an adaptive Creative Decision Brief", () => {
     assert.match(detail, new RegExp(field, "i"));
   assert.match(detail, /no minimum count/i);
   assert.match(detail, /Visible execution map.+experience arc.+mobile transformation/i);
-  assert.match(detail, /Editable Experience Map/);
-  assert.match(detail, /Compiled obligations/);
+  assert.doesNotMatch(detail, /Editable Experience Map|Compiled obligations/);
   assert.match(detail, /Showcase implementation attempted:/);
   assert.match(detail, /Independent visual verdict: awaiting user review/);
   assert.match(detail, /Recommended baseline/);

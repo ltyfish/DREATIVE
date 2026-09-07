@@ -20,16 +20,15 @@ finished art direction or a long effect menu.
 
 ## Planning flow
 
-1. Direction: Recommended, Efficient, or Showcase.
-2. Compact configuration: Fast/Lean/Full Audit, references, sources, packages,
-   and prototype policy.
-3. Private implementation blueprint: the page's sections are decided here, with
-   visible start/end, ownership, responsive, fallback, and review obligations;
-   the full Creative Decision Brief is shown only on request.
+1. Offer Recommended, Efficient, or Showcase with relevant configuration choices.
+   Honor existing decisions and delegated autonomy; avoid repeated approval stops.
+2. Keep a compact implementation note and prototype the decisive uncertainty at
+   intended fidelity, limiting coverage rather than replacing the mechanism.
+3. Integrate, inspect normal-motion playback and desktop/mobile composition,
+   exercise the primary task, correct defects, and run deterministic checks.
 
-A third gate, an editable Experience Map, was removed on 2026-08-16 after blind
-review showed the pages it produced had the same sections in the same order as
-builds with no skill at all.
+The Experience Map is not a planning gate. Its existing optional CLI and Showcase
+compatibility surface remain; see the audit for the remaining migration boundary.
 
 Recommended is the direction the agent judges best for the inspected product.
 Efficient is the most token- and implementation-efficient direction. Showcase
@@ -102,6 +101,9 @@ evaluation package in projects that did not opt in.
 - `dreative experience-map --file map.json [--check|--obligations]` — render,
   validate, or compile the accepted section journey.
 - `dreative catalogue --query "..."` — focused golden-system lookup.
+- `dreative motion-capture --url <preview-url> --out <directory>` — normal desktop
+  wheel/keyboard, mobile touch, and reduced-motion videos with input samples.
+  This is observation for review, not an artistic or performance score.
 - `dreative visual-smoke --url <preview-url> --profile <direction>` — ephemeral desktop, mobile, reduced-motion, route, runtime, and asset smoke gate.
 - `dreative finalize --codex --profile <direction> --visual-smoke-url <preview-url>` — deterministic delivery gate; smoke is mandatory for every substantial delivery.
 

@@ -35,6 +35,48 @@ PLAN.md, schemas, and executable checks.
 
 ## Active lessons
 
+### DL-021 / proposed / 2026-09-06
+
+Observed failure: The latest clothing run read motion/material guidance but
+shipped cloth swatches instead of garment views and received a 1/5 verdict.
+Core docs repeated conflicting obligations; docs-check pinned 81 phrases.
+The testbed captured reduced-motion stills and injected a non-shipped read-denial
+hook. Its ordinary shopping brief did not request the motion-led experience the
+reviewer expected.
+
+Root cause: Reading, dependency presence, and test completion do not establish
+material fit or authored choreography. The harness also mixed task mismatch and
+extra enforcement with skill quality. These are audit findings, not a causal
+estimate of why each historical run failed.
+
+Change: Consolidated six core guides, removed phrase-level documentation gates,
+added native-input playback capture and review, made read-denial experimental,
+and added a separate explicit motion-led brief. Bounded the native sequence's
+retained cache and prevented new loads after disposal.
+
+Evidence: Repository audit at 4d620e1; archived clothing source, reads.json,
+BRIEF.md and user verdict; a fresh replay reached the end on desktop, touch
+emulation and reduced motion without console/page errors. Unit/browser tests
+validate mechanics only. A later independent verdict for
+`clothing-motion__with-a__202609060820` gives overall/material/subject/motion/craft
+4/5 and structure 3/5, praising the transition and requesting fuller shopping
+imagery, variety, and better lower-page composition. That run used git:4d620e1,
+not this rewrite; it cannot validate the rewritten skill. Its CREDITS.md explicitly
+uses fictional inventory as the reason for drawn dye plates. Clarified that
+fictional concepts may use coherent generated garments; real inventory needs
+verified fidelity. Added targeted resource routing and preserved successful
+prototype code instead of instructing agents to discard it. These revisions
+remain proposed pending a fresh controlled run.
+
+Cost or trade-off: Core reading is smaller; playback adds browser time/storage.
+Several variables changed, so compare the revision as a bundle before attributing
+benefit to any one change. The legacy Showcase contract remains for compatibility.
+
+Recheck condition: Frozen old/new revisions on held-out ordinary and motion-led
+tasks, with identical host/model/tools/budgets, repeats, blind playback review,
+and completion/cost results including truncated runs. Keep this proposed until
+a later independent user verdict supports improvement.
+
 ### DL-001 / superseded / 2026-08-01
 
 Observed failure: Bounded versus Higher Ceiling repeatedly made the lower-risk

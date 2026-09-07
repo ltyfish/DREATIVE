@@ -1,6 +1,7 @@
 # Creative execution
 
-Read this only after a project-native concept needs an advanced runtime.
+Read this when choosing or integrating a runtime for a concrete visual result.
+Use `CREATIVE_RESOURCES.md` for a targeted external resource lookup.
 
 For every advanced mechanism, identify its semantic purpose, section owner,
 meaningful state change, mobile form, reduced-motion form, loading/failure
@@ -47,18 +48,24 @@ reduced-motion, or failed contexts.
 
 ## Quality threshold
 
-Prototype only when one signature mechanism is both central and technically
-uncertain. Define the decision the probe will answer, use real content, and
-discard the probe after the decision.
+Prototype the uncertainty that could invalidate the direction: visual fit,
+material, interaction, or technical feasibility. Define the decision the probe
+will answer and use intended content. Carry successful implementation into the
+application; discard only failed experiments and temporary scaffolding.
 
 Reject:
 
-- a generic shader, particle field, or floating object behind ordinary copy;
-- a WebGL plane that behaves like a normal image;
+- an unadapted demo whose composition or behavior does not fit the direction;
+- rendering complexity that adds no visible value to the intended result;
 - smooth scrolling with no concept-driven use;
 - multiple libraries producing the same class of motion;
 - effects that cover controls, reduce readability, or vanish on mobile;
 - a prototype that consumes more effort than the final product.
+
+Atmospheric shaders, particles, and image planes can be the right visual medium.
+Judge their framing, identity, rhythm, and integration, rather than banning the
+medium. A library component is a starting implementation: change its visual
+grammar to fit this project and inspect its full interaction lifecycle.
 
 After integration, run `VISUAL_REFINEMENT.md`: inspect screenshots at desktop,
 390px, reduced motion, and the loading/failure state, fix visible findings, and

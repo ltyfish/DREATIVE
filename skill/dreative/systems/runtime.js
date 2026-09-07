@@ -94,6 +94,8 @@ export function mountFrameSequence(canvas, options) {
   const context = canvas.getContext("2d");
   if (!context || !options.frames?.length) return { setProgress: noop, destroy: noop };
   const images = new Map();
+  const cacheLimit = Number.isFinite(options.maxCachedFrames)
+    ? Math.max(1, Math.floor(options.maxCachedFrames)) : 12;
   let destroyed = false;
   let current = -1;
   let requestVersion = 0;
@@ -105,7 +107,12 @@ export function mountFrameSequence(canvas, options) {
     if (current >= 0) draw(current);
   };
   const load = (index) => {
-    if (images.has(index)) return images.get(index);
+    if (images.has(index)) {
+      const cached = images.get(index);
+      images.delete(index);
+      images.set(index, cached);
+      return cached;
+    }
     const image = new Image();
     const promise = new Promise((resolve) => {
       image.onload = () => resolve(image);
@@ -113,9 +120,11 @@ export function mountFrameSequence(canvas, options) {
     });
     image.src = options.frames[index];
     images.set(index, promise);
+    while (images.size > cacheLimit) images.delete(images.keys().next().value);
     return promise;
   };
   const draw = async (index) => {
+    if (destroyed) return;
     current = clamp(index, 0, options.frames.length - 1);
     const requested = current;
     const version = ++requestVersion;

@@ -2,7 +2,7 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./src/cli",
-  testMatch: "visualSmoke.browser.spec.ts",
+  testMatch: ["visualSmoke.browser.spec.ts", "motionCapture.browser.spec.ts"],
   workers: 1,
   // Each case drives four viewports through motion, affordance, and density
   // sampling; the default 30s budget is no longer enough.

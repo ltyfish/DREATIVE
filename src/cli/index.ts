@@ -16,6 +16,7 @@ import { printDocsCheck, runDocsCheck } from "./docsCheck.js";
 import { checkPortableArtifacts, localShowcaseArtifacts, runFinalize } from "./finalize.js";
 import { runVisualSmoke, type DeliveryProfile, type ShowcaseMechanismContract } from "./visualSmoke.js";
 import { renderLook, runLook } from "./look.js";
+import { runMotionCapture } from "./motionCapture.js";
 import { availableSkills, checkSkillInstallation, installSkill, installationDirectory, resolveSkillSelection } from "./installSkill.js";
 import { CREATIVE_MECHANISMS, renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
 import { renderConfigurationChoices, renderDeliveryBrief, renderDetailedPlanGuide, type DeliveryProfileId } from "../shared/deliveryProfiles.js";
@@ -59,6 +60,8 @@ const USAGE = `usage: dreative [command]
   catalogue        search the executable creative catalogue [--query phrase] [--json]
   look             render the page and report what a browser sees that source cannot
                    --url URL [--out DIR]   screenshot tiles + BROKEN/OBSERVED; never fails
+  motion-capture   record normal desktop/touch and reduced-motion traversal for review
+                   --url URL --out DIR   videos + input samples; no taste verdict
   visual-smoke     production-equivalent browser smoke audit --url URL --profile efficient|recommended|showcase
                    Showcase requires tracked --mechanism-contract and --experience-map files
   finalize         run deterministic checks; always requires --visual-smoke-url URL and --profile
@@ -98,6 +101,13 @@ async function installCommand(): Promise<void> {
 async function main(): Promise<void> {
   if (args.includes("--help") || args.includes("-h")) { console.log(USAGE); return; }
   switch (cmd) {
+    case "motion-capture": {
+      const value = (flag: string) => { const i = args.indexOf(flag); return i >= 0 ? args[i + 1] : undefined; };
+      const url = value("--url"); const out = value("--out");
+      if (!url || !out) throw new Error("motion-capture requires --url and --out");
+      console.log(JSON.stringify(await runMotionCapture(url, path.resolve(out)), null, 2));
+      return;
+    }
     case "brief": {
       const configureIndex = args.indexOf("--configure");
       if (configureIndex >= 0) {

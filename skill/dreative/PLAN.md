@@ -1,572 +1,94 @@
-# Planning protocol
-
-Planning has two required, blocking user-facing stages—direction and compact
-configuration—plus a blocking prototype review whenever Prototype is selected
-and produced, and an optional reveal of the detailed Creative Decision Brief.
-The reveal is optional; creating and using the complete private brief is not.
-Keep private exploration private. Do not edit implementation files until both
-stages have an explicit user response. Never silently apply recommended settings.
-
-## Stage 1: direction
-
-Inspect the real product and read `references/CREATIVE_DIRECTION.md`. Privately
-create three genuinely different concepts before assigning them to delivery
-levels. They must differ in experience structure or interaction logic, not
-only color, type, and effort.
-
-Concepts come from the product, never from a shelf. Decide the type pairing,
-palette construction, composition, and depth treatment from what this product is
-and does. A catalogue of ready-made combinations was tried here and removed: it
-went five rounds without a reviewer ever naming one of its decisions, while
-costing context on every turn and risking a Dreative house style in place of the
-generic one.
-
-Show exactly:
-
-The three levels differ in scope and ceiling — how much of the route is
-redesigned, how much of it is authored in time, and how expensive its material
-is. They are not three intensities of one style.
-
-1. **Recommended — <project-native concept>**
-   The direction most likely to produce the strongest product for this
-   audience, content, and implementation reality.
-
-2. **Efficient — <focused concept>**
-   The highest-value improvement using the least tokens and implementation cost,
-   preserving the current structure, assets, and stack where useful. Efficient
-   is a narrower scope, not a flatter page.
-
-3. **Showcase — <flagship concept>**
-   The highest creative and technical ceiling. Sourced footage, frame sequences,
-   3D, shaders, and scroll-authored choreography are all available; select only
-   what materially strengthens the premise. Its delivered route must be
-   visibly and structurally distinct from Recommended; a long conventional page
-   with one isolated spectacle is insufficient.
-
-Each option must name its premise, composition, material/type voice, meaningful
-media or interaction, and product fit. Where the concept moves, name the event
-in the subject it makes visible and the material that shows it. Do not mention
-reference brands as the concept. Do not offer three versions of the same
-editorial landing page, and do not offer three intensities of the same scroll
-fade. Each must be the strongest honest design for its stated constraint:
-Efficient is not deliberately weak, Recommended is not a diluted Showcase, and
-Showcase must genuinely reach the highest coherent creative and technical
-ceiling.
-
-End with:
-
-> I recommend **<direction>**. Reply with **1, 2, or 3**. You can also say
-> **show detailed plan**.
-
-If the user asks for detail before choosing, expand Recommended by default.
-This expands information only; it does not select Recommended. Wait for the
-user's explicit direction choice. A general instruction such as "go ahead,"
-"redesign it," or "use your judgment" is not a direction choice unless it
-explicitly authorizes choosing among the three options.
-
-## Stage 2: compact configuration
-
-After selection, show five compact choices with direction-adapted
-recommendations. End with:
-
-> Reply **use recommended settings** or list any changes. Say **show detailed
-> plan** for the full project-specific Creative Decision Brief.
-
-Wait for the reply. Do not treat the displayed recommendations as accepted
-until the user says `use recommended settings` or explicitly supplies their
-choices. The prototype choice must always appear and be confirmed; for
-Showcase, clearly state that `Required` means prototyping the riskiest signature
-mechanism before integrating the route.
-
-When the request already authorised proceeding without confirmation, show the
-block and build on the recommendations rather than waiting; anything the user
-did name still binds.
-
-### Review depth
-
-- Fast — production build and one focused desktop/mobile primary-flow pass.
-- Lean — full-page desktop/mobile, key interactions, console/overflow/text
-  integrity, and one visible correction pass.
-- Full Audit — Lean plus 320px, reduced motion, performance, direct routes,
-  console/network, asset failures, and final full-page regression.
-
-Defaults: Efficient=Fast, Recommended=Lean, Showcase=Full Audit.
-
-Full Audit increases observable review. It never adds approval hashes,
-attestation, provenance, evidence ledgers, or a mandatory critic.
-
-### References
-
-- Follow a website, URL, image, or file supplied by the user.
-- Scout and synthesize relevant references.
-- Use no external reference.
-
-Efficient uses supplied references only. Recommended uses supplied material or
-a small cross-domain scout. Showcase uses supplied material plus two to four
-strong references from different domains. Extract principles; never reproduce
-a reference's complete visual fingerprint.
-Mark each adoption as user-required or direction-recommended. A user-required
-reference must be visibly implemented, or rejected only after the user
-explicitly approves the rejection.
-
-### Sources
-
-- Existing assets only.
-- Allow sourced/licensed images.
-- Allow sourced and generated images; use video or 3D when useful.
-- Ask before each new asset.
-
-Efficient defaults to existing assets. Recommended chooses best-fit media.
-Showcase permits maximum useful sourced/generated imagery, video, and 3D.
-
-Sourcing here means motion material, not only stills: frame sequences, footage,
-models, HDRIs, depth maps. Read `references/MOTION_MATERIAL.md` for where it
-comes from and what to run over it, and get the files on disk before writing the
-section that drives them.
-Mark specific user-requested assets as user-required. They must ship visibly,
-or be rejected only after the user explicitly approves the rejection. Broad
-permission to source media does not make every possible asset user-required.
-
-### Packages
-
-- Allow focused package installation.
-- Keep the existing stack.
-- Ask before installing.
-
-Efficient keeps the stack. Recommended and Showcase allow packages whose
-capabilities are necessary for the selected experience.
-
-### Prototype
-
-- Skip — build directly.
-- Auto — test only a central mechanism with real uncertainty.
-- Required — build the riskiest signature mechanism before integrating it.
-
-Defaults: Efficient=Skip, Recommended=Auto, Showcase=Required.
-
-Prototype the one mechanism whose outcome you genuinely cannot predict and whose
-result would change the build. Show it rendered at desktop and mobile, say what
-it does and does not yet prove, and stop for the user's response before
-integrating. A general instruction to continue is not acceptance.
-
-Keep the prototype cheap in ceremony and **full in fidelity**. A prototype is the
-real mechanism, built against real downloaded material, seen running — it is
-never a simplified draft of the mechanism, and never a placeholder transition
-standing where the mechanism will go. A stripped-down version answers the wrong
-question: it tells you whether the easy thing works, which you already knew.
-See `SKILL.md`, *Build the real thing first*. If it is easier to
-build the real route than to build an artifact about the route, build the real
-route. Do not manufacture a second comparison build unless a named decision is
-still unresolved and the alternatives differ in medium, interaction model,
-spatial structure, or mobile behavior — input method, runtime, or polish is not
-a material difference.
-
-The prototype exists to answer a question, not to produce evidence. Its output
-is a decision and a rendered thing the user looked at; captures, recordings,
-storyboards, frame counts, and fidelity labels are not required and are not
-treated as proof of anything.
-
-## Stage 3: removed
-
-The editable Experience Map was a third blocking gate. It was removed on
-2026-08-16: a clean blind round showed the arms it produced were the same
-sections in the same order as a build with no skill at all, and the gate never
-fired in unattended runs anyway. Do not reintroduce a section-table gate. Decide
-the page shape in the private brief below and build it.
-
-## Stage 4: private Creative Decision Brief and optional reveal
-
-After direction and configuration are resolved, always complete this entire
-project-specific brief privately before implementation. It is the working
-blueprint for section allocation, treatments, assets, signature mechanisms,
-continuity, mobile transformation, runtime ownership, fallbacks, and review.
-Keep it current when repository inspection or prototyping changes a decision.
-
-When `.dreative/evaluation/README.md` exists in the target project, it is an
-explicit request for a compact evaluator handoff. After configuration, write
-the selected direction and a concise, inspectable decision summary to the
-current-run record named by that local contract. Include product observations,
-the alternatives considered at a summary level, selection reasons, promises,
-and material later changes with their triggers. Do not expose chain-of-thought,
-private exploration, raw conversation, or scratch notes. This handoff reports
-decisions; it does not replace the private brief or become an approval gate.
-Record the exact branch and commit, updating `uncommitted` after the final
-commit. Only paths named by the local evaluation README belong to the handoff;
-remove stale untracked legacy critic, verification, certification, trace, and
-evidence artifacts rather than allowing an evaluator to confuse them with the
-current build.
-
-Do not require the user to read or approve it. By default, show only the short
-build brief required by `SKILL.md`, including this compact execution map:
-
-```text
-Experience arc: <hero> → <proof> → <transformation> → <decision>
-Section ownership: <section → perceptible treatment or role>
-Post-hero peak: <section and meaningful state change>
-Continuity owner: <device that carries the concept beyond the hero>
-Mobile transformation: <structural changes, not “stack everything”>
-Showcase ceiling: <highest coherent mechanism/media decision and prototype result>
-```
-
-Keep it concrete and under roughly ten lines. It exposes the implementation
-shape without turning the private brief into an approval or evidence artifact.
-If the user says `show detailed plan`, reveal the current full brief. Do not
-create a plan file, approval record, or other compliance artifact merely to
-prove that the private brief exists.
-
-Adapt every decision below to the inspected project and selected direction.
-The user's explicit choices and corrections are the source of truth. Use direction
-defaults and agent judgment only where the user left a decision open. Do not
-reinterpret a direction label to reduce its promised scope, and do not change taste,
-intensity, treatments, or page allocation merely because implementation is
-harder than expected.
-
-Ask one focused question before implementation when two plausible readings of
-the user's intent would materially change a page or section, or when uncertain
-whether a major section should carry an unusually intense, spatial, cinematic,
-or experimental treatment. Ask again before any later material deviation from
-the brief unless the user delegated that choice. Do not interrupt for routine
-craft decisions the selected direction already resolves.
-
-### 1. Product truth
-
-Summarize audience, primary task, routes, content shape, subject vocabulary,
-working behavior, valuable visual equity, assets, dependencies, defects, and
-preservation.
-
-### 2. Selected direction
-
-Define the project-native premise, composition rule, typography, material/color
-logic, media role, motion/interaction grammar, continuity device, and why they
-fit. Include three decisions that could only come from this product.
-
-### 3. Reference synthesis
-
-For each supplied or scouted source, show only the principle being adapted and
-what will deliberately differ. Confirm that no source contributes the complete
-palette + type + layout + signature-motion combination.
-
-### 4. Workflow and resources
-
-Show Fast/Lean/Full Audit, Skip/Auto/Required, reference strategy, Sourced images,
-Generated images, sourced/generated video, 3D sourcing or generation,
-Packages, and actual detected capabilities. Mark recommendations.
-
-### 5. Treatment and experience allocation
-
-For each relevant treatment, state the project-specific use, selected/declined
-decision, cost, risk, and insufficient version. Then map the selected treatments
-to route sections, including a meaningful post-hero peak and the continuity
-owner. User-selected treatment names or counts override direction defaults. UX and
-Mobile always apply. Showcase may use any treatment but has no minimum technology
-count. It requires one connected experience system: a meaningful choice or
-transformation must propagate through at least three non-adjacent regions across
-the pre-peak, central peak, and post-peak experience. Static grids, isolated
-widgets, and thematic labels do not count.
-Selection is a delivery promise, not checkbox coverage: every
-selected treatment needs a named owner and perceptible contribution, although
-one coherent mechanism may serve several treatments.
-
-**Search and look before you cut the slots.** The order matters and the wrong
-one is the default: name seven sections from the copy, then go shopping to fill
-seven seats, and every image arrives as a rectangle in a slot that was designed
-without it. A slot does not care what fills it — which is how the same picture
-holds four sections and how a clip of the wrong mechanism reaches the focal seat
-with nothing objecting.
-
-So run the search first, at breadth, and *look* at what came back before the
-section list hardens: `references/MEDIA_SOURCES.md`, *Look at forty, not four*,
-which is one contact sheet and one read rather than thirty file opens. You are
-finding out what this page can actually be made of. A route bends around a clip
-nobody expected to find; it cannot bend around one discovered after the
-architecture was committed.
-
-This one is a gate, not an intention. Nothing downstream of it — no section
-list, no component, no CSS — is written until a sheet exists on disk and you
-have read it. The failure it stops is not laziness; it is that the search goes
-badly for ten minutes, something workable turns up on the way, and the build
-quietly proceeds on that instead, with no moment at which anyone decided to.
-A round that shipped a whole route off three downloaded files had run five
-searches, kept the third result, and never wrote a sheet. So the observable is
-a file: the sheet, or a written sentence saying what was searched and that
-nothing on it was a keeper. Either is a pass. Neither existing is not a thin
-search — it is a search whose result nobody ever looked at, and the page is
-being designed around whatever happened to be lying around.
-
-**The second half of the gate is that the material got worked.** Sourcing well and
-then shipping the downloads is a distinct failure with its own signature, and it
-is the one that produces a page described as *"nice images, but nothing is done
-with them"*. A route can look at eighty candidates, keep twenty-one, resize them
-correctly, and still arrive at a wall of `<img>` — because resizing is
-production, not treatment, and the two get confused precisely because the
-production step feels like work.
-
-So two things are decided here, beside the sheet, and both have something you can
-point at:
-
-- **The set was treated.** The file you ship is not the file you downloaded. A
-  webp derivative at 1500px is the same photograph; a graded, cropped, matched
-  set is not. The tell that this was skipped is a page whose images each look
-  correct alone and unrelated together — different light, different warmth,
-  different distance to the subject — which is exactly what a wide search hands
-  you and what *Sourced material arrives mismatched* exists to fix. Grade toward
-  one temperature and one contrast, settle a crop family, and do it in the pass
-  that produced the derivatives, because doing it later means doing it never.
-- **Something drives the material, and it exists before the sections do.** Name
-  the driver and put it in the project at the same time you put the material
-  there: a scroll driver, a sequence player, a canvas or WebGL surface, a
-  timeline library, an interpolated scroll decision, a compositing layer. It does
-  not matter which and there is no list to satisfy — what matters is that the
-  choice is made while the page is still being planned. A build that reaches the
-  writing stage with material on disk and nothing to drive it will animate it the
-  only way that costs nothing, which is one `IntersectionObserver` fading every
-  region up, and that is a page with no motion decision rather than a page that
-  chose restraint. If the honest answer is that this subject wants stillness, say
-  so and ship it still — but that is an argument you make, not a state you end up
-  in because the driver was never installed.
-
-The tell for both is the same and it is visible from the outside: the page's
-dependency list and its stylesheet. Real photographs, correctly sized, moved by a
-single fade, with no compositing, no filtering, no sequence and nothing crossing a
-boundary is not an under-motioned page — it is a page where the treatment stage
-did not happen at all.
-
-**These are one standard, checked at one moment — not a list you clear in order.**
-The failure mode is specific and it has happened: a build satisfies whichever
-requirement is most recently in front of it and quietly abandons the one before.
-One round looked at eighty candidates, shipped twenty-one subjects, and installed
-no driver at all. The next installed a real driver and a real light and shipped
-two photographs, generating everything else. Both cleared a gate. Neither made a
-page, because the page needs the same three things true at once: material that is
-real and *of the subject*, worked into one set, with something authoring what it
-does. A build that trades one for another has not advanced — it has moved the
-hole.
-
-So read the three together before the section list hardens, and if satisfying one
-is costing you another, that is the signal to change the plan rather than the
-signal to pick a winner. The cheapest version of this check is one question with
-three parts, asked once, out loud: *what is on this page, is it the subject, and
-what makes it move?* Any of the three answered with a shrug is the same failure
-wearing different clothes.
-
-**Video is material, not a feature, and this is where it is decided.** It sits
-on rung 1 beside the still, it is usually the easier find for anything that
-moves or is used by a person, and it is the single largest difference between a
-route that has something to animate and one that has position, scale and
-opacity. There is no obligation to ship it and no section that owes you one — a
-page can be entirely still and be right. But when the direction you are building
-is motion-led, when a section turns on something happening rather than something
-being, footage is the material that makes that section possible, and reaching
-for a pinned CSS sequence instead is almost always a search that was not run.
-So put it on the sheet: a clip becomes a candidate by giving up one frame, which
-means stills and footage are judged side by side in the same look rather than
-video being a thing you remember to consider afterwards. Then cut it, retime it,
-grade it into the set — editing is part of sourcing, not a later polish.
-
-Then decide the page's sections — which exist, in what order, and why this
-product needs those and not the default five, **with the material you have in
-front of you**. Add executable states, owners, handoffs, responsive forms,
-fallbacks, and evidence targets. Do not force a generic architecture.
-
-Name the seams while you are naming the sections. For each join, say what
-carries across it or that it is deliberately a cut — the same object re-framed,
-a travelling frame, one section's ground becoming the next one's subject, a
-state paid off later. A route whose every join is a scroll position is the flat
-result reviewers describe, and the joins are decided here or not at all.
-`skills/immersive.md` is the file for this when the sections should read as
-one place.
-
-**The page has a material budget, and it is not the hero's.** Allocate it here,
-across the sections you are naming, before any of them is written. The failure
-this prevents is a route where one moment is fully realised — sourced,
-treated, driven — and every other section is a table, a card row, a stat strip,
-or a shape someone drew, because the material decision was made once for the
-peak and never made again. That page reads as empty and unfinished no matter how
-good the peak is, and the peak cannot rescue it: a reader who has scrolled past
-four unfunded sections has already decided what this is.
-
-So for **every** section, name what physically holds it — a photograph, a
-sequence, a clip, a surface, a real state, a drawn notation over one of those, or
-type alone. Type alone is a legitimate answer, deliberately chosen, and a page
-where one section is silent so the next can be loud is composed. A page where
-five sections are silent because nobody budgeted for them is not, and the tell is
-that you cannot say what any of them was supposed to hold.
-
-Two allocations to make explicitly, because they are the ones that get skipped:
-
-- **The sections that carry obligation** — specifications, prices, hours,
-  tiers, comparisons, contact. These arrive as content and leave as tables, and
-  a table is a legitimate form only when it was chosen against the alternatives:
-  the same rows against the real surface they describe, at the scale they
-  describe, or annotated over the object, or held by one photograph that makes
-  the number mean something. Deciding this early is what stops the page from
-  ending in four grey rectangles.
-- **The numbers.** A quantity — units remaining, a run size, a percentage, a
-  count of anything — has two default answers that arrive before thinking does:
-  the figure set large in the display face, and a grid of small marks, one per
-  unit. Both are legitimate and both are now reflexive; the same two-hundred-cell
-  dot grid has appeared in every round of one scenario, which is a form nobody
-  chose. The alternatives are not exotic — the quantity at its real size against
-  something whose scale a reader already knows, the number driving a piece of
-  motion rather than sitting still in the middle of a band, a figure that
-  resolves out of the material it describes, one unit shown properly with the
-  count stated beside it, or the quantity expressed as the room it takes up on
-  the page. The tell that you defaulted is that the treatment would work
-  unchanged on any other number.
-- **The reserve.** Material found for the peak is usually the same shoot the
-  rest of the page needs. Budget the outtakes deliberately — a second crop, the
-  frame before the action, a detail at ten times life size — rather than
-  discovering later that the only thing on disk is the hero.
-
-**This is a floor, not an equal share.** A page where every section is as loud as
-the peak has no peak, costs a fortune to load, and is the density failure in
-`exemplars/SLOP.md` under another name. What every section owes is that it was *decided* and
-that what holds it is real — a photograph chosen for this seat, a surface, a state,
-notation over one of those, or type set deliberately. What one section owes on top
-of that is to be the thing the page was built for. Quiet is a composition; unfunded
-is an omission, and the difference is whether you can say what the section holds and
-why that is enough for it.
-
-**Held is not the same as present.** A section whose photograph gains a moving
-highlight, a tinted overlay, a border that thickens, or a toggle between two
-crops has technically been funded and has not been designed: those are the
-cheapest gestures available, and a route where each section gets exactly one of
-them reads as seven shallow ideas rather than a page. It is also the predictable
-way to satisfy a floor — every seat filled, nothing worth watching. The test is
-whether a reader could say what the section showed them, not whether something
-in it moved. Where the honest answer is that a section has one photograph and
-nothing to do with it, the photograph set well and left alone beats a gesture
-applied to it.
-
-The consequence, when the budget will not stretch: reduce what the peak promised
-until the floor is paid for. A route with three sections that each hold something
-real and one of them singing beats a route with one aria and six empty rooms — and
-a build that discovers it is short has found a scope decision, not a licence to fund
-the first section and coast.
-
-Three things about material apply to every build, whichever reference you open
-next, so they are here rather than only there:
-
-1. **Rank the material and take the highest rung the subject and the licence
-   allow** — a photograph of the thing (a *set* of views is motion material),
-   then a licensed model or frames rendered from one, then real surface material
-   (texture, PBR, HDRI), and only then drawn construction. Drawing is
-   unlimited for **notation** — diagrams, annotation over a photograph, charts,
-   icons, marks. It is the fallback when it stands in for something physical
-   that exists and could have been sourced, and reaching it is a sentence you
-   should be able to write. A real photograph is not automatically a good
-   one: the keyless archives are full of record shots — flat-lit, centred,
-   everything equally sharp — and where that is all they hold, rendering your own
-   frames from a licensed model under a real HDRI is the rung that fixes it.
-2. **Real material takes the focal seat of the section it belongs to.** A
-   photograph in a side slot under a figure you drew is a page made of drawings
-   with photographs attached — the inversion blind review calls "it's all SVG".
-3. **A sourced set is processed into one image system before it ships**: one
-   light and grade, one subject scale and crop family, applied to the set rather
-   than to one image. Separately sourced material reads as stock until it is
-   treated. And a set indexed as one subject has to *be* one subject.
-
-`references/MEDIA_SOURCES.md` carries all three in full, with the sources, the
-licence rules, and the processing recipes; `references/MOTION_MATERIAL.md`
-carries drivable material, the production pipeline, and the forms at equal
-weight. Open both when the route has any focal subject at all.
-
-
-Name the **signature component** here: the one element on this route that could
-not be lifted onto a competitor's page, and the one sentence saying why. It is
-the requirement most often missed, and removing generic components does not
-satisfy it. Name the product subject it operates on, too — the item for sale,
-the document being read, the appointment being booked. A chart, log, or metrics
-panel *about* the product satisfies the letter of this requirement and has twice
-lost the round; it is the right answer only when the product is itself data or
-developer tooling.
-
-Name the **interaction baseline** as a separate line item, on every profile
-including Efficient: the hover, focus, press, and regional-entrance grammar that
-applies to the whole route. It is deliberately cheap and unoriginal, it is not
-part of the signature-moment budget, and it is the thing blind review reads as
-smoothness. Do not fund a second set-piece before it exists. Pick one hover
-behaviour for the whole route rather than mixing four.
-
-Where the route has a **signature moment that moves**, name it here as four
-things: the event in the subject, the material that shows it, that material's
-real source, and the single authored value that drives it. A moment missing any
-of the four is not planned yet, and planning it as "an animated reveal" is how
-the route ships as fades. Name the **seams** too: what carries across each major
-section boundary.
-
-For every focal subject, decide the medium and where the asset actually comes
-from before writing focal code. Evaluate external media before
-fabricating a realistic physical subject out of CSS or SVG; fabricated product
-imagery is the single failure blind reviewers have called out most sharply, and
-"evaluated external options" means you searched. If the selected fidelity needs a capability you do not
-have, say so and name one concrete route to it — a tool, a supplied asset, or an
-explicit treatment change — rather than quietly substituting geometry. Local
-assets must exist in the repository and be tracked; remote assets must load.
-
-Then write the project's own mechanism contract to
-`.dreative/showcase-mechanism.json`, validated against the packaged schema at
-`schemas/showcase-mechanism.schema.json` — the schema is a definition that
-ships with the skill and is never edited. The contract file is tracked in the
-repository and passed to `dreative finalize --mechanism-contract`, which is
-what makes it worth writing: every field in it is exercised against the
-rendered page. Fill it using the operational rules
-in `SKILL.md`: the signature component, the Recommended baseline, perceptible
-Showcase differences, media decisions, and the mechanisms the browser will
-exercise. The connected experience system must carry either meaningful shared
-state or one authored physical/cinematic/material motif through pre-peak,
-central peak, and post-peak regions. User Control is required only when it
-improves the product decision.
-
-The contract is small on purpose. It has no field for your own account of your
-process, because a non-empty string is not evidence and checking one only
-teaches you to write longer strings. Everything in it is exercised in a browser
-or read by a human; none of it is a verdict on visual quality.
-
-### 6. Build architecture
-
-Name the signature mechanism, semantic fallback, runtime ownership, component
-boundaries, asset pipeline, mobile transformation, accessibility behavior, and
-performance budget. Use a prototype only when its result can change the build.
-
-### 7. Review, risks, and decision
-
-List observable review passes, material risks, and fallbacks that preserve the
-concept. End with one editable decision line containing direction, review,
-prototype, treatments, references, sources, packages, and missing-content
-choices.
-
-Before completion, reconcile the rendered product against this current brief.
-Check every promised route, section role, treatment owner, signature mechanism,
-mobile transformation, preserved behavior, fallback, and chosen review pass.
-Do not call the work complete while an item is absent, imperceptible, replaced
-by a weaker substitute, or unverified. Continue correcting it or report the
-specific blocker and remaining scope.
-
-For Showcase, inspect below the first peak and reject completion if the rest
-could plausibly be Efficient or ordinary Recommended. Disclose:
-
-```text
-Showcase implementation attempted: <what visibly shipped>
-Independent visual verdict: awaiting user review
-Not pursued: <material advanced treatment rejected or replaced, and why>
-```
-
-Omit `Not pursued:` only when no material treatment was rejected or replaced.
-Ask the user for the independent visual verdict; Codex cannot author it.
-
-After the explicit configuration reply, implement. Do not generate another
-approval or contract gate. The prototype-review pause above and a small
-integrated experience checkpoint are the only exceptions.
-
-For Showcase and experience-led Recommended work, checkpoint the primary peak,
-its downstream consequence, and their desktop/mobile handoff before polishing.
-
-Every substantial final handoff ends with:
-
-```text
-Implementation complete; human taste verdict: awaiting user review
-```
-
-This applies to every direction. Supply rendered views and ask for the verdict.
-For opted-in evaluation, reconcile the designated record with shipped source.
+# Planning and prototypes
+
+Use this for open frontend design. For a scoped fix, retain the existing direction
+and perform the relevant work directly. User instructions and existing
+authorization take precedence over this workflow.
+
+## Offer different experiences
+
+Present Recommended, Efficient, and Showcase with a project-specific concept.
+These are delivery approaches, not taste scores or three color schemes.
+
+- **Recommended:** the strongest complete solution for the brief and available
+  resources. An explicitly motion-led brief remains motion-led here.
+- **Efficient:** reduce scope and production cost while preserving the selected
+  slice's quality. Reuse good assets and mechanisms; avoid speculative generation.
+- **Showcase:** a more extensively authored experience, including development
+  beyond the hero, with a real prototype of the highest-risk moment. Read
+  `references/SHOWCASE.md` for its existing executable delivery contract.
+
+For each, describe composition, material, a visible sequence, mobile form, and
+relative cost/risk. Example of a sequence description: the product begins inside
+a narrow editorial frame, the frame opens with scroll, then the same product
+settles beside its purchase controls. This describes behavior; it is not a
+universal layout.
+
+For an undecided user, ask for the approach once. Show relevant reference,
+source, package, prototype, and review recommendations together so the user can
+change them in the same response. If they ask you to choose or proceed
+autonomously, state your assumption and build. Do not repeatedly ask for approval
+of routine decisions. Explicit restrictions and requested review stops remain binding.
+
+## Configuration defaults
+
+| Choice | Efficient | Recommended | Showcase |
+|---|---|---|---|
+| Review depth | Fast: focused desktop/mobile primary task | Lean: full page, motion, primary task, correction | Full Audit: Lean plus narrow mobile, reduced motion, routes, failures, performance |
+| References | Supplied | Supplied or focused scout | Supplied and focused motion scout |
+| Sources | Existing where adequate | Best fit within available authorization | Best fit, including video/3D/generation where useful |
+| Packages | Existing where capable | Focused installation | Focused installation |
+| Prototype | Skip unless uncertainty threatens the fix | Auto for consequential uncertainty | Required decisive slice |
+
+Available overrides include existing assets only, supplied references only,
+no external reference, no new packages, generated images, sourced images,
+or an explicit review before new assets. Paid services remain subject to the
+user's authorization. Do not equate a source default with access to a paid tool.
+
+## Cheap comparison, faithful prototype
+
+Compare alternatives before coding two full versions. Use a few annotated
+reference frames, a rough composition board, or concise start/develop/resolve
+descriptions to contrast distinct interaction models. Label a board as a board.
+Use the actual supplied reference when fidelity to it is the task.
+
+Build one selected slice with the real mechanism and representative final assets.
+Test the uncertainty at its actual viewport size: crop continuity, decode/seek
+behavior, visual strength, legibility during motion, and entry/exit. A low-cost
+prototype limits coverage, not the fidelity of the property being tested.
+Do not spend on a second coded approach unless its result could change the decision.
+
+Show the running result when user review is part of the task. Respect a requested
+stop; otherwise continue after your inspection and state the decision.
+A prototype is not a completed route. Integrate only after it answers the question.
+
+## Compact implementation note
+
+Keep only decisions needed to build and resume:
+
+- Product task and preserved behavior.
+- Selected concept and binding user requests.
+- Actual material and source; remaining capability or identity gaps.
+- Signature sequence: input, start, development, resolved state.
+- What carries between regions and what changes beyond the hero.
+- Motion/runtime ownership; mobile and reduced-motion form.
+- Prototype conclusion and next concrete implementation step.
+
+This can live in ordinary project notes or existing context; no extra schema,
+signature, approval hash, section-table gate, or hidden-reasoning record is needed.
+Offer “show detailed plan” if the user wants expanded rationale.
+
+## Spend where uncertainty is
+
+Scout broadly enough to compare credible options, then inspect candidates in
+batches. Stop when the chosen sequence has suitable material; keep searching
+only to resolve a named gap. One paid generation should answer a composed shot
+brief, not explore a direction that cheap references could eliminate.
+
+Reserve time for integration and correction before starting a costly mechanism.
+After a failed attempt, diagnose the failure before repeating it. Change one
+material variable per retry. If a resource limit prevents the requested outcome,
+report the specific shortfall; do not silently lower fidelity or call a draft done.
+
+For opted-in evaluator records follow `references/EVALUATION_HANDOFF.md`.
+For substantial frontend work, finalization and user taste review follow
+`SKILL.md`. Deterministic success and human acceptance are different results.

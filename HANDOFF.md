@@ -7,9 +7,9 @@ product quality from unverifiable local ceremony.
 
 The default CLI command is `brief`; it prints Recommended, Efficient, and
 Showcase. `brief --configure <direction>` prints compact review, reference,
-source, package, and prototype choices. The Experience Map then exposes
-section roles, intensity, and handoffs before compiling them into implementation
-obligations. `brief --detailed <direction>` prints
+source, package, and prototype choices. Existing user choices and delegated
+decisions take precedence; the Experience Map is not a planning gate.
+`brief --detailed <direction>` prints
 the adaptive Creative Decision Brief structure. Dreative is a skill and CLI;
 the legacy visual editor and its server have been removed.
 
@@ -39,8 +39,8 @@ active workflow.
 
 1. `npm install`
 2. `npm run build`
-3. `npm test`
-4. `npm run test:all`
+3. `npm test` (build, unit, and browser suites; `test:all` is an alias)
+4. `node dist/cli/index.js docs-check`
 5. `node dist/cli/index.js`
 6. `node dist/cli/index.js docs-check`
 7. `node dist/cli/index.js install-skill --skills all --codex`

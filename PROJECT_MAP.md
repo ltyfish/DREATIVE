@@ -20,6 +20,9 @@
   `scripts/serve-visual-smoke-fixtures.mjs` — healthy and failing regression
   fixtures for the smoke gate itself.
 - `src/cli/docsCheck.ts` — guards the streamlined public contract.
+- `src/cli/motionCapture.ts` — bounded native wheel/keyboard/touch traversal,
+  videos and input samples, with reduced motion recorded separately. No taste score.
+- `AUDIT_2026-09-06.md` — system audit, changes, limits, and next experiments.
 
 ## Progressive design knowledge
 
