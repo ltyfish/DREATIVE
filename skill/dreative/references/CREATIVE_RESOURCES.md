@@ -19,6 +19,23 @@ license/access, asset availability, and behavior in the target environment.
 
 ## Adapt a primitive
 
+For transitions that change the composition rather than decorate an entrance,
+start from a specific mechanism and inspect its actual demo/source:
+
+- [Codrops image expansion within typography](https://tympanus.net/codrops/2024/04/02/on-scroll-expanding-image-animation-within-typography/):
+  study how image space and type displacement share a composition. Adapt the
+  relationships and responsive wrapping; the article's media is not a reusable
+  asset pack. [Source](https://github.com/codrops/ImageExpansionTypography).
+- [GSAP Flip](https://gsap.com/docs/v3/Plugins/Flip/): measured transitions
+  between layouts, useful for image-to-detail and collection reorganization.
+  Inspect interrupted transitions and source/destination ownership.
+- [GSAP matchMedia](https://gsap.com/docs/v3/GSAP/gsap.matchMedia()/): scope
+  animation setup and reversion to viewport and reduced-motion conditions.
+  Choose a mobile composition; a breakpoint API cannot design it.
+
+These are implementation references, not proof of a site's full-route pacing.
+Use `CHOREOGRAPHY.md` to decide what needs to connect before selecting a demo.
+
 | Need | Candidates | Adoption decision |
 |---|---|---|
 | Expressive React interaction | [Skiper](https://skiper-ui.com), [Aceternity](https://ui.aceternity.com), [Kokonut](https://kokonutui.com), [Lukacho](https://ui.lukacho.com), [Watermelon](https://ui.watermelon.sh) | Inspect the chosen source, replace demo content, own responsive/focus/exit behavior and animation cleanup |

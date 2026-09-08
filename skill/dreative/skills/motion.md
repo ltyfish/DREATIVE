@@ -43,6 +43,10 @@ enough. Video and 3D are options, not mandatory signs of ambition.
 
 ## Expand the expression without collecting effects
 
+For the transition from a successful moment to a complete experience, use
+`../references/CHOREOGRAPHY.md`. It covers composition in time, joins,
+information as interaction, and an ending that belongs to the opening.
+
 When comparing directions, vary the experience itself: a typographic relay that
 becomes navigation, imagery blending into the surrounding material, a framed
 subject opening into an immersive detail view, or an editorial sequence of cuts

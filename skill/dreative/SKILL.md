@@ -24,6 +24,11 @@ is fallible memory; reconcile it against the project.
 
 ## Build the decisive slice first
 
+Resolve the material and tool uncertainty before the effect locks in a visual
+language. Discover callable sourcing/generation capabilities as well as local
+production tools; a failed stock endpoint is an access finding, not an art
+direction. See `references/MEDIA_SOURCES.md` for recovery choices.
+
 Before completing a motion-led route, build its hardest uncertain moment against
 the actual intended material, with its entry, development, and exit into the next
 region. Inspect it at desktop and mobile. This is a small slice at the intended
@@ -35,12 +40,19 @@ Reuse the successful implementation. Do not promise to replace placeholder motio
 later. If real material or a capability is missing, identify it and pursue the
 closest faithful route; disclose any change to the promised result.
 
+After the slice works, change scale from a moment to the whole experience.
+For a motion-led route use `references/CHOREOGRAPHY.md` at this transition:
+compose the middle, primary interaction, and ending before elaborating the hero.
+Preserve required facts and behavior without treating their source grouping as
+the page's section list. Prototype approval applies to the demonstrated scope.
+
 ## Read at the decision, not all at once
 
 | Decision | Resource |
 |---|---|
 | Open concept and user approaches | `PLAN.md`, then `references/CREATIVE_DIRECTION.md` if needed |
 | Motion-led brief, including named parallax/pixelation/framing/scroll/transition | `skills/motion.md` |
+| Extending a motion slice into a complete route, or fixing repetitive sections | `references/CHOREOGRAPHY.md` |
 | Sourcing, generating, scraping, or preparing assets | `references/MEDIA_SOURCES.md` |
 | Sequence, video, depth, or 3D material production | `references/MOTION_MATERIAL.md` |
 | Supplied references or motion scouting | `references/REFERENCE_ADOPTION.md` |

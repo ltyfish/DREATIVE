@@ -61,6 +61,13 @@ Show the running result when user review is part of the task. Respect a requeste
 stop; otherwise continue after your inspection and state the decision.
 A prototype is not a completed route. Integrate only after it answers the question.
 
+Before extending a successful motion slice, read `references/CHOREOGRAPHY.md`.
+Choose how the remaining information is experienced and how the page ends.
+Use actual images and short scene descriptions to compare the sequence; a
+section-heading outline cannot expose monotonous scale, framing, or tempo.
+Fund the least-resolved part of the route next. Do not spend the remaining
+budget repeatedly polishing the already convincing moment.
+
 ## Compact implementation note
 
 Keep only decisions needed to build and resume:

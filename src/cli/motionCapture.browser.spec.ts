@@ -2,7 +2,12 @@ import { test, expect, chromium } from "@playwright/test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { captureMotionProfile } from "./motionCapture.js";
+import { captureMotionProfile, runMotionCapture } from "./motionCapture.js";
+
+test("capture rejects invalid traversal budgets before launching", async () => {
+  for (const steps of [0, 121, NaN, 2.5])
+    await expect(runMotionCapture("http://127.0.0.1:4181/", "unused", steps)).rejects.toThrow("maxSteps");
+});
 
 test("capture exercises native wheel, keyboard and coarse touch with separate reduced motion", async () => {
   const out = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-motion-"));

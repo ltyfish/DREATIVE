@@ -103,7 +103,12 @@ evaluation package in projects that did not opt in.
 - `dreative catalogue --query "..."` — focused golden-system lookup.
 - `dreative motion-capture --url <preview-url> --out <directory>` — normal desktop
   wheel/keyboard, mobile touch, and reduced-motion videos with input samples.
-  This is observation for review, not an artistic or performance score.
+  Use `--max-steps 64` for longer routes (default 32, maximum 120). Incomplete
+  traversal is reported explicitly. This is observation, not a quality score.
+- `dreative media-inspect --input <local-video-or-image-directory> --out <new-directory>` —
+  FFmpeg contact sheet, labeled HTML, and metadata. Optional `--start`,
+  `--duration` (maximum 60 seconds), and `--samples` (2–24) bound the work.
+  Requires FFmpeg/ffprobe on PATH; preserves originals and refuses existing output.
 - `dreative visual-smoke --url <preview-url> --profile <direction>` — ephemeral desktop, mobile, reduced-motion, route, runtime, and asset smoke gate.
 - `dreative finalize --codex --profile <direction> --visual-smoke-url <preview-url>` — deterministic delivery gate; smoke is mandatory for every substantial delivery.
 

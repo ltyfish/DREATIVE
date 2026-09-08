@@ -18,6 +18,12 @@ the intended art direction; an unconvincing invented physical product is a defec
 
 ## Search in useful batches
 
+First discover the current host's callable image search, image editing/generation,
+video generation, and asset connectors when relevant. Probe local production
+tools separately. Availability in another host or a recommended-plugin list is
+not availability here. Distinguish ready, missing credentials, unavailable, and
+disallowed; do not treat unknown as disallowed. Keep this a short decision note.
+
 Search the exact subject, its process/material/environment, and the desired shot
 language. Inspect a contact sheet or search-result grid with labels instead of
 opening dozens of files. Shortlist by identity, framing, usable dimensions,
@@ -45,6 +51,21 @@ Check the current provider documentation and individual asset terms at use time.
 A search API being public does not establish that its downloads are public.
 HTTP 200 can contain an error page: check body, content type, dimensions or media
 probe output. Do not claim “no assets exist” from one failed endpoint.
+
+Classify failure before changing medium. A 401 needs authorized credentials;
+a 403 or challenge needs a permitted access route; a 429 needs backoff; an empty
+relevant search needs different shot language or another source. Do not test a
+keyed API with dummy credentials or treat an undocumented endpoint as the
+provider's supported interface. Verify its current official documentation.
+After a bounded recovery attempt, switch route instead of repeating failed calls.
+
+If sourcing fails, compare a callable generator, another authorized source,
+an actual model/render, and an explicitly graphic direction by the required
+visual result. Texture synthesis supplies texture, not convincing object shape,
+construction, light, or photography. Before expanding a procedural substitute
+into a set, inspect one object at the largest intended size. If its silhouette
+or surface is unconvincing, change production method or recompose around viable
+material; disclosure alone does not repair the image.
 
 ## Browser research and scraping
 
@@ -86,6 +107,14 @@ For a set, hold camera, light, background, and subject identity constant; inspec
 consistency before paying for more. Independently generated stills are not a
 reliable frame sequence. For continuous motion use video generation with verified
 identity, supplied footage, or a deterministic render.
+
+Direct a useful set rather than one repeated shot: overview for identity,
+detail for evidence, context for scale or use, and alternate views for exploration
+where needed. Keep a consistent lighting/color family across those shot roles.
+Inspect them together at their actual placement sizes before expanding production.
+When video serves atmosphere, it need not carry exact product identity; keep
+the exact product view distinct and clear. When it depicts product behavior,
+verify that behavior and identity across the clip.
 
 Choose the smallest production experiment that resolves the uncertainty. A
 strong still may support masking, depth, pixelation, collage, and responsive

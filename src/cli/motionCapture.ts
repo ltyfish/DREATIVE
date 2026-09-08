@@ -100,12 +100,13 @@ export async function captureMotionProfile(browser: Browser, url: string, outDir
   return result;
 }
 
-export async function runMotionCapture(url: string, outDir: string): Promise<MotionCapture[]> {
+export async function runMotionCapture(url: string, outDir: string, maxSteps = 32): Promise<MotionCapture[]> {
+  if (!Number.isInteger(maxSteps) || maxSteps < 1 || maxSteps > 120) throw new Error("maxSteps must be 1–120");
   const browser = await chromium.launch();
   try {
     const results: MotionCapture[] = [];
     for (const profile of ["desktop", "mobile", "reduced"] as const)
-      results.push(await captureMotionProfile(browser, url, outDir, profile));
+      results.push(await captureMotionProfile(browser, url, outDir, profile, maxSteps));
     return results;
   } finally { await browser.close(); }
 }

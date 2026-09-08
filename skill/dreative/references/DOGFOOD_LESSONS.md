@@ -68,6 +68,26 @@ verified fidelity. Added targeted resource routing and preserved successful
 prototype code instead of instructing agents to discard it. These revisions
 remain proposed pending a fresh controlled run.
 
+Later evidence (2026-09-08): The completed `202609071139` run used aaba0cf,
+the rewritten skill. Overall/subject/motion are 4/5, material/craft/structure
+3/5. The reviewer likes the opening but again rejects material quality and
+ordinary lower-page composition. This supports the isolated-moment improvement,
+not a validated improvement to the complete route. Recorded discovery searched
+browser tools only; stock access failures preceded procedural garment production.
+The source repeats a shared reveal below the shop. The desktop recording has
+missing imagery in sampled frames despite separate stills showing it; the
+mobile traversal did not reach the end. No runtime cause for that recording
+discrepancy is established by this audit.
+
+Revision: Added a conditional whole-route choreography guide at slice expansion,
+explicit capability/access recovery and shot-set decisions, a bounded FFmpeg
+media-inspection CLI, and configurable traversal length with an incomplete
+notice. Aligned Recommended's CLI material choice with the prose; removed the
+compulsory cosmetic before/after edit. Existing native mechanisms and quality
+gates stay intact. Cost: one conditional guide, modest routing additions, and
+optional local media processing. Recheck using the frozen old/new and held-out
+protocol below; do not validate these revisions from this audit or its tests.
+
 Cost or trade-off: Core reading is smaller; playback adds browser time/storage.
 Several variables changed, so compare the revision as a bundle before attributing
 benefit to any one change. The legacy Showcase contract remains for compatibility.

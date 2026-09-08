@@ -17,6 +17,7 @@ import { checkPortableArtifacts, localShowcaseArtifacts, runFinalize } from "./f
 import { runVisualSmoke, type DeliveryProfile, type ShowcaseMechanismContract } from "./visualSmoke.js";
 import { renderLook, runLook } from "./look.js";
 import { runMotionCapture } from "./motionCapture.js";
+import { inspectMedia } from "./mediaInspect.js";
 import { availableSkills, checkSkillInstallation, installSkill, installationDirectory, resolveSkillSelection } from "./installSkill.js";
 import { CREATIVE_MECHANISMS, renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
 import { renderConfigurationChoices, renderDeliveryBrief, renderDetailedPlanGuide, type DeliveryProfileId } from "../shared/deliveryProfiles.js";
@@ -61,7 +62,10 @@ const USAGE = `usage: dreative [command]
   look             render the page and report what a browser sees that source cannot
                    --url URL [--out DIR]   screenshot tiles + BROKEN/OBSERVED; never fails
   motion-capture   record normal desktop/touch and reduced-motion traversal for review
-                   --url URL --out DIR   videos + input samples; no taste verdict
+                   --url URL --out DIR [--max-steps 32]   range 1–120; no taste verdict
+  media-inspect    inspect a local video, still, or image directory with FFmpeg
+                   --input PATH --out NEW_DIR [--samples 9] [--start 0] [--duration 10]
+                   contact sheet + labeled HTML + metadata; no quality score
   visual-smoke     production-equivalent browser smoke audit --url URL --profile efficient|recommended|showcase
                    Showcase requires tracked --mechanism-contract and --experience-map files
   finalize         run deterministic checks; always requires --visual-smoke-url URL and --profile
@@ -101,11 +105,30 @@ async function installCommand(): Promise<void> {
 async function main(): Promise<void> {
   if (args.includes("--help") || args.includes("-h")) { console.log(USAGE); return; }
   switch (cmd) {
+    case "media-inspect": {
+      const value = (flag: string) => { const i = args.indexOf(flag); return i >= 0 ? args[i + 1] : undefined; };
+      const input = value("--input"), out = value("--out");
+      if (!input || !out) throw new Error("media-inspect requires --input and --out");
+      const numeric = (flag: string) => {
+        if (!args.includes(flag)) return undefined;
+        const raw = value(flag);
+        if (!raw || raw.startsWith("--") || !Number.isFinite(Number(raw))) throw new Error(`${flag} requires a number`);
+        return Number(raw);
+      };
+      console.log(JSON.stringify(inspectMedia({ input, out, samples: numeric("--samples"),
+        start: numeric("--start"), duration: numeric("--duration") }), null, 2));
+      return;
+    }
     case "motion-capture": {
       const value = (flag: string) => { const i = args.indexOf(flag); return i >= 0 ? args[i + 1] : undefined; };
       const url = value("--url"); const out = value("--out");
       if (!url || !out) throw new Error("motion-capture requires --url and --out");
-      console.log(JSON.stringify(await runMotionCapture(url, path.resolve(out)), null, 2));
+      const rawSteps = value("--max-steps");
+      const steps = args.includes("--max-steps") ? Number(rawSteps) : 32;
+      const captures = await runMotionCapture(url, path.resolve(out), steps);
+      console.log(JSON.stringify(captures, null, 2));
+      for (const capture of captures) if (!capture.reachedEnd)
+        console.error(`INCOMPLETE traversal: ${capture.profile} did not reach the page end. Inspect the recording; increase --max-steps or review the remaining route directly.`);
       return;
     }
     case "brief": {

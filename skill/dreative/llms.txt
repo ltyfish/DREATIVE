@@ -20,6 +20,11 @@ footage, models — and its production pipeline is in
 after a project-native concept has been chosen. It must never supply the concept
 or a named site's house style.
 
+After a motion slice works, `references/CHOREOGRAPHY.md` helps compose its
+development, task interactions, handoffs, and ending. For local production
+review, `dreative media-inspect --input <path> --out <new-directory>` creates
+bounded FFmpeg contact sheets and labeled metadata; it does not judge quality.
+
 `exemplars/SLOP.md` lists the default shapes that make generated frontends
 recognisable as generated, and `exemplars/PRINCIPLES.md` holds principles
 indexed by the condition under which they apply. Neither contains copied

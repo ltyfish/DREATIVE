@@ -12,6 +12,10 @@ desktop wheel/keyboard input, emulated mobile touch, and separate reduced-motion
 playback. It writes videos, sectional screenshots, and observed input/scroll data.
 Open the recordings or watch the live page: file existence is not inspection.
 Capture traversal is bounded and reports when it did not reach the page end.
+For a longer route use `--max-steps 64` (maximum 120), or inspect the remaining
+passage directly. Compare the recording to sectional screenshots: missing
+canvas/media, stale frames, or different rendering invalidate that recording
+for judging the affected effect even when there are no console errors.
 These are reproducible input samples, not a complete task test, a performance
 benchmark, real-phone GPU evidence, or a taste verdict. Exercise the product's
 primary task separately. Reduced-motion stills must not be scored as normal motion.
@@ -80,9 +84,9 @@ thing being sold is actually shown. Open the tiles.
 7. Recapture the affected viewport and the full page. Continue until blocking
    findings are cleared and the correction does not damage another viewport.
 
-At least one before/after correction cycle is required for Lean and Full Audit.
-The pair must show a perceptible rendered change and the final response must
-name the correction. Byte-identical or visibly duplicate captures do not count.
+When inspection finds a defect or mismatch with the brief, correct it and compare
+the affected states before and after. Name the visible correction in delivery.
+Do not manufacture a change merely to obtain a before/after pair.
 When sticky or pinned scenes create blank, repeated, clipped, or misleading
 full-page captures, add sectional or stitched captures that truthfully show the
 composition and handoffs; do not accept the broken capture as visual evidence.

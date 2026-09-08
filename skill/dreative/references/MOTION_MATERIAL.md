@@ -14,6 +14,21 @@ for 3D its camera/light/material, for a shader its visible distortion and edge
 handling. A file count or a canvas node does not establish a working treatment.
 Source and rights procedures are in `MEDIA_SOURCES.md`.
 
+With FFmpeg and ffprobe on PATH, inspect local material before committing:
+
+```sh
+dreative media-inspect --input source.mp4 --out .dreative/shot-review --start 4 --duration 5 --samples 9
+dreative media-inspect --input public/images --out .dreative/image-review --samples 12
+```
+
+Choose a new output directory for each review. The command preserves originals
+and writes a contact sheet, labeled HTML, and metadata; open them. Video samples
+are requested seek positions, not exact frame timestamps. Use a shorter window
+around a suspect transition to inspect continuity, and play the actual clip to
+judge timing. Directory sampling is numeric filename order, not a verified
+sequence manifest. Default video coverage is ten seconds; maximum is sixty.
+The preview preserves aspect ratio; test the intended crop in the application.
+
 ## Video versus image sequences
 
 Use a trimmed encoded clip for time playback, short loops, and cinematic cuts.
@@ -91,6 +106,12 @@ DOM state should not independently override the same transform as GSAP.
 Separate loading from authored progress: load a visible first state, then enable
 the mechanism when its required material is ready. Progress jumps must not produce
 blank frames. Recheck late image/font layout changes and restored scroll position.
+
+Keep the DOM image/poster visible until the replacement renderer has produced
+its first usable frame, not merely until a texture request starts. On decode,
+upload, or context failure, resolve back to the visible DOM state and remove the
+item from pending animation work. A failed item must not keep a RAF loop alive
+forever while its fallback is hidden. Guard asynchronous callbacks after teardown.
 
 ## Production acceptance
 
