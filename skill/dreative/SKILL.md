@@ -22,7 +22,16 @@ runtime owner, mobile form, primary user task, and unresolved risks. It is worki
 memory, not an approval artifact or a score. Existing `.dreative/context.json`
 is fallible memory; reconcile it against the project.
 
-## Build the decisive slice first
+## Compose the experience, then prove its hardest join
+
+For motion-led work, use `references/CHOREOGRAPHY.md` before selecting the focal
+effect. Arrange the actual content and material into a journey with a useful
+destination. The first viewport, development, primary task, and ending should
+belong to that idea. An outline of headings cannot show this: use material at
+its intended scale, in rough compositions or an equivalent visual study.
+When the idea is still generic, study a relevant complete production through
+`references/PRODUCTION_STUDIES.md` and the user's references. Compare different
+ways of experiencing the subject, not different filters on the same hero.
 
 Resolve the material and tool uncertainty before the effect locks in a visual
 language. Discover callable sourcing/generation capabilities as well as local
@@ -40,9 +49,8 @@ Reuse the successful implementation. Do not promise to replace placeholder motio
 later. If real material or a capability is missing, identify it and pursue the
 closest faithful route; disclose any change to the promised result.
 
-After the slice works, change scale from a moment to the whole experience.
-For a motion-led route use `references/CHOREOGRAPHY.md` at this transition:
-compose the middle, primary interaction, and ending before elaborating the hero.
+After the slice works, test it against the planned whole experience.
+Build the least-resolved passage next, including the primary interaction and ending.
 Preserve required facts and behavior without treating their source grouping as
 the page's section list. Prototype approval applies to the demonstrated scope.
 
@@ -52,7 +60,9 @@ the page's section list. Prototype approval applies to the demonstrated scope.
 |---|---|
 | Open concept and user approaches | `PLAN.md`, then `references/CREATIVE_DIRECTION.md` if needed |
 | Motion-led brief, including named parallax/pixelation/framing/scroll/transition | `skills/motion.md` |
-| Extending a motion slice into a complete route, or fixing repetitive sections | `references/CHOREOGRAPHY.md` |
+| Composing a motion-led experience or fixing repetitive sections | `references/CHOREOGRAPHY.md` |
+| Learning how a complete immersive production works | `references/PRODUCTION_STUDIES.md`, then the relevant original |
+| Image/canvas continuity, framing, and ownership through a join | `references/MEDIA_HANDOFF.md` |
 | Sourcing, generating, scraping, or preparing assets | `references/MEDIA_SOURCES.md` |
 | Sequence, video, depth, or 3D material production | `references/MOTION_MATERIAL.md` |
 | Supplied references or motion scouting | `references/REFERENCE_ADOPTION.md` |

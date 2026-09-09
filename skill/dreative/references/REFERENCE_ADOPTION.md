@@ -17,6 +17,9 @@ For scouting, use whole experiences (studio portfolios, Awwwards, FWA, Godly)
 to find a fitting sequence, then primary documentation or an implementation
 article such as Codrops to understand the mechanism. Follow the linked original
 site. Galleries and popularity are discovery tools, not evidence of fit.
+For worked examples of this translation, use `PRODUCTION_STUDIES.md`. A library
+demo answers how an effect works; a complete production also shows what happens
+before it, what it enables afterward, and where the experience becomes quiet.
 
 For a specific gap in references, components, asset authoring, or craft guidance,
 use `CREATIVE_RESOURCES.md`. Read only the relevant family; do not tour a catalog
@@ -25,6 +28,10 @@ before deciding what the project needs.
 Keep the useful note short:
 `source → observed behavior → adapted property → destination in this project`.
 Include what the observation does not establish. No mandatory source-count quota.
+Separate inspiration from acquisition: a gallery gives a lead; a component
+repository gives implementation; an asset source gives usable material only
+under its applicable terms; a skill gives advice. Select the missing output
+instead of collecting all four indiscriminately.
 
 ## Translate the visual grammar
 

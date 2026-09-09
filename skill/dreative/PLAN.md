@@ -46,6 +46,15 @@ user's authorization. Do not equate a source default with access to a paid tool.
 
 ## Cheap comparison, faithful prototype
 
+For motion-led work, read `references/CHOREOGRAPHY.md` now. Choose what the
+visitor discovers, changes, or chooses throughout the route before committing
+to its focal effect. Start from the subject's useful relationships: scale,
+construction, change over time, location, comparison, or a decision. Choose the
+ones the actual material can show. Build the rough compositions with that
+material, including a dense working state and the ending; then select the join
+whose failure would undermine the idea. `references/PRODUCTION_STUDIES.md`
+demonstrates this reasoning in real productions without prescribing their style.
+
 Compare alternatives before coding two full versions. Use a few annotated
 reference frames, a rough composition board, or concise start/develop/resolve
 descriptions to contrast distinct interaction models. Label a board as a board.
@@ -61,10 +70,9 @@ Show the running result when user review is part of the task. Respect a requeste
 stop; otherwise continue after your inspection and state the decision.
 A prototype is not a completed route. Integrate only after it answers the question.
 
-Before extending a successful motion slice, read `references/CHOREOGRAPHY.md`.
-Choose how the remaining information is experienced and how the page ends.
-Use actual images and short scene descriptions to compare the sequence; a
-section-heading outline cannot expose monotonous scale, framing, or tempo.
+Before extending a successful motion slice, revisit the composed sequence.
+Revise it if the real material or interaction changed the idea. A change of
+camera crop is not a new information state unless it reveals something useful.
 Fund the least-resolved part of the route next. Do not spend the remaining
 budget repeatedly polishing the already convincing moment.
 

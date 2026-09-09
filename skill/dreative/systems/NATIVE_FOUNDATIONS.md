@@ -58,6 +58,10 @@ same set with the reject conditions attached.
 ## frame-sequence
 
 - Export: `mountFrameSequence`
+- Framing: optional `framing: { fit: "cover" | "contain", position: [x, y] }`
+  with normalized alignment, or a function receiving CSS `{width, height, frame}`.
+  Defaults to centered cover. `mediaPlacement` exposes the same geometry for
+  other renderers; see `../references/MEDIA_HANDOFF.md` for canvas/DOM continuity.
 - Use: pre-rendered motion is more faithful or efficient than runtime simulation.
 - Reject: a short compressed video or two stills communicate the same result.
 - Mobile/reduced: pass a smaller manifest when mounting; choose a resolved

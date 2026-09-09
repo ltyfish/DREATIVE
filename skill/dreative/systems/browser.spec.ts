@@ -228,3 +228,61 @@ test("sequence reuses recent frames, evicts old frames, and stops loading after 
   });
   expect(loads).toEqual(["a", "b", "c", "a"]);
 });
+
+test("media placement preserves aspect and frame coverage and rejects invalid geometry", async ({ page }) => {
+  const result = await page.evaluate(() => {
+    const place = globalThis.dreativeFixture.systems.mediaPlacement;
+    const failures = [];
+    for (const [sw, sh] of [[1600, 900], [900, 1600], [100, 100]]) {
+      for (const [fw, fh] of [[390, 844], [1440, 900], [73.5, 201.25]]) {
+        for (const fit of ["cover", "contain"]) {
+          for (const position of [[0, 0], [.58, .42], [1, 1], [-2, 3]]) {
+            const p = place(sw, sh, fw, fh, { fit, position });
+            const epsilon = 1e-8;
+            if (Math.abs(p.width / p.height - sw / sh) > epsilon) failures.push("aspect");
+            if (fit === "cover" && (p.x > epsilon || p.y > epsilon || p.x + p.width < fw - epsilon || p.y + p.height < fh - epsilon)) failures.push("hole");
+            if (fit === "contain" && (p.x < -epsilon || p.y < -epsilon || p.x + p.width > fw + epsilon || p.y + p.height > fh + epsilon)) failures.push("clip");
+          }
+        }
+      }
+    }
+    let rejected = 0;
+    for (const args of [[0, 100, 100, 100], [100, NaN, 100, 100], [100, 100, Infinity, 100], [100, 100, 100, 100, { fit: "stretch" }], [100, 100, 100, 100, { position: [NaN, .5] }]]) {
+      try { place(...args); } catch (error) { if (error instanceof RangeError) rejected++; }
+    }
+    return { failures, rejected, centered: place(200, 100, 100, 100) };
+  });
+  expect(result).toEqual({ failures: [], rejected: 5, centered: { x: -50, y: 0, width: 200, height: 100 } });
+});
+
+test("sequence canvas matches CSS image framing through responsive resize", async ({ page }) => {
+  await page.evaluate(() => {
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="160" height="80"><path fill="red" d="M0 0h40v80H0z"/><path fill="lime" d="M40 0h40v80H40z"/><path fill="blue" d="M80 0h40v80H80z"/><path fill="yellow" d="M120 0h40v80H120z"/><path fill="black" d="M0 0h160v10H0z"/></svg>';
+    const source = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+    const host = document.createElement("div");
+    host.id = "crop-probe";
+    host.style.cssText = "position:fixed;inset:0 auto auto 0;z-index:99999;background:white";
+    host.innerHTML = '<canvas></canvas><img alt="framing comparison">';
+    document.body.append(host);
+    const canvas = host.querySelector("canvas");
+    const img = host.querySelector("img");
+    for (const node of [canvas, img]) node.style.cssText = "display:block;width:120px;height:80px;border:0;padding:0;background:white;object-fit:cover;object-position:75% 25%";
+    img.src = source;
+    globalThis.cropProbe = globalThis.dreativeFixture.systems.mountFrameSequence(canvas, {
+      frames: [source], maxDpr: 1,
+      framing: ({ width }) => ({ fit: width < 100 ? "contain" : "cover", position: [.75, .25] }),
+    });
+  });
+  const canvas = page.locator("#crop-probe canvas");
+  const img = page.locator("#crop-probe img");
+  await expect(canvas).toHaveAttribute("data-state", "ready");
+  await expect.poll(async () => (await canvas.screenshot()).equals(await img.screenshot())).toBe(true);
+  await page.evaluate(() => {
+    for (const node of document.querySelectorAll("#crop-probe canvas, #crop-probe img")) {
+      node.style.width = "80px"; node.style.height = "120px"; node.style.objectFit = "contain";
+    }
+  });
+  await expect.poll(() => canvas.evaluate((node) => node.width)).toBe(80);
+  await expect.poll(async () => (await canvas.screenshot()).equals(await img.screenshot())).toBe(true);
+  await page.evaluate(() => { globalThis.cropProbe.destroy(); document.querySelector("#crop-probe").remove(); });
+});

@@ -90,6 +90,21 @@ export async function runSharedElementHandoff(mutate, options = {}) {
   if (options.restoreFocus !== false && active instanceof HTMLElement && document.contains(active)) active.focus();
 }
 
+/** CSS object-fit geometry in the caller's coordinate units; position is 0..1. */
+export function mediaPlacement(sourceWidth, sourceHeight, frameWidth, frameHeight, options = {}) {
+  if (![sourceWidth, sourceHeight, frameWidth, frameHeight].every((value) => Number.isFinite(value) && value > 0)) {
+    throw new RangeError("Media and frame dimensions must be finite and positive");
+  }
+  const fit = options.fit ?? "cover";
+  if (fit !== "cover" && fit !== "contain") throw new RangeError("Media fit must be cover or contain");
+  const position = options.position ?? [0.5, 0.5];
+  if (position.length !== 2 || !position.every(Number.isFinite)) throw new RangeError("Media position must contain two finite numbers");
+  const scale = Math[fit === "cover" ? "max" : "min"](frameWidth / sourceWidth, frameHeight / sourceHeight);
+  const width = sourceWidth * scale;
+  const height = sourceHeight * scale;
+  return { x: (frameWidth - width) * clamp(position[0]), y: (frameHeight - height) * clamp(position[1]), width, height };
+}
+
 export function mountFrameSequence(canvas, options) {
   const context = canvas.getContext("2d");
   if (!context || !options.frames?.length) return { setProgress: noop, destroy: noop };
@@ -136,11 +151,12 @@ export function mountFrameSequence(canvas, options) {
       return options.onMissing?.(requested);
     }
     canvas.dataset.state = "ready";
-    const scale = Math.max(canvas.width / image.width, canvas.height / image.height);
-    const width = image.width * scale;
-    const height = image.height * scale;
+    const framing = typeof options.framing === "function"
+      ? options.framing({ width: canvas.clientWidth, height: canvas.clientHeight, frame: requested })
+      : options.framing;
+    const { x, y, width, height } = mediaPlacement(image.width, image.height, canvas.width, canvas.height, framing);
     context.clearRect(0, 0, canvas.width, canvas.height);
-    context.drawImage(image, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
+    context.drawImage(image, x, y, width, height);
   };
   const observer = new ResizeObserver(resize);
   observer.observe(canvas);

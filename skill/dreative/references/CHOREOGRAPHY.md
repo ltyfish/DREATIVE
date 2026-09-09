@@ -1,7 +1,7 @@
 # Compose the whole experience
 
-Use after the decisive slice works, or when a motion-led route feels like a
-hero followed by a template. This is an authoring method, not an effect quota,
+Use before choosing a motion-led route's decisive slice, and when a route feels
+like a hero followed by a template. This is an authoring method, not an effect quota,
 mandatory storyboard artifact, or another approval gate.
 
 ## Edit the information before animating it
@@ -91,6 +91,20 @@ let a typographic phrase complete, show the resulting state, or close with a
 deliberate still image and useful next action. Service links and required facts
 can share this composition. The last section does not need another spectacle,
 but it needs a decision about scale, space, material, and what remains in memory.
+
+## Diagnose the visible failure, then choose the operation
+
+| Visible failure | Production correction |
+|---|---|
+| An opening consumes a screen before the subject arrives | Compose the subject, a meaningful preview, or a purposeful opening action into that time. A load screen should reflect actual readiness and release as soon as its critical assets are usable; never fabricate a waiting percentage. |
+| A zoom promises detail the photograph does not contain | Acquire a close-up, footage, model, or explanatory drawing. Pixelation changes representation; sharpening the same wide shot cannot reveal unseen construction. |
+| The image jumps at the canvas/DOM join | Share the source, crop, frame geometry, and transform. Follow `MEDIA_HANDOFF.md`; matching the outer rectangles alone is insufficient. |
+| Everything below the hero is the same rectangle | Re-edit information around comparison, evidence, or exploration and compose with the actual quantity of material. A direct grid remains valid where it serves the task. |
+| Lower-page entrances are invisible in playback | Trigger viewport entrances when encountered, rather than running every mount animation at page load. Direct entry and reduced motion must still show the content. |
+| The scene ends and unrelated layout starts | Give it a real destination in the next layout, or author a deliberate cut with a shared visual relationship. Continuity need not mean endless morphing. |
+| An overlay looks closed but its controls receive focus | Use semantic dialog behavior and inactive-state handling. Test open, interaction, Escape, return focus, and the actual final action. Clipping and opacity do not disable controls. |
+
+Use these diagnoses only when observed. They are not a list of effects to add.
 
 ## Review the weakest passage
 

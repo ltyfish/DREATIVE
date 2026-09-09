@@ -88,6 +88,23 @@ gates stay intact. Cost: one conditional guide, modest routing additions, and
 optional local media processing. Recheck using the frozen old/new and held-out
 protocol below; do not validate these revisions from this audit or its tests.
 
+Later evidence (2026-09-09): Completed run `202609081112` used git:401798c.
+The independent verdict is overall 3, material/subject 4, motion/craft/structure 2.
+The whole-route intervention did not achieve its intended result in this run:
+an isolated pixel/zoom scene again precedes repetitive commerce and information.
+Reject the assumption that routing to choreography only after a successful slice
+is enough. Empty read telemetry cannot establish which guides were consulted;
+the provider changed, so the score difference is not a causal estimate.
+
+Revision: Move whole-experience composition before focal-effect selection;
+add primary-source production studies and a media-handoff construction guide.
+Teach diagnosis-specific corrections and distinguish resource outputs/access.
+Add shared cover/contain alignment to the existing sequence renderer with browser
+checks against CSS image rendering. These changes remain proposed: renderer
+tests establish crop mechanics, not complete-route quality. Added cost is two
+conditional references and one small geometry helper, with no new dependency,
+mechanism quota, taste threshold, or approval step.
+
 Cost or trade-off: Core reading is smaller; playback adds browser time/storage.
 Several variables changed, so compare the revision as a bundle before attributing
 benefit to any one change. The legacy Showcase contract remains for compatibility.
