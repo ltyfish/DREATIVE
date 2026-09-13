@@ -1,5 +1,6 @@
 export type DeliveryProfileId = "efficient" | "recommended" | "showcase";
 export type ReviewDepth = "fast" | "lean" | "full-audit";
+// Technical implementation experiments; the visual-selection gate is separate.
 export type PrototypePolicy = "skip" | "auto" | "required";
 
 export interface DeliveryProfile {
@@ -17,119 +18,69 @@ export interface DeliveryProfile {
 
 export const DELIVERY_PROFILES: readonly DeliveryProfile[] = [
   {
-    id: "recommended",
-    label: "Recommended",
-    promise: "The direction the agent believes will produce the strongest result for this specific product.",
-    scope: "A complete, coherent redesign with the treatments and mechanisms that genuinely improve the concept, authored handoffs between sections, and a route-wide interaction baseline.",
-    treatments: "Agent-selected; UX, Mobile, and the interaction baseline always apply. Author the seams between sections before funding a second signature moment.",
-    review: "lean",
-    prototype: "auto",
-    referenceDefault: "supplied-or-scout",
-    sourceDefault: "best-fit",
-    packageDefault: "allow",
+    id: "recommended", label: "Recommended",
+    promise: "A complete design and implementation for the specific product.",
+    scope: "Generate distinct visual directions and plans, implement the user's selection faithfully, and refine the complete responsive route in the browser.",
+    treatments: "Choose sourcing, generation, interaction and motion to serve the selected design. Honor an explicitly motion-led brief; ordinary designs need no signature effect.",
+    review: "lean", prototype: "auto", referenceDefault: "supplied-or-scout",
+    sourceDefault: "best-fit", packageDefault: "allow",
   },
   {
-    id: "efficient",
-    label: "Efficient",
-    promise: "The most token-efficient and implementation-efficient direction: a narrower scope, not a flatter page.",
-    scope: "Small, high-value changes using the existing structure, assets, and stack wherever possible, including the cheap interaction baseline the route is missing.",
-    treatments: "UX, Mobile, Refined, and a designed hover/focus/press state on everything interactive; add another treatment only to fix the scoped experience. Efficient is exempt from signature motion, never from the interaction baseline — it is the cheapest craft on the page.",
-    review: "fast",
-    prototype: "skip",
-    referenceDefault: "supplied-only",
-    sourceDefault: "existing-only",
-    packageDefault: "keep-existing",
+    id: "efficient", label: "Efficient",
+    promise: "A narrower production scope or targeted improvement using existing resources.",
+    scope: "Preserve the chosen design and focus effort on the requested change. Open design work still needs a visual choice unless already supplied or delegated.",
+    treatments: "Use existing assets and mechanisms where suitable; retain usable responsive controls and visual care.",
+    review: "fast", prototype: "skip", referenceDefault: "supplied-only",
+    sourceDefault: "existing-only", packageDefault: "keep-existing",
   },
   {
-    id: "showcase",
-    label: "Showcase",
-    promise: "The absolute highest coherent creative and technical ceiling, visibly distinct from Recommended.",
-    scope: "A flagship experience whose ambition is distributed beyond one isolated spectacle, using the strongest coherent combination of sourced footage, frame sequences, 3D, shaders, scroll-authored choreography, and responsive craft — distributed as resolution per section, not elements per section.",
-    treatments: "UX and Mobile always apply; every other treatment is selected only when it strengthens the premise. There is no minimum count.",
-    review: "full-audit",
-    prototype: "required",
-    referenceDefault: "supplied-and-scout",
-    sourceDefault: "maximum",
-    packageDefault: "allow",
+    id: "showcase", label: "Showcase",
+    promise: "An explicitly selected advanced production with deeper implementation and review.",
+    scope: "Resolve ambitious visual and technical work across the selected experience, with a faithful mechanism prototype and the existing Showcase delivery contract.",
+    treatments: "Select advanced media and motion only when they strengthen the design; there is no minimum count.",
+    review: "full-audit", prototype: "required", referenceDefault: "supplied-and-scout",
+    sourceDefault: "maximum", packageDefault: "allow",
   },
 ] as const;
 
 export function renderDeliveryBrief(recommendation: DeliveryProfileId = "recommended"): string {
-  const ordered = [
-    ...DELIVERY_PROFILES.filter((profile) => profile.id === recommendation),
-    ...DELIVERY_PROFILES.filter((profile) => profile.id !== recommendation),
-  ];
+  const profile = deliveryProfile(recommendation);
   return [
-    "Choose a redesign direction:",
+    "Design visually → choose → build faithfully → refine in the browser.",
     "",
-    ...ordered.flatMap((profile, index) => [
-      `${index + 1}. ${profile.label}${profile.id === recommendation ? " — recommended" : ""}`,
-      `   ${profile.promise}`,
-      `   ${profile.scope}`,
-      "",
-    ]),
-    "Reply with 1, 2, or 3. You can also say “show detailed plan”.",
+    "For an open brief, inspect the project and generate multiple distinct page design images with concrete plans. Show the actual images, recommend one, and stop for the user's selection before implementation.",
+    "Each plan explains composition, content and task, imagery production, mobile adaptation, useful interaction/motion, feasibility and relative cost.",
+    "After selection, obtain separate assets, build real responsive UI, and compare the browser render with the chosen design. Prototype technical uncertainty when needed; motion serves the design.",
+    "Supplied selections, scoped fixes and explicit delegation take precedence. Missing generation must be disclosed rather than replaced with an imaginary mockup.",
+    "",
+    `Delivery profile: ${profile.label}. ${profile.promise}`,
+    "Efficient, Recommended and Showcase are delivery profiles, not the visual directions the user chooses between. Infer routine settings; avoid an extra configuration interview.",
+    "Use PLAN.md and references/VISUAL_DESIGN.md. Offer show detailed plan when requested.",
   ].join("\n");
 }
 
-const mark = (selected: boolean): string => selected ? " — recommended" : "";
-
 export function renderConfigurationChoices(profileId: DeliveryProfileId): string {
-  const profile = deliveryProfile(profileId);
+  const p = deliveryProfile(profileId);
   return [
-    `Configure ${profile.label}:`,
-    "",
-    "1. Review depth",
-    `   Fast — one focused desktop/mobile pass${mark(profile.review === "fast")}`,
-    `   Lean — full-page desktop/mobile, key interactions, and a correction pass${mark(profile.review === "lean")}`,
-    `   Full Audit — Lean plus 320px, reduced motion, performance, routes, console/network, and final regression${mark(profile.review === "full-audit")}`,
-    "",
-    "2. References",
-    `   Follow a website, URL, or file you provide${mark(profile.referenceDefault === "supplied-only")}`,
-    `   Scout and adapt principles from relevant references${mark(profile.referenceDefault !== "supplied-only")}`,
-    "   Use no external reference",
-    "",
-    "3. Sources",
-    `   Existing assets only${mark(profile.sourceDefault === "existing-only")}`,
-    "   Allow sourced/licensed images",
-    `   Best-fit sourced or generated material; video/3D when useful and authorized${mark(profile.sourceDefault === "best-fit" || profile.sourceDefault === "maximum")}`,
-    "   Ask before each new asset",
-    "",
-    "4. Packages",
-    `   Allow focused package installation${mark(profile.packageDefault === "allow")}`,
-    `   Keep the existing stack${mark(profile.packageDefault === "keep-existing")}`,
-    "   Ask before installing",
-    "",
-    "5. Prototype",
-    `   Skip${mark(profile.prototype === "skip")}`,
-    `   Auto — only genuinely uncertain signature mechanisms${mark(profile.prototype === "auto")}`,
-    `   Required — prototype the riskiest signature mechanism${mark(profile.prototype === "required")}`,
-    "",
-    "These are defaults; existing user choices and delegated decisions take precedence. Keep a compact implementation note and prototype consequential uncertainty.",
-    "Reply “use recommended settings” or list any changes. Say “show detailed plan” for the full project-specific Creative Decision Brief.",
+    `${p.label} delivery defaults (optional overrides):`,
+    `Review depth: ${p.review}; References: ${p.referenceDefault}; Sources: ${p.sourceDefault}; Packages: ${p.packageDefault}.`,
+    `Prototype for technical uncertainty: ${p.prototype}. This applies after visual selection; it does not skip the requested image-and-plan gate.`,
+    "Honor existing source, cost and package restrictions. Infer ordinary settings from the brief rather than asking the user to configure them all.",
   ].join("\n");
 }
 
 export function renderDetailedPlanGuide(profileId: DeliveryProfileId): string {
-  const profile = deliveryProfile(profileId);
+  const p = deliveryProfile(profileId);
   return [
-    `Detailed ${profile.label} plan`,
-    "",
-    "Build a project-specific Creative Decision Brief with:",
-    "1. Product truth/current state — audience, task, routes, content, subject vocabulary, behavior, assets, defects, and preservation.",
-    "2. Selected direction — project-native premise, composition, type, material, media, motion/interaction grammar, continuity, and three product-only decisions.",
-    "3. Reference synthesis — each adopted principle, deliberate differences, and the complete-fingerprint independence check.",
-    `4. Workflow/resources — Fast/Lean/Full Audit, Skip/Auto/Required, references, sources, packages, and detected capability; recommend ${profile.review} + ${profile.prototype} for ${profile.label}.`,
-    `5. Treatment guide and section allocation — project-specific use, cost, risk, insufficiency, post-hero peak, and continuity owner. ${profile.treatments}`,
-    "Signature moments that move — for each, the event in the subject, the material that shows it, that material's real source, and the one authored value that drives it; plus what carries across each section seam.",
-    "6. Build architecture — signature mechanism, runtime ownership, component/asset pipeline, mobile and semantic fallbacks, accessibility, and performance.",
-    "7. Observable review, risks, fallbacks, and one editable decision reply.",
-    "Visible execution map — experience arc, section ownership, post-hero peak, continuity owner, and mobile transformation in roughly ten lines.",
-    "Implementation note — actual assets, input, visible start/development/end, mechanism owner, desktop/mobile/reduced-motion behavior, and unresolved risks.",
-    "Showcase ceiling — bind the Recommended baseline, two perceptible Showcase-only qualities, two product-native media opportunities, two or three cheap treatments, one production-like selected prototype, any genuinely necessary second coded comparison, and why the delivered route is visibly beyond Recommended.",
-    "Showcase final response — state `Showcase implementation attempted:` and `Independent visual verdict: awaiting user review`, then ask the user for that verdict; disclose materially rejected or replaced advanced treatments under `Not pursued:` with the reason.",
-    "",
-    "The brief must adapt every decision to the inspected project. Do not imitate a named site, emit a generic template, or require another implementation-contract approval.",
+    `Detailed ${p.label} plan`,
+    "1. Inspect product, audience, task, actual content, preserved behavior and available resources.",
+    "2. Generate multiple structurally different visual directions. Pair each actual design image with composition, imagery, mobile, interaction/motion, execution approach and cost/risk notes.",
+    "3. Recommend one and stop for selection unless the user already selected or explicitly delegated the choice. Profiles are not visual options.",
+    "4. Carry the selected images and user changes into a compact implementation note. Translate spatial decisions into responsive layout, available typography, separate assets and live controls.",
+    `5. Source/generate the required material and build a representative composition with its adjacent region. ${p.treatments}`,
+    `6. Use a ${p.prototype} technical-prototype policy to resolve consequential uncertainty, without adding an automatic second approval stop.`,
+    "7. Compare matching browser/reference states; refine the full desktop/mobile route, exercise the primary task and any motion/reduced-motion behavior, then finalize with the selected delivery profile.",
+    "For explicitly selected Showcase, follow references/SHOWCASE.md and its existing mechanism contract. Report implementation evidence separately from the user's taste verdict.",
   ].join("\n");
 }
 

@@ -7,6 +7,67 @@ test.beforeEach(async ({ page }) => {
   await expect(page.locator("section")).toHaveCount(12);
 });
 
+test("pin progress preserves entry and release compositions on desktop and mobile", async ({ page }) => {
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    const chapter = page.locator("#pinned-chapter");
+    for (const [progress, state] of [[0, "0"], [.5, "1"], [1, "2"], [0, "0"]] as const) {
+      await chapter.evaluate((element, p) => {
+        const start = element.getBoundingClientRect().top + scrollY;
+        scrollTo(0, start + (element.getBoundingClientRect().height - innerHeight) * p);
+      }, progress);
+      await expect(chapter).toHaveAttribute("data-active-state", state);
+    }
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await expect(chapter).toHaveAttribute("data-active-state", "all");
+    for (const state of await chapter.locator("[data-chapter-state]").all()) {
+      await expect(state).toBeVisible();
+      await expect(state).not.toHaveAttribute("aria-hidden", "true");
+    }
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await expect(chapter).not.toHaveAttribute("data-active-state", "all");
+  }
+});
+
+test("kinetic text waits for its viewport and responds to a live motion preference", async ({ page }) => {
+  const heading = page.locator("#kinetic-type h2");
+  await expect(heading).toHaveAttribute("data-state", "pending");
+  await page.waitForTimeout(850); // An offscreen mount animation would already have ended.
+  await expect(heading).toHaveAttribute("data-state", "pending");
+  await heading.scrollIntoViewIfNeeded();
+  await expect(heading).toHaveAttribute("data-state", "active");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(heading).toHaveAttribute("data-state", "resolved");
+  await page.evaluate(() => globalThis.dreativeFixture.destroy());
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await expect(heading).not.toHaveAttribute("data-state", /.+/);
+  await expect(heading).toHaveText("Language remains the interface");
+});
+
+test("authored tracks hold, overlap and reverse without accumulating state", async ({ page }) => {
+  const result = await page.evaluate(() => {
+    const { motionTrack } = globalThis.dreativeFixture.systems;
+    const stops = [{ at: 0, value: 0 }, { at: .2, value: 0 },
+      { at: .6, value: 100, ease: (t) => t * t }, { at: 1, value: 100 }];
+    const image = motionTrack(stops);
+    const type = motionTrack([{ at: .4, value: 0 }, { at: .8, value: -80 }]);
+    stops[0].value = 999; // Caller mutations must not corrupt a compiled track.
+    const frames = [0, .1, .4, .6, 1, .4, -1, 2].map((p) => [image(p), type(p)]);
+    const invalid = [[], [{ at: 0, value: 0 }], [{ at: .5, value: 1 }, { at: .5, value: 2 }],
+      [{ at: 0, value: 0 }, { at: 2, value: 1 }], [{ at: 0, value: NaN }, { at: 1, value: 1 }]];
+    return { frames, rejects: invalid.map((stops) => { try { motionTrack(stops); return false; } catch { return true; } }) };
+  });
+  expect(result.rejects.every(Boolean)).toBeTruthy();
+  expect(result.frames[0]).toEqual([0, 0]);
+  expect(result.frames[1]).toEqual([0, 0]);
+  expect(result.frames[2][0]).toBeCloseTo(25);
+  expect(result.frames[3][1]).toBeCloseTo(-40);
+  expect(result.frames[4]).toEqual([100, -80]);
+  expect(result.frames[5]).toEqual(result.frames[2]);
+  expect(result.frames[6]).toEqual([0, 0]);
+  expect(result.frames[7]).toEqual([100, -80]);
+});
+
 test("native foundations render without runtime errors and expose meaningful primary states", async ({ page }) => {
   const errors: string[] = [];
   page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
@@ -44,7 +105,7 @@ test("pinned, shared-element, and frame foundations exercise forward, reverse, f
   const chapter = page.locator("#pinned-chapter");
   await chapter.scrollIntoViewIfNeeded();
   const firstState = await chapter.getAttribute("data-active-state");
-  await page.evaluate(() => scrollBy(0, innerHeight * 0.8));
+  await chapter.evaluate((element) => scrollTo(0, element.offsetTop + (element.offsetHeight - innerHeight) * .8));
   await expect.poll(() => chapter.getAttribute("data-active-state")).not.toBe(firstState);
   const forwardState = await chapter.getAttribute("data-active-state");
   await chapter.evaluate((element) => scrollTo(0, element.offsetTop - innerHeight + 1));

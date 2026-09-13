@@ -1,37 +1,55 @@
 ---
 name: dreative
-description: Design and build distinctive frontends with authored motion, sourced or generated assets, reference study, realistic prototypes, and desktop/mobile browser refinement. Use for frontend design, redesign, and motion-led product experiences.
+description: Design distinctive websites through generated visual directions, user selection, faithful implementation, and browser refinement. Use for frontend design and redesign, with sourced or generated assets and authored motion when the chosen design calls for it.
 ---
 
 # Dreative
 
-Build the user's real frontend. Own composition, typography, material, motion,
-usability, and the rendered result. A working effect is not yet good art direction;
-a compelling screenshot does not prove the experience works in time.
+Design visually, build faithfully, refine in the browser. Dreative is a general
+frontend design skill: composition, typography, imagery, structure and usability
+are its core. Motion is a creative capability that serves the selected design;
+it can lead when the user requests a motion-led experience.
 
 ## Start here
 
 Inspect the repository, user brief, existing behavior, assets, and available tools.
 Respect supplied references, named effects, intensity, budget, and authorization.
-For an open design use `PLAN.md`: offer materially different approaches, then
-prototype the uncertainty that could invalidate the chosen direction. If the user
-delegated decisions or already selected the approach, proceed within that scope.
+For an open design use `PLAN.md`: generate multiple visual directions with concrete
+plans, show the images and recommend one, then stop for the user's choice before
+implementation. An existing design selection or explicit delegation to choose
+autonomously takes precedence. Do not confuse budget profiles with design options.
+
+Use `references/VISUAL_DESIGN.md` for the image-led direction stage and its
+translation into layout, separate assets and real controls. Keep the selected
+image in view through implementation and compare the browser render against it.
+Supplied designs enter at translation; scoped fixes need no new concept round.
 
 Keep a short implementation note: concept, actual assets, visible motion beats,
 runtime owner, mobile form, primary user task, and unresolved risks. It is working
 memory, not an approval artifact or a score. Existing `.dreative/context.json`
 is fallible memory; reconcile it against the project.
 
-## Compose the experience, then prove its hardest join
+## Build the selected composition
+
+Obtain the imagery and materials that make the chosen direction work. Build a
+representative composition and its adjacent region in the real application;
+compare it to the chosen design before extending the route. Preserve its defining
+spatial choices while making content, interactions and mobile reflow real.
+Follow `references/MEDIA_SOURCES.md` for sourcing and generation, and
+`references/VISUAL_REFINEMENT.md` for matched-state browser correction.
+
+## When motion is part of the design
 
 For motion-led work, use `references/CHOREOGRAPHY.md` before selecting the focal
 effect. Arrange the actual content and material into a journey with a useful
 destination. The first viewport, development, primary task, and ending should
 belong to that idea. An outline of headings cannot show this: use material at
 its intended scale, in rough compositions or an equivalent visual study.
-When the idea is still generic, study a relevant complete production through
-`references/PRODUCTION_STUDIES.md` and the user's references. Compare different
-ways of experiencing the subject, not different filters on the same hero.
+For an ambitious bespoke motion brief, study a relevant live passage through
+`references/PRODUCTION_STUDIES.md` or the user's references before settling on
+the mechanism. Observe its input, timing, material and destination; then obtain
+the useful implementation source through `references/CREATIVE_RESOURCES.md`.
+Compare ways of experiencing the subject, not filters on the same hero.
 
 Resolve the material and tool uncertainty before the effect locks in a visual
 language. Discover callable sourcing/generation capabilities as well as local
@@ -44,7 +62,8 @@ region. Inspect it at desktop and mobile. This is a small slice at the intended
 visual fidelity, not an entire first draft and not a substitute fade.
 
 A prototype may isolate a shader, crop, scrub, transition, or interaction without
-building unrelated navigation or sections. State the question it answers.
+building unrelated navigation or sections. Include the real receiving composition
+when continuity is the uncertainty. State the question it answers.
 Reuse the successful implementation. Do not promise to replace placeholder motion
 later. If real material or a capability is missing, identify it and pursue the
 closest faithful route; disclose any change to the promised result.
@@ -59,6 +78,7 @@ the page's section list. Prototype approval applies to the demonstrated scope.
 | Decision | Resource |
 |---|---|
 | Open concept and user approaches | `PLAN.md`, then `references/CREATIVE_DIRECTION.md` if needed |
+| Generated page mockups, visual exploration, or translating a design image into UI | `references/VISUAL_DESIGN.md` |
 | Motion-led brief, including named parallax/pixelation/framing/scroll/transition | `skills/motion.md` |
 | Composing a motion-led experience or fixing repetitive sections | `references/CHOREOGRAPHY.md` |
 | Learning how a complete immersive production works | `references/PRODUCTION_STUDIES.md`, then the relevant original |
@@ -97,6 +117,8 @@ Fictional concepts can use coherent generated product imagery. Source
 or create assets before committing the focal composition. SVG, type, CSS, canvas,
 photography, and video are all legitimate media. Judge the rendered work.
 Do not fabricate an unconvincing physical prop because it is easy to code.
+A material study cannot replace the subject views the primary task needs. Resolve
+one usable subject view before expanding a substitute into an entire set.
 
 Fund three kinds of work independently: responsive controls, continuity between
 regions, and any focal set-piece. Quiet regions can remain still. A fade, transform,

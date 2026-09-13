@@ -1,7 +1,9 @@
 # Creative direction synthesis
 
 Use this reference before proposing an open-ended redesign or adapting external
-references. It is a thinking method, not a user questionnaire.
+references. Use it to develop the visual options in `PLAN.md`, not as an extra
+user questionnaire. Its decomposition advice applies to inspiration; a supplied
+or selected design requested for faithful implementation should be preserved.
 
 ## 1. Extract product DNA
 
@@ -46,13 +48,13 @@ behavior—not only other websites.
 
 ## 3. Generate divergent premises
 
-Privately sketch at least three premises before choosing the public directions.
+Explore different premises for the visual directions.
 A premise is a relationship between product meaning and interface behavior:
 
 > Because the product is/does **X**, the interface behaves like **Y**, allowing
 > the visitor to **Z**.
 
-Force structural divergence:
+Possible sources of structural divergence include:
 
 - one content- or typography-led system;
 - one media, interaction, or tool-led system;
@@ -72,8 +74,8 @@ For each viable premise, choose:
 6. motion and interaction grammar;
 7. continuity device beyond the hero.
 
-Reject a concept if fewer than three choices are anchored in real product
-content, assets, behavior, or history.
+Ground the concept in the product's content, assets, behavior or history.
+Counting such choices does not establish that they form a compelling experience.
 
 ## 5. Run the independence test
 
@@ -84,7 +86,7 @@ Reject or transform the direction when any answer is yes:
 - Is the main idea a known studio effect with different content inserted?
 - Would removing the hero leave a generic component page?
 - Did a library name determine the concept?
-- Are the three directions merely low, medium, and high versions of one style?
+- Are the directions merely low, medium, and high versions of one style?
 
 Reference resemblance at the level of a principle is acceptable. Resemblance at
 the level of a complete visual fingerprint is imitation.
@@ -92,7 +94,8 @@ the level of a complete visual fingerprint is imitation.
 ## 6. Allocate an experience arc
 
 Give every major section a distinct role: orient, demonstrate, compare,
-transform, prove, rest, decide, or resolve. Design at least one post-hero peak.
+transform, prove, rest, decide, or resolve. Develop the idea beyond the hero
+through the primary task and ending; choose emphasis from the actual content.
 Use a small transition vocabulary derived from the concept so the route feels
 connected without repeating the same reveal.
 

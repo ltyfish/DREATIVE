@@ -24,6 +24,8 @@ const scrollScene = (script) => shell(`<section id="before"><button>Before</butt
 const scrollProgress = `addEventListener('scroll',()=>{const scene=document.querySelector('#scroll-story');const box=scene.querySelector('.box');const progress=Math.max(0,Math.min(1,(scrollY-scene.offsetTop)/(scene.offsetHeight-innerHeight)));const stage=Math.min(3,Math.floor(progress*4));box.dataset.scrollStage=stage;box.style.transform='translateX('+(stage*50)+'px)'})`;
 const scrollMechanism = scrollScene(`${sharedStateScript};${scrollProgress}`);
 const staticScrollMechanism = scrollScene(sharedStateScript);
+const readablePin = shell(`<section><h1>Opening</h1><p>Readable introduction.</p></section><section id="held" style="height:260vh;padding:0"><div style="position:sticky;top:0;height:100vh;display:grid;place-items:center"><h2>A readable composition held during scroll</h2></div></section><section><h2>Ending</h2><p>The pin released.</p></section>`);
+const overlappingSurfaces = shell(`<section style="position:relative"><h1>Layered gallery</h1><button style="position:absolute;top:140px;left:30px;width:260px;height:160px;text-align:left;vertical-align:top">First</button><button style="position:absolute;top:180px;left:150px;width:260px;height:160px;text-align:right">Second</button></section>`);
 const desktopOnlyScrollMechanism = `<!doctype html><html><head><title>Smoke fixture</title><style>html,body{margin:0}main>section{min-height:70vh;padding:32px}.box{width:120px;height:120px;background:#f60}@media(max-width:600px){#scroll-story .box{position:static!important}#scroll-story .box{transform:none!important}}</style></head><body><main><section id="before"><button>Before</button><div class="box"></div></section><section id="scroll-story" style="height:320vh"><h1 style="position:sticky;top:32px">Desktop-only story</h1><div class="box" style="position:sticky;top:100px"></div></section><section id="after"><button>After</button><div class="box"></div><div class="box"></div></section></main><script>${sharedStateScript};${scrollProgress}</script></body></html>`;
 
 const section = (index) => `<section id="s${index}"><h2>Section ${index}</h2><p>Ordinary body copy for section ${index}.</p></section>`;
@@ -40,6 +42,9 @@ const cramped = shell(`<section id="cramped"><h2>Cramped</h2>${Array.from({ leng
 const mainlessRoute = shell(Array.from({ length: 5 }, (_, index) => section(index)).join(""), revealScript).replace("<main>", "").replace("</main>", "");
 
 const pages = {
+  "/readable-pin": readablePin,
+  "/overlapping-surfaces": overlappingSurfaces,
+  "/mainless-controls": noAffordance.replace('<main>', '<div>').replace('</main>', '</div>'),
   "/": healthy,
   "/mainless": mainlessRoute,
   // Nothing tall enough to sample anywhere in the document: the case that used to read as

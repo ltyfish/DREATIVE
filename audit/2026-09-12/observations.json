@@ -1,0 +1,380 @@
+[
+  {
+    "name": "claude",
+    "profile": "desktop",
+    "errors": [],
+    "views": [
+      {
+        "label": "entry",
+        "y": 0,
+        "height": 9248,
+        "headings": [
+          "The nine cloths, made up",
+          "Measured on the body, in centimetres.",
+          "What it takes to keep it.",
+          "Where it goes, and how it comes back.",
+          "Three people who bought something.",
+          "Eleven people, one shop, one price.",
+          "Your bag"
+        ]
+      },
+      {
+        "label": "development",
+        "y": 1296,
+        "height": 9248,
+        "headings": [
+          "The nine cloths, made up",
+          "Measured on the body, in centimetres.",
+          "What it takes to keep it.",
+          "Where it goes, and how it comes back.",
+          "Three people who bought something.",
+          "Eleven people, one shop, one price.",
+          "Your bag"
+        ]
+      },
+      {
+        "label": "handoff",
+        "y": 2880,
+        "height": 9248,
+        "headings": [
+          "The nine cloths, made up",
+          "Measured on the body, in centimetres.",
+          "What it takes to keep it.",
+          "Where it goes, and how it comes back.",
+          "Three people who bought something.",
+          "Eleven people, one shop, one price.",
+          "Your bag"
+        ]
+      },
+      {
+        "label": "shop",
+        "y": 4680,
+        "height": 9248,
+        "headings": [
+          "The nine cloths, made up",
+          "Measured on the body, in centimetres.",
+          "What it takes to keep it.",
+          "Where it goes, and how it comes back.",
+          "Three people who bought something.",
+          "Eleven people, one shop, one price.",
+          "Your bag"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "claude",
+    "profile": "mobile",
+    "errors": [],
+    "views": [
+      {
+        "label": "entry",
+        "y": 0,
+        "height": 15191,
+        "headings": [
+          "The nine cloths, made up",
+          "Measured on the body, in centimetres.",
+          "What it takes to keep it.",
+          "Where it goes, and how it comes back.",
+          "Three people who bought something.",
+          "Eleven people, one shop, one price.",
+          "Your bag"
+        ]
+      },
+      {
+        "label": "development",
+        "y": 1215,
+        "height": 15191,
+        "headings": [
+          "The nine cloths, made up",
+          "Measured on the body, in centimetres.",
+          "What it takes to keep it.",
+          "Where it goes, and how it comes back.",
+          "Three people who bought something.",
+          "Eleven people, one shop, one price.",
+          "Your bag"
+        ]
+      },
+      {
+        "label": "handoff",
+        "y": 2701,
+        "height": 15191,
+        "headings": [
+          "The nine cloths, made up",
+          "Measured on the body, in centimetres.",
+          "What it takes to keep it.",
+          "Where it goes, and how it comes back.",
+          "Three people who bought something.",
+          "Eleven people, one shop, one price.",
+          "Your bag"
+        ]
+      },
+      {
+        "label": "shop",
+        "y": 4389,
+        "height": 15191,
+        "headings": [
+          "The nine cloths, made up",
+          "Measured on the body, in centimetres.",
+          "What it takes to keep it.",
+          "Where it goes, and how it comes back.",
+          "Three people who bought something.",
+          "Eleven people, one shop, one price.",
+          "Your bag"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "claude",
+    "profile": "reduced",
+    "errors": [],
+    "views": [
+      {
+        "label": "entry",
+        "y": 0,
+        "height": 12491,
+        "headings": [
+          "The nine cloths, made up",
+          "Measured on the body, in centimetres.",
+          "What it takes to keep it.",
+          "Where it goes, and how it comes back.",
+          "Three people who bought something.",
+          "Eleven people, one shop, one price.",
+          "Your bag"
+        ]
+      },
+      {
+        "label": "development",
+        "y": 0,
+        "height": 12491,
+        "headings": [
+          "The nine cloths, made up",
+          "Measured on the body, in centimetres.",
+          "What it takes to keep it.",
+          "Where it goes, and how it comes back.",
+          "Three people who bought something.",
+          "Eleven people, one shop, one price.",
+          "Your bag"
+        ]
+      },
+      {
+        "label": "handoff",
+        "y": 0,
+        "height": 12491,
+        "headings": [
+          "The nine cloths, made up",
+          "Measured on the body, in centimetres.",
+          "What it takes to keep it.",
+          "Where it goes, and how it comes back.",
+          "Three people who bought something.",
+          "Eleven people, one shop, one price.",
+          "Your bag"
+        ]
+      },
+      {
+        "label": "shop",
+        "y": 1688,
+        "height": 12491,
+        "headings": [
+          "The nine cloths, made up",
+          "Measured on the body, in centimetres.",
+          "What it takes to keep it.",
+          "Where it goes, and how it comes back.",
+          "Three people who bought something.",
+          "Eleven people, one shop, one price.",
+          "Your bag"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "codex",
+    "profile": "desktop",
+    "errors": [],
+    "views": [
+      {
+        "label": "entry",
+        "y": 0,
+        "height": 17861,
+        "headings": [
+          "ChoreJacket",
+          "Clothes forkeeping.",
+          "Measuredon you.",
+          "Wear isthe point.",
+          "Field notes",
+          "No mythology.Just the facts.",
+          "From Leeds,without fuss."
+        ]
+      },
+      {
+        "label": "development",
+        "y": 1053,
+        "height": 17861,
+        "headings": [
+          "ChoreJacket",
+          "Clothes forkeeping.",
+          "Measuredon you.",
+          "Wear isthe point.",
+          "Field notes",
+          "No mythology.Just the facts.",
+          "From Leeds,without fuss."
+        ]
+      },
+      {
+        "label": "handoff",
+        "y": 2340,
+        "height": 17861,
+        "headings": [
+          "ChoreJacket",
+          "Clothes forkeeping.",
+          "Measuredon you.",
+          "Wear isthe point.",
+          "Field notes",
+          "No mythology.Just the facts.",
+          "From Leeds,without fuss."
+        ]
+      },
+      {
+        "label": "shop",
+        "y": 4140,
+        "height": 17861,
+        "headings": [
+          "ChoreJacket",
+          "Clothes forkeeping.",
+          "Measuredon you.",
+          "Wear isthe point.",
+          "Field notes",
+          "No mythology.Just the facts.",
+          "From Leeds,without fuss."
+        ]
+      }
+    ]
+  },
+  {
+    "name": "codex",
+    "profile": "mobile",
+    "errors": [],
+    "views": [
+      {
+        "label": "entry",
+        "y": 0,
+        "height": 19934,
+        "headings": [
+          "ChoreJacket",
+          "Clothes forkeeping.",
+          "Measuredon you.",
+          "Wear isthe point.",
+          "Field notes",
+          "No mythology.Just the facts.",
+          "From Leeds,without fuss."
+        ]
+      },
+      {
+        "label": "development",
+        "y": 836,
+        "height": 19934,
+        "headings": [
+          "ChoreJacket",
+          "Clothes forkeeping.",
+          "Measuredon you.",
+          "Wear isthe point.",
+          "Field notes",
+          "No mythology.Just the facts.",
+          "From Leeds,without fuss."
+        ]
+      },
+      {
+        "label": "handoff",
+        "y": 1857,
+        "height": 19934,
+        "headings": [
+          "ChoreJacket",
+          "Clothes forkeeping.",
+          "Measuredon you.",
+          "Wear isthe point.",
+          "Field notes",
+          "No mythology.Just the facts.",
+          "From Leeds,without fuss."
+        ]
+      },
+      {
+        "label": "shop",
+        "y": 3545,
+        "height": 19934,
+        "headings": [
+          "ChoreJacket",
+          "Clothes forkeeping.",
+          "Measuredon you.",
+          "Wear isthe point.",
+          "Field notes",
+          "No mythology.Just the facts.",
+          "From Leeds,without fuss."
+        ]
+      }
+    ]
+  },
+  {
+    "name": "codex",
+    "profile": "reduced",
+    "errors": [],
+    "views": [
+      {
+        "label": "entry",
+        "y": 0,
+        "height": 17992,
+        "headings": [
+          "ChoreJacket",
+          "Clothes forkeeping.",
+          "Measuredon you.",
+          "Wear isthe point.",
+          "Field notes",
+          "No mythology.Just the facts.",
+          "From Leeds,without fuss."
+        ]
+      },
+      {
+        "label": "development",
+        "y": 0,
+        "height": 17992,
+        "headings": [
+          "ChoreJacket",
+          "Clothes forkeeping.",
+          "Measuredon you.",
+          "Wear isthe point.",
+          "Field notes",
+          "No mythology.Just the facts.",
+          "From Leeds,without fuss."
+        ]
+      },
+      {
+        "label": "handoff",
+        "y": 0,
+        "height": 17992,
+        "headings": [
+          "ChoreJacket",
+          "Clothes forkeeping.",
+          "Measuredon you.",
+          "Wear isthe point.",
+          "Field notes",
+          "No mythology.Just the facts.",
+          "From Leeds,without fuss."
+        ]
+      },
+      {
+        "label": "shop",
+        "y": 1688,
+        "height": 17992,
+        "headings": [
+          "ChoreJacket",
+          "Clothes forkeeping.",
+          "Measuredon you.",
+          "Wear isthe point.",
+          "Field notes",
+          "No mythology.Just the facts.",
+          "From Leeds,without fuss."
+        ]
+      }
+    ]
+  }
+]

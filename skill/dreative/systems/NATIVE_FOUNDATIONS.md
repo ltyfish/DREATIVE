@@ -31,6 +31,11 @@ same set with the reject conditions attached.
 ## scroll-progress
 
 - Export: `mountScrollProgress`
+- Range: default `"passage"` runs from top/bottom to bottom/top.
+  `range: "pin"` runs from top/top to bottom/bottom for a top-zero,
+  full-viewport sticky stage. Other geometries need measured start/end points
+  in a specialist runtime. The returned cleanup function also has `.refresh()`
+  for upstream layout changes; subject resize, fonts and motion preference refresh automatically.
 - Use: one native signal shared by a meaningful progress/velocity treatment.
 - Reject: decorative smoothness or competing scroll clocks.
 - Mobile/reduced: clamp velocity; publish zero velocity under reduced motion.
@@ -40,6 +45,8 @@ same set with the reject conditions attached.
 ## pinned-chapter
 
 - Export: `mountPinnedChapter`
+- Uses the pin range by default; pass `range: "passage"` only for an unpinned
+  traversal. It switches discrete states; it does not interpolate a scene.
 - Use: a real comparison or sequence with authored states and a safe release.
 - Reject: pinning ordinary copy or trapping mobile scroll.
 - Mobile/reduced: shorter sticky travel or normal vertical state sequence.
@@ -94,6 +101,9 @@ same set with the reject conditions attached.
 ## kinetic-type
 
 - Export: `mountKineticType`
+- Starts on viewport entry, once. Use `trigger: "mount"` only for an intended
+  mount entrance; `rootMargin` adjusts entry. It groups words and changes state,
+  but does not author scroll typography. Use tracks/timelines for that.
 - Use: language itself carries hierarchy or transformation.
 - Reject: decorative glyph noise, delayed reading, or broken copy/paste.
 - Mobile/reduced: fewer groups; immediate readable resolution.
@@ -141,22 +151,45 @@ same set with the reject conditions attached.
 - Budget/cleanup: six items and 700ms life by default; remove nodes and handler.
 - Browser: density bound, coarse pointer, controls, reduced motion, cleanup.
 
-## The four that cross a section boundary
+## Compose overlapping motion with tracks
 
-`persistent-stage`, `shared-element-handoff`, `pinned-chapter` and
-`video-handoff` are the foundations that carry something across a join rather
-than animating inside one section. They are the continuity half of the budget in
-`SKILL.md` and they draw from their own slot, not the signature moment's — a
-route gets one of these *and* its set-piece, because a page whose sections are
-independent bands is the note this skill receives most often.
+`motionTrack(stops)` returns a pure sampler for one numeric property. Stops use
+`{ at, value, ease? }`: progress in 0–1, a number, and optional incoming easing.
+Repeated values make a hold. Sampling backwards gives the same composition;
+several tracks share a clock but need not start, finish or rest together.
+This helper is for authored DOM/SVG/canvas properties, not a thirteenth effect.
 
-They are the packaged cases, not the boundary of the idea. Continuity carried by
-a field rather than a subject — grain, dither, particles, an evolving light, a
-resolution or focus that transforms between sections — is authored against
-`adaptive-canvas`, `kinetic-type`, or a specialist runtime, and is a continuity
-system in exactly the same sense. So is a relay in which several subjects hand to
-one another under one constant rule. Choose from the whole space; these four
-simply already exist.
+For example, in an existing composition where a readable phrase makes room for
+an actual detail image, give the type and aperture different intervals:
+
+```js
+const typeTravel = motionTrack([
+  { at: 0, value: 0 }, { at: .18, value: 0 },
+  { at: .56, value: -28 }, { at: 1, value: -28 },
+]);
+const aperture = motionTrack([
+  { at: 0, value: 0 }, { at: .3, value: 0 },
+  { at: .72, value: 100 }, { at: 1, value: 100 },
+]);
+const cleanup = mountScrollProgress(scene, ({ progress }) => {
+  const p = matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : progress;
+  scene.style.setProperty('--type-travel', `${typeTravel(p)}%`);
+  scene.style.setProperty('--aperture', `${aperture(p)}%`);
+}, { range: 'pin' });
+```
+
+Bind these to separate wrappers: translate the phrase's visual groups with
+`--type-travel`; reveal the image using an inset or aperture derived from
+`--aperture`, preserving its cover crop. Keep semantic text intact. Design the
+resolved image and labels first. On narrow screens, recompose the words and
+image before changing the travel. Under reduced motion, remove the pin and
+show that resolved composition in normal flow. Tune the example intervals by
+watching; they do not fit every subject or amount of text.
+
+Continuity can instead be an edited cut, color field, selected item or camera
+axis. Choose from the relationship the route needs; no route must include a
+particular packaged foundation. A helper removes mechanical work, not the need
+to compose the task and ending.
 
 ## Optional runtime routing
 

@@ -41,6 +41,13 @@ Read `../references/MOTION_MATERIAL.md` for production of media-driven forms.
 For pixelation, parallax, masks, and type, a single high-quality still can be
 enough. Video and 3D are options, not mandatory signs of ambition.
 
+When the brief asks for variety or rejects a previous motion idea, change the
+underlying event and composition. Another blur-to-sharp zoom does not answer
+that feedback. Begin with a legible subject unless concealment has a specific
+payoff. Source the required clip, model, views, or typography treatment before
+declaring the more expressive approach infeasible; a failed stock search does
+not establish the limits of the host's generation or code-sourcing tools.
+
 ## Expand the expression without collecting effects
 
 For the transition from a successful moment to a complete experience, use
@@ -83,14 +90,21 @@ For smoothing use time-based damping
 Snap to a small tolerance and stop scheduling once settled; cap a resumed tab's
 dt. Never run both a scroll smoother and a second uncontrolled smoothing loop.
 
+The native `mountScrollProgress` defaults to viewport passage (entry to exit).
+Use its `range: "pin"` for a top-zero, full-viewport sticky scene; the two ranges
+are not interchangeable. Use measured ScrollTrigger start/end for other pin
+geometries. `motionTrack` in `../systems/runtime.js` compiles timed values for
+overlap and holds without adding a clock. See the construction example in
+`../systems/NATIVE_FOUNDATIONS.md`; use GSAP timelines for richer orchestration.
+
 Animate transform/opacity where suitable; masks, filters, sampling resolution,
 and canvas have different paint/GPU costs. Measure the actual chosen effect.
 Do not impose a transforms-only aesthetic in the name of performance.
 
 ## Build and observe
 
-Build the hardest slice with its real crop and material before composing the
-whole route. Watch normal playback at desktop and mobile. Compare against the
+Compose the route first, then build the hardest slice with its real crop,
+material and receiving state. Watch normal playback at desktop and mobile. Compare against the
 reference at matched start, midpoint, and handoff states, then watch the timing.
 Static screenshots cannot establish rhythm or smoothness.
 

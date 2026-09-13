@@ -1,0 +1,32 @@
+[
+  {
+    "name": "claude",
+    "width": 1440,
+    "bagText": "Your bag\nCLOSE\n\nThe Oxford Shirt\n\nSize S · £78\n\nREMOVE\nTHE OXFORD SHIRT, SIZE S\n\nSubtotal\n£78.00\n\nDelivery\n£4.95\n\n£22.00 more for free delivery.\n\nTotal\n£82.95\n\nCHECKOUT\n\n60 days to return anything unworn with its tags on, and return postage is free in the UK.",
+    "focusEscaped": true,
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.bagpanel').getByRole('button', { name: /Remove/ })\u001b[22m\n"
+  },
+  {
+    "name": "claude",
+    "width": 390,
+    "bagText": "Your bag\nCLOSE\n\nThe Oxford Shirt\n\nSize S · £78\n\nREMOVE\nTHE OXFORD SHIRT, SIZE S\n\nSubtotal\n£78.00\n\nDelivery\n£4.95\n\n£22.00 more for free delivery.\n\nTotal\n£82.95\n\nCHECKOUT\n\n60 days to return anything unworn with its tags on, and return postage is free in the UK.",
+    "focusEscaped": true,
+    "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.bagpanel').getByRole('button', { name: /Remove/ })\u001b[22m\n"
+  },
+  {
+    "name": "codex",
+    "width": 1440,
+    "bagText": "Your bag\n01\nCLOSE ×\nThe Oxford Shirt\nSize S\n\n£78.00\n\nREMOVE\nSubtotal\n£78.00\n\n£22.00 MORE FOR FREE DELIVERY. DELIVERY IS £4.95.\n\nDelivery\n£4.95\nTotal\n£82.95\nCHECKOUT",
+    "focusEscaped": true,
+    "emptyText": "Your bag\n00\nCLOSE ×\n\nNothing here yet.\n£100.00 AWAY FROM FREE DELIVERY.\n\nSubtotal\n£0.00\n\nFREE UK DELIVERY OVER £100.",
+    "primaryFlow": "passed"
+  },
+  {
+    "name": "codex",
+    "width": 390,
+    "bagText": "Your bag\n01\nCLOSE ×\nThe Oxford Shirt\nSize S\n\n£78.00\n\nREMOVE\nSubtotal\n£78.00\n\n£22.00 MORE FOR FREE DELIVERY. DELIVERY IS £4.95.\n\nDelivery\n£4.95\nTotal\n£82.95\nCHECKOUT",
+    "focusEscaped": true,
+    "emptyText": "Your bag\n00\nCLOSE ×\n\nNothing here yet.\n£100.00 AWAY FROM FREE DELIVERY.\n\nSubtotal\n£0.00\n\nFREE UK DELIVERY OVER £100.",
+    "primaryFlow": "passed"
+  }
+]

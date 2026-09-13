@@ -1,109 +1,84 @@
-# Planning and prototypes
+# Visual directions, selection, execution
 
-Use this for open frontend design. For a scoped fix, retain the existing direction
-and perform the relevant work directly. User instructions and existing
-authorization take precedence over this workflow.
+Use this for open frontend design or redesign. For a scoped fix or an already
+chosen design, preserve that direction and do the relevant work directly.
 
-## Offer different experiences
+## Prototype means visual choices first
 
-Present Recommended, Efficient, and Showcase with a project-specific concept.
-These are delivery approaches, not taste scores or three color schemes.
+Inspect the actual brief, behavior, content, assets and tools. Then use
+`references/VISUAL_DESIGN.md` to generate multiple materially different design
+directions. Two or three is a useful starting range; adapt to the user's request
+and available budget. Each direction needs an actual viewable page image and a
+concise implementation plan. Text descriptions, palette swaps and alternate
+filters on the same hero do not provide the visual choice being requested.
 
-- **Recommended:** the strongest complete solution for the brief and available
-  resources. An explicitly motion-led brief remains motion-led here.
-- **Efficient:** reduce scope and production cost while preserving the selected
-  slice's quality. Reuse good assets and mechanisms; avoid speculative generation.
-- **Showcase:** a more extensively authored experience, including development
-  beyond the hero, with a real prototype of the highest-risk moment. Read
-  `references/SHOWCASE.md` for its existing executable delivery contract.
+Explore page structure, image relationships, typography and visual character.
+Show the working middle and ending as well as the opening; use related sectional
+images when a full-page image becomes unreadably small. Preserve real content
+and product identity. Keep options credible at the available production budget.
 
-For each, describe composition, material, a visible sequence, mobile form, and
-relative cost/risk. Example of a sequence description: the product begins inside
-a narrow editorial frame, the frame opens with scroll, then the same product
-settles beside its purchase controls. This describes behavior; it is not a
-universal layout.
+For each direction, present together:
 
-For an undecided user, ask for the approach once. Show relevant reference,
-source, package, prototype, and review recommendations together so the user can
-change them in the same response. If they ask you to choose or proceed
-autonomously, state your assumption and build. Do not repeatedly ask for approval
-of routine decisions. Explicit restrictions and requested review stops remain binding.
+- A short name, its design image(s), and the idea that distinguishes it.
+- Page composition and primary user journey, including dense or working content.
+- What imagery must be sourced/generated and what existing material can be reused.
+- Interaction and motion intent where useful: what changes, what drives it and
+  where it resolves. A still does not demonstrate motion.
+- Mobile adaptation, implementation approach, major uncertainty and relative cost.
 
-## Configuration defaults
+Recommend one with a concrete reason, then **stop for the user's selection**.
+They can choose, combine specified parts, or request a visual revision. If they
+request a revision, update the affected images and plan before asking again.
+Do not implement the site while this requested decision is pending. An explicit
+instruction to choose autonomously or an existing selection overrides the stop.
+Choosing a delivery budget/profile is not choosing a visual design.
 
-| Choice | Efficient | Recommended | Showcase |
-|---|---|---|---|
-| Review depth | Fast: focused desktop/mobile primary task | Lean: full page, motion, primary task, correction | Full Audit: Lean plus narrow mobile, reduced motion, routes, failures, performance |
-| References | Supplied | Supplied or focused scout | Supplied and focused motion scout |
-| Sources | Existing where adequate | Best fit within available authorization | Best fit, including video/3D/generation where useful |
-| Packages | Existing where capable | Focused installation | Focused installation |
-| Prototype | Skip unless uncertainty threatens the fix | Auto for consequential uncertainty | Required decisive slice |
+If generation is missing or disallowed, say what is unavailable and offer a
+concrete visual alternative. A prompt is not an image, and a sourced reference
+must not be labelled as a generated design. Do not silently skip the gate or
+substitute one coded hero. Honor source limits and existing tool authorization.
 
-Available overrides include existing assets only, supplied references only,
-no external reference, no new packages, generated images, sourced images,
-or an explicit review before new assets. Paid services remain subject to the
-user's authorization. Do not equate a source default with access to a paid tool.
+## Execute the chosen design
 
-## Cheap comparison, faithful prototype
+Carry the exact selected images and user changes into the implementation note.
+Read their composition into layout, typography, asset roles and responsive rules
+using `references/VISUAL_DESIGN.md`. Obtain usable separate assets through
+`references/MEDIA_SOURCES.md`; a flattened mockup is not a layered asset pack.
+Build live content and controls in the real application.
 
-For motion-led work, read `references/CHOREOGRAPHY.md` now. Choose what the
-visitor discovers, changes, or chooses throughout the route before committing
-to its focal effect. Start from the subject's useful relationships: scale,
-construction, change over time, location, comparison, or a decision. Choose the
-ones the actual material can show. Build the rough compositions with that
-material, including a dense working state and the ending; then select the join
-whose failure would undermine the idea. `references/PRODUCTION_STUDIES.md`
-demonstrates this reasoning in real productions without prescribing their style.
+First implement a representative composition and its adjacent region so you can
+compare the render to the chosen image before mistakes spread. When a mechanism
+is consequentially uncertain, prototype it at intended fidelity with actual
+material and its real destination. This is an implementation experiment after
+direction selection, not a second automatic approval gate.
 
-Compare alternatives before coding two full versions. Use a few annotated
-reference frames, a rough composition board, or concise start/develop/resolve
-descriptions to contrast distinct interaction models. Label a board as a board.
-Use the actual supplied reference when fidelity to it is the task.
+For ambitious motion, use `references/CHOREOGRAPHY.md` and relevant production
+studies. Build the actual scroll/animation/spatial mechanism; preserve the visual
+intent through its entry, development and resolution. Quiet designs need no
+invented set-piece. Reuse successful code and fund unresolved parts of the route,
+including the primary interaction and ending, before repeatedly polishing the hero.
 
-Build one selected slice with the real mechanism and representative final assets.
-Test the uncertainty at its actual viewport size: crop continuity, decode/seek
-behavior, visual strength, legibility during motion, and entry/exit. A low-cost
-prototype limits coverage, not the fidelity of the property being tested.
-Do not spend on a second coded approach unless its result could change the decision.
+Inspect the selected design alongside the real browser at corresponding widths
+and states. Correct composition, subject scale, type and spacing before fine
+effects. Test mobile reflow, task behavior and motion separately. Complete the
+rendered refinement and finalization in `SKILL.md`; disclose material deviations.
 
-Show the running result when user review is part of the task. Respect a requested
-stop; otherwise continue after your inspection and state the decision.
-A prototype is not a completed route. Integrate only after it answers the question.
+## Keep execution choices out of the design decision
 
-Before extending a successful motion slice, revisit the composed sequence.
-Revise it if the real material or interaction changed the idea. A change of
-camera crop is not a new information state unless it reveals something useful.
-Fund the least-resolved part of the route next. Do not spend the remaining
-budget repeatedly polishing the already convincing moment.
+Recommended is the default complete delivery. Efficient scopes down production
+or handles targeted changes. Showcase is an explicitly selected advanced delivery
+with its existing contract in `references/SHOWCASE.md`. These are compatible CLI
+profiles, not the visual alternatives presented to the user. Do not make the
+user configure a matrix of review depth, packages and treatments before seeing
+designs. Infer routine choices from the brief and authorization; ask only when a
+missing constraint changes the proposed outcome.
 
-## Compact implementation note
+Keep a compact note with the selected image paths, user edits, defining spatial
+choices, content/behavior, actual assets, implementation risks and next step.
+Include motion ownership and mobile/reduced-motion form when motion is present.
+No extra planning schema, approval hash or taste score is needed in ordinary work.
+The testbed's explicit file protocol is only for its local selection interface.
 
-Keep only decisions needed to build and resume:
-
-- Product task and preserved behavior.
-- Selected concept and binding user requests.
-- Actual material and source; remaining capability or identity gaps.
-- Signature sequence: input, start, development, resolved state.
-- What carries between regions and what changes beyond the hero.
-- Motion/runtime ownership; mobile and reduced-motion form.
-- Prototype conclusion and next concrete implementation step.
-
-This can live in ordinary project notes or existing context; no extra schema,
-signature, approval hash, section-table gate, or hidden-reasoning record is needed.
-Offer “show detailed plan” if the user wants expanded rationale.
-
-## Spend where uncertainty is
-
-Scout broadly enough to compare credible options, then inspect candidates in
-batches. Stop when the chosen sequence has suitable material; keep searching
-only to resolve a named gap. One paid generation should answer a composed shot
-brief, not explore a direction that cheap references could eliminate.
-
-Reserve time for integration and correction before starting a costly mechanism.
-After a failed attempt, diagnose the failure before repeating it. Change one
-material variable per retry. If a resource limit prevents the requested outcome,
-report the specific shortfall; do not silently lower fidelity or call a draft done.
-
-For opted-in evaluator records follow `references/EVALUATION_HANDOFF.md`.
-For substantial frontend work, finalization and user taste review follow
-`SKILL.md`. Deterministic success and human acceptance are different results.
+Reserve budget for production assets, implementation and browser correction.
+Each generation or retry should resolve a named design problem. Avoid generating
+more directions after the user has selected one unless they request a change.

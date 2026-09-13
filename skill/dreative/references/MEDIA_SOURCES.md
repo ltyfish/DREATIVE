@@ -23,6 +23,9 @@ video generation, and asset connectors when relevant. Probe local production
 tools separately. Availability in another host or a recommended-plugin list is
 not availability here. Distinguish ready, missing credentials, unavailable, and
 disallowed; do not treat unknown as disallowed. Keep this a short decision note.
+With lazy tool discovery, search specifically for the needed production capability
+(image generation/editing, footage, or video generation), not just browser tools.
+No result from a browser-only search says nothing about generation availability.
 
 Search the exact subject, its process/material/environment, and the desired shot
 language. Inspect a contact sheet or search-result grid with labels instead of
@@ -66,6 +69,9 @@ construction, light, or photography. Before expanding a procedural substitute
 into a set, inspect one object at the largest intended size. If its silhouette
 or surface is unconvincing, change production method or recompose around viable
 material; disclosure alone does not repair the image.
+Do this before rendering a family of substitutes. Obtain one acceptable subject
+view and its detail or motion test first, then expand. A texture contact sheet
+can judge texture; it cannot judge an absent object's silhouette, fit or use.
 
 ## Browser research and scraping
 
@@ -81,6 +87,10 @@ bypass login/paywalls or assume a studio's visible imagery is reusable. Studying
 an interaction and downloading its proprietary assets are separate actions.
 
 ## Making assets
+
+For generated page layouts and mockup-to-interface work, use `VISUAL_DESIGN.md`.
+A composition image can establish the design before asset production, but its
+flattened imagery is not automatically a usable set of implementation assets.
 
 Generation is a first-class production route, including generation-first when
 the required world, shot, or coherent set is unlikely to exist. It does not need

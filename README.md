@@ -1,17 +1,15 @@
 # Dreative
 
-Dreative is a frontend design-builder skill for coding agents. It acts as a
-creative director, resource guide, implementation system, and visual refiner:
-it develops a project-native direction, sources the real material the design is
-made of — imagery, frame sequences, footage, models, textures — selects useful
-capabilities such as GSAP, Lenis, Canvas, Three.js/OGL and shaders, builds in
-the real application, and corrects the complete rendered experience.
+Continuing on another laptop? Start with [HANDOFF.md](HANDOFF.md) for the active
+branches, setup, verified work and remaining image-generation dependency.
 
-Structure, hierarchy, UX and mobile are the whole job alongside the visual and
-temporal work; motion is where the skill carries the most depth. Two rules
-carry most of that depth: the material is decided and downloaded before the
-section that drives it exists, and the real mechanism is built at full fidelity
-on the first pass rather than as a placeholder intended for later upgrade.
+Dreative is a general frontend design skill for coding agents:
+**design visually → choose → build faithfully → refine in the browser**.
+It develops multiple visual directions with generated page images and concrete
+plans, waits for the user's selection, then carries that design into a real
+responsive website. Composition, typography, imagery, structure and usability
+are the core. Sourcing, generation, motion and scroll animation serve the chosen
+design; motion can lead when the brief asks for it.
 
 Its execution library is intentionally small: twelve executable native
 foundations with source, a functional fixture, explicit fallback and cleanup
@@ -20,19 +18,24 @@ finished art direction or a long effect menu.
 
 ## Planning flow
 
-1. Offer Recommended, Efficient, or Showcase with relevant configuration choices.
-   Honor existing decisions and delegated autonomy; avoid repeated approval stops.
-2. Keep a compact implementation note and prototype the decisive uncertainty at
-   intended fidelity, limiting coverage rather than replacing the mechanism.
-3. Integrate, inspect normal-motion playback and desktop/mobile composition,
-   exercise the primary task, correct defects, and run deterministic checks.
+1. Inspect the brief and generate multiple distinct design images with plans
+   covering structure, assets, mobile, interaction/motion where useful, and execution.
+2. Show the options, recommend one, and stop for the user's choice. An existing
+   selection, scoped fix or explicit delegation takes precedence.
+3. Source/generate separate assets and implement the chosen composition. Resolve
+   technical uncertainty with a faithful experiment when needed; this is not
+   another automatic approval gate.
+4. Compare the real browser to the selected design at matching viewports/states,
+   refine desktop/mobile, test the primary task and motion, then finalize.
 
 The Experience Map is not a planning gate. Its existing optional CLI and Showcase
 compatibility surface remain; see the audit for the remaining migration boundary.
 
-Recommended is the direction the agent judges best for the inspected product.
-Efficient is the most token- and implementation-efficient direction. Showcase
-is the absolute highest ceiling, with no required treatment count.
+Recommended is the default complete delivery profile. Efficient narrows production
+scope; Showcase is an explicitly selected advanced production with its existing
+contract. These are execution settings, not the visual options shown at selection.
+The testbed's prototype mode mirrors the image-and-plan selection gate and retains
+the chosen artifacts for continuation and later review.
 
 ## Quick start
 

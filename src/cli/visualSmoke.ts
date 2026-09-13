@@ -293,7 +293,7 @@ async function verifySignature(page: Page, signature: SignatureComponent): Promi
  * uniform is the point; this layer is not where distinctiveness comes from.
  */
 async function measureInteractionAffordance(page: Page): Promise<{ responding: number; total: number }> {
-  const selectors = await page.evaluate(() => Array.from(document.querySelectorAll<HTMLElement>("main a[href],main button,main [role=button],main summary,main input,main select,main [tabindex]:not([tabindex='-1'])"))
+  const selectors = await page.evaluate(() => Array.from((document.querySelector("main") ?? document.body).querySelectorAll<HTMLElement>("a[href],button,[role=button],summary,input,select,[tabindex]:not([tabindex='-1'])"))
     .filter((element) => {
       const rect = element.getBoundingClientRect();
       const style = getComputedStyle(element);
@@ -365,7 +365,7 @@ async function measureMotion(page: Page, documentHeight: number, viewportHeight:
   // Per element, so lateness can be judged for the elements the reader could
   // actually see: `onScreen` says whether this element was in the viewport at
   // this stop, `state` is its viewport-independent appearance.
-  const signature = (selector: string): Promise<{ onScreen: boolean; state: string }[]> => page.locator(selector).evaluate((root) => {
+  const signature = (selector: string): Promise<{ onScreen: boolean; state: string; revealState: string }[]> => page.locator(selector).evaluate((root) => {
     const rootRect = root.getBoundingClientRect();
     return Array.from(root.querySelectorAll<HTMLElement>("*")).slice(0, 40).map((element) => {
       const rect = element.getBoundingClientRect();
@@ -376,6 +376,9 @@ async function measureMotion(page: Page, documentHeight: number, viewportHeight:
         // at the very bottom of the viewport has not had its turn yet.
         onScreen: rect.width > 2 && rect.height > 2 && onScreenHeight / rect.height >= .6,
         state: JSON.stringify([Math.round(rect.x - rootRect.x), Math.round(rect.y - rootRect.y), Math.round(rect.width), Math.round(rect.height), style.transform, style.opacity, style.filter, style.clipPath, style.backgroundImage, style.color, style.backgroundColor]),
+        // Sticky positioning changes root-relative geometry while its contents
+        // remain fully readable. Geometry alone cannot establish a late reveal.
+        revealState: JSON.stringify([style.transform, style.opacity, style.filter, style.clipPath, style.visibility, style.display]),
       };
     });
   });
@@ -385,7 +388,7 @@ async function measureMotion(page: Page, documentHeight: number, viewportHeight:
     const selector = `[data-dreative-motion-id=${JSON.stringify(region.id)}]`;
     const top = await page.locator(selector).evaluate((element) => element.getBoundingClientRect().top + scrollY);
     // entering (region top near the viewport bottom), centred, then leaving.
-    const stops: { y: number; elements: { onScreen: boolean; state: string }[] }[] = [];
+    const stops: { y: number; elements: { onScreen: boolean; state: string; revealState: string }[] }[] = [];
     for (const offset of [viewportHeight * .9, viewportHeight * .3, -viewportHeight * .35]) {
       const y = Math.max(0, Math.min(documentHeight - viewportHeight, top - offset));
       await page.evaluate((scrollY) => scrollTo(0, scrollY), y);
@@ -407,8 +410,8 @@ async function measureMotion(page: Page, documentHeight: number, viewportHeight:
     // as a late one. An element that resolves as it enters is correct and is
     // never counted, which is why `onScreen` is required at the centred stop.
     if (distinctStops && sameLength && centred.elements.some((element, index) =>
-      element.onScreen && !entering.elements[index].onScreen
-      && element.state === entering.elements[index].state && element.state !== leaving.elements[index].state))
+      element.onScreen && !entering.elements[index].onScreen && !leaving.elements[index].onScreen
+      && element.revealState === entering.elements[index].revealState && element.revealState !== leaving.elements[index].revealState))
       lateReveals.push(region.name);
   }
   return { moving, total: regions.length, lateReveals };
@@ -591,7 +594,7 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
     const links = Array.from(document.querySelectorAll<HTMLAnchorElement>("a[href]"))
       .map((link) => link.href).filter((href) => href.startsWith(location.origin) && !new URL(href).hash && new URL(href).pathname !== location.pathname)
       .filter((href, index, all) => all.indexOf(href) === index);
-    const tinyMeaningfulText = Array.from(document.querySelectorAll<HTMLElement>("button,a,label,input,textarea,select,[role=button],[role=tab],main p,main li,main dt,main dd"))
+    const tinyMeaningfulText = Array.from(document.querySelectorAll<HTMLElement>("button,a,label,input,textarea,select,[role=button],[role=tab],p,li,dt,dd"))
       .filter((element) => {
         const rect = element.getBoundingClientRect();
         const style = getComputedStyle(element);
@@ -614,26 +617,45 @@ async function inspectContext(browser: Browser, url: string, config: typeof cont
   for (let index = 0; index < sampleCount; index += 1) {
     const y = Math.round((audit.documentHeight - audit.viewportHeight) * index / Math.max(1, sampleCount - 1));
     await page.evaluate((scrollY) => scrollTo(0, scrollY), y); await twoFrames(page);
-    const visible = await page.evaluate(() => Array.from(document.querySelectorAll<HTMLElement>("main h1,main h2,main h3,main p,main img,main svg,main canvas,main video,main button,main a")).filter((element) => { const rect = element.getBoundingClientRect(); const style = getComputedStyle(element); return rect.bottom > 0 && rect.top < innerHeight && rect.width > 8 && rect.height > 8 && style.visibility !== "hidden" && Number(style.opacity) > .02; }).length);
+    const visible = await page.evaluate(() => Array.from((document.querySelector("main") ?? document.body).querySelectorAll<HTMLElement>("h1,h2,h3,p,img,svg,canvas,video,button,a")).filter((element) => { const rect = element.getBoundingClientRect(); const style = getComputedStyle(element); return rect.bottom > 0 && rect.top < innerHeight && rect.width > 8 && rect.height > 8 && style.visibility !== "hidden" && Number(style.opacity) > .02; }).length);
     if (visible === 0) sparse.push(y);
     const collisions = await page.evaluate(() => {
-      const elements = Array.from(document.querySelectorAll<HTMLElement>("main h1,main h2,main h3,main h4,main p,main li,main label,main button,main a"))
+      const elements = Array.from((document.querySelector("main") ?? document.body).querySelectorAll<HTMLElement>("h1,h2,h3,h4,p,li,label,button,a"))
         .filter((element) => {
           const rect = element.getBoundingClientRect();
           const style = getComputedStyle(element);
           return Boolean(element.innerText.trim()) && rect.bottom > 0 && rect.top < innerHeight && rect.width > 8 && rect.height > 8 && style.visibility !== "hidden" && Number(style.opacity) > .1;
         }).slice(0, 100);
       const name = (element: HTMLElement): string => `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : element.classList.length ? `.${element.classList[0]}` : ""}`;
+      // Cards/buttons may overlap intentionally while their labels remain
+      // separate. A text-collision check must compare glyph-run rectangles,
+      // not the full surfaces containing those labels.
+      const textRects = elements.map((element) => {
+        const rects: DOMRect[] = [];
+        const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+        let node: Node | null;
+        while ((node = walker.nextNode())) {
+          if (!node.textContent?.trim()) continue;
+          const parentStyle = getComputedStyle(node.parentElement!);
+          if (parentStyle.visibility === "hidden" || Number(parentStyle.opacity) <= .1) continue;
+          const range = document.createRange();
+          range.selectNodeContents(node);
+          rects.push(...Array.from(range.getClientRects()).filter((rect) => rect.width > 0 && rect.height > 0));
+        }
+        return rects;
+      });
       const found: string[] = [];
       for (let left = 0; left < elements.length; left += 1) for (let right = left + 1; right < elements.length; right += 1) {
         const a = elements[left], b = elements[right];
         if (a.contains(b) || b.contains(a)) continue;
-        const ar = a.getBoundingClientRect(), br = b.getBoundingClientRect();
-        const width = Math.max(0, Math.min(ar.right, br.right) - Math.max(ar.left, br.left));
-        const height = Math.max(0, Math.min(ar.bottom, br.bottom) - Math.max(ar.top, br.top));
-        const overlap = width * height;
-        const smaller = Math.min(ar.width * ar.height, br.width * br.height);
-        if (overlap >= 64 && overlap / smaller >= .18) found.push(`${name(a)} overlaps ${name(b)}`);
+        const collides = textRects[left].some((ar) => textRects[right].some((br) => {
+          const width = Math.max(0, Math.min(ar.right, br.right) - Math.max(ar.left, br.left));
+          const height = Math.max(0, Math.min(ar.bottom, br.bottom) - Math.max(ar.top, br.top));
+          const overlap = width * height;
+          const smaller = Math.min(ar.width * ar.height, br.width * br.height);
+          return overlap >= 64 && overlap / smaller >= .18;
+        }));
+        if (collides) found.push(`${name(a)} overlaps ${name(b)}`);
       }
       return found.slice(0, 5);
     });

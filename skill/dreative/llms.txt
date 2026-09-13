@@ -1,5 +1,9 @@
 # Dreative executable native foundations
 
+For open visual design or implementation from a mockup,
+`references/VISUAL_DESIGN.md` covers image-led composition, separate asset
+production, responsive translation and comparison to the selected design.
+
 Search the small machine-readable system set after selecting an advanced need:
 
     dreative catalogue --query "persistent product" --json
@@ -20,7 +24,7 @@ footage, models — and its production pipeline is in
 after a project-native concept has been chosen. It must never supply the concept
 or a named site's house style.
 
-After a motion slice works, `references/CHOREOGRAPHY.md` helps compose its
+Before selecting a motion slice, `references/CHOREOGRAPHY.md` helps compose its
 development, task interactions, handoffs, and ending. For local production
 review, `dreative media-inspect --input <path> --out <new-directory>` creates
 bounded FFmpeg contact sheets and labeled metadata; it does not judge quality.

@@ -7,6 +7,10 @@ isolated browser profile. Never require access to a user's authenticated
 personal browser when a clean profile can test the product.
 
 For a motion-led slice, start this loop before the rest of the route exists.
+When implementing a selected design image, use the comparison procedure in
+`VISUAL_DESIGN.md` from the first representative slice. Keep the reference in
+view, match viewport/state, and correct lost composition before surface polish.
+
 `dreative motion-capture --url <preview-url> --out <directory>` records normal
 desktop wheel/keyboard input, emulated mobile touch, and separate reduced-motion
 playback. It writes videos, sectional screenshots, and observed input/scroll data.

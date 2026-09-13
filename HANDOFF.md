@@ -1,49 +1,104 @@
-# Handoff
+# Laptop handoff — 13 September 2026
 
-## Current architecture
+## Current direction
 
-Dreative 1.4 is a frontend design-builder skill. It separates observable
-product quality from unverifiable local ceremony.
+Dreative is a general design skill: **visual directions → user selection → faithful
+implementation → browser refinement**. For an open brief, generate multiple actual
+page images with concrete plans, then wait for the user's choice. Motion, scroll
+animation, generated/sourced media and spatial mechanisms serve the selected design.
+Do not turn delivery profiles into visual options or introduce another automatic gate
+for technical implementation experiments.
 
-The default CLI command is `brief`; it prints Recommended, Efficient, and
-Showcase. `brief --configure <direction>` prints compact review, reference,
-source, package, and prototype choices. Existing user choices and delegated
-decisions take precedence; the Experience Map is not a planning gate.
-`brief --detailed <direction>` prints
-the adaptive Creative Decision Brief structure. Dreative is a skill and CLI;
-the legacy visual editor and its server have been removed.
+Read `skill/dreative/PLAN.md` and `skill/dreative/references/VISUAL_DESIGN.md`.
+The older audit in `AUDIT_2026-09-12.md` explains the recurring failures; its runtime
+findings are not established causes of the historical custom-code sites.
 
-The agent extracts product DNA, synthesizes original directions from product
-truth and decomposed cross-domain references, resolves a compact configuration,
-selects specialist resources after the concept, builds in the real application,
-and runs a screenshot–critique–repair loop over the entire desktop and mobile
-route. The complete private
-implementation blueprint is mandatory; only revealing the detailed brief is
-opt-in.
+## Pull and prepare both repositories
 
-The former broad mechanism catalogue is replaced by twelve executable golden
-systems in `skill/dreative/systems/`. `.dreative/context.json` is optional
-durable working memory and must never be interpreted as approval, visual proof,
-or completion certification.
+Keep these repositories beside each other. Run each block from its named repository.
+Preserve any local laptop changes before switching branches; these commands do not
+discard changes or force an update.
 
-`dreative finalize` runs deterministic project scripts and documentation
-checks. It does not require plan hashes, approval provenance, critic
-attestation, or model-authored evidence records.
+From Dreative:
 
-The retired v9 compatibility surface and its removal rationale are documented
-in `LEGACY_SYSTEM_REMOVAL.md`. Do not reintroduce those systems without evidence
-that an objective, independently trustworthy requirement cannot be met by the
-active workflow.
+```sh
+git fetch origin
+git switch fix-motion-floor-sampling
+git pull --ff-only origin fix-motion-floor-sampling
+npm ci
+npm run build
+npm run test:browser:install
+node dist/cli/index.js install-skill --codex
+node dist/cli/index.js install-skill --claude
+```
 
-## Release checks
+From dreative-testbed:
 
-1. `npm install`
-2. `npm run build`
-3. `npm test` (build, unit, and browser suites; `test:all` is an alias)
-4. `node dist/cli/index.js docs-check`
-5. `node dist/cli/index.js`
-6. `node dist/cli/index.js docs-check`
-7. `node dist/cli/index.js install-skill --skills all --codex`
-8. `node dist/cli/index.js finalize --codex --profile <direction> --visual-smoke-url <preview-url>` (plus tracked `--mechanism-contract .dreative/showcase-mechanism.json --experience-map .dreative/experience-map.json` files for Showcase)
+```sh
+git fetch origin
+git switch measure-visual-smoke-per-run
+git pull --ff-only origin measure-visual-smoke-per-run
+node scripts/setup.mjs --skill-from ../Dreative
+node ../Dreative/dist/cli/index.js install-skill --codex --check
+node ../Dreative/dist/cli/index.js install-skill --claude --check
+node scripts/review.mjs
+```
 
-The final command must print `DREATIVE_CHECKS_PASSED`.
+Open `http://127.0.0.1:4321/status`. The launcher defaults to the installed working
+skill. A `git:<sha>` comparison uses that committed tree instead; do not accidentally
+select the old `2912db8` revision. `main` is not the active branch in either repo.
+
+## What is implemented
+
+- General design workflow and generated image-to-UI translation guidance.
+- Native pin progress, viewport-triggered kinetic type, live reduced-motion and
+  cleanup fixes, gallery stacking, and numeric motion tracks.
+- Smoke sampling fixes for sticky motion, mainless pages and overlapping surfaces.
+- Testbed `visual-directions-v1`: actual local image/plan display, explicit selection,
+  feedback handoff, stale-design rejection, pause and timeout without approval.
+- Historical runs keep the coded-prototype recovery path. New design-only runs are
+  not treated as completed websites. Captures record source correspondence.
+- Archive retains images/plans and selection feedback. User verdicts and September
+  7, 8, 9 and 11 run archives are included. Scratch reconstructions are retained in
+  testbed `scratch/audit-2026-09-12`; they are review copies, not completed new runs.
+
+## Remaining dependency and next work
+
+The image-generation tool in a desktop chat is not automatically available inside
+Claude/Codex CLI sessions. The testbed accepts authorized stdio MCP servers from its
+local `.mcp.json` or `DREATIVE_MCP_CONFIG`, shared by both provider arms. Configure
+that locally on the laptop; credentials/configs are deliberately not committed.
+No live image provider has been connected or end-to-end generation run validated
+by this change. Missing generation must pause with `design-blocker.md`, not fake
+images or a substituted coded hero. Setup success alone does not prove this capability.
+
+Next: verify generation in the chosen provider session, run one complete image-first
+design trial, choose a direction at the gate, then judge fidelity in the real browser.
+Keep model/tools/budget/protocol constant for comparisons. Include incomplete runs
+in completion/cost results. Do not mark the creative intervention validated from tests.
+
+## Validation already completed
+
+Build, documentation/skill validation, native browser tests and smoke/capture tests
+passed. Finalization against the design-gate UI fixture printed
+`DREATIVE_CHECKS_PASSED` at desktop 1440px, mobile 390px, narrow 320px and reduced
+motion. All 13 testbed regression tests passed, including selection through the
+browser/API into the continuation prompt and timeout/pause behavior.
+
+The gate screenshots in `audit/2026-09-12/gate-*.png` use clearly labeled UI test
+artwork. They verify the review interface, not generated-design quality. Other
+captures in that folder document replay of the historical source. Neither is a
+fresh independent provider build or a human acceptance verdict.
+
+To rerun deterministic tests when implementation changes:
+
+```sh
+# Dreative
+npm test
+# dreative-testbed
+node --test scripts/tests/*.test.mjs scripts/lib/source-evidence.test.mjs
+```
+
+Browser processes, node_modules, installed skill copies, temporary test roots and
+local generation credentials do not transfer through Git. Recreate them using the
+setup above; do not copy an old installed skill over the current source.

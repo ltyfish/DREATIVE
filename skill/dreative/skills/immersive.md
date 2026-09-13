@@ -50,4 +50,7 @@ repeated badge or a shared canvas rather than by anything actually continuous.
 And the safe failure: sections so cautiously connected that the reader never
 notices they were meant to be one place.
 
-Read only the selected continuity system in `../systems/NATIVE_FOUNDATIONS.md`.
+Use `../references/CHOREOGRAPHY.md` for the relationships and
+`../references/CREATIVE_EXECUTION.md` for their runtime. If a native foundation
+fully implements the chosen mechanism, read that export in
+`../systems/NATIVE_FOUNDATIONS.md`; it is not the boundary of immersive work.

@@ -19,6 +19,7 @@ export function mountSectionObserver(elements, options = {}) {
 }
 
 export function mountScrollProgress(subject, onFrame, options = {}) {
+  const motionQuery = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)");
   let raf = 0;
   let lastY = globalThis.scrollY ?? 0;
   let lastTime = performance.now();
@@ -27,8 +28,12 @@ export function mountScrollProgress(subject, onFrame, options = {}) {
     raf = 0;
     if (!active) return;
     const rect = subject.getBoundingClientRect();
-    const travel = Math.max(1, rect.height + innerHeight);
-    const progress = clamp((innerHeight - rect.top) / travel);
+    // Passage includes entry/exit. A full-viewport pin starts at top/top and
+    // finishes at bottom/bottom; using passage here skips its authored ends.
+    const pin = options.range === "pin";
+    const travel = pin ? rect.height - innerHeight : rect.height + innerHeight;
+    const distance = pin ? -rect.top : innerHeight - rect.top;
+    const progress = travel > 0 ? clamp(distance / travel) : Number(distance >= 0);
     const y = globalThis.scrollY ?? 0;
     const elapsed = Math.max(16, time - lastTime);
     const rawVelocity = (y - lastY) / elapsed;
@@ -37,15 +42,50 @@ export function mountScrollProgress(subject, onFrame, options = {}) {
     lastY = y;
     lastTime = time;
   };
-  const request = () => { if (!raf) raf = requestAnimationFrame(update); };
+  const request = () => { if (active && !raf) raf = requestAnimationFrame(update); };
   addEventListener("scroll", request, { passive: true });
   addEventListener("resize", request);
+  motionQuery?.addEventListener("change", request);
+  const observer = globalThis.ResizeObserver ? new ResizeObserver(request) : null;
+  observer?.observe(subject);
+  // Font swaps can move an unchanged-height subject without resizing it.
+  document.fonts?.ready.then(() => { if (active) request(); });
   request();
-  return () => {
+  const destroy = () => {
     active = false;
     removeEventListener("scroll", request);
     removeEventListener("resize", request);
+    motionQuery?.removeEventListener("change", request);
+    observer?.disconnect();
     if (raf) cancelAnimationFrame(raf);
+  };
+  // Call after upstream images/layout changes move the subject. No polling loop.
+  destroy.refresh = request;
+  return destroy;
+}
+
+/** Sample an authored scalar track. Repeated values create holds; no clock or DOM.
+ * Stops are { at: 0..1, value: number, ease?: (t) => number }.
+ * The destination stop owns its incoming easing. Compile once, sample each frame.
+ */
+export function motionTrack(stops) {
+  if (!Array.isArray(stops) || stops.length < 2 || stops.some((stop, i) =>
+    !Number.isFinite(stop.at) || !Number.isFinite(stop.value) || stop.at < 0 || stop.at > 1 ||
+    (i > 0 && stop.at <= stops[i - 1].at) || (stop.ease !== undefined && typeof stop.ease !== "function"))) {
+    throw new RangeError("A motion track needs ordered, finite stops in 0..1");
+  }
+  const frames = stops.map((stop) => ({ ...stop }));
+  return (progress) => {
+    if (!Number.isFinite(progress)) throw new RangeError("Motion progress must be finite");
+    if (progress <= frames[0].at) return frames[0].value;
+    for (let i = 1; i < frames.length; i++) {
+      const end = frames[i], start = frames[i - 1];
+      if (progress <= end.at) {
+        const t = (progress - start.at) / (end.at - start.at);
+        return start.value + (end.value - start.value) * (end.ease ? end.ease(t) : t);
+      }
+    }
+    return frames[frames.length - 1].value;
   };
 }
 
@@ -63,12 +103,12 @@ export function mountPinnedChapter(root, options = {}) {
       else state.setAttribute("aria-hidden", originals[index].aria);
     });
   };
-  if (reduced()) {
-    root.dataset.activeState = "all";
-    states.forEach((state) => { state.hidden = false; });
-    return restore;
-  }
   const destroyProgress = mountScrollProgress(root, ({ progress }) => {
+    if (reduced()) {
+      root.dataset.activeState = "all";
+      states.forEach((state) => { state.hidden = false; state.removeAttribute("aria-hidden"); });
+      return;
+    }
     const index = Math.min(states.length - 1, Math.floor(progress * states.length));
     root.dataset.activeState = String(index);
     states.forEach((state, current) => {
@@ -76,7 +116,7 @@ export function mountPinnedChapter(root, options = {}) {
       state.setAttribute("aria-hidden", String(current !== index));
     });
     options.onState?.(index, progress);
-  });
+  }, { range: "pin", ...options });
   return () => { destroyProgress(); restore(); };
 }
 
@@ -287,10 +327,32 @@ export function mountKineticType(element, options = {}) {
     return index < words.length - 1 ? [span, document.createTextNode(" ")] : [span];
   }));
   let raf = 0;
-  if (reduced()) element.dataset.state = "resolved";
-  else raf = requestAnimationFrame(() => { element.dataset.state = options.initialState ?? "active"; });
+  let entered = false;
+  let observer;
+  const query = globalThis.matchMedia?.("(prefers-reduced-motion: reduce)");
+  const activate = () => {
+    entered = true;
+    element.dataset.state = reduced() ? "resolved" : options.initialState ?? "active";
+    observer?.disconnect();
+  };
+  const sync = () => {
+    if (reduced() || entered) activate();
+  };
+  element.dataset.state = "pending";
+  if (reduced() || options.trigger === "mount" || !globalThis.IntersectionObserver) {
+    if (reduced()) activate();
+    else raf = requestAnimationFrame(activate);
+  } else {
+    observer = new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) activate();
+    }, { threshold: 0, rootMargin: options.rootMargin ?? "0px" });
+    observer.observe(element);
+  }
+  query?.addEventListener("change", sync);
   return () => {
     if (raf) cancelAnimationFrame(raf);
+    observer?.disconnect();
+    query?.removeEventListener("change", sync);
     element.replaceChildren(...originalNodes);
     if (originalAria === null) element.removeAttribute("aria-label");
     else element.setAttribute("aria-label", originalAria);
@@ -394,6 +456,7 @@ export function mountSpatialGallery(root, options = {}) {
       const offset = index - selected;
       item.tabIndex = index === selected ? 0 : -1;
       item.dataset.selected = String(index === selected);
+      item.style.zIndex = String(items.length - Math.abs(offset));
       item.style.setProperty("--spatial-x", `${offset * (shallow ? 78 : 58)}%`);
       item.style.setProperty("--spatial-z", `${shallow ? 0 : -Math.abs(offset) * 120}px`);
       item.style.setProperty("--spatial-r", `${shallow ? 0 : offset * -7}deg`);

@@ -105,6 +105,66 @@ tests establish crop mechanics, not complete-route quality. Added cost is two
 conditional references and one small geometry helper, with no new dependency,
 mechanism quota, taste threshold, or approval step.
 
+Later evidence (2026-09-12): Both `202609090405` (Codex) and `202609111514`
+(Claude) used git:2912db8 and were truncated by provider limits. Both recur to
+an isolated opening and ordinary lower-page composition; Claude again substitutes
+cloth plates for garments. Archived source AND built site contain later unfinished
+work, while preserved shots/recordings are phase-one captures. These are different
+revisions, not contradictory views of the same build. Fresh desktop/mobile/reduced
+replays of the archived source support the qualitative failure, but cannot turn
+unfinished runs into complete deliveries. Phase-two reads.json cannot establish
+the absence of earlier skill reads. Recorded browser-only tool discovery does
+not establish generator unavailability.
+
+Revision: Reconcile the testbed's prototype prompt with whole-route planning and
+a real receiving interaction; it previously forbade other sections and froze an
+already-treated hero. Add capture/source fingerprints and visible correspondence
+notices. Require capability-specific discovery and one usable subject view before
+bulk material production; study an actual relevant passage before selecting an
+ambitious mechanism. Remove fixed option counts and post-hero peak quotas.
+Repair native pin progress, viewport-triggered kinetic type, live reduced motion,
+cleanup and gallery stacking; add a numeric track sampler for overlapping events
+and holds. Repair smoke checks that mistook sticky geometry for late entry,
+ignored controls outside main, or treated overlapping surfaces as colliding text.
+Historical sites used custom motion code: these runtime defects are independent
+findings, not established causes of those outputs. See AUDIT_2026-09-12.md.
+
+Validation: 78 unit, 11 foundation-browser and 32 smoke/capture tests pass;
+finalize prints DREATIVE_CHECKS_PASSED on the current foundations fixture. This
+establishes mechanics only. No fresh provider build has validated creative output.
+The changed phase protocol is another experimental variable and must be recorded
+or held constant when testing old/new skill revisions. Keep this lesson proposed.
+
+Later user evidence (2026-09-12): The user reports that generating images and
+page mockups, then manually designing, improves structure, creativity and
+uniqueness, while implementation from those images often loses the design.
+This is user-reported experience, not a controlled Dreative result. Added a
+conditional image-led design route with actual page compositions, separate asset
+production, spatial translation and matched-viewport rendered comparison. It
+reuses the existing implementation note and refinement loop; no new score,
+approval gate or mandatory image count. Added cost is one conditional reference,
+generation/editing when used, and visual comparison. Recheck whether a fresh
+build preserves the chosen composition across the whole route and mobile,
+whether the user prefers it, and whether production cost remains acceptable.
+Keep proposed until that independent review; documentation checks prove routing
+and packaging only.
+
+User-selected direction (2026-09-12): Make Dreative a general design skill with
+multiple generated visual directions and plans, an explicit user selection, then
+faithful implementation and browser refinement. Reframed SKILL/PLAN/CLI around
+that flow; motion remains conditional. Delivery profiles no longer stand in for
+visual directions. Replaced the testbed's coded-slice phase with a versioned
+image/plan transport and selection UI. Selection passes exact paths and user
+feedback to continuation; missing or changed artifacts cannot auto-continue,
+timeout pauses without approval, and historical sessions keep their old protocol.
+Added optional shared stdio tool configuration because desktop generation is not
+automatically available in CLI provider sessions. Archive keeps the options and
+selection. This is the user's chosen workflow, not evidence of creative benefit.
+Cost: visual production before coding and a small harness transport/UI. Recheck
+with a fresh complete run and independent browser/reference fidelity verdict;
+mock UI tests establish selection mechanics only. The protocol change must be
+held constant or recorded in old/new comparisons.
+
 Cost or trade-off: Core reading is smaller; playback adds browser time/storage.
 Several variables changed, so compare the revision as a bundle before attributing
 benefit to any one change. The legacy Showcase contract remains for compatibility.

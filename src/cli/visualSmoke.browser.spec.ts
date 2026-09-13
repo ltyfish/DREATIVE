@@ -70,6 +70,25 @@ test("a route where nothing moves records the count and blocks nothing", async (
 test("a route with no <main> is still sampled rather than silently exempted", async () => {
   const result = await runVisualSmoke(`${base}/mainless`, { profile: "recommended" });
   expect(result.checks.join("\n")).not.toContain("motion: 0 of 0 regions");
+  expect(result.blockers.join("\n")).not.toContain("near-empty");
+});
+
+test("a readable sticky hold is not a late entrance", async () => {
+  const result = await runVisualSmoke(`${base}/readable-pin`, { profile: "recommended" });
+  expect(result.blockers.join("\n")).not.toContain("reveals fire after");
+});
+
+test("overlapping surfaces with separate labels are not text collisions", async () => {
+  const result = await runVisualSmoke(`${base}/overlapping-surfaces`, { profile: "recommended" });
+  expect(result.blockers.join("\n")).not.toContain("text collision");
+  const broken = await runVisualSmoke(`${base}/collision`, { profile: "recommended" });
+  expect(broken.blockers.join("\n")).toContain("text collision");
+});
+
+test("controls outside main still receive interaction checks", async () => {
+  const result = await runVisualSmoke(`${base}/mainless-controls`, { profile: "recommended" });
+  expect(result.checks.join("\n")).toContain("0 of 4 interactive elements");
+  expect(result.blockers.join("\n")).toContain("no interaction baseline");
 });
 
 test("a route that cannot be sampled says so in the checks instead of blocking", async () => {

@@ -7,6 +7,11 @@ license/access, asset availability, and behavior in the target environment.
 
 ## Find an experience or interaction
 
+- [Awwwards](https://www.awwwards.com/websites/) and
+  [CSS Design Awards](https://www.cssdesignawards.com/): discover a relevant
+  production, follow its original-site link, and operate the passage. If the
+  directory is inaccessible, open the creator's site or production account.
+  Record what you actually observed separately from a gallery description.
 - [Recent Design](https://recent.design), [Godly](https://godly.website),
   [Refero](https://refero.design), and [Appshots](https://appshots.design): scout
   composition or real product flows, then inspect the original experience.
@@ -49,6 +54,10 @@ for carrying the actual image into a working destination.
 Borrow the smallest useful implementation. Adapt scale, type, material, pace,
 input, and handoff so the primitive belongs to this project. A functioning demo
 does not prove mobile usability, interruptibility, performance, or originality.
+For a selected technique, keep its canonical source and license beside the
+adapted code. Reuse the working geometry/timeline, then replace the demo's
+material and compositions together. Merely listing a library or tutorial as a
+reference leaves the implementation work unresolved.
 [Skiper's current guide](https://skiper-ui.com/docs/quick-start) requires attribution
 for free use and distinguishes Pro. Check the chosen component's actual terms;
 "free component" is not synonymous with attribution-free source.
