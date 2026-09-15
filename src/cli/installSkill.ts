@@ -110,6 +110,11 @@ export function checkSkillInstallation(options: { sourceDir: string; projectDir:
   const available = availableSkills(options.sourceDir);
   for (const skill of manifest.selectedSkills ?? []) if (!available.includes(skill)) errors.push(`manifest selects unavailable specialist ${skill}`);
   const expected = new Set(Object.keys(manifest.files ?? {}));
+  // A valid old manifest cannot tell us which resources were added since install.
+  // Compare the current package set too, including additions at the same version.
+  const packaged = walk(options.sourceDir).filter((relative) =>
+    relative !== INSTALL_MANIFEST && activeSkillFile(relative, new Set(manifest.selectedSkills ?? [])));
+  for (const relative of packaged) if (!expected.has(relative)) errors.push(`new packaged file is not installed: ${relative}`);
   const actual = new Set(fs.existsSync(destination) ? walk(destination).filter((file) => file !== INSTALL_MANIFEST) : []);
   for (const relative of expected) {
     const installed = path.join(destination, relative);

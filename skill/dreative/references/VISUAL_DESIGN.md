@@ -14,6 +14,29 @@ discover capability through `MEDIA_SOURCES.md`. Respect cost and source limits.
 If generation is unavailable, use supplied images or a material-backed visual
 composition in a capable design tool/browser, and name the substitution.
 
+## Before generating: decide what the image must resolve
+
+Develop the concepts before writing image prompts. Use the real brief to identify
+the visitor's task, required content and density, subject identity, and constraints.
+For each idea decide the central relationship, opening, working middle, ending,
+and material that can actually be produced. Reject alternatives whose only
+difference is a palette or treatment. A brief public summary of the exploration
+is enough; do not ask the user to approve an internal planning document.
+
+For motion-led ideas, plan the event now, before a still locks the composition:
+input, entry composition, transformation, readable hold, destination and release.
+Identify what persists and who owns its movement. Plan touch and reduced-motion
+forms alongside it. Ask the generator for corresponding composition studies;
+independent generated frames establish endpoints, not interpolatable animation.
+
+Choose the generation unit deliberately: a route overview for structure, a dense
+section for content fit, related states for a handoff, or a separate asset for
+production. Keep one task and content set across alternatives so differences
+reflect the ideas. Separate immutable identity/facts from invented visual material.
+Name the uncertainty each call resolves and reserve effort for asset production,
+the live prototype and browser correction. Do not spend that budget polishing
+mockup text that will become live text anyway.
+
 ## Explore the actual page
 
 Start with the real task, content density, brand constraints and usable subject
@@ -112,3 +135,85 @@ things to verify.
 Report what was preserved, material deviations and observed remaining issues.
 Deterministic checks cannot certify fidelity or design quality; no automated
 similarity threshold or builder-awarded taste verdict is introduced here.
+
+## Worked studies: generation intent to a moving interface
+
+These are authored teaching examples, not reports of generated images or accepted
+client work. `systems/production-lab.html` contains runnable slices for the three
+relationships below, using live typography and original graphic artwork. In the
+Dreative repository run `node scripts/serve-foundations-demo.mjs` and open
+`http://127.0.0.1:4177/production-lab.html`. In another project serve the copied
+systems directory over HTTP. Adapt the relationship to the brief; do not insert
+all three into a page. The lab proves bounded mechanics, not a complete production.
+
+### Type becomes a programme — fictional print exhibition
+
+**Plan:** the visitor discovers printmaking sessions and chooses one. Type is the
+subject, so a large PRINT / IN MOTION composition opens to reveal the live programme.
+The same paper field carries the opening into three readable session rows and a
+closing visit action. Motion separates the title groups, opens the programme
+aperture, then holds; touch can scroll or use the visible progress control.
+Reduced motion shows the programme immediately without a pin.
+
+**Generate:** “Design a fictional print exhibition page at 1440px, front-on. Keep
+the exact title PRINT IN MOTION and sessions Type in public / Ink and pressure /
+After the impression. Explore monumental typography becoming the frame around a
+compact programme, followed by a practical visit section. Show opening, resolved
+programme and ending as related sectional views. Use live-text-compatible flat
+letterforms and a warm paper field with red ink accents; invent spatial
+relationships, not extra programme items. No device framing.”
+
+**Implement/inspect:** use two visual title groups around semantic text, a single
+scroll signal and separately timed title/aperture tracks. Keep a readable result
+before release into the next composition. Test reversal, fast input, content
+growth, narrow line breaks and reduced motion. A title sliding past an unrelated
+programme is a failed relationship even if both animate correctly.
+
+### An edition moves into its reading room — fictional graphic archive
+
+**Plan:** choose a graphic edition, read its description, return to the same
+collection position. Compare an index of oversized covers with a compact reading
+surface; carry the chosen cover into that surface. Keep controls available while
+motion runs. The lab uses authored typographic covers, not generated inventory.
+
+**Generate:** “Explore a graphic archive page with three fictional editions:
+Signal / Field / Interval. Show the collection and the open Signal reading state
+as related front-on compositions. Preserve edition identity and cover artwork
+between states. Give the selected cover a distinct origin and destination beside
+live description and Back to editions control. Include a mobile reading state.
+Compare a generous visual index with a compact editorial reading room; avoid
+inventing account or checkout features.”
+
+**Implement/inspect:** move the actual cover between measured layout parents and
+animate the layout delta. Keep a stable accessible name, history/state ownership,
+Escape and return focus. Resize or an interrupt must resolve to the current
+layout, not an obsolete coordinate. If generation changes the cover between
+states, edit for identity or reuse the original artwork; a crossfade hides the
+problem rather than preserving the chosen item.
+
+### A process can be inspected — two-color print registration
+
+**Plan:** explain how two inks overlap; users select the individual plates or the
+registered result. Graphic plates are appropriate because this is a diagram,
+not a simulation of a printing press. A resolved overlap supplies information
+that two generic photographs would not. The lab uses SVG plate geometry with
+explicit controls and readable explanations in ordinary flow.
+
+**Generate:** “Design an educational page explaining a two-color print. Use three
+related states: red plate, blue plate, registered overlap. Preserve the same
+geometry across all states and keep explanatory text outside the artwork.
+Show a selectable process diagram at real reading size plus its introductory
+and concluding content. Explore a technical workbook arrangement and a public
+exhibition arrangement with the same information. Treat the image as composition
+guidance; the final diagram will be live vector artwork.”
+
+**Implement/inspect:** keep the geometry in SVG and animate plate offsets from the
+current state; explicit selection drives it. The text and active control update
+together. Test rapid selections, keyboard, touch and preference changes. Generated
+diagrams may contain incorrect overlap or labels: verify the explanatory model,
+then author the actual diagram rather than shipping its mistakes as facts.
+
+For a new subject, a contrasting fourth study might use actual footage or a model;
+first prove the required material can show the event. More examples are useful
+when they introduce a different relationship or solve an observed uncertainty.
+Repainting an existing example adds volume without expanding execution ability.

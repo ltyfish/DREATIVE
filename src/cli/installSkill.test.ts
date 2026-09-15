@@ -108,3 +108,19 @@ test("Claude target does not create an AGENTS pointer", () => {
   installSkill({ sourceDir, projectDir: root, packageVersion: version, target: "claude", selected: ["ux"], explicitAll: false });
   assert.equal(fs.existsSync(path.join(root, "AGENTS.md")), false);
 });
+
+test("same-version package additions invalidate an otherwise intact older installation", () => {
+  const root = temporary();
+  const source = path.join(root, "package");
+  fs.mkdirSync(path.join(source, "references"), { recursive: true });
+  fs.mkdirSync(path.join(source, "skills"));
+  fs.writeFileSync(path.join(source, "SKILL.md"), "original");
+  const options = { sourceDir: source, projectDir: root, packageVersion: version, target: "codex" as const };
+  installSkill({ ...options, selected: [], explicitAll: false });
+  fs.writeFileSync(path.join(source, "references", "new-study.md"), "new material");
+  fs.writeFileSync(path.join(source, "skills", "unselected.md"), "optional");
+  fs.writeFileSync(path.join(source, "references", "DOGFOOD_LESSONS.md"), "maintainer only");
+  assert.deepEqual(checkSkillInstallation(options), ["new packaged file is not installed: references/new-study.md"]);
+  installSkill({ ...options, selected: [], explicitAll: false });
+  assert.deepEqual(checkSkillInstallation(options), []);
+});

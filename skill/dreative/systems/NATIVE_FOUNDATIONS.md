@@ -19,6 +19,13 @@ Copy it into the project and adapt it; it is a starting point you own, not a
 package to import from here. `dreative catalogue --query <mechanism>` prints the
 same set with the reject conditions attached.
 
+For composed examples rather than isolated primitives, open `production-lab.html`
+and `production-lab.js` beside this file. They connect typography to a readable
+programme, a selected edition to its reading surface, and a process control to
+its diagram. The worked studies in `../references/VISUAL_DESIGN.md` explain the
+pre-generation plan, prompt and verification question for each. These are original
+graphic teaching slices, not proof of generated-asset fidelity or a finished site.
+
 ## section-observer
 
 - Export: `mountSectionObserver`

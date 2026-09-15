@@ -48,7 +48,7 @@ export function renderDeliveryBrief(recommendation: DeliveryProfileId = "recomme
   return [
     "Design visually → choose → build faithfully → refine in the browser.",
     "",
-    "For an open brief, inspect the project and generate multiple distinct page design images with concrete plans. Show the actual images, recommend one, and stop for the user's selection before implementation.",
+    "For an open brief, inspect the project and plan distinct concepts, real content, asset roles and motion states before generating page design images. Show the actual images with concrete plans, recommend one, and stop for the user's selection before implementation.",
     "Each plan explains composition, content and task, imagery production, mobile adaptation, useful interaction/motion, feasibility and relative cost.",
     "After selection, obtain separate assets, build real responsive UI, and compare the browser render with the chosen design. Prototype technical uncertainty when needed; motion serves the design.",
     "Supplied selections, scoped fixes and explicit delegation take precedence. Missing generation must be disclosed rather than replaced with an imaginary mockup.",
@@ -74,7 +74,7 @@ export function renderDetailedPlanGuide(profileId: DeliveryProfileId): string {
   return [
     `Detailed ${p.label} plan`,
     "1. Inspect product, audience, task, actual content, preserved behavior and available resources.",
-    "2. Generate multiple structurally different visual directions. Pair each actual design image with composition, imagery, mobile, interaction/motion, execution approach and cost/risk notes.",
+    "2. Plan structurally different concepts before generation: content, composition, asset roles, motion states and feasibility. Generate those ideas, pairing each actual image with its mobile and execution plan.",
     "3. Recommend one and stop for selection unless the user already selected or explicitly delegated the choice. Profiles are not visual options.",
     "4. Carry the selected images and user changes into a compact implementation note. Translate spatial decisions into responsive layout, available typography, separate assets and live controls.",
     `5. Source/generate the required material and build a representative composition with its adjacent region. ${p.treatments}`,

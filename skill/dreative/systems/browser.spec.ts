@@ -7,6 +7,44 @@ test.beforeEach(async ({ page }) => {
   await expect(page.locator("section")).toHaveCount(12);
 });
 
+test("production studies preserve reading context through interruption, mobile and reduced motion", async ({ page }) => {
+  await page.goto('/production-lab.html');
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({width, height:900});
+    const signal = page.getByRole('button', {name:'Read Signal'});
+    await signal.click();
+    await expect(page.locator('#cover-destination [data-edition]')).toHaveAttribute('data-edition', 'signal');
+    await expect(page.getByRole('button', {name:'Back to editions'})).toBeFocused();
+    // Replace a choice while the flight may still be running.
+    await page.getByRole('button', {name:'Read Field'}).click();
+    await expect(page.locator('#edition-title')).toHaveText('Field');
+    await page.keyboard.press('Escape');
+    await expect(page.getByRole('button', {name:'Read Field'})).toBeFocused();
+    await expect(page.locator('.shelf [data-edition]')).toHaveCount(3);
+    await expect(page.locator('#reading-content')).toBeHidden();
+    await page.getByRole('button', {name:'Register', exact:true}).click();
+    await page.getByRole('button', {name:'Blue plate', exact:true}).click();
+    await expect(page.getByRole('button', {name:'Blue plate', exact:true})).toHaveAttribute('aria-pressed','true');
+    await expect(page.locator('#process-title')).toHaveText('Then, the blue plate.');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await expect(page.locator('.type-stage')).toHaveCSS('position','static');
+  await expect(page.locator('.programme')).toHaveCSS('clip-path','none');
+  await page.getByRole('button', {name:'Read Interval'}).click();
+  expect(await page.locator('#cover-destination .cover').evaluate(el => el.getAnimations().length)).toBe(0);
+  await expect(page.locator('#edition-title')).toHaveText('Interval');
+});
+
+test("production typography opens, holds and reverses under real scroll", async ({ page }) => {
+  await page.goto('/production-lab.html');
+  const chapter = page.locator('#type-scene');
+  for (const [progress, open] of [[0,0],[.8,1],[1,1],[0,0]]) {
+    await chapter.evaluate((el,p) => scrollTo(0,el.getBoundingClientRect().top+scrollY+(el.clientHeight-innerHeight)*p),progress);
+    await expect.poll(() => chapter.evaluate(el => Number(el.style.getPropertyValue('--open')))).toBeCloseTo(open,2);
+  }
+});
+
 test("pin progress preserves entry and release compositions on desktop and mobile", async ({ page }) => {
   for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
     await page.setViewportSize(viewport);

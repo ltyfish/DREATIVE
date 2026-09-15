@@ -14,7 +14,8 @@ it can lead when the user requests a motion-led experience.
 
 Inspect the repository, user brief, existing behavior, assets, and available tools.
 Respect supplied references, named effects, intensity, budget, and authorization.
-For an open design use `PLAN.md`: generate multiple visual directions with concrete
+For an open design use `PLAN.md`: plan distinct concepts and their material,
+composition and behavior before generating images; generate visual directions with concrete
 plans, show the images and recommend one, then stop for the user's choice before
 implementation. An existing design selection or explicit delegation to choose
 autonomously takes precedence. Do not confuse budget profiles with design options.
@@ -79,6 +80,7 @@ the page's section list. Prototype approval applies to the demonstrated scope.
 |---|---|
 | Open concept and user approaches | `PLAN.md`, then `references/CREATIVE_DIRECTION.md` if needed |
 | Generated page mockups, visual exploration, or translating a design image into UI | `references/VISUAL_DESIGN.md` |
+| Worked generation briefs and runnable motion slices | Worked studies in `references/VISUAL_DESIGN.md`, then `systems/production-lab.html` |
 | Motion-led brief, including named parallax/pixelation/framing/scroll/transition | `skills/motion.md` |
 | Composing a motion-led experience or fixing repetitive sections | `references/CHOREOGRAPHY.md` |
 | Learning how a complete immersive production works | `references/PRODUCTION_STUDIES.md`, then the relevant original |

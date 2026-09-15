@@ -5,7 +5,11 @@ chosen design, preserve that direction and do the relevant work directly.
 
 ## Prototype means visual choices first
 
-Inspect the actual brief, behavior, content, assets and tools. Then use
+Inspect the actual brief, behavior, content, assets and tools. Before generating,
+use the pre-generation study in `references/VISUAL_DESIGN.md`: develop the ideas,
+their actual content and asset needs, and the motion states that affect layout.
+Show a short rationale for the proposed exploration; this adds no approval stop.
+Then use
 `references/VISUAL_DESIGN.md` to generate multiple materially different design
 directions. Two or three is a useful starting range; adapt to the user's request
 and available budget. Each direction needs an actual viewable page image and a
