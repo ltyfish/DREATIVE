@@ -23,6 +23,12 @@ similarly sized rectangles will remain one after each rectangle receives an
 entrance effect. Change crop, density, hierarchy, spatial relationship, or the
 visitor's mode of exploration where the content calls for it.
 
+A focal device is not continuity by itself. If the opening promises a subject,
+carry that subject, state, or visual grammar into the first useful task region
+or a deliberate ending. A beautiful local canvas followed by an unrelated grid
+still leaves the route unresolved; the receiving composition is part of the
+motion design.
+
 Choose color from the material and the emotional direction: background, ink,
 material colors, and a purposeful contrast accent. Test those relationships in
 the opening, a dense task state, and the closing composition. A familiar neutral

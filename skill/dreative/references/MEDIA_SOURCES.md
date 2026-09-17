@@ -104,6 +104,13 @@ merely because the products do not exist. For real inventory, preserve verified
 identity, construction, and variant details. A contextual image is not a product
 photograph, and a disclosure does not make an unrelated hero suitable for a buy view.
 
+For subject-led commerce, treat the usable subject view as required material.
+If no callable generator, authorized source, or supplied asset can provide it,
+either recompose the concept around an explicitly graphic/editorial task or mark
+the product delivery incomplete. Authored flats, cloth textures, and technical
+diagrams may support the story, but they are not interchangeable with a product
+view and must not be expanded into a full inventory set by default.
+
 Use a generation tool when available and appropriate; probe actual capabilities
 before proposing a service. Ask only for missing authorization or required input.
 For product fidelity, use the supplied image as an edit/reference rather than

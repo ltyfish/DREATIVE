@@ -29,6 +29,13 @@ Identify what persists and who owns its movement. Plan touch and reduced-motion
 forms alongside it. Ask the generator for corresponding composition studies;
 independent generated frames establish endpoints, not interpolatable animation.
 
+For a subject-led brief, make a material decision before locking the event:
+identify the exact subject view the task needs, verify that it can be produced,
+and name the honest fallback if it cannot. A texture study, drawn flat, or
+contextual photograph can shape an editorial concept, but it cannot silently
+stand in for a product view that the visitor must inspect or buy. Recompose the
+task around graphic subject art or mark that promise incomplete.
+
 Choose the generation unit deliberately: a route overview for structure, a dense
 section for content fit, related states for a handoff, or a separate asset for
 production. Keep one task and content set across alternatives so differences

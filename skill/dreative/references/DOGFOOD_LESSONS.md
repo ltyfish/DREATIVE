@@ -778,3 +778,37 @@ the session limit; is the peak context materially below 158k; and does
 `interaction.md` opened when the artefact shows those moments were reached. If
 the routing misses persist with the list at the top, position was not the
 constraint and the theory is wrong — say so rather than moving it again.
+
+DL-022 / proposed / 2026-09-17
+Observed failure: Two clothing motion runs produced a coherent focal device but
+an ordinary lower task. The latest Claude run (`clothing-motion__with-a__202609170405`)
+also used drawn garment flats for the product grid after recording that no image
+generator or usable stock route was available. The route was finalized and the
+user's independent verdict scored motion, craft, structure and overall quality
+low. The earlier Codex archive (`202609140700`) similarly reduced its promised
+subject-to-facts handoff to a local pixel effect plus an independent facts section.
+
+Root cause hypothesis: the guidance names material and destination, but does not
+make required subject material a delivery decision or require the receiving task
+to be inspected as part of the motion slice. A disclosure was treated as if it
+made an unrelated substitute equivalent, and a local mechanism was allowed to
+stand in for route continuity.
+
+Change: classify subject views as required material for subject-led commerce;
+recompose around an explicitly graphic/editorial task or report the promise
+incomplete when that material cannot be produced. Add a completion inspection
+for entry, development, hold, destination and release into the first useful task
+region or ending. This adds no animation quota or new approval gate.
+
+Evidence status: proposed. The observation is independently visible in the two
+run artefacts and user verdicts; the causal explanation and improvement still
+need a fresh round with the updated skill.
+
+Cost or trade-off: some runs will correctly stop, disclose incompleteness, or
+change concept when subject production is unavailable. This is preferable to a
+polished but misleading commerce mockup and costs only a short planning check.
+
+Recheck condition: run the same brief with the updated skill and either callable
+generation or supplied product assets. Judge whether the subject remains usable
+through the motion handoff and whether the primary task becomes more than a
+generic post-hero grid. Keep this lesson proposed until that result is reviewed.

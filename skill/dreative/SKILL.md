@@ -62,12 +62,26 @@ the actual intended material, with its entry, development, and exit into the nex
 region. Inspect it at desktop and mobile. This is a small slice at the intended
 visual fidelity, not an entire first draft and not a substitute fade.
 
+The slice must prove the relationship survives into the first useful task region
+or a deliberate ending. A local reveal, filter, or FLIP demo followed by ordinary
+independent sections is a mechanism demo, not route continuity. Inspect the
+entry, development, readable hold, destination, and release at desktop and
+mobile, including reduced motion.
+
 A prototype may isolate a shader, crop, scrub, transition, or interaction without
 building unrelated navigation or sections. Include the real receiving composition
 when continuity is the uncertainty. State the question it answers.
 Reuse the successful implementation. Do not promise to replace placeholder motion
 later. If real material or a capability is missing, identify it and pursue the
 closest faithful route; disclose any change to the promised result.
+
+For subject-led commerce or another task that requires inspecting a subject,
+classify the subject view as required material. Do not silently fill the primary
+task with hand-drawn stand-ins when the brief promises a real or generated
+product view, unless the chosen concept explicitly makes diagrammatic product
+art the subject. Recompose honestly around a graphic/editorial task or report
+the promised delivery incomplete. Disclosure records the deviation; it does not
+make an unrelated substitute equivalent.
 
 After the slice works, test it against the planned whole experience.
 Build the least-resolved passage next, including the primary interaction and ending.
