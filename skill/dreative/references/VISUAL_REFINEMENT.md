@@ -54,33 +54,20 @@ thing being sold is actually shown. Open the tiles.
    findings tied to a route, viewport, section, and visible symptom:
    hierarchy, rhythm, type, crop, composition, contrast, repetition, overflow,
    controls, loading, and section handoffs.
-   For every prominent decorative line, grid, overlay, shape, persistent
-   element, or motif, name its concrete role in product meaning, hierarchy,
-   interaction, or continuity; remove or redesign it when the rendered
-   experience does not make that role perceptible. Compare hero-grade media
-   reused across major sections and require visible evolution in crop, state,
-   material, meaning, or interaction unless a distinct composition is used.
-   In each section, name what the eye lands on first and whether that thing is
-   real material or something you drew. Sourced photographs relegated to a strip,
-   a card grid, or a below-fold gallery beneath a drawn focal figure is the
-   inversion blind review reads as "it is all SVG" — correct it by swapping what
-   holds the section, not by drawing more. Check the crop at 390px too: a frame
-   whose subject is unreadable there is decoration on a phone.
-   Review the route as a sequence: compare the primary peak with at
-   least one development or consequence away from it and inspect their handoff.
-   Flag when one section owns nearly all salient motion, media change, or
-   compositional transformation. Inspect optical typography explicitly:
+   Compare the focal material to the actual subject the visitor needs to see.
+   A loaded, licensed photograph may still have the wrong subject, scale or crop;
+   a drawing may be excellent when its form and detail serve the direction.
+   Judge the rendered view rather than ranking media by file type.
+   Review the route as a sequence, including its useful middle and ending.
+   Inspect optical typography explicitly:
    headline wrapping, cap-height and baseline relationships, tiny or
    low-contrast supporting copy, visual-anchor alignment, negative-space
    balance, and section-to-section rhythm.
-4. Inventory the whole route by section, in one pass: for each one, write what
-   physically holds it — a photograph, a sequence, a clip, a real surface, a real
-   state, notation drawn over one of those, or type alone. Then read the list.
-   One section fully realised above a run of tables, card rows and drawn figures
-   is the commonest shape of an unfinished page, and it is invisible while you
-   are looking at the peak, which is why this is a separate pass. Type alone is
-   a real answer where it was chosen; the finding is a section nobody decided.
-   Fix it by funding those sections, not by adding motion to them.
+4. Compare the weakest passage with the selected direction or relevant reference.
+   Is the problem absent material, an uninteresting composition, interrupted
+   continuity, flat timing, or awkward interaction? Fix that cause. A sequence
+   can be mechanically correct and still feel dull. Reconsider its staging or
+   premise when polishing the effect no longer improves the experience.
 5. Exercise motion at entry, midpoint, reversal, and release. Inspect reduced
    motion separately. Use console, network, and performance traces to explain
    defects, not to substitute for visual judgment.
@@ -91,6 +78,17 @@ thing being sold is actually shown. Open the tiles.
 When inspection finds a defect or mismatch with the brief, correct it and compare
 the affected states before and after. Name the visible correction in delivery.
 Do not manufacture a change merely to obtain a before/after pair.
+For a promised transition, watch the passage between the matched endpoints.
+Separate screenshots of an outgoing effect and an incoming grid cannot establish
+that one becomes the other. Inspect normal motion on mobile too; a narrow screen
+or coarse pointer is not a reduced-motion preference. Adapt framing, distance or
+rendering cost before discarding the concept's defining behavior.
+
+When a mechanical check flags a collision, verify the actual viewport and state.
+Repair geometry, layering, focus or overflow while preserving the chosen function
+and design. Removing the requested interaction to make a check green is a scope
+change, not proof that the original experience was repaired. A false positive
+needs concrete evidence and a reported limitation, not blind obedience or dismissal.
 When sticky or pinned scenes create blank, repeated, clipped, or misleading
 full-page captures, add sectional or stitched captures that truthfully show the
 composition and handoffs; do not accept the broken capture as visual evidence.

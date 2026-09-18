@@ -21,7 +21,7 @@ export const DELIVERY_PROFILES: readonly DeliveryProfile[] = [
     id: "recommended", label: "Recommended",
     promise: "A complete design and implementation for the specific product.",
     scope: "Generate distinct visual directions and plans, implement the user's selection faithfully, and refine the complete responsive route in the browser.",
-    treatments: "Choose sourcing, generation, interaction and motion to serve the selected design. Honor an explicitly motion-led brief; ordinary designs need no signature effect. For subject-led commerce, report missing product material instead of silently replacing it with a full drawn inventory.",
+    treatments: "Explore sourcing, generation, expressive interaction and motion to serve the selected design. Honor an ambitious motion-led brief across the useful route; the profile is not a creative ceiling. Preserve the user's task when material is missing, and keep that dependency explicit until resolved.",
     review: "lean", prototype: "auto", referenceDefault: "supplied-or-scout",
     sourceDefault: "best-fit", packageDefault: "allow",
   },
@@ -49,7 +49,7 @@ export function renderDeliveryBrief(recommendation: DeliveryProfileId = "recomme
     "Design visually → choose → build faithfully → refine in the browser.",
     "",
     "For an open brief, inspect the project and plan distinct concepts, real content, asset roles and motion states before generating page design images. Show the actual images with concrete plans, recommend one, and stop for the user's selection before implementation.",
-    "Each plan explains composition, content and task, imagery production, mobile adaptation, useful interaction/motion, feasibility and relative cost.",
+    "Use references/CREATIVE_DIRECTION.md to explore different experiences. Small material or moving studies may inform selection without building full alternative sites. Each plan explains composition, task, imagery, mobile behavior, motion, feasibility and relative cost.",
     "After selection, obtain separate assets, build real responsive UI, and compare the browser render with the chosen design. Prototype technical uncertainty when needed; motion serves the design and must reach the first useful task state or ending.",
     "Supplied selections, scoped fixes and explicit delegation take precedence. Missing generation must be disclosed rather than replaced with an imaginary mockup.",
     "",
@@ -79,7 +79,7 @@ export function renderDetailedPlanGuide(profileId: DeliveryProfileId): string {
     "4. Carry the selected images and user changes into a compact implementation note. Translate spatial decisions into responsive layout, available typography, separate assets and live controls.",
     `5. Source/generate the required material and build a representative composition with its adjacent region. ${p.treatments}`,
     `6. Use a ${p.prototype} technical-prototype policy to resolve consequential uncertainty, without adding an automatic second approval stop.`,
-    "7. Compare matching browser/reference states; refine the full desktop/mobile route, exercise the primary task and any motion/reduced-motion behavior, then finalize with the selected delivery profile.",
+    "7. Compare matching browser/reference states and the moving passage between them; refine desktop/mobile, exercise the task and reduced motion, then finalize. Passing checks does not clear missing material or an unimplemented selected transition.",
     "For explicitly selected Showcase, follow references/SHOWCASE.md and its existing mechanism contract. Report implementation evidence separately from the user's taste verdict.",
   ].join("\n");
 }

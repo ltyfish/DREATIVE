@@ -35,6 +35,21 @@ assets and transition into exploration early. Their reported performance is an
 author account, not a benchmark for your device. Destruction, tunnels, and 3D
 cities are not universal storytelling requirements.
 
+## NITEX: identity across story and action
+
+The studio describes a fashion/technology identity expressed through angular
+framing, energetic photography and generated visuals. Narrative chapters coexist
+with direct practical paths; addressable overlays expose detail without requiring
+every visitor to finish the story. The reported stack combines GSAP with native
+transitions and Web Animations.
+[Production account](https://tympanus.net/codrops/2025/10/10/nitex-building-a-brand-and-digital-platform-for-fashions-new-supply-chain/)
+and [original site](https://nitex.com/).
+
+**Transfer:** build a recognizable motion and material language across narrative,
+navigation and working states while leaving the primary task directly accessible.
+The account is evidence of the creators' method, not a verified current playback
+or an instruction to copy its angular shapes. Operate the live passage at use.
+
 ## Interaction craft: compare the property that matters
 
 [Emil Kowalski's paired exercises](https://emilkowal.ski/ui/train-your-judgement)

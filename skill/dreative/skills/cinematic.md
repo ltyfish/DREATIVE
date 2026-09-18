@@ -7,6 +7,9 @@ Cinema's actual tools are pacing, framing, and the cut. Not video. A page can be
 cinematic in still type and photography and no motion at all, and a page with a
 looping hero film usually isn't.
 
+That does not waive an explicit motion brief. When movement is requested, author
+the framing, cuts and transitions in time and inspect them in playback.
+
 ## The sequence has to be about something
 
 Before pacing anything, be able to say what the reader knows at the end that

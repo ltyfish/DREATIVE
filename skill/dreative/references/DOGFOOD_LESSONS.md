@@ -812,3 +812,29 @@ Recheck condition: run the same brief with the updated skill and either callable
 generation or supplied product assets. Judge whether the subject remains usable
 through the motion handoff and whether the primary task becomes more than a
 generic post-hero grid. Keep this lesson proposed until that result is reviewed.
+
+Later evidence (2026-09-18): `clothing-motion__with-a__202609180358` received
+2/5 throughout. Its installed guidance matches the pre-audit source. Live review,
+selected mockup and source show texture-filled garment outlines, a separate mosaic
+band above the shop heading, and conventional lower content. The plan promises
+a FLIP join; source uses FLIP for filtering only. Product text and basic buying
+controls exist. This run does not validate DL-022; it repeats the failure after
+the guidance change. The specified asset-ready recheck was not performed.
+
+Revised hypothesis: task-changing fallback language legitimized the wrong
+material; image selection froze an inadequate premise; creative references
+included restrictive category rules and discouraged technique exploration.
+The transcript includes screenshot inspection and corrections, so absence of
+review alone is not a supported explanation. No causal model comparison exists.
+
+Revision: preserve the task through asset recovery; teach reference-led and
+material-led exploration with small moving experiments before static polish;
+replace rigid concept/effect prescriptions with expressive design methods;
+inspect the actual passage between endpoints. Distinguish selected-experience
+fulfillment from command success, and preserve creative ambition across delivery
+profiles. No new schema, quota, critic, taste gate or dependency was introduced.
+
+Added cost: conditional motion experiments and purposeful reference inspection;
+reduced prescriptive prose offsets some reading cost. Recheck on a complete
+asset-ready run and a held-out subject with fixed host/tools/budget, normal-motion
+desktop/mobile playback and an external verdict. All revisions remain proposed.

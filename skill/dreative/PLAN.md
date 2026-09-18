@@ -5,7 +5,11 @@ chosen design, preserve that direction and do the relevant work directly.
 
 ## Prototype means visual choices first
 
-Inspect the actual brief, behavior, content, assets and tools. Before generating,
+Inspect the actual brief, behavior, content, assets and tools. Develop the ideas
+with `references/CREATIVE_DIRECTION.md`. For ambitious motion, operate a relevant
+live reference or inspect its creator's recording before settling on the event.
+Bring the useful construction insight into the options, not just a reference URL.
+Before generating,
 use the pre-generation study in `references/VISUAL_DESIGN.md`: develop the ideas,
 their actual content and asset needs, and the motion states that affect layout.
 Show a short rationale for the proposed exploration; this adds no approval stop.
@@ -15,6 +19,13 @@ directions. Two or three is a useful starting range; adapt to the user's request
 and available budget. Each direction needs an actual viewable page image and a
 concise implementation plan. Text descriptions, palette swaps and alternate
 filters on the same hero do not provide the visual choice being requested.
+
+When movement defines the direction, use a small moving experiment if a still
+cannot answer the important question. Test the uncertain transition or material,
+not a full alternative site. It may happen during exploration; the production
+slice follows selection. Show what has actually been demonstrated separately
+from what is planned. Do not spend the exploration budget making polished page
+images of a concept whose essential material or motion already looks weak.
 
 Explore page structure, image relationships, typography and visual character.
 Show the working middle and ending as well as the opening; use related sectional
@@ -54,7 +65,9 @@ First implement a representative composition and its adjacent region so you can
 compare the render to the chosen image before mistakes spread. When a mechanism
 is consequentially uncertain, prototype it at intended fidelity with actual
 material and its real destination. This is an implementation experiment after
-direction selection, not a second automatic approval gate.
+direction selection, not a second automatic approval gate. A local effect and a
+separate destination shown in two screenshots do not demonstrate their transition:
+operate the passage between them and compare it to the selected intent.
 
 For ambitious motion, use `references/CHOREOGRAPHY.md` and relevant production
 studies. Build the actual scroll/animation/spatial mechanism; preserve the visual

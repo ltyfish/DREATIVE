@@ -33,6 +33,13 @@ opening dozens of files. Shortlist by identity, framing, usable dimensions,
 continuity, and rights. Search a second source family if the first is unsuitable.
 Stop when the planned shot has viable material; no candidate-count quota applies.
 
+For a fictional subject, search for representative views by silhouette, material,
+camera and use, rather than the invented brand name or an exact nonexistent SKU.
+One candidate can establish a production route before a complete set is available.
+A public asset page and its permitted download may work when an API requires a
+key; inspect that route before calling the provider unavailable. Do not broaden
+an unsuccessful search into a claim that suitable imagery does not exist.
+
 Use a working asset list if it helps: source page, local path, rights/credit,
 exact-product or contextual role, crop, and derivative. Keep required attribution
 with shipped assets. This is production information, not proof of good design.
@@ -106,10 +113,14 @@ photograph, and a disclosure does not make an unrelated hero suitable for a buy 
 
 For subject-led commerce, treat the usable subject view as required material.
 If no callable generator, authorized source, or supplied asset can provide it,
-either recompose the concept around an explicitly graphic/editorial task or mark
-the product delivery incomplete. Authored flats, cloth textures, and technical
-diagrams may support the story, but they are not interchangeable with a product
-view and must not be expanded into a full inventory set by default.
+state the specific missing view and the input that would unlock it. Continue
+independent composition and interaction work, but keep that requirement visibly
+unfinished. Changing a commerce task into an editorial one requires the user's
+scope change; a disclosure or design selection does not waive the original task.
+Authored illustration can be a deliberate subject view when it shows the needed
+form and detail convincingly. Cloth textures and crude silhouettes cannot supply
+fit, drape or construction merely by being labeled representative. Inspect the
+actual object view before replicating it across a catalogue.
 
 Use a generation tool when available and appropriate; probe actual capabilities
 before proposing a service. Ask only for missing authorization or required input.

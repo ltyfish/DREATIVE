@@ -41,6 +41,13 @@ The carrier might be a subject, edge, word, camera axis, color field, or rhythm.
 Choose the relationship first; then choose the renderer. Examples below are
 mechanical starting points to adapt, not sections to insert into every site.
 
+A relationship can also be a deliberate cut, a contrast in scale, or a rhythmic
+echo; a shared-element morph is only one choice. When you promise an object
+handoff, follow that actual object through the join. Matching column widths or
+colors in two separate sections creates a visual rhyme, not an object transfer.
+Watch the intervening frames: a heading, empty spacer or independent entrance
+can break a transition that looks convincing in endpoint screenshots.
+
 | Relationship | How to construct it | What to inspect |
 |---|---|---|
 | Image becomes a working view | Measure its source and destination frames. Carry the same image through an overlay or FLIP transform; reveal controls as it settles; return ownership to the ordinary layout. | No duplicate subject, jump in crop, covered controls, or lost return position. |

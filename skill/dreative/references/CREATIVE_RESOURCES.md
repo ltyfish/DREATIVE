@@ -37,6 +37,14 @@ start from a specific mechanism and inspect its actual demo/source:
 - [GSAP matchMedia](https://gsap.com/docs/v3/GSAP/gsap.matchMedia()/): scope
   animation setup and reversion to viewport and reduced-motion conditions.
   Choose a mobile composition; a breakpoint API cannot design it.
+- [CSS and GSAP spatial typography](https://tympanus.net/codrops/2025/11/04/creating-3d-scroll-driven-text-animations-with-css-and-gsap/):
+  a worked construction using CSS transforms and scroll orchestration. Follow
+  the article's demo and code links; try the spatial idea with actual line lengths
+  and mobile wrapping. Spatial expression need not start with a WebGL scene.
+- [Codrops Creative Hub](https://tympanus.net/codrops/hub/): search the unresolved
+  behavior, such as page transition, kinetic type, draggable image field or video
+  transition. Inspect a promising demo and its source. This expands exploration
+  beyond the few teaching slices bundled here; it is not a component checklist.
 
 These are implementation references, not proof of a site's full-route pacing.
 Use `CHOREOGRAPHY.md` to decide what needs to connect before selecting a demo.

@@ -1,139 +1,90 @@
-# Creative direction synthesis
+# Explore before the direction hardens
 
-Use this reference before proposing an open-ended redesign or adapting external
-references. Use it to develop the visual options in `PLAN.md`, not as an extra
-user questionnaire. Its decomposition advice applies to inspiration; a supplied
-or selected design requested for faithful implementation should be preserved.
+Use with `PLAN.md` for an open design, especially an ambitious motion-led brief.
+These are working methods to choose from, not required artifacts or a scoring
+rubric. Keep exploration small enough to leave time to make the result excellent.
 
-## 1. Extract product DNA
+## Find something specific to express
 
-Build a private product-DNA card from the repository:
+Look for a tension, gesture, material, attitude or useful behavior in the subject.
+Who is this for; what should they feel, notice or do? A brand can be sharp,
+playful, austere, strange or exuberant. Give that character a visible expression
+in image direction, type, scale, color and how things move. A slogan describing
+a metaphor is not yet a visual identity.
 
-- subject nouns and verbs;
-- audience desire, anxiety, and primary task;
-- physical materials, environments, history, data, or process;
-- content shape: catalogue, argument, timeline, comparison, journey, tool;
-- real assets and behaviors worth preserving;
-- one tension the design can make visible.
+Keep required content and user tasks intact. Information can change location,
+format and rhythm; it cannot disappear because a more convenient concept omits it.
+Check dense content early so the exciting opening has somewhere useful to go.
 
-Prefer evidence in the product over category clichés. “Coffee” does not imply
-beige editorial paper; roasting temperature, origin geography, aroma language,
-trade routes, machinery, and buying behavior are richer design material.
+## Let references expand the possibilities
 
-## 2. Decompose references
+Find a relevant live production through `CREATIVE_RESOURCES.md` or use the user's
+references. Operate the passage: watch what starts moving, what overlaps, what
+rests, where the eye goes, and how the visitor continues. If live access fails,
+use the creator's recording or account and say which evidence you saw.
 
-When named websites, libraries, or prior-adoption lists are in scope, also read
-`REFERENCE_ADOPTION.md` and route each candidate by research role. Do not treat
-the list as an installation checklist.
+Study the property your idea lacks: image scale, editorial cuts, depth, a type
+sequence, an unusual navigation model, or an expressive working state. A film,
+printed object, physical mechanism or game can suggest another relationship.
+No reference count establishes breadth. Stop once you have a useful construction
+idea, not a list of inspiring URLs.
 
-Never consume a reference as one aesthetic package. For each source, extract at
-most two transferable principles:
+Borrow timing, geometry or an interaction principle; author the composition and
+identity around this subject. Retrieve the relevant demo/source when it saves
+reinvention. Reference code can be a starting point without importing its whole
+site, imagery or visual identity. Verify its license separately.
 
-- information rhythm;
-- compositional rule;
-- typographic behavior;
-- material or lighting idea;
-- transition grammar;
-- interaction model;
-- media treatment;
-- technical mechanism.
+## Explore different ways to experience the subject
 
-Record what must not transfer: its combined palette, type pairing, hero
-composition, signature transition, branded motif, or copy voice.
+Try changing the visitor's experience, rather than changing the filter on one
+layout. For example, browsing a visual index, inhabiting an environment, directing
+a sequence, and reading a typographic argument imply different compositions and
+inputs. These examples are prompts to invent, not directions every brief needs.
 
-When scouting, triangulate two to four sources from different domains. Useful
-cross-domain inputs include physical objects, print systems, cinema, maps,
-instruments, archives, games, industrial interfaces, stage design, and natural
-behavior—not only other websites.
+For each promising idea, sketch the opening, a transformation, the working state
+and the ending with the actual content. Use generation, collage, a design tool,
+or a tiny browser experiment as appropriate to the question. A still resolves
+composition; a moving sketch resolves timing or spatial behavior. Do not render
+an entire alternate website just to discover whether a transition is interesting.
 
-## 3. Generate divergent premises
+Before recommending, compare what each option makes compelling and what it leaves
+weak. If every option rests on the same inadequate material, the choice is not
+ready: improve the material or expose the shared dependency. Do not present one
+polished option against an intentionally underdeveloped alternative.
 
-Explore different premises for the visual directions.
-A premise is a relationship between product meaning and interface behavior:
+## Direct motion, then find the means
 
-> Because the product is/does **X**, the interface behaves like **Y**, allowing
-> the visitor to **Z**.
+Describe the event in visible terms. A field of images parts around a headline;
+a camera leaves a detail and reveals its environment; a selected object travels
+into an explorable view; a cut changes the scale and tempo. What does the visitor
+see halfway through, and what makes the resolved composition worth arriving at?
 
-Possible sources of structural divergence include:
+Explore media and implementation alongside the concept. Test a real clip, model,
+image crop or type treatment before ruling it out. Choose GSAP, Motion, WebGL,
+native APIs or an adapted implementation by the work they simplify. Dependency
+count and a hand-written animation loop are not creative virtues. Neither is a
+large renderer that adds no perceptible benefit.
 
-- one content- or typography-led system;
-- one media, interaction, or tool-led system;
-- one spatial, temporal, or experimental system when capabilities permit.
+Motion can communicate personality, anticipation, surprise, materiality or mood;
+it need not justify itself through a purchase metric. Its staging still needs to
+be convincing, its controls usable, and its cost proportionate. Technical diagrams,
+photography, graphic art and data can coexist when the actual subject supports
+them. Avoid assigning every product category a mandatory medium.
 
-Changing only palette, font, or animation intensity is not divergence.
+Use `CHOREOGRAPHY.md` to develop the idea through the route. Share a visual grammar,
+but vary scale, density, tempo and agency where the material warrants it. A calm
+task view or deliberate cut can belong to a bold site. Continuity is a perceptible
+relationship, not a rule that every scene must morph into the next.
 
-## 4. Define a concept fingerprint
+## Choose using the evidence you have
 
-For each viable premise, choose:
+Present the directions using `PLAN.md`. Say which compositions are designed,
+which motion has been tried, and which production dependency remains unresolved.
+A selected still approves that visual direction, not every untested claim in its
+plan. Preserve its identity while developing its responsive and moving forms.
 
-1. project-native metaphor or operating idea;
-2. information/composition rule;
-3. type voice;
-4. material and color logic;
-5. media role;
-6. motion and interaction grammar;
-7. continuity device beyond the hero.
-
-Ground the concept in the product's content, assets, behavior or history.
-Counting such choices does not establish that they form a compelling experience.
-
-## 5. Run the independence test
-
-Reject or transform the direction when any answer is yes:
-
-- Could the concept describe a famous reference after changing only the brand?
-- Does it reuse one source's type + palette + composition + signature motion?
-- Is the main idea a known studio effect with different content inserted?
-- Would removing the hero leave a generic component page?
-- Did a library name determine the concept?
-- Are the directions merely low, medium, and high versions of one style?
-
-Reference resemblance at the level of a principle is acceptable. Resemblance at
-the level of a complete visual fingerprint is imitation.
-
-## 6. Allocate an experience arc
-
-Give every major section a distinct role: orient, demonstrate, compare,
-transform, prove, rest, decide, or resolve. Develop the idea beyond the hero
-through the primary task and ending; choose emphasis from the actual content.
-Use a small transition vocabulary derived from the concept so the route feels
-connected without repeating the same reveal.
-
-Define rests as deliberately lower-intensity authored states, not untreated
-layout. A rest must preserve at least one concept-bearing relationship:
-continuity device, evolving visual variable, meaningful tactile state, media
-treatment, or authored handoff. Stillness can improve pacing; default grids do
-not become intentional merely by being labelled calm.
-
-The hero-removed test is mandatory: without the first viewport, the remaining
-route must still express the selected concept. For Showcase, also inspect the
-route below its first major peak and compare it with the lower delivery levels.
-If it could plausibly be the Efficient or ordinary Recommended direction, the
-Showcase allocation is incomplete.
-
-## 7. Match resources after concept
-
-Only after the fingerprint and arc exist, select implementation resources.
-For each advanced mechanism name:
-
-- the product meaning it carries;
-- the section and state it owns;
-- why native CSS/SVG is insufficient;
-- mobile and reduced-motion behavior;
-- loading/failure fallback;
-- cleanup and performance cost.
-
-If those answers are weak, omit the mechanism. If they are strong, use the
-specialist runtime confidently rather than reducing the idea to a decorative
-approximation.
-
-The mechanism's expressive form must match how the product is experienced, not
-only its topic. A data-visualisation, dashboard, chart, or telemetry-log peak
-belongs to products whose value is data, measurement, or system state. On a
-commerce or tactile product it misrepresents the offer: the peak should
-foreground the goods themselves—material, craft, provenance, freshness, the
-object in the hand—not abstract the product into statistics. Selling coffee
-through a metrics graph and roast logs is a category error even when the graph
-is well built; the visitor came to want the beans, not to read a chart about
-them. Choose the peak's medium from the product's own mode—physical goods lead
-with imagery, material, and process; data tools lead with the live data.
+During implementation, return to the reference or sketch when a passage feels
+weak. Change the specific cause: material, scale, timing, composition or interaction.
+If the technique works but the scene remains dull, reconsider the idea instead of
+polishing its easing indefinitely. Simplify incidental work to fund the defining
+experience; disclose a material scope change rather than quietly lowering ambition.

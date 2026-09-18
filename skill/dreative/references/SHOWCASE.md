@@ -1,14 +1,14 @@
 # Showcase
 
-Read this only when the user has selected the Showcase direction. Nothing here
+Read this only when the user has selected the Showcase delivery profile. Nothing here
 applies to Recommended or Efficient, which is why it does not live in
 `SKILL.md`.
 
-The delivered route must be visibly and structurally distinct from Recommended.
-A conventional long page with one isolated spectacle does not fulfill the
-highest-ceiling promise. Before implementation, bind the difference: state the
-Recommended baseline, at least two perceptible Showcase-only qualities, and two
-product-native media opportunities with use/reject reasons.
+Showcase adds implementation and review depth; it does not reserve a class of
+creative ideas unavailable to Recommended. Fulfill the selected experience and
+the user's ambition. Use its actual mechanisms in the compatibility contract
+below, rather than inventing extra effects or a weaker baseline to justify a
+profile distinction. This contract checks declared behavior, not design quality.
 
 In the final response state `Showcase implementation attempted:` followed by the
 concrete mechanisms, media, and distributed experience actually shipped, plus
@@ -81,8 +81,8 @@ names say. Text and `data-*` values are supporting identifiers only.
 
 ## Completion
 
-Inspect below the first peak and reject completion if the rest could plausibly
-be Efficient or ordinary Recommended. Disclose:
+Inspect the complete route against the selected experience, including its useful
+middle and ending. Report unmet promises independently of contract success. Disclose:
 
 ```text
 Showcase implementation attempted: <what visibly shipped>

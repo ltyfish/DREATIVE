@@ -3,9 +3,9 @@
 Read this when choosing or integrating a runtime for a concrete visual result.
 Use `CREATIVE_RESOURCES.md` for a targeted external resource lookup.
 
-For every advanced mechanism, identify its semantic purpose, section owner,
-meaningful state change, mobile form, reduced-motion form, loading/failure
-fallback, and cleanup cost. A library name is never a design rationale.
+For an advanced mechanism, understand its visible or expressive purpose, owner,
+mobile form, reduced-motion form, loading/failure fallback and cleanup cost.
+Atmosphere and delight are valid purposes. A library name alone is not one.
 
 ## Choose by outcome
 
@@ -36,7 +36,9 @@ its capabilities.
 
 ## Runtime ownership
 
-Keep one scroll owner and one animation clock. With GSAP + Lenis, drive Lenis
+Keep one owner for each animated property and synchronize clocks that drive the
+same scene. Independent UI reactions need not share one global clock.
+With GSAP + Lenis, drive Lenis
 from `gsap.ticker`, update ScrollTrigger once, and remove the exact callback on
 teardown. In React, scope timelines and handlers, revert them on unmount, and
 refresh measurements after fonts/media settle.

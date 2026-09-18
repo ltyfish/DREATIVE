@@ -22,6 +22,13 @@ region. These are sketch values to tune while watching, not standard timings.
 Use overlap and held compositions to create rhythm. Constant motion everywhere
 erases emphasis.
 
+The score is a sketch, not a fixed sequence every scene must follow. Try timing
+and overlap with the actual material early. If the concept promises continuous
+motion, inspect intermediate frames as well as endpoint compositions; a short
+ladder of visibly stepped states may lose the effect even when it saves work.
+On mobile, try a lower-cost renderer or revised framing first. Use a static form
+for reduced motion or a demonstrated limitation, not simply because input is touch.
+
 ## Choose the mechanism by what must be visible
 
 | Treatment | What to implement | Frequent failure and correction |

@@ -10,14 +10,24 @@ frontend design skill: composition, typography, imagery, structure and usability
 are its core. Motion is a creative capability that serves the selected design;
 it can lead when the user requests a motion-led experience.
 
+For an ambitious or Awwwards-style brief, pursue a distinctive moving experience:
+art-directed material, expressive typography, surprising spatial relationships,
+and deliberate pacing through the useful parts of the site. Atmosphere, delight
+and dramatic transitions are valid goals, alongside clarity and usability.
+The resources below teach ways to explore and build; they are not a house style,
+an approved effects menu, or a formula for award-worthy work.
+
 ## Start here
 
 Inspect the repository, user brief, existing behavior, assets, and available tools.
 Respect supplied references, named effects, intensity, budget, and authorization.
-For an open design use `PLAN.md`: plan distinct concepts and their material,
+For an open design use `PLAN.md` and the exploration method in
+`references/CREATIVE_DIRECTION.md`: plan distinct concepts and their material,
 composition and behavior before generating images; generate visual directions with concrete
 plans, show the images and recommend one, then stop for the user's choice before
-implementation. An existing design selection or explicit delegation to choose
+implementation. Small material or motion experiments can inform that choice;
+they do not authorize building the full site before selection.
+An existing design selection or explicit delegation to choose
 autonomously takes precedence. Do not confuse budget profiles with design options.
 
 Use `references/VISUAL_DESIGN.md` for the image-led direction stage and its
@@ -29,6 +39,12 @@ Keep a short implementation note: concept, actual assets, visible motion beats,
 runtime owner, mobile form, primary user task, and unresolved risks. It is working
 memory, not an approval artifact or a score. Existing `.dreative/context.json`
 is fallible memory; reconcile it against the project.
+
+Keep the task fixed while exploring its presentation. Missing material is a
+production problem, not permission to replace a shop with an editorial study.
+Name an unresolved dependency without letting it consume the whole exploration;
+continue the useful work that does not depend on it. See `references/MEDIA_SOURCES.md` for
+bounded recovery and representative imagery for fictional subjects.
 
 ## Build the selected composition
 
@@ -168,6 +184,9 @@ not motion quality or taste.
 
 Compare the rendered result to the user's actual choices. Report what shipped,
 what was tested, and remaining limitations. For substantial frontend delivery:
-**Implementation complete; human taste verdict: awaiting user review.**
+Report technical checks, fulfillment of the selected experience, and human taste
+review separately. Use **Implementation complete; human taste verdict: awaiting
+user review** only when the requested material, behavior and selected motion
+actually shipped. Passing finalization cannot clear a missing requirement.
 Do not award yourself acceptance. Do not create taste thresholds, read-count
 gates, mandatory critic loops, or prose attestations as substitutes for observation.

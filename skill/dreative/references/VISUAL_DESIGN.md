@@ -34,7 +34,14 @@ identify the exact subject view the task needs, verify that it can be produced,
 and name the honest fallback if it cannot. A texture study, drawn flat, or
 contextual photograph can shape an editorial concept, but it cannot silently
 stand in for a product view that the visitor must inspect or buy. Recompose the
-task around graphic subject art or mark that promise incomplete.
+presentation while preserving the task; keep missing required material explicit.
+Changing the task itself needs the user's scope change.
+
+Let production experiments inform the image. When the idea depends on movement,
+try its uncertain moment with the intended material before polishing all its
+static states. A lightweight moving sketch can reject a weak premise early;
+it is neither a finished alternative site nor another approval gate. Bring the
+successful spatial relationship back into the composition studies.
 
 Choose the generation unit deliberately: a route overview for structure, a dense
 section for content fit, related states for a handoff, or a separate asset for
