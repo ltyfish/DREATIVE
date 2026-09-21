@@ -61,7 +61,7 @@ const USAGE = `usage: dreative [command]
   catalogue        search the executable creative catalogue [--query phrase] [--json]
   look             render the page and report what a browser sees that source cannot
                    --url URL [--out DIR]   screenshot tiles + BROKEN/OBSERVED; never fails
-  motion-capture   record normal desktop/touch and reduced-motion traversal for review
+  motion-capture   record desktop/touch/reduced motion; optional --from <selector> --to <selector>
                    --url URL --out DIR [--max-steps 32]   range 1–120; no taste verdict
   media-inspect    inspect a local video, still, or image directory with FFmpeg
                    --input PATH --out NEW_DIR [--samples 9] [--start 0] [--duration 10]
@@ -125,10 +125,13 @@ async function main(): Promise<void> {
       if (!url || !out) throw new Error("motion-capture requires --url and --out");
       const rawSteps = value("--max-steps");
       const steps = args.includes("--max-steps") ? Number(rawSteps) : 32;
-      const captures = await runMotionCapture(url, path.resolve(out), steps);
+      const from = value("--from"); const to = value("--to");
+      if ((args.includes("--from") || args.includes("--to")) && (!from || !to || from.startsWith("--") || to.startsWith("--")))
+        throw new Error("passage capture requires both --from and --to CSS selectors");
+      const captures = await runMotionCapture(url, path.resolve(out), steps, from && to ? { from, to } : undefined);
       console.log(JSON.stringify(captures, null, 2));
-      for (const capture of captures) if (!capture.reachedEnd)
-        console.error(`INCOMPLETE traversal: ${capture.profile} did not reach the page end. Inspect the recording; increase --max-steps or review the remaining route directly.`);
+      for (const capture of captures) if (!(capture.passage ? capture.passage.reachedEnd : capture.reachedEnd))
+        console.error(`INCOMPLETE traversal: ${capture.profile} did not reach the ${capture.passage ? "selected passage" : "page"} end. Inspect the recording; increase --max-steps or review the remaining route directly.`);
       return;
     }
     case "brief": {

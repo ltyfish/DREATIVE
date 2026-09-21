@@ -42,6 +42,7 @@ const cramped = shell(`<section id="cramped"><h2>Cramped</h2>${Array.from({ leng
 const mainlessRoute = shell(Array.from({ length: 5 }, (_, index) => section(index)).join(""), revealScript).replace("<main>", "").replace("</main>", "");
 
 const pages = {
+  "/capture-passage": shell(`<section style="height:4500px"><h1>Long introduction</h1></section><section id="departure"><h2>Departure</h2></section><section id="destination"><h2>Working destination</h2></section><section style="height:4500px"><h2>Remaining route</h2></section>`),
   "/readable-pin": readablePin,
   "/overlapping-surfaces": overlappingSurfaces,
   "/mainless-controls": noAffordance.replace('<main>', '<div>').replace('</main>', '</div>'),

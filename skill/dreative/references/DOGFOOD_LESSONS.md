@@ -838,3 +838,13 @@ Added cost: conditional motion experiments and purposeful reference inspection;
 reduced prescriptive prose offsets some reading cost. Recheck on a complete
 asset-ready run and a held-out subject with fixed host/tools/budget, normal-motion
 desktop/mobile playback and an external verdict. All revisions remain proposed.
+
+Re-audit (2026-09-21): the user confirmed the September 18 verdict is still the
+latest; no post-revision run exists in the active testbed. Source and fresh
+desktop/mobile join captures still show an independent mosaic, heading/filter
+interval and outlined product cards. This is evidence about the preserved run,
+not a new failure of the September 18 revisions. Avoid another speculative prose
+rewrite. The capture tool now accepts a source/destination passage so the real
+join can be replayed with native wheel/touch and separate reduced motion. Its
+completion flag describes traversal only. Cost: optional capture time and files;
+no new gate, dependency or quality score. Creative improvement remains untested.

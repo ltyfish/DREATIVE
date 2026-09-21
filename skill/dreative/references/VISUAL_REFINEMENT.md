@@ -24,6 +24,16 @@ These are reproducible input samples, not a complete task test, a performance
 benchmark, real-phone GPU evidence, or a taste verdict. Exercise the product's
 primary task separately. Reduced-motion stills must not be scored as normal motion.
 
+To review a specific join, add `--from '<outgoing-selector>' --to '<destination-selector>'`
+and use a separate output directory. Select the actual receiving task or ending,
+not only the effect container. Each selector must match one laid-out element;
+use in-flow wrappers for sticky/fixed scenes. The capture positions before the
+source, then uses native input through the destination with intermediate images,
+reverse input and a resolved hold. Positioning is recorded as setup. Passage
+completion and whole-page completion are reported separately; neither proves
+that the promised relationship exists. Compare the intervening frames to the
+selected plan and report what actually persists, changes ownership, or disappears.
+
 Treat package presence and browser-executable detection as unverified. Before
 claiming this loop is available, verify a real launch and navigation to the
 served preview. With the Dreative CLI, run

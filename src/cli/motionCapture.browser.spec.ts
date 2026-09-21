@@ -26,3 +26,38 @@ test("capture exercises native wheel, keyboard and coarse touch with separate re
     }
   } finally { await browser.close(); fs.rmSync(out, { recursive: true, force: true }); }
 });
+
+test("passage capture reaches a late destination without claiming full-route coverage", async () => {
+  const out = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-passage-"));
+  const browser = await chromium.launch();
+  try {
+    for (const profile of ["desktop", "mobile", "reduced"] as const) {
+      const result = await captureMotionProfile(browser, "http://127.0.0.1:4181/capture-passage", out, profile, 32,
+        { from: "#departure", to: "#destination" });
+      expect(result.passage?.startY).toBeGreaterThan(3000);
+      expect(result.samples.find(s => s.input === "entry")!.y).toBeGreaterThan(3000);
+      expect(result.passage?.reachedEnd).toBe(true);
+      expect(result.reachedEnd).toBe(false);
+      expect(result.inputCoverage).toContain(profile === "mobile" ? "touch-reverse" : "wheel-reverse");
+      expect(result.screenshots.some(file => file.endsWith("passage-50.png"))).toBe(true);
+      expect(result.receivedEvents?.[profile === "mobile" ? "touchmove" : "wheel"]).toBeGreaterThan(0);
+      expect(result.device?.reducedMotion).toBe(profile === "reduced");
+    }
+    const incomplete = await captureMotionProfile(browser, "http://127.0.0.1:4181/capture-passage", out, "desktop", 1,
+      { from: "#departure", to: "#destination" });
+    expect(incomplete.passage?.reachedEnd).toBe(false);
+  } finally { await browser.close(); fs.rmSync(out, { recursive: true, force: true }); }
+});
+
+test("passage capture rejects missing, ambiguous and reversed selectors", async () => {
+  const out = fs.mkdtempSync(path.join(os.tmpdir(), "dreative-passage-invalid-"));
+  const browser = await chromium.launch();
+  try {
+    for (const passage of [
+      { from: "#missing", to: "#destination" },
+      { from: "section", to: "#destination" },
+      { from: "#destination", to: "#departure" },
+    ]) await expect(captureMotionProfile(browser, "http://127.0.0.1:4181/capture-passage", out, "desktop", 1, passage))
+      .rejects.toThrow(/passage/);
+  } finally { await browser.close(); fs.rmSync(out, { recursive: true, force: true }); }
+});
