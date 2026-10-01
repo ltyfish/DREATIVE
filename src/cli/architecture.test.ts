@@ -9,7 +9,9 @@ test("package remains a skill and CLI without the retired editor or design engin
   const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 
   assert.doesNotMatch(cli, /start-editor|createServer|\/api\/agent|\/api\/baseline/);
-  assert.deepEqual(pkg.dependencies ?? {}, {});
+  // The browser commands (look, motion-capture, visual-smoke, finalize) import Playwright at
+  // runtime, so a global install needs it; nothing else may become a runtime dependency.
+  assert.deepEqual(Object.keys(pkg.dependencies ?? {}), ["@playwright/test"]);
 
   for (const retired of [
     "src/server/index.ts",

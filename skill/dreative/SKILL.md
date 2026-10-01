@@ -16,14 +16,24 @@ references are listed at the end; open one when its step says so.
 ## 1. Inventory (short)
 
 - Read the brief, required content, primary tasks, existing code/assets and stack.
-- Run `dreative media probe`. It lists callable generators, photo sources and local
-  tools. Also check the host's own tools (an image-generation tool, browser, MCP).
+- Run `dreative doctor` (and `dreative doctor --fix` to install the project's motion
+  packages — gsap, lenis, @gsap/react — and the Playwright browser). Tell the user
+  in one short list what is missing and the exact command to fix it (machine tools,
+  image-generation key, skill installs); continue with what is available.
 - Keep `.dreative/NOTE.md` as working memory: concept, selected images, assets
   and their sources, signature moment score, runtime, mobile/reduced forms, open risks.
 
-If no image generator is available and someone can answer, ask once for a key
-(`OPENAI_API_KEY`, `GEMINI_API_KEY`, `FAL_KEY` or `REPLICATE_API_TOKEN`) — subject
-imagery decides most outcomes. In an autonomous run, continue with the best route.
+**Images by host** — decide this now:
+- **Codex**: use the built-in `image_gen` tool for direction mockups and every asset.
+  It saves under `~/.codex/generated_images/`; bring each into the project with
+  `dreative media import --latest-codex --shots .dreative/shots.json --shot <id>`.
+- **Claude Code and other hosts with a generator key** (`dreative doctor` shows it):
+  `dreative media generate`, or `dreative media fill` for the whole shot list.
+- **Claude Code without a key**: build with **placeholders**. Do not spend the budget
+  sourcing lookalikes or drawing the product. Declare every image in
+  `.dreative/shots.json`, run `dreative media placeholder`, and design around the
+  correctly sized slots. The user fills them later with a key (`dreative media fill`)
+  or from Codex (`dreative media import`); references update automatically.
 
 ## 2. Concept: two or three directions that differ in experience
 
@@ -43,24 +53,27 @@ Directions differ by how the visitor experiences the subject (index, journey,
 editorial cuts, spatial scene, typographic argument), not by palette or filter.
 `references/CREATIVE_DIRECTION.md` and `references/CHOREOGRAPHY.md` help develop them.
 
-## 3. Material first
+## 3. Material first: the shot list
 
-Produce the hero image and one real subject view for each direction before any
-mockup. Inspect them at intended size; a weak image makes a weak direction.
+Write `.dreative/shots.json` — every image the design needs, each with a full shot
+brief. `path` is a stem whose file name equals the id; reference it in code as
+`/media/<id>.svg` while it is a placeholder (fill/import rewrite the reference):
 
+```json
+{ "version": 1, "shots": [
+  { "id": "hero", "path": "public/media/hero", "aspect": "16:9", "role": "hero",
+    "prompt": "<subject>, <camera/lens/view>, <light>, <background>, <mood>, copy space left" },
+  { "id": "item-01", "path": "public/media/item-01", "aspect": "4:5", "role": "product",
+    "prompt": "<item>, ecommerce studio photograph, front view, <fixed light/background suffix>" } ] }
 ```
-dreative media generate --prompt "<shot brief>" --out public/media/gen --name hero --aspect 16:9
-dreative media generate --prompt "<same light/background/camera> <item>" --out public/media/gen --name item-01 --aspect 4:5
-dreative media generate --ref public/media/gen/item-01.png --prompt "same garment, back view" --out ... (openai/gemini)
-dreative media search --query "<material or context shot>" --out public/media/src
-```
 
-Prefer the host's own image tool when it has one. Hold camera, light, background and
-crop constant across a product set; generate one, inspect, then the rest. Output
-from `media generate` keyless fallback is marked EXPLORATION: use it to judge
-composition, not as shipped product imagery. Keep `generated.json` / `sources.json`
-(prompts, licences, attribution) with the project. Shot briefs and recovery routes:
-`references/MEDIA_SOURCES.md`.
+Then produce them by host (step 1): Codex `image_gen` + `dreative media import`;
+keyed `dreative media fill`; otherwise `dreative media placeholder`. Make the hero and
+one subject view first and inspect them at intended size before the rest — a weak
+image makes a weak direction. Hold camera, light, background and crop constant
+across a product set (`--ref` keeps one subject consistent). `dreative media search`
+adds licensed context photography with attribution. `dreative media status` lists
+what is still a placeholder. Shot briefs and recovery: `references/MEDIA_SOURCES.md`.
 
 Material rules that apply to every build:
 - Real or generated subject imagery holds the focal seats. Drawn stand-ins for a
@@ -73,10 +86,11 @@ Material rules that apply to every build:
 ## 4. Show directions, then stop for selection
 
 Give each direction a viewable design: generated page compositions when a
-generator exists (`references/VISUAL_DESIGN.md`), otherwise **coded studies** — the
-direction's opening and signature moment built in the real app with the real
-material (e.g. `/study/a`), screenshotted at 1440 and 390 and recorded with
-`dreative motion-capture`. Studies are production code; the selected one is kept.
+generator exists (Codex `image_gen`, or a key — `references/VISUAL_DESIGN.md`),
+otherwise **coded studies** — the direction's opening and signature moment built in
+the real app with its shots (real or placeholder; e.g. `/study/a`), screenshotted at
+1440 and 390 and recorded with `dreative motion-capture`. Studies are production
+code; the selected one is kept.
 
 Present per direction: name, images/recording, idea, route, material and motion
 plan, mobile form, main risk. Recommend one with a concrete reason, then **stop
@@ -99,9 +113,10 @@ budget choices, not designs. Details: `PLAN.md`.
 
 Build the hardest moment with the real material, its entry, its hold and its
 landing in the real destination (usually the first task region). Start from the
-matching recipes (R1–R10) and compose them around the subject. No placeholder
-motion or stand-in image "to replace later": if a real attempt fails, change the
-method and say so.
+matching recipes (R1–R10) and compose them around the subject. Motion is never a
+placeholder: build the real mechanism now. The only allowed image placeholders are
+declared shots from step 3, at their final size, crop and position, so filling them
+changes nothing else.
 
 Then watch it: `dreative motion-capture --url <preview> --out .dreative/capture
 --from <entry selector> --to <destination selector>`. Compare the frames to the
@@ -138,9 +153,13 @@ means the build is incomplete — list the blockers. The marker certifies comman
 not taste.
 
 Report separately: technical checks, whether the selected experience and material
-shipped, and what remains for human taste review. Use **Implementation complete;
+shipped, and what remains for human taste review. Include `dreative media status`:
+list every open placeholder shot and how to fill it (key + `dreative media fill`, or
+Codex `image_gen` + `dreative media import`). Use **Implementation complete;
 human taste verdict: awaiting user review** only when the requested material,
-behaviour and selected motion actually shipped. Never award yourself acceptance.
+behaviour and selected motion actually shipped; with open placeholder shots say
+**Implementation complete except N image shots (placeholders)**. Never award
+yourself acceptance.
 
 ## Craft reference points
 

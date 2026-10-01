@@ -70,7 +70,7 @@ export function installationDirectory(projectDir: string, target: "claude" | "co
   return path.join(projectDir, target === "codex" ? ".codex" : ".claude", "skills", "dreative");
 }
 
-export function installSkill(options: { sourceDir: string; projectDir: string; packageVersion: string; target: "claude" | "codex"; selected: string[]; explicitAll: boolean; installedAt?: string }): InstallManifest {
+export function installSkill(options: { sourceDir: string; projectDir: string; packageVersion: string; target: "claude" | "codex"; selected: string[]; explicitAll: boolean; installedAt?: string; agentsPointer?: boolean }): InstallManifest {
   const available = availableSkills(options.sourceDir);
   const unknown = options.selected.filter((item) => !available.includes(item));
   if (unknown.length) throw new Error(`unknown skill(s): ${unknown.join(", ")}`);
@@ -91,7 +91,7 @@ export function installSkill(options: { sourceDir: string; projectDir: string; p
   const base = { schemaVersion: INSTALLER_SCHEMA_VERSION as 2, packageVersion: options.packageVersion, target: options.target, installedAt: options.installedAt ?? new Date().toISOString(), selectedSkills: [...options.selected].sort(), explicitAll: options.explicitAll, files: hashes };
   const manifest: InstallManifest = { ...base, manifestHash: manifestDigest(base) };
   fs.writeFileSync(path.join(destination, INSTALL_MANIFEST), `${JSON.stringify(manifest, null, 2)}\n`);
-  if (options.target === "codex") updateAgentsPointer(options.projectDir);
+  if (options.target === "codex" && options.agentsPointer !== false) updateAgentsPointer(options.projectDir);
   return manifest;
 }
 
@@ -132,7 +132,7 @@ export function checkSkillInstallation(options: { sourceDir: string; projectDir:
 export function updateAgentsPointer(projectDir: string): void {
   const file = path.join(projectDir, "AGENTS.md");
   const existing = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
-  const block = `${DREATIVE_AGENT_START}\n## Dreative frontend design-builder\nFor frontend design or redesign work, read \`.codex/skills/dreative/SKILL.md\` first. Build the real mechanism against real sourced material on the first pass — never a simplified placeholder intended for later upgrade. Build in the real application, inspect the rendered full page at desktop and mobile, correct visible failures, and run the project's deterministic checks. Substantial work is incomplete unless \`dreative finalize --codex --profile <direction> --visual-smoke-url <preview-url>\` succeeds against the current source and prints \`DREATIVE_CHECKS_PASSED\`; Showcase also requires \`--mechanism-contract <file-or-json>\`. This marker certifies command success only, not visual quality. After any finalization failure, report the build as incomplete and list the blockers.\n${DREATIVE_AGENT_END}`;
+  const block = `${DREATIVE_AGENT_START}\n## Dreative frontend design-builder\nFor frontend design or redesign work, read \`.codex/skills/dreative/SKILL.md\` first. Generate mockups and imagery with your built-in image_gen tool and bring each file into the project with \`dreative media import\`; build the real mechanism against that material on the first pass. Build in the real application, inspect the rendered full page at desktop and mobile, correct visible failures, and run the project's deterministic checks. Substantial work is incomplete unless \`dreative finalize --codex --profile <direction> --visual-smoke-url <preview-url>\` succeeds against the current source and prints \`DREATIVE_CHECKS_PASSED\`; Showcase also requires \`--mechanism-contract <file-or-json>\`. This marker certifies command success only, not visual quality. After any finalization failure, report the build as incomplete and list the blockers.\n${DREATIVE_AGENT_END}`;
   const pattern = new RegExp(`\\n?${DREATIVE_AGENT_START}[\\s\\S]*?${DREATIVE_AGENT_END}\\n?`, "g");
   const legacy = /\n?<!-- dreative-skill -->[\s\S]*?(?=\n{2,}|$)/g;
   const stripped = existing.replace(pattern, "\n").replace(legacy, "\n").trimEnd();

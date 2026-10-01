@@ -19,6 +19,9 @@ import { renderLook, runLook } from "./look.js";
 import { runMotionCapture } from "./motionCapture.js";
 import { inspectMedia } from "./mediaInspect.js";
 import { generateImages, parseAspect, probeMedia, renderProbe, searchImages, type PhotoSource, type Provider } from "./media.js";
+import { fillShots, importImage, latestCodexImage, placeShots, shotStatus } from "./shots.js";
+import { fixDoctor, renderDoctor, runDoctor } from "./doctor.js";
+import os from "node:os";
 import { availableSkills, checkSkillInstallation, installSkill, installationDirectory, resolveSkillSelection } from "./installSkill.js";
 import { CREATIVE_MECHANISMS, renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
 import { renderConfigurationChoices, renderDeliveryBrief, renderDetailedPlanGuide, type DeliveryProfileId } from "../shared/deliveryProfiles.js";
@@ -46,7 +49,9 @@ const USAGE = `usage: dreative [command]
                    --configure efficient|recommended|showcase
                    --detailed efficient|recommended|showcase
   install-skill    exact-sync the packaged skill and write a hashed manifest
-                   --list | --skills all|a,b | --codex | --check
+                   --list | --skills all|a,b | --codex | --claude | --check | --global (user-level ~/.claude or ~/.codex)
+  doctor           check machine tools, host image generation, skill installs and project packages
+                   [--fix] installs missing project motion packages and Playwright Chromium; [--json]
   preflight        detect the current framework, package manager, scripts and capabilities
                    --mechanisms a,b   resolve mechanism-led package/install requirements
                    --permissions file-or-json
@@ -68,6 +73,10 @@ const USAGE = `usage: dreative [command]
   media generate   generate images with the first configured provider
                    --prompt TEXT --out DIR [--name base] [--aspect 4:5] [--count 1-8]
                    [--provider auto|openai|gemini|fal|replicate|pollinations] [--ref img ...] [--seed n] [--model id]
+  media placeholder  write labelled SVG placeholders for every shot in .dreative/shots.json [--shots FILE]
+  media fill       generate every placeholder shot with a keyed provider and rewrite references [--only a,b] [--provider p]
+  media import     bring an image into the project: --file PATH | --latest-codex, then --shots FILE --shot ID | --out DIR --name n
+  media status     list shots and whether each has a real image [--shots FILE]
   media search     download licensed photo candidates with attribution
                    --query TEXT --out DIR [--source auto|openverse|pexels|unsplash|pixabay] [--count 12]
   media-inspect    inspect a local video, still, or image directory with FFmpeg
@@ -87,10 +96,12 @@ async function installCommand(): Promise<void> {
     return;
   }
   const target = hostTarget();
+  const global = args.includes("--global");
+  const baseDir = global ? os.homedir() : process.cwd();
   if (args.includes("--check")) {
-    const errors = checkSkillInstallation({ sourceDir: packagedSkillDir, projectDir: process.cwd(), packageVersion, target });
+    const errors = checkSkillInstallation({ sourceDir: packagedSkillDir, projectDir: baseDir, packageVersion, target });
     if (errors.length) { errors.forEach((error) => console.error(`ERROR ${error}`)); process.exitCode = 1; return; }
-    const manifest = JSON.parse(fs.readFileSync(path.join(installationDirectory(process.cwd(), target), ".dreative-install.json"), "utf8"));
+    const manifest = JSON.parse(fs.readFileSync(path.join(installationDirectory(baseDir, target), ".dreative-install.json"), "utf8"));
     console.log(`ok — exact ${target} installation verified`);
     console.log(`specialist skills: ${manifest.selectedSkills.join(", ") || "none"}`);
     return;
@@ -104,8 +115,8 @@ async function installCommand(): Promise<void> {
     rl.close();
   }
   const selection = resolveSkillSelection(raw, available);
-  const manifest = installSkill({ sourceDir: packagedSkillDir, projectDir: process.cwd(), packageVersion, target, ...selection });
-  console.log(`installed exact ${target} skill set to ${installationDirectory(process.cwd(), target)}`);
+  const manifest = installSkill({ sourceDir: packagedSkillDir, projectDir: baseDir, packageVersion, target, ...selection, agentsPointer: !global });
+  console.log(`installed exact ${target} skill set to ${installationDirectory(baseDir, target)}`);
   console.log(`specialist skills: ${manifest.selectedSkills.join(", ") || "none"}`);
 }
 
@@ -118,7 +129,8 @@ async function main(): Promise<void> {
       const all = (flag: string) => args.flatMap((a, i) => (a === flag && args[i + 1] && !args[i + 1].startsWith("--") ? [args[i + 1]] : []));
       const numeric = (flag: string) => (value(flag) === undefined ? undefined : Number(value(flag)));
       if (sub === "probe") {
-        const report = probeMedia();
+        const host = detectCodingHost(process.cwd()).name;
+        const report = probeMedia(process.env, undefined, host === "codex" || host === "claude" ? host : "unknown");
         console.log(args.includes("--json") ? JSON.stringify(report, null, 2) : renderProbe(report));
         return;
       }
@@ -143,7 +155,35 @@ async function main(): Promise<void> {
         if (!images.length) process.exitCode = 1;
         return;
       }
-      throw new Error("usage: dreative media probe|generate|search (see --help)");
+      const shots = value("--shots") ?? (sub && ["placeholder", "fill", "status"].includes(sub) ? ".dreative/shots.json" : undefined);
+      if (sub === "placeholder") {
+        const { created, skipped } = placeShots(path.resolve(shots!));
+        for (const file of created) console.log(`PLACEHOLDER ${file}`);
+        for (const item of skipped) console.log(`kept ${item}`);
+        console.log("Reference each shot by its file (e.g. /media/<id>.svg); fill/import rewrites those references when the real image arrives.");
+        return;
+      }
+      if (sub === "fill") {
+        const done = await fillShots(path.resolve(shots!), { provider: (value("--provider") ?? "auto") as Provider | "auto", only: value("--only")?.split(",") });
+        for (const d of done) console.log(`FILLED ${d.id} → ${d.file}${d.rewritten.length ? ` (updated ${d.rewritten.join(", ")})` : ""}`);
+        if (!done.length) console.log("nothing to fill: every shot already has an image");
+        return;
+      }
+      if (sub === "import") {
+        const from = args.includes("--latest-codex") ? latestCodexImage() : value("--file");
+        if (!from) throw new Error("media import needs --file PATH or --latest-codex");
+        const result = importImage({ from, shots: value("--shots"), shot: value("--shot"), out: value("--out") && path.resolve(value("--out")!), name: value("--name"),
+          source: args.includes("--latest-codex") ? "codex image_gen" : undefined });
+        console.log(`IMPORTED ${from} → ${result.file}${result.rewritten.length ? ` (updated ${result.rewritten.join(", ")})` : ""}`);
+        return;
+      }
+      if (sub === "status") {
+        const { rows, open } = shotStatus(path.resolve(shots!));
+        for (const r of rows) console.log(`${r.status.padEnd(11)} ${r.id.padEnd(20)} ${r.file}${r.role ? `  (${r.role})` : ""}`);
+        console.log(open ? `${open} shot(s) still need real images — report them as open.` : "all shots have real images");
+        return;
+      }
+      throw new Error("usage: dreative media probe|generate|search|placeholder|fill|import|status (see --help)");
     }
     case "media-inspect": {
       const value = (flag: string) => { const i = args.indexOf(flag); return i >= 0 ? args[i + 1] : undefined; };
@@ -199,6 +239,13 @@ async function main(): Promise<void> {
       return;
     }
     case "install-skill": await installCommand(); return;
+    case "doctor": {
+      const items = await runDoctor({ projectDir: process.cwd() });
+      if (args.includes("--json")) { console.log(JSON.stringify(items, null, 2)); return; }
+      console.log(renderDoctor(items));
+      if (args.includes("--fix")) for (const line of fixDoctor(items, process.cwd())) console.log(line);
+      return;
+    }
     case "finalize": {
       const valueAfter = (flag: string): string | undefined => { const index = args.indexOf(flag); return index >= 0 ? args[index + 1] : undefined; };
       const smokeIndex = args.indexOf("--visual-smoke-url");

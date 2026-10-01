@@ -18,9 +18,12 @@ direction; an unconvincing invented physical product is a defect.
 
 ## Tools for the job
 
-`dreative media probe` lists what is callable here. Then, in order of usefulness:
+`dreative doctor` and `dreative media probe` list what is callable here. Then, in
+order of usefulness:
 
-1. **Host image tool** (e.g. a built-in image generation/edit tool) when present.
+1. **Host image tool** when present. Codex: built-in `image_gen`; its files land in
+   `~/.codex/generated_images/<session>/` — import each with
+   `dreative media import --latest-codex --shots .dreative/shots.json --shot <id>`.
 2. **`dreative media generate`** with a configured key — OpenAI (`OPENAI_API_KEY`),
    Gemini (`GEMINI_API_KEY`), fal (`FAL_KEY`) or Replicate (`REPLICATE_API_TOKEN`).
    `--ref <image>` (OpenAI/Gemini) keeps one subject consistent across views.
@@ -29,13 +32,15 @@ direction; an unconvincing invented physical product is a defect.
 3. **`dreative media search`** — Openverse without a key; Pexels, Unsplash and
    Pixabay with their keys. Downloads are validated as real images and recorded with
    licence and attribution in `sources.json`.
-4. **Keyless generation** (`--provider pollinations`, chosen automatically when
-   nothing else exists) is low fidelity and watermarked: composition studies only.
+4. **Placeholders** (`dreative media placeholder`) when no generator exists, e.g.
+   Claude Code without a key: labelled SVGs at the final aspect carrying the shot
+   brief, swapped later by `fill`/`import` with references rewritten. Keyless
+   `--provider pollinations` exists for rough composition studies only (watermarked).
 5. Local production: ffmpeg, ImageMagick (`magick`), Pillow, Blender for derivatives,
    grading, sequences and renders.
 
-In an interactive session with no keyed generator, ask the user once for a key
-before settling for lower-grade material on a subject-led brief. With lazy tool
+With no generator, tell the user once which key or host would fill the open shots,
+then keep building around placeholders rather than lower-grade lookalikes. With lazy tool
 discovery, search specifically for image generation/editing, not only browser tools.
 
 ## Search in useful batches

@@ -118,7 +118,7 @@ function toolReady(binary: string, args: string[]): boolean {
   return result.status === 0;
 }
 
-export function probeMedia(env: Env = process.env, checkTool: (b: string, a: string[]) => boolean = toolReady): ProbeReport {
+export function probeMedia(env: Env = process.env, checkTool: (b: string, a: string[]) => boolean = toolReady, host: "codex" | "claude" | "unknown" = "unknown"): ProbeReport {
   const notes: Record<Provider, string> = {
     openai: "gpt-image class; best text rendering and edits with reference images",
     gemini: "Gemini image; strong reference-consistent edits and sets",
@@ -144,9 +144,11 @@ export function probeMedia(env: Env = process.env, checkTool: (b: string, a: str
     { id: "blender", ready: checkTool("blender", ["--version"]) },
   ];
   const strong = generators.filter((g) => g.ready && g.id !== "pollinations");
-  const recommendation = strong.length
-    ? `Generate with ${strong[0].id} (dreative media generate --provider ${strong[0].id}). Use the host's own image tool instead if it has one.`
-    : "No keyed generator in this environment. If the host has a built-in image tool, use it. Otherwise, in an interactive session ask the user once for OPENAI_API_KEY, GEMINI_API_KEY, FAL_KEY or REPLICATE_API_TOKEN; in an autonomous run use openverse photography, pollinations for exploration only, or an authored graphic direction, and disclose the limit.";
+  const recommendation = host === "codex"
+    ? "Codex: generate mockups and assets with the built-in image_gen tool, then copy each into the project with `dreative media import --latest-codex --shots .dreative/shots.json --shot <id>` (or --out/--name)."
+    : strong.length
+    ? `Generate with ${strong[0].id}: dreative media generate --provider ${strong[0].id}, or fill declared shots with dreative media fill --shots .dreative/shots.json.`
+    : "No image generator here. Declare every needed image in .dreative/shots.json, run `dreative media placeholder --shots .dreative/shots.json`, and build around the placeholders. Tell the user which shots remain; they fill with a key (OPENAI_API_KEY, GEMINI_API_KEY, FAL_KEY, REPLICATE_API_TOKEN) via `dreative media fill`, or from Codex via `dreative media import`.";
   return { generators, photoSources, localTools, recommendation };
 }
 
@@ -187,7 +189,9 @@ function pickProvider(requested: Provider | "auto", env: Env, wantsRef: boolean)
   const ready = PROVIDER_ORDER.filter((p) => p !== "pollinations" && providerKey(p, env) && (!wantsRef || REF_PROVIDERS.has(p)));
   if (ready.length) return ready[0];
   if (wantsRef) throw new Error("reference-guided generation needs OPENAI_API_KEY or GEMINI_API_KEY (or the host's own image-edit tool)");
-  return "pollinations";
+  throw new Error("NO_IMAGE_GENERATOR: no keyed provider is configured. Codex: use the built-in image_gen tool, then `dreative media import`. "
+    + "Claude/other hosts: declare shots in .dreative/shots.json and run `dreative media placeholder`; fill them later with a key or Codex. "
+    + "(`--provider pollinations` gives keyless, watermarked exploration images.)");
 }
 
 const mime = (file: string) => /\.png$/i.test(file) ? "image/png" : /\.webp$/i.test(file) ? "image/webp" : "image/jpeg";

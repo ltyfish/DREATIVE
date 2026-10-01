@@ -28,7 +28,8 @@ test("probe reports key names, never values, and recommends a keyed provider fir
   assert.equal(report.photoSources.find((s) => s.id === "pexels")!.ready, true);
   assert.match(report.recommendation, /gemini/);
   assert.doesNotMatch(JSON.stringify(report), /secret-value/);
-  assert.match(probeMedia({}, () => false).recommendation, /ask the user once/);
+  assert.match(probeMedia({}, () => false).recommendation, /placeholder/);
+  assert.match(probeMedia({}, () => false, "codex").recommendation, /image_gen/);
 });
 
 test("openai generation writes validated images, manifest and contact sheet", async () => {
@@ -70,7 +71,8 @@ test("provider selection fails clearly instead of faking output", async () => {
     await assert.rejects(generateImages({ prompt: "x", out, provider: "fal", refs: [], env: { FAL_KEY: "f" }, fetcher: fakeFetch(() => jsonResponse({ images: [] })) }), /no images/);
     const ref = path.join(out, "r.png"); fs.writeFileSync(ref, PNG);
     await assert.rejects(generateImages({ prompt: "x", out, refs: [ref], env: { FAL_KEY: "f" }, fetcher: fakeFetch(() => jsonResponse({})) }), /OPENAI_API_KEY or GEMINI_API_KEY/);
-    await assert.rejects(generateImages({ prompt: "x", out, env: {}, fetcher: fakeFetch(() => new Response("<html>busy</html>")) }), /not an image/);
+    await assert.rejects(generateImages({ prompt: "x", out, env: {}, fetcher: fakeFetch(() => new Response(JPEG)) }), /NO_IMAGE_GENERATOR/);
+    await assert.rejects(generateImages({ prompt: "x", out, provider: "pollinations", env: {}, fetcher: fakeFetch(() => new Response("<html>busy</html>")) }), /not an image/);
     await assert.rejects(generateImages({ prompt: "x", out, provider: "openai", env: { OPENAI_API_KEY: "k" }, fetcher: fakeFetch(() => jsonResponse({ error: "nope" }, 429)) }), /rate limited/);
   } finally { fs.rmSync(out, { recursive: true, force: true }); }
 });
@@ -78,7 +80,7 @@ test("provider selection fails clearly instead of faking output", async () => {
 test("keyless fallback is labelled exploration quality", async () => {
   const out = dir(), calls: Call[] = [];
   try {
-    const [r] = await generateImages({ prompt: "linen shirt", out, seed: 4, env: {}, fetcher: fakeFetch(() => new Response(JPEG), calls) });
+    const [r] = await generateImages({ prompt: "linen shirt", out, seed: 4, provider: "pollinations", env: {}, fetcher: fakeFetch(() => new Response(JPEG), calls) });
     assert.equal(r.provider, "pollinations");
     assert.equal(r.quality, "exploration");
     assert.match(calls[0].url, /seed=4/);

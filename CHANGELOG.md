@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.7.0
+
+- Host-specific imagery: Codex uses its built-in `image_gen` and `dreative media
+  import --latest-codex`; Claude Code without a key builds around declared
+  placeholder shots instead of sourcing lookalikes or drawing products.
+- Add `.dreative/shots.json` shot lists with `dreative media placeholder | fill |
+  import | status`. Placeholders are labelled SVGs at the final aspect carrying
+  their brief; fill/import validate the image, replace the file and rewrite exact
+  references in project source.
+- `media generate` no longer silently falls back to keyless output; it explains the
+  Codex/placeholder routes (`--provider pollinations` remains explicit).
+- Add `dreative doctor [--fix]`: machine tools, Codex image generation, generator
+  and photo keys, skill installs, project motion packages and shot status, each with
+  its install command; `--fix` installs gsap/lenis/@gsap/react and Chromium.
+- Add `install-skill --global` for user-level Claude/Codex installs.
+- Move `@playwright/test` to runtime dependencies: the browser commands import it,
+  so a non-linked global install previously could not start.
+
 ## 1.6.0
 
 - Add `dreative media probe|generate|search`: provider-neutral image generation
