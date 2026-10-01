@@ -11,21 +11,37 @@ Distinguish an exact product image from contextual editorial imagery. A differen
 garment, machine, or finish must not be presented as the one being sold.
 
 Start with supplied assets and the product's own authorized media. Then select
-the most suitable route: licensed photography/footage, an existing model rendered
-to the required view, commissioned/generated illustration, or authored graphics.
-There is no universal medium ranking. Type, SVG, and procedural graphics can be
-the intended art direction; an unconvincing invented physical product is a defect.
+the most suitable route: generated images, licensed photography/footage, an existing
+model rendered to the required view, or authored graphics. There is no universal
+medium ranking. Type, SVG, and procedural graphics can be the intended art
+direction; an unconvincing invented physical product is a defect.
+
+## Tools for the job
+
+`dreative media probe` lists what is callable here. Then, in order of usefulness:
+
+1. **Host image tool** (e.g. a built-in image generation/edit tool) when present.
+2. **`dreative media generate`** with a configured key — OpenAI (`OPENAI_API_KEY`),
+   Gemini (`GEMINI_API_KEY`), fal (`FAL_KEY`) or Replicate (`REPLICATE_API_TOKEN`).
+   `--ref <image>` (OpenAI/Gemini) keeps one subject consistent across views.
+   Output, prompt, seed, size and hash land in `generated.json`; `contact.html`
+   shows the set side by side.
+3. **`dreative media search`** — Openverse without a key; Pexels, Unsplash and
+   Pixabay with their keys. Downloads are validated as real images and recorded with
+   licence and attribution in `sources.json`.
+4. **Keyless generation** (`--provider pollinations`, chosen automatically when
+   nothing else exists) is low fidelity and watermarked: composition studies only.
+5. Local production: ffmpeg, ImageMagick (`magick`), Pillow, Blender for derivatives,
+   grading, sequences and renders.
+
+In an interactive session with no keyed generator, ask the user once for a key
+before settling for lower-grade material on a subject-led brief. With lazy tool
+discovery, search specifically for image generation/editing, not only browser tools.
 
 ## Search in useful batches
 
-First discover the current host's callable image search, image editing/generation,
-video generation, and asset connectors when relevant. Probe local production
-tools separately. Availability in another host or a recommended-plugin list is
-not availability here. Distinguish ready, missing credentials, unavailable, and
-disallowed; do not treat unknown as disallowed. Keep this a short decision note.
-With lazy tool discovery, search specifically for the needed production capability
-(image generation/editing, footage, or video generation), not just browser tools.
-No result from a browser-only search says nothing about generation availability.
+Distinguish ready, missing credentials, unavailable, and disallowed; do not treat
+unknown as disallowed. Keep this a short decision note.
 
 Search the exact subject, its process/material/environment, and the desired shot
 language. Inspect a contact sheet or search-result grid with labels instead of
@@ -130,6 +146,12 @@ generating a lookalike and claiming it is the product.
 A useful generation brief specifies:
 subject/reference identity; camera and lens/view; composition with copy space;
 lighting/material; background; output aspect/size/alpha; permitted changes.
+For a product set, fix one shared suffix and vary only the item, e.g.
+`"<item description>, ecommerce studio photograph, front view, centred with 12%
+margin, soft diffuse key light from left, seamless warm grey #d9d4cc background,
+no props, no text, 85mm, high fabric detail"`; for editorial/context shots add
+subject, place, time of day, lens and mood. Generate one, inspect at placement size,
+then the set; use `--ref` for alternate views of the same item.
 Generate a contact sheet or one decisive shot first if that can resolve the choice.
 For a set, hold camera, light, background, and subject identity constant; inspect
 consistency before paying for more. Independently generated stills are not a

@@ -1,6 +1,7 @@
 # Creative execution
 
 Read this when choosing or integrating a runtime for a concrete visual result.
+Working setup code and recipes are in `MOTION_RECIPES.md`.
 Use `CREATIVE_RESOURCES.md` for a targeted external resource lookup.
 
 For an advanced mechanism, understand its visible or expressive purpose, owner,
@@ -22,8 +23,9 @@ its capabilities.
   state changes in product interfaces.
 - GSAP: coordinated timelines, reversible sequences, pinning, scrubbing,
   shared-element movement, and DOM/SVG/WebGL choreography.
-- Lenis: intentional interpolated scrolling, velocity-driven behavior, or a
-  controlled horizontal/infinite rail. It is not a default polish layer.
+- Lenis: interpolated scrolling for scroll-led, image-heavy pages, velocity-driven
+  behavior, or a controlled rail. Set it up per R0 in `MOTION_RECIPES.md`; keep
+  native scroll on task-heavy surfaces and nested scroll containers.
 - Three.js/OGL/R3F: spatial behavior that materially explains, demonstrates,
   or embodies the subject.
 - Canvas: dense procedural drawing or continuous simulation that DOM/SVG cannot

@@ -4,6 +4,12 @@ For open visual design or implementation from a mockup,
 `references/VISUAL_DESIGN.md` covers image-led composition, separate asset
 production, responsive translation and comparison to the selected design.
 
+Asset production: `dreative media probe` lists callable generators/sources;
+`dreative media generate --prompt ... --out ...` and `dreative media search
+--query ... --out ...` produce validated images with provenance manifests.
+Motion code: `references/MOTION_RECIPES.md` (GSAP/ScrollTrigger/Lenis setup,
+timing tokens, tested recipes; lab in `systems/motion-recipes.html`).
+
 Search the small machine-readable system set after selecting an advanced need:
 
     dreative catalogue --query "persistent product" --json

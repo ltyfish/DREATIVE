@@ -1,101 +1,65 @@
-# Visual directions, selection, execution
+# Directions, selection, execution
 
-Use this for open frontend design or redesign. For a scoped fix or an already
-chosen design, preserve that direction and do the relevant work directly.
+Use for open frontend design or redesign. For a scoped fix or an already chosen
+design, keep that direction and do the work directly.
 
-## Prototype means visual choices first
+## Make the directions viewable
 
-Inspect the actual brief, behavior, content, assets and tools. Develop the ideas
-with `references/CREATIVE_DIRECTION.md`. For ambitious motion, operate a relevant
-live reference or inspect its creator's recording before settling on the event.
-Bring the useful construction insight into the options, not just a reference URL.
-Before generating,
-use the pre-generation study in `references/VISUAL_DESIGN.md`: develop the ideas,
-their actual content and asset needs, and the motion states that affect layout.
-Show a short rationale for the proposed exploration; this adds no approval stop.
-Then use
-`references/VISUAL_DESIGN.md` to generate multiple materially different design
-directions. Two or three is a useful starting range; adapt to the user's request
-and available budget. Each direction needs an actual viewable page image and a
-concise implementation plan. Text descriptions, palette swaps and alternate
-filters on the same hero do not provide the visual choice being requested.
+Each direction needs something the user can look at, built from real material:
 
-When movement defines the direction, use a small moving experiment if a still
-cannot answer the important question. Test the uncertain transition or material,
-not a full alternative site. It may happen during exploration; the production
-slice follows selection. Show what has actually been demonstrated separately
-from what is planned. Do not spend the exploration budget making polished page
-images of a concept whose essential material or motion already looks weak.
+1. **Generated page compositions** when an image generator is callable
+   (host tool or `dreative media generate`). Follow `references/VISUAL_DESIGN.md`:
+   front-on page at an explicit viewport, real content, opening, working middle and
+   ending; sectional images when a full page becomes too small to judge.
+2. **Coded studies** otherwise, or when motion is the question a still cannot answer.
+   Build the direction's opening and signature moment in the real application with
+   its real images and type (a `/study/<id>` route, or a page under `design/`).
+   Screenshot 1440 and 390 and record it with `dreative motion-capture`. Keep each
+   study small — one opening, one transformation, one glimpse of the working state —
+   and write it as production code so the selected study becomes the build.
 
-Explore page structure, image relationships, typography and visual character.
-Show the working middle and ending as well as the opening; use related sectional
-images when a full-page image becomes unreadably small. Preserve real content
-and product identity. Keep options credible at the available production budget.
+Generate or source the subject imagery before either form (SKILL step 3). HTML
+mockup slideshows that will be thrown away, prompts presented as images, and
+sourced references labelled as generated designs do not count as directions.
 
-For each direction, present together:
+## Present
 
-- A short name, its design image(s), and the idea that distinguishes it.
-- Page composition and primary user journey, including dense or working content.
-- What imagery must be sourced/generated and what existing material can be reused.
-- Interaction and motion intent where useful: what changes, what drives it and
-  where it resolves. A still does not demonstrate motion.
-- Mobile adaptation, implementation approach, major uncertainty and relative cost.
+For each direction, together:
 
-Recommend one with a concrete reason, then **stop for the user's selection**.
-They can choose, combine specified parts, or request a visual revision. If they
-request a revision, update the affected images and plan before asking again.
-Do not implement the site while this requested decision is pending. An explicit
-instruction to choose autonomously or an existing selection overrides the stop.
-Choosing a delivery budget/profile is not choosing a visual design.
+- Name, images or recording, and the idea in one sentence.
+- Route: opening → development → working task → ending, with the dense content.
+- Signature moment score and what has actually been demonstrated versus planned.
+- Material: what was generated/sourced, what remains, and its route.
+- Mobile and reduced-motion form, implementation approach, main risk, relative cost.
 
-If generation is missing or disallowed, say what is unavailable and offer a
-concrete visual alternative. A prompt is not an image, and a sourced reference
-must not be labelled as a generated design. Do not silently skip the gate or
-substitute one coded hero. Honor source limits and existing tool authorization.
+Two or three directions is the usual range. Each must be credible at the available
+budget; never pair a polished favourite with a strawman. Recommend one with a
+concrete reason, then **stop for the user's selection**. They may choose, combine
+named parts, or ask for a revision (update the affected images/studies, then ask
+again). An explicit instruction to choose autonomously, or an existing selection,
+replaces the stop. Delivery profiles are budgets, not visual options.
 
-## Execute the chosen design
+If no generator, source or authored route can produce the subject view the task
+needs, say which view is missing and what would unlock it (a key, supplied
+photos), keep working on everything independent of it, and keep that requirement
+visibly open rather than swapping the task for an editorial one.
 
-Carry the exact selected images and user changes into the implementation note.
-Read their composition into layout, typography, asset roles and responsive rules
-using `references/VISUAL_DESIGN.md`. Obtain usable separate assets through
-`references/MEDIA_SOURCES.md`; a flattened mockup is not a layered asset pack.
-Build live content and controls in the real application.
+## Execute the selection
 
-First implement a representative composition and its adjacent region so you can
-compare the render to the chosen image before mistakes spread. When a mechanism
-is consequentially uncertain, prototype it at intended fidelity with actual
-material and its real destination. This is an implementation experiment after
-direction selection, not a second automatic approval gate. A local effect and a
-separate destination shown in two screenshots do not demonstrate their transition:
-operate the passage between them and compare it to the selected intent.
+Copy the selected images, study code and user edits into `.dreative/NOTE.md`.
+Translate the composition into layout, type, asset roles and responsive rules
+(`references/VISUAL_DESIGN.md`); a flattened mockup is not a layered asset pack, so
+produce separate assets for each role.
 
-For ambitious motion, use `references/CHOREOGRAPHY.md` and relevant production
-studies. Build the actual scroll/animation/spatial mechanism; preserve the visual
-intent through its entry, development and resolution. Quiet designs need no
-invented set-piece. Reuse successful code and fund unresolved parts of the route,
-including the primary interaction and ending, before repeatedly polishing the hero.
+Then follow SKILL steps 5–9: foundation, signature moment at full fidelity into its
+real destination, the rest of the route including task and ending, browser review,
+finalize. Compare the browser render against the selected design at matching
+widths and states; correct composition, subject scale, type and spacing before
+fine effects. Disclose any material deviation from the selected design.
 
-Inspect the selected design alongside the real browser at corresponding widths
-and states. Correct composition, subject scale, type and spacing before fine
-effects. Test mobile reflow, task behavior and motion separately. Complete the
-rendered refinement and finalization in `SKILL.md`; disclose material deviations.
+## Budget
 
-## Keep execution choices out of the design decision
-
-Recommended is the default complete delivery. Efficient scopes down production
-or handles targeted changes. Showcase is an explicitly selected advanced delivery
-with its existing contract in `references/SHOWCASE.md`. These are compatible CLI
-profiles, not the visual alternatives presented to the user. Do not make the
-user configure a matrix of review depth, packages and treatments before seeing
-designs. Infer routine choices from the brief and authorization; ask only when a
-missing constraint changes the proposed outcome.
-
-Keep a compact note with the selected image paths, user edits, defining spatial
-choices, content/behavior, actual assets, implementation risks and next step.
-Include motion ownership and mobile/reduced-motion form when motion is present.
-No extra planning schema, approval hash or taste score is needed in ordinary work.
-The testbed's explicit file protocol is only for its local selection interface.
-
-Reserve budget for production assets, implementation and browser correction.
-Each generation or retry should resolve a named design problem. Avoid generating
-more directions after the user has selected one unless they request a change.
+Spend on material, the signature moment and browser correction. Each generation
+or retry should fix a named problem. After selection, generate new directions only
+when the user asks. Infer routine configuration from the brief; ask only when a
+missing constraint changes the outcome.

@@ -1,192 +1,181 @@
 ---
 name: dreative
-description: Design distinctive websites through generated visual directions, user selection, faithful implementation, and browser refinement. Use for frontend design and redesign, with sourced or generated assets and authored motion when the chosen design calls for it.
+description: Design and build distinctive, award-calibre websites with authored motion. Plans concepts, sources or generates real imagery, builds scroll/transition choreography with GSAP/Lenis recipes, and refines in the browser. Use for any frontend design or redesign, landing, product, ecommerce or portfolio site, and any request for creative motion, scroll animation, immersive or Awwwards-style work.
 ---
 
 # Dreative
 
-Design visually, build faithfully, refine in the browser. Dreative is a general
-frontend design skill: composition, typography, imagery, structure and usability
-are its core. Motion is a creative capability that serves the selected design;
-it can lead when the user requests a motion-led experience.
+The goal is a site people remember: one clear idea, real art-directed material,
+motion that carries that idea from the first screen into the task, and execution
+that holds at 1440px, 390px and reduced motion. Composition, typography, imagery
+and usability come first; motion is how the idea moves through them.
 
-For an ambitious or Awwwards-style brief, pursue a distinctive moving experience:
-art-directed material, expressive typography, surprising spatial relationships,
-and deliberate pacing through the useful parts of the site. Atmosphere, delight
-and dramatic transitions are valid goals, alongside clarity and usability.
-The resources below teach ways to explore and build; they are not a house style,
-an approved effects menu, or a formula for award-worthy work.
+Work through the steps in order. Each step names its command or file. Deeper
+references are listed at the end; open one when its step says so.
 
-## Start here
+## 1. Inventory (short)
 
-Inspect the repository, user brief, existing behavior, assets, and available tools.
-Respect supplied references, named effects, intensity, budget, and authorization.
-For an open design use `PLAN.md` and the exploration method in
-`references/CREATIVE_DIRECTION.md`: plan distinct concepts and their material,
-composition and behavior before generating images; generate visual directions with concrete
-plans, show the images and recommend one, then stop for the user's choice before
-implementation. Small material or motion experiments can inform that choice;
-they do not authorize building the full site before selection.
-An existing design selection or explicit delegation to choose
-autonomously takes precedence. Do not confuse budget profiles with design options.
+- Read the brief, required content, primary tasks, existing code/assets and stack.
+- Run `dreative media probe`. It lists callable generators, photo sources and local
+  tools. Also check the host's own tools (an image-generation tool, browser, MCP).
+- Keep `.dreative/NOTE.md` as working memory: concept, selected images, assets
+  and their sources, signature moment score, runtime, mobile/reduced forms, open risks.
 
-Use `references/VISUAL_DESIGN.md` for the image-led direction stage and its
-translation into layout, separate assets and real controls. Keep the selected
-image in view through implementation and compare the browser render against it.
-Supplied designs enter at translation; scoped fixes need no new concept round.
+If no image generator is available and someone can answer, ask once for a key
+(`OPENAI_API_KEY`, `GEMINI_API_KEY`, `FAL_KEY` or `REPLICATE_API_TOKEN`) — subject
+imagery decides most outcomes. In an autonomous run, continue with the best route.
 
-Keep a short implementation note: concept, actual assets, visible motion beats,
-runtime owner, mobile form, primary user task, and unresolved risks. It is working
-memory, not an approval artifact or a score. Existing `.dreative/context.json`
-is fallible memory; reconcile it against the project.
+## 2. Concept: two or three directions that differ in experience
 
-Keep the task fixed while exploring its presentation. Missing material is a
-production problem, not permission to replace a shop with an editorial study.
-Name an unresolved dependency without letting it consume the whole exploration;
-continue the useful work that does not depend on it. See `references/MEDIA_SOURCES.md` for
-bounded recovery and representative imagery for fictional subjects.
+For each direction write, briefly:
 
-## Build the selected composition
+- **Idea** — one sentence about the subject (a tension, gesture, material or behaviour).
+- **Signature moment** — the score `input → establish → transform → hold → handoff →
+  release`, naming the real image/text that moves and the element it lands in.
+- **Route** — opening, development, the working task (shop, read, compare, sign up),
+  ending. Each region gets a decided composition, not a default card row.
+- **Material** — the exact shots needed (subject, view, light, background, crop) and
+  the route to each: supplied, generated, sourced, rendered or authored type/graphics.
+- **Type and colour** — a display face with character, a text face, 3–5 colours
+  taken from the material, one accent.
 
-Obtain the imagery and materials that make the chosen direction work. Build a
-representative composition and its adjacent region in the real application;
-compare it to the chosen design before extending the route. Preserve its defining
-spatial choices while making content, interactions and mobile reflow real.
-Follow `references/MEDIA_SOURCES.md` for sourcing and generation, and
-`references/VISUAL_REFINEMENT.md` for matched-state browser correction.
+Directions differ by how the visitor experiences the subject (index, journey,
+editorial cuts, spatial scene, typographic argument), not by palette or filter.
+`references/CREATIVE_DIRECTION.md` and `references/CHOREOGRAPHY.md` help develop them.
 
-## When motion is part of the design
+## 3. Material first
 
-For motion-led work, use `references/CHOREOGRAPHY.md` before selecting the focal
-effect. Arrange the actual content and material into a journey with a useful
-destination. The first viewport, development, primary task, and ending should
-belong to that idea. An outline of headings cannot show this: use material at
-its intended scale, in rough compositions or an equivalent visual study.
-For an ambitious bespoke motion brief, study a relevant live passage through
-`references/PRODUCTION_STUDIES.md` or the user's references before settling on
-the mechanism. Observe its input, timing, material and destination; then obtain
-the useful implementation source through `references/CREATIVE_RESOURCES.md`.
-Compare ways of experiencing the subject, not filters on the same hero.
+Produce the hero image and one real subject view for each direction before any
+mockup. Inspect them at intended size; a weak image makes a weak direction.
 
-Resolve the material and tool uncertainty before the effect locks in a visual
-language. Discover callable sourcing/generation capabilities as well as local
-production tools; a failed stock endpoint is an access finding, not an art
-direction. See `references/MEDIA_SOURCES.md` for recovery choices.
+```
+dreative media generate --prompt "<shot brief>" --out public/media/gen --name hero --aspect 16:9
+dreative media generate --prompt "<same light/background/camera> <item>" --out public/media/gen --name item-01 --aspect 4:5
+dreative media generate --ref public/media/gen/item-01.png --prompt "same garment, back view" --out ... (openai/gemini)
+dreative media search --query "<material or context shot>" --out public/media/src
+```
 
-Before completing a motion-led route, build its hardest uncertain moment against
-the actual intended material, with its entry, development, and exit into the next
-region. Inspect it at desktop and mobile. This is a small slice at the intended
-visual fidelity, not an entire first draft and not a substitute fade.
+Prefer the host's own image tool when it has one. Hold camera, light, background and
+crop constant across a product set; generate one, inspect, then the rest. Output
+from `media generate` keyless fallback is marked EXPLORATION: use it to judge
+composition, not as shipped product imagery. Keep `generated.json` / `sources.json`
+(prompts, licences, attribution) with the project. Shot briefs and recovery routes:
+`references/MEDIA_SOURCES.md`.
 
-The slice must prove the relationship survives into the first useful task region
-or a deliberate ending. A local reveal, filter, or FLIP demo followed by ordinary
-independent sections is a mechanism demo, not route continuity. Inspect the
-entry, development, readable hold, destination, and release at desktop and
-mobile, including reduced motion.
+Material rules that apply to every build:
+- Real or generated subject imagery holds the focal seats. Drawn stand-ins for a
+  product the visitor must inspect or buy are a missing requirement, not a style.
+- Fictional subjects get coherent generated representative images, labelled as
+  such where it matters. Real products show the real product.
+- Texture, type, SVG and procedural graphics are excellent when they are the chosen
+  art direction and when a still, crop or texture cannot pretend to be the subject.
 
-A prototype may isolate a shader, crop, scrub, transition, or interaction without
-building unrelated navigation or sections. Include the real receiving composition
-when continuity is the uncertainty. State the question it answers.
-Reuse the successful implementation. Do not promise to replace placeholder motion
-later. If real material or a capability is missing, identify it and pursue the
-closest faithful route; disclose any change to the promised result.
+## 4. Show directions, then stop for selection
 
-For subject-led commerce or another task that requires inspecting a subject,
-classify the subject view as required material. Do not silently fill the primary
-task with hand-drawn stand-ins when the brief promises a real or generated
-product view, unless the chosen concept explicitly makes diagrammatic product
-art the subject. Recompose honestly around a graphic/editorial task or report
-the promised delivery incomplete. Disclosure records the deviation; it does not
-make an unrelated substitute equivalent.
+Give each direction a viewable design: generated page compositions when a
+generator exists (`references/VISUAL_DESIGN.md`), otherwise **coded studies** — the
+direction's opening and signature moment built in the real app with the real
+material (e.g. `/study/a`), screenshotted at 1440 and 390 and recorded with
+`dreative motion-capture`. Studies are production code; the selected one is kept.
 
-After the slice works, test it against the planned whole experience.
-Build the least-resolved passage next, including the primary interaction and ending.
-Preserve required facts and behavior without treating their source grouping as
-the page's section list. Prototype approval applies to the demonstrated scope.
+Present per direction: name, images/recording, idea, route, material and motion
+plan, mobile form, main risk. Recommend one with a concrete reason, then **stop
+for the user's choice**. Skip the stop only when the user selected already or told
+you to choose autonomously. Delivery profiles (efficient/recommended/showcase) are
+budget choices, not designs. Details: `PLAN.md`.
 
-## Read at the decision, not all at once
+## 5. Foundation
 
-| Decision | Resource |
+- Tokens: type scale (display set large: 8–20vw headlines with tight tracking are
+  normal here), spacing, grid, colours, and motion tokens from the recipes.
+- Motion stack: for scroll-led work use GSAP + ScrollTrigger (+ SplitText, Flip) with
+  Lenis, set up exactly as **R0 in `references/MOTION_RECIPES.md`**; read that file
+  now. Use CSS for hover/focus/press, Motion (framer) for React component state,
+  three/R3F/OGL only when the subject is spatial. One owner per animated property.
+- Assets: responsive derivatives (`srcset`, AVIF/WebP), `decode()` critical images,
+  posters for video, explicit width/height.
+
+## 6. Build the signature moment first, at full fidelity
+
+Build the hardest moment with the real material, its entry, its hold and its
+landing in the real destination (usually the first task region). Start from the
+matching recipes (R1–R10) and compose them around the subject. No placeholder
+motion or stand-in image "to replace later": if a real attempt fails, change the
+method and say so.
+
+Then watch it: `dreative motion-capture --url <preview> --out .dreative/capture
+--from <entry selector> --to <destination selector>`. Compare the frames to the
+selected design. Fix crop, scale, timing and the join before moving on.
+
+## 7. Complete the route
+
+Compose each remaining region with its own decided relationship (scale, crop,
+density, mode) while carrying the visual grammar from the signature moment.
+Give the task surfaces the same craft: filtering with Flip, image-to-detail
+handoff, bag/drawer with 0.35–0.6s state motion, visible focus, touch-sized controls.
+Close with a composed ending that returns to the opening idea. Read
+`references/CHOREOGRAPHY.md` when the route feels like a hero followed by a template.
+
+Fund three things separately: responsive controls, continuity between regions, the
+signature set-piece. A quiet region may be still; an unmade decision may not.
+
+## 8. Review in the browser and fix
+
+- Serve the real route. `dreative look --url <preview> --out .dreative/look` and view
+  the tiles; run motion-capture for normal, touch and reduced motion.
+- Check 1440 and 390 (320 when content is dense): crop, hierarchy, overflow,
+  collisions, invisible lower-page content on direct entry, focus, Escape, touch.
+- Scroll slow, fast, reverse and reload mid-page. Pins must release; nothing stays hidden.
+- Fix what you see, recapture, compare to the selected design. `references/VISUAL_REFINEMENT.md`.
+
+## 9. Finalize and report
+
+Run the production build, then
+`dreative finalize --codex|--claude --profile <recommended|efficient|showcase> --visual-smoke-url <preview-url>`
+(Showcase also needs `--mechanism-contract` and `--experience-map`, see
+`references/SHOWCASE.md`). Completion requires `DREATIVE_CHECKS_PASSED`; a failure
+means the build is incomplete — list the blockers. The marker certifies commands,
+not taste.
+
+Report separately: technical checks, whether the selected experience and material
+shipped, and what remains for human taste review. Use **Implementation complete;
+human taste verdict: awaiting user review** only when the requested material,
+behaviour and selected motion actually shipped. Never award yourself acceptance.
+
+## Craft reference points
+
+- **Type**: one expressive display face used big and confidently; a quiet text face;
+  mono/small caps only for real metadata. Set line breaks by hand on display lines.
+- **Layout**: asymmetric 12-column grid, extreme scale contrast (full-bleed image
+  next to small text), generous negative space, deliberate overlaps.
+- **Image**: few large images beat many small ones; crop for the composition;
+  one consistent light and colour family across the set.
+- **Motion**: few motifs, done fully. Ease out strongly (`expo.out`), overlap
+  neighbours, hold resolved states, keep controls live mid-animation.
+- **Generic tells to remove**: centred hero + three cards, uniform fade-up on every
+  block, default palette, motion only in the hero. See `exemplars/SLOP.md` if the
+  render looks generic.
+
+## Resources
+
+| When | Open |
 |---|---|
-| Open concept and user approaches | `PLAN.md`, then `references/CREATIVE_DIRECTION.md` if needed |
-| Generated page mockups, visual exploration, or translating a design image into UI | `references/VISUAL_DESIGN.md` |
-| Worked generation briefs and runnable motion slices | Worked studies in `references/VISUAL_DESIGN.md`, then `systems/production-lab.html` |
-| Motion-led brief, including named parallax/pixelation/framing/scroll/transition | `skills/motion.md` |
-| Composing a motion-led experience or fixing repetitive sections | `references/CHOREOGRAPHY.md` |
-| Learning how a complete immersive production works | `references/PRODUCTION_STUDIES.md`, then the relevant original |
-| Image/canvas continuity, framing, and ownership through a join | `references/MEDIA_HANDOFF.md` |
-| Sourcing, generating, scraping, or preparing assets | `references/MEDIA_SOURCES.md` |
-| Sequence, video, depth, or 3D material production | `references/MOTION_MATERIAL.md` |
-| Supplied references or motion scouting | `references/REFERENCE_ADOPTION.md` |
-| Runtime integration | `references/CREATIVE_EXECUTION.md`; framework file matching the project |
-| Copyable mechanism implementation | `systems/NATIVE_FOUNDATIONS.md`; inspect only the selected export |
-| Spatial subject | `skills/3d.md` |
-| Stateful controls | `skills/interaction.md` |
-| Route continuity or cinematic sequence | `skills/immersive.md` or `skills/cinematic.md` |
-| Experimental treatment | `skills/experimental.md` |
-| Typography, hierarchy, responsive layout | `skills/refined.md`, `skills/ux.md`, `skills/mobile.md` as needed |
-| Image presentation | `skills/media.md` |
-| First rendered review | `references/VISUAL_REFINEMENT.md` |
-| Selected Showcase delivery | `references/SHOWCASE.md` |
-| Persistent generic design after inspection | `exemplars/PRINCIPLES.md`, `exemplars/SLOP.md` as diagnostic examples, not universal bans |
-| Explicit local evaluator handoff | `references/EVALUATION_HANDOFF.md` only if `.dreative/evaluation/README.md` exists |
-| Maintaining this skill | `skills/learning.md` and repository-only `references/DOGFOOD_LESSONS.md` (not installed) |
+| Presenting directions and selection | `PLAN.md` |
+| Generated page mockups or implementing a design image | `references/VISUAL_DESIGN.md` |
+| Writing motion code (step 5–7) | `references/MOTION_RECIPES.md`, lab `systems/motion-recipes.html` |
+| Choosing the mechanism for a named treatment (parallax, pixelation, sequence…) | `skills/motion.md` |
+| Composing route, joins, task and ending | `references/CHOREOGRAPHY.md` |
+| Shot briefs, sourcing, generation recovery, rights | `references/MEDIA_SOURCES.md` |
+| Frame sequences, video, depth, 3D material | `references/MOTION_MATERIAL.md`, `skills/3d.md` |
+| Image ↔ canvas continuity through a join | `references/MEDIA_HANDOFF.md` |
+| Studying a live award site or the user's references | `references/PRODUCTION_STUDIES.md`, `references/REFERENCE_ADOPTION.md`, `references/CREATIVE_RESOURCES.md` |
+| Runtime choice and integration details | `references/CREATIVE_EXECUTION.md`, `frameworks/<stack>.md` |
+| Reusable native mechanisms without dependencies | `systems/NATIVE_FOUNDATIONS.md` |
+| Stateful controls, mobile, UX, type | `skills/interaction.md`, `skills/mobile.md`, `skills/ux.md`, `skills/refined.md` |
+| Immersive/cinematic/experimental treatments | `skills/immersive.md`, `skills/cinematic.md`, `skills/experimental.md` |
+| Rendered review and correction | `references/VISUAL_REFINEMENT.md` |
+| Showcase delivery | `references/SHOWCASE.md` |
+| Local evaluator handoff (only if `.dreative/evaluation/README.md` exists) | `references/EVALUATION_HANDOFF.md` |
+| Maintaining this skill | `skills/learning.md`, repository-only `references/DOGFOOD_LESSONS.md` |
 
-Read relevant sections once while they remain available. After compaction or a
-source change, a targeted reread is appropriate. Do not spend the build budget
-surveying every specialty. A file read is not evidence that its advice was used.
-
-## Design decisions that matter
-
-Make motion concrete: what appears, what changes, what persists across a join,
-what input drives it, and what the user sees when it resolves. If the brief asks
-for ambitious motion, preserve that ambition in the slice; a profile label does
-not override named treatments.
-
-Choose materials by fit and identity. For a real product, show the actual product;
-an analogue or generated illustration must not masquerade as real inventory.
-Fictional concepts can use coherent generated product imagery. Source
-or create assets before committing the focal composition. SVG, type, CSS, canvas,
-photography, and video are all legitimate media. Judge the rendered work.
-Do not fabricate an unconvincing physical prop because it is easy to code.
-A material study cannot replace the subject views the primary task needs. Resolve
-one usable subject view before expanding a substitute into an entire set.
-
-Fund three kinds of work independently: responsive controls, continuity between
-regions, and any focal set-piece. Quiet regions can remain still. A fade, transform,
-or mask can be excellent motion; its adequacy depends on the promised experience.
-Do not replace a requested mechanism with a nominal effect and call it complete.
-
-Use one owner per animated property. Native foundations are reusable mechanics,
-not an art-direction menu; mature runtimes are appropriate when they solve the
-chosen problem. Preserve native scrolling unless interpolation improves the
-tested experience. Smooth-scroll installation alone creates no choreography.
-
-## Review and delivery
-
-Serve the actual route. Inspect the full page and key sectional states at 1440px
-and 390px, including normal-motion playback, reverse and fast input, release,
-touch and keyboard interaction. Inspect reduced motion separately. Full-page
-screenshots cannot show time and can misrepresent sticky scenes.
-
-Exercise the user's primary task, direct routes, loading and failure states.
-Correct visible crop, hierarchy, spacing, collision, overflow, missing-media,
-encoding, and interaction failures, then recapture affected views. Use 320px and
-performance/device checks when the content or runtime warrants them.
-
-Run the production build and applicable existing deterministic checks.
-For substantial frontend delivery run:
-`dreative finalize --codex|--claude --profile <direction> --visual-smoke-url <preview-url>`
-with the correct host flag; Showcase also needs its mechanism contract.
-Completion requires command success and `DREATIVE_CHECKS_PASSED`. A failure means
-implementation is incomplete: state the blockers. This marker certifies commands,
-not motion quality or taste.
-
-Compare the rendered result to the user's actual choices. Report what shipped,
-what was tested, and remaining limitations. For substantial frontend delivery:
-Report technical checks, fulfillment of the selected experience, and human taste
-review separately. Use **Implementation complete; human taste verdict: awaiting
-user review** only when the requested material, behavior and selected motion
-actually shipped. Passing finalization cannot clear a missing requirement.
-Do not award yourself acceptance. Do not create taste thresholds, read-count
-gates, mandatory critic loops, or prose attestations as substitutes for observation.
+Read a file once when its step arrives; reread only after compaction or a change.

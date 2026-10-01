@@ -11,8 +11,9 @@ when available and allowed. Skip concept generation for scoped repairs,
 an established direction or a supplied design that already answers the question.
 Use the host's image-generation/editing tool and its applicable instructions;
 discover capability through `MEDIA_SOURCES.md`. Respect cost and source limits.
-If generation is unavailable, use supplied images or a material-backed visual
-composition in a capable design tool/browser, and name the substitution.
+Probe with `dreative media probe`; `dreative media generate` reaches keyed
+providers when the host has no image tool. If generation is unavailable, build
+coded studies with real material as described in `../PLAN.md` and name the substitution.
 
 ## Before generating: decide what the image must resolve
 

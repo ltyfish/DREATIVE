@@ -18,6 +18,7 @@ import { runVisualSmoke, type DeliveryProfile, type ShowcaseMechanismContract } 
 import { renderLook, runLook } from "./look.js";
 import { runMotionCapture } from "./motionCapture.js";
 import { inspectMedia } from "./mediaInspect.js";
+import { generateImages, parseAspect, probeMedia, renderProbe, searchImages, type PhotoSource, type Provider } from "./media.js";
 import { availableSkills, checkSkillInstallation, installSkill, installationDirectory, resolveSkillSelection } from "./installSkill.js";
 import { CREATIVE_MECHANISMS, renderAgentCatalogue, searchCreativeCatalog } from "../shared/creativeCatalog.js";
 import { renderConfigurationChoices, renderDeliveryBrief, renderDetailedPlanGuide, type DeliveryProfileId } from "../shared/deliveryProfiles.js";
@@ -63,6 +64,12 @@ const USAGE = `usage: dreative [command]
                    --url URL [--out DIR]   screenshot tiles + BROKEN/OBSERVED; never fails
   motion-capture   record desktop/touch/reduced motion; optional --from <selector> --to <selector>
                    --url URL --out DIR [--max-steps 32]   range 1–120; no taste verdict
+  media probe      list callable image generators, photo sources and local tools [--json]
+  media generate   generate images with the first configured provider
+                   --prompt TEXT --out DIR [--name base] [--aspect 4:5] [--count 1-8]
+                   [--provider auto|openai|gemini|fal|replicate|pollinations] [--ref img ...] [--seed n] [--model id]
+  media search     download licensed photo candidates with attribution
+                   --query TEXT --out DIR [--source auto|openverse|pexels|unsplash|pixabay] [--count 12]
   media-inspect    inspect a local video, still, or image directory with FFmpeg
                    --input PATH --out NEW_DIR [--samples 9] [--start 0] [--duration 10]
                    contact sheet + labeled HTML + metadata; no quality score
@@ -105,6 +112,39 @@ async function installCommand(): Promise<void> {
 async function main(): Promise<void> {
   if (args.includes("--help") || args.includes("-h")) { console.log(USAGE); return; }
   switch (cmd) {
+    case "media": {
+      const sub = args[1];
+      const value = (flag: string) => { const i = args.indexOf(flag); const v = i >= 0 ? args[i + 1] : undefined; return v && !v.startsWith("--") ? v : undefined; };
+      const all = (flag: string) => args.flatMap((a, i) => (a === flag && args[i + 1] && !args[i + 1].startsWith("--") ? [args[i + 1]] : []));
+      const numeric = (flag: string) => (value(flag) === undefined ? undefined : Number(value(flag)));
+      if (sub === "probe") {
+        const report = probeMedia();
+        console.log(args.includes("--json") ? JSON.stringify(report, null, 2) : renderProbe(report));
+        return;
+      }
+      if (sub === "generate") {
+        const prompt = value("--prompt"), out = value("--out");
+        if (!prompt || !out) throw new Error("media generate requires --prompt and --out");
+        const results = await generateImages({ prompt, out: path.resolve(out), name: value("--name"), aspect: parseAspect(value("--aspect")),
+          count: numeric("--count"), provider: (value("--provider") ?? "auto") as Provider | "auto", refs: all("--ref"), seed: numeric("--seed"), model: value("--model") });
+        for (const r of results) console.log(`${r.quality === "exploration" ? "EXPLORATION" : "GENERATED"} ${path.join(out, r.file)} ${r.width}x${r.height} via ${r.provider}/${r.model}`);
+        if (results.some((r) => r.quality === "exploration"))
+          console.log("Keyless output is watermarked and low fidelity: use it to judge composition, not as shipped product imagery.");
+        console.log(`manifest: ${path.join(out, "generated.json")}  contact sheet: ${path.join(out, "contact.html")}`);
+        return;
+      }
+      if (sub === "search") {
+        const query = value("--query"), out = value("--out");
+        if (!query || !out) throw new Error("media search requires --query and --out");
+        const { images, failures } = await searchImages({ query, out: path.resolve(out), source: (value("--source") ?? "auto") as PhotoSource | "auto", count: numeric("--count") });
+        for (const image of images) console.log(`SOURCED ${path.join(out, image.file)} ${image.width}x${image.height} ${image.license}`);
+        for (const failure of failures) console.error(`NOTE ${failure}`);
+        console.log(`${images.length} downloaded; manifest with attribution: ${path.join(out, "sources.json")}  contact sheet: ${path.join(out, "contact.html")}`);
+        if (!images.length) process.exitCode = 1;
+        return;
+      }
+      throw new Error("usage: dreative media probe|generate|search (see --help)");
+    }
     case "media-inspect": {
       const value = (flag: string) => { const i = args.indexOf(flag); return i >= 0 ? args[i + 1] : undefined; };
       const input = value("--input"), out = value("--out");

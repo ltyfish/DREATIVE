@@ -2,7 +2,7 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./skill/dreative/systems",
-  testMatch: "browser.spec.ts",
+  testMatch: ["browser.spec.ts", "motion-recipes.spec.ts"],
   workers: 1,
   reporter: "line",
   use: {

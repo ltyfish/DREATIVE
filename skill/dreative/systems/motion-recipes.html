@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motion recipes lab</title>
+<!-- Verification fixture for references/MOTION_RECIPES.md. Served by the repository's
+     scripts/serve-foundations-demo.mjs, which maps /vendor/ to the installed gsap and lenis
+     packages. The code in motion-recipes.js is the code printed in the recipes. -->
+<style>
+  :root { --ink:#f1ece4; --ground:#121110; --accent:#d4562a; --muted:#8d867c;
+    --ease-out: cubic-bezier(.16,1,.3,1); --ease-in-out: cubic-bezier(.65,0,.35,1); }
+  * { box-sizing: border-box; }
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  body { margin:0; background:var(--ground); color:var(--ink); font:16px/1.5 system-ui, sans-serif; }
+  h1,h2 { font-weight:800; letter-spacing:-.04em; line-height:.9; margin:0; }
+  .label { font:12px/1 ui-monospace, monospace; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+  section { position:relative; padding:12vh 5vw; }
+  .plate { background:linear-gradient(135deg,#6b4a35,#d4a373 45%,#2b2622); }
+  .plate.b { background:linear-gradient(160deg,#20303a,#7d9aa8 50%,#e7dccb); }
+  .plate.c { background:linear-gradient(120deg,#3b1f1a,#d4562a 55%,#f1ece4); }
+
+  /* R1 masked line reveal */
+  #r1 h2 { font-size:clamp(48px,9vw,150px); max-width:12ch; }
+  /* Tight display leading clips descenders inside a line mask: extend the mask, then pull the next line back. */
+  .line-mask { padding-bottom:.14em; margin-bottom:-.14em; }
+
+  /* R2 clip reveal */
+  .clip { width:min(70vw,900px); aspect-ratio:16/10; overflow:hidden; margin-top:4vh; }
+  .clip > .plate { width:100%; height:100%; }
+
+  /* R3 parallax frame */
+  .frame { width:min(46vw,520px); aspect-ratio:4/5; overflow:hidden; margin-left:auto; }
+  .frame > .plate { width:100%; height:124%; margin-top:-12%; }
+
+  /* R4 pinned aperture scene */
+  #r4 { height:100vh; padding:0; overflow:hidden; display:grid; place-items:center; }
+  #r4 .aperture { position:absolute; inset:0; clip-path:inset(32% 36% 32% 36%); }
+  #r4 .word { position:relative; z-index:2; font-size:clamp(56px,14vw,240px); font-weight:800; letter-spacing:-.05em; mix-blend-mode:difference; }
+  #r4 .word.left { margin-right:.2em; }
+  #r4 .row { display:flex; }
+  #r4 .caption { position:absolute; bottom:8vh; left:5vw; max-width:34ch; z-index:2; }
+
+  /* R5 horizontal gallery */
+  #r5 { padding:0; overflow:hidden; }
+  #r5 .track { display:flex; gap:4vw; padding:20vh 5vw; width:max-content; }
+  #r5 .panel { width:60vw; height:60vh; flex:none; display:flex; align-items:flex-end; padding:24px; }
+  #r5 .panel span { font-size:clamp(28px,4vw,64px); font-weight:800; }
+  @media (max-width:760px) {
+    #r5 { overflow-x:auto; scroll-snap-type:x mandatory; }
+    #r5 .panel { width:82vw; height:56vh; scroll-snap-align:center; }
+  }
+
+  /* R6 shared element Flip */
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:4vh; }
+  .card { appearance:none; border:0; padding:0; background:none; color:inherit; text-align:left; cursor:pointer; }
+  .card .plate { aspect-ratio:3/4; }
+  .detail { position:fixed; inset:0; display:grid; grid-template-columns:1.2fr 1fr; background:var(--ground); z-index:20; }
+  .detail[hidden] { display:none; }
+  .detail .slot { position:relative; overflow:hidden; }
+  .detail .slot .plate { position:absolute; inset:0; }
+  .detail .info { padding:8vh 4vw; }
+  .detail button { margin-top:24px; }
+  @media (max-width:760px) { .detail { grid-template-columns:1fr; grid-template-rows:55vh 1fr; } .grid { grid-template-columns:1fr 1fr; } }
+
+  /* R7 velocity marquee */
+  .marquee { overflow:hidden; white-space:nowrap; font-size:clamp(40px,8vw,120px); font-weight:800; letter-spacing:-.04em; }
+  .marquee .inner { display:inline-flex; gap:.5em; will-change:transform; }
+
+  /* R9 stacked scenes */
+  .stack { position:relative; }
+  .stack .sheet { position:sticky; top:0; height:100vh; display:flex; align-items:flex-end; padding:6vh 5vw; transform-origin:50% 0; }
+  .stack .sheet h2 { font-size:clamp(40px,8vw,120px); }
+
+  /* R10 magnetic */
+  .magnet { display:inline-grid; place-items:center; width:180px; height:180px; border-radius:50%; background:var(--accent); color:#120c08; font-weight:700; border:0; }
+
+  @media (prefers-reduced-motion: reduce) { #r4 .aperture { clip-path:none; } }
+</style>
+</head>
+<body>
+<header id="r8" class="label" style="padding:24px 5vw">Recipes lab · <span id="ready">loading</span></header>
+
+<section id="r1"><p class="label">R1 masked line reveal</p><h2 data-split>Cut close to the body, built to be worn for a decade</h2></section>
+
+<section id="r2"><p class="label">R2 clip-path reveal with counter-scale</p><div class="clip" data-clip><div class="plate"></div></div></section>
+
+<section id="r3"><p class="label">R3 parallax inside a fixed frame</p><div class="frame" data-parallax><div class="plate b"></div></div></section>
+
+<section id="r4" data-pin-scene>
+  <div class="aperture plate c"></div>
+  <div class="row"><span class="word left">FROM</span><span class="word right">CLOTH</span></div>
+  <p class="caption">R4 pinned scene: the words part, the aperture opens to full bleed, the caption holds.</p>
+</section>
+
+<section id="r5" data-horizontal><div class="track">
+  <div class="panel plate"><span>01 Weave</span></div><div class="panel plate b"><span>02 Cut</span></div>
+  <div class="panel plate c"><span>03 Stitch</span></div><div class="panel plate"><span>04 Press</span></div>
+</div></section>
+
+<section id="r6"><p class="label">R6 shared-element handoff (Flip)</p>
+  <div class="grid">
+    <button class="card" data-item="1" aria-label="Open Wool Overshirt"><div class="plate" data-flip-id="p1"></div><p>Wool Overshirt</p></button>
+    <button class="card" data-item="2" aria-label="Open Chore Jacket"><div class="plate b" data-flip-id="p2"></div><p>Chore Jacket</p></button>
+    <button class="card" data-item="3" aria-label="Open Camp Short"><div class="plate c" data-flip-id="p3"></div><p>Camp Short</p></button>
+  </div>
+  <div class="detail" role="dialog" aria-modal="true" aria-labelledby="detail-title" hidden>
+    <div class="slot"></div>
+    <div class="info"><h2 id="detail-title">—</h2><p>Sizes, fabric and care live here.</p><button type="button" data-close>Back to the collection</button></div>
+  </div>
+</section>
+
+<section id="r7"><p class="label">R7 scroll-velocity marquee</p>
+  <div class="marquee" data-marquee><div class="inner"><span>Wool · Linen · Denim · Cord ·</span><span aria-hidden="true">Wool · Linen · Denim · Cord ·</span></div></div>
+</section>
+
+<div class="stack" id="r9">
+  <div class="sheet plate"><h2>Weave</h2></div>
+  <div class="sheet plate b"><h2>Cut</h2></div>
+  <div class="sheet plate c"><h2>Finish</h2></div>
+</div>
+
+<section id="r10"><p class="label">R10 magnetic control</p><button class="magnet" data-magnetic>Add to bag</button></section>
+<section style="height:60vh"><p class="label">End</p></section>
+
+<script src="/vendor/gsap/gsap.min.js"></script>
+<script src="/vendor/gsap/ScrollTrigger.min.js"></script>
+<script src="/vendor/gsap/SplitText.min.js"></script>
+<script src="/vendor/gsap/Flip.min.js"></script>
+<script src="/vendor/lenis/lenis.min.js"></script>
+<script src="motion-recipes.js"></script>
+</body>
+</html>

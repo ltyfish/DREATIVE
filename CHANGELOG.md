@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.6.0
+
+- Add `dreative media probe|generate|search`: provider-neutral image generation
+  (OpenAI, Gemini, fal, Replicate; keyless Pollinations marked exploration-only),
+  reference-guided edits, Openverse/Pexels/Unsplash/Pixabay search with licence and
+  attribution manifests, byte-level image validation and a contact sheet.
+- Add `references/MOTION_RECIPES.md` with GSAP/ScrollTrigger/SplitText/Flip/Lenis
+  setup, timing/easing tokens and ten recipes, executed by
+  `systems/motion-recipes.html` and covered by `motion-recipes.spec.ts`.
+- Rewrite `SKILL.md` as an ordered procedure (inventory → concept → material →
+  directions → foundation → signature moment → route → review → finalize) with
+  the material and motion stack rules inline; rewrite `PLAN.md` so directions are
+  generated compositions or coded studies that become production code.
+- Point media, motion, execution and visual-design references at the new tools.
+
 ## 1.5.3
 
 - Exercise accepted-prototype production bindings in desktop, 390px, and 320px
