@@ -25,6 +25,7 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const lenis = reduce ? null : new Lenis({ lerp: 0.1, smoothWheel: true });
 if (lenis) {
   lenis.on("scroll", ScrollTrigger.update);
+  ScrollTrigger.addEventListener("refresh", () => lenis.resize()); // pins change page height
   gsap.ticker.add((t) => lenis.raf(t * 1000));
   gsap.ticker.lagSmoothing(0);
 }
@@ -153,6 +154,28 @@ same image node moves, so there is no crossfade or crop jump. Give the dialog
 Transitions API (`document.startViewTransition`, matching `view-transition-name` on
 source and destination) with an instant fallback.
 
+### R11 Scroll-driven handoff into the real destination
+```js
+const box = (el) => { let x = 0, y = 0; for (let n = el; n && n !== stage; n = n.offsetParent) { x += n.offsetLeft; y += n.offsetTop; }
+  return { x, y, w: el.offsetWidth, h: el.offsetHeight }; };   // layout boxes ignore transforms
+const from = () => box(media), to = () => box(slot);
+gsap.timeline({ defaults: { ease: "power2.inOut" },
+  scrollTrigger: { trigger: stage, start: "top top", end: desktop ? "+=160%" : "+=110%", pin: true, scrub: 0.6, invalidateOnRefresh: true } })
+  .from(shop, { yPercent: 40, autoAlpha: 0, duration: 0.6 }, 0.25)
+  .fromTo(media, { x: 0, y: 0, width: () => from().w, height: () => from().h },
+    { x: () => to().x - from().x, y: () => to().y - from().y, width: () => to().w, height: () => to().h, duration: 1 }, 0)
+  .set(slotImage, { visibility: "visible" }, 1)   // the real product image takes over…
+  .set(media, { visibility: "hidden" }, 1)        // …and the flying copy disappears
+  .to({}, { duration: 0.25 });
+```
+The hero image and the first product slot sit in one pinned stage, so the
+destination is on screen when the image arrives. Both show the same image file,
+cover-cropped the same way. The flying element animates width/height (one element,
+acceptable) so `object-fit: cover` keeps the crop honest. Never move the hero by
+guessed `xPercent`/`yPercent`; it lands somewhere near the card, not on it, and
+breaks on every other viewport. Reduced motion: hide the flying copy and show the
+slot image (CSS only).
+
 ### R7 Velocity-reactive marquee
 ```js
 const loop = gsap.to(inner, { xPercent: -50, duration: 18, ease: "none", repeat: -1 });
@@ -200,8 +223,8 @@ the same two `quickTo` calls move one shared image element; touch gets the image
 A signature moment usually chains two or three recipes around one subject:
 
 - **Opening → shop:** R8 loader exits into R4 aperture holding the hero product
-  image; the aperture's final frame is the first product card's image, and R6 carries
-  it into the detail view when tapped.
+  image; R11 lands that image on the first product slot as the shop rises, and R6
+  carries it into the detail view when tapped.
 - **Story → evidence:** R1 headline, R4 pinned scene whose timeline swaps
   close-up crops of the same garment (macro → detail → full), released into a size
   and fabric panel that uses the same crop.

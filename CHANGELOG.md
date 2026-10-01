@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.8.0
+
+From the 2026-10-01 Codex run (2/5: material 4, motion/craft/structure 2): images
+worked, but both directions were a standard shop page plus one motif, the
+whole-page mockup anchored the build to a template, and the hero was moved by
+guessed percentages instead of landing on the product.
+
+- Directions are now a route storyboard (5–8 frames through task, information and
+  ending), with "different styling is not different design" and task-surface
+  alternatives stated where step 2 is read.
+- Directions are shown as separately generated storyboard frames, with guidance on
+  image models' pull toward the standard template.
+- Add recipe R11: scroll-driven handoff that lands the hero image on the measured
+  product slot and passes ownership to it (lab + browser test, desktop/mobile/reverse).
+- R0 resizes Lenis on ScrollTrigger refresh; pin spacers otherwise leave Lenis
+  clamping scroll to a stale page height.
+- Step 8 adds a designer's review: watch the whole recording against the storyboard,
+  name and rework the weakest passage. Guidance only; nothing is gated.
+
 ## 1.7.0
 
 - Host-specific imagery: Codex uses its built-in `image_gen` and `dreative media

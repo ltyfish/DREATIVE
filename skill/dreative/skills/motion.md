@@ -83,7 +83,7 @@ quiet composition can resolve the experience without becoming filler.
 ## Runtime and timing
 
 Start from `../references/MOTION_RECIPES.md`: the GSAP/ScrollTrigger/Lenis setup (R0),
-timing and easing tokens, and tested recipes R1–R10 for reveals, pinned scenes,
+timing and easing tokens, and tested recipes R1–R11 for reveals, pinned scenes,
 rails, shared-element handoffs, velocity, loaders and pointer craft.
 
 CSS handles local hover/focus/press states. Native scroll timelines can handle

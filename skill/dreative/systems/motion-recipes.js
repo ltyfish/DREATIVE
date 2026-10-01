@@ -13,6 +13,7 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 if (!reduce && params.get("lenis") !== "0") {
   lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
   lenis.on("scroll", ScrollTrigger.update);
+  ScrollTrigger.addEventListener("refresh", () => lenis.resize()); // pin spacers change the page height
   gsap.ticker.add((time) => lenis.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);
 }
@@ -56,6 +57,26 @@ mm.add({ motion: "(prefers-reduced-motion: no-preference)", desktop: "(min-width
       .from(scene.querySelector(".caption"), { autoAlpha: 0, y: 24, duration: 0.4, ease: EASE.soft }, "hold-=0.2")
       .to({}, { duration: DUR.hold }); // readable hold before release
     scene.__timeline = tl;
+  }
+
+  // R11 — scroll-driven handoff: the hero image flies into the real first product slot, then the slot owns it.
+  // Layout boxes (offset*) ignore transforms, so the target is correct at any scroll position and after resize.
+  const handoff = document.querySelector("[data-handoff]");
+  if (handoff) {
+    const media = handoff.querySelector("[data-handoff-media]");
+    const slot = handoff.querySelector("[data-handoff-slot]");
+    const box = (el) => { let x = 0, y = 0; for (let n = el; n && n !== handoff; n = n.offsetParent) { x += n.offsetLeft; y += n.offsetTop; }
+      return { x, y, w: el.offsetWidth, h: el.offsetHeight }; };
+    const from = () => box(media), to = () => box(slot);
+    gsap.timeline({ defaults: { ease: "power2.inOut" },
+      scrollTrigger: { trigger: handoff, start: "top top", end: desktop ? "+=160%" : "+=110%", pin: true, scrub: 0.6, invalidateOnRefresh: true } })
+      .from(handoff.querySelector(".r11-shop"), { yPercent: 40, autoAlpha: 0, duration: 0.6 }, 0.25)
+      .fromTo(media, { x: 0, y: 0, width: () => from().w, height: () => from().h },
+        { x: () => to().x - from().x, y: () => to().y - from().y, width: () => to().w, height: () => to().h, duration: 1 }, 0)
+      .to(handoff.querySelector(".r11-title"), { yPercent: -30, autoAlpha: 0, duration: 0.5 }, 0)
+      .set(slot.firstElementChild, { visibility: "visible" }, 1)   // ownership passes to the real slot…
+      .set(media, { visibility: "hidden" }, 1)                       // …so the shop layout, focus and resize are ordinary again
+      .to({}, { duration: 0.25 });
   }
 
   // R5 — horizontal gallery. Desktop pins and translates; mobile keeps native scroll-snap (no pin).

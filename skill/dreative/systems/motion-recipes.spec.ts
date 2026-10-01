@@ -99,3 +99,37 @@ test("reduced motion renders the resolved composition without pins or splits", a
   await expect(page.locator(".detail .slot [data-flip-id='p3']")).toHaveCount(1);
   expect(errors).toEqual([]);
 });
+
+test("scroll handoff lands the hero image exactly on the real product slot, then hands ownership over", async ({ page }) => {
+  for (const width of [1440, 390]) {
+    await open(page, "?lenis=0", width);
+    const start = await top(page, "#r11");
+    const rect = (s: string) => page.locator(s).evaluate((el) => { const r = el.getBoundingClientRect(); return [r.x, r.y, r.width, r.height]; });
+    const before = await rect("[data-handoff-media]");
+    const slot = await rect("[data-handoff-slot]");
+    expect(before[2]).toBeGreaterThan(slot[2] * 1.5);
+    await expect(page.locator("[data-handoff-slot] .slot-art")).toHaveCSS("visibility", "hidden");
+    const end = start + 900 * (width > 760 ? 1.6 : 1.1);
+    await scrollTo(page, end - 5);
+    await page.waitForTimeout(900);
+    await expect(page.locator("[data-handoff-slot] .slot-art")).toHaveCSS("visibility", "visible");
+    await expect(page.locator("[data-handoff-media]")).toHaveCSS("visibility", "hidden");
+    // Ownership passes at 80% of the range (a 0.25 hold follows a 1.0 flight).
+    // Reverse: the flight resumes from the slot, not from a stale position.
+    await scrollTo(page, start + (end - start) * 0.7);
+    await page.waitForTimeout(900);
+    await expect(page.locator("[data-handoff-media]")).toHaveCSS("visibility", "visible");
+    const near = await rect("[data-handoff-media]");
+    const slotNow = await rect("[data-handoff-slot]");
+    expect(Math.abs(near[0] - slotNow[0])).toBeLessThan(before[2] * 0.25);
+    await scrollTo(page, end - 5);
+    await page.waitForTimeout(900);
+    await expect(page.locator("[data-handoff-media]")).toHaveCSS("visibility", "hidden");
+    // At the hand-off frame the flying image matched the slot box (checked just before ownership passed).
+    await scrollTo(page, start + (end - start) * 0.795);
+    await page.waitForTimeout(900);
+    const landed = await rect("[data-handoff-media]");
+    const target = await rect("[data-handoff-slot]");
+    for (let i = 0; i < 4; i++) expect(Math.abs(landed[i] - target[i])).toBeLessThan(width > 760 ? 12 : 8);
+  }
+});

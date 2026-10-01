@@ -76,6 +76,17 @@
   /* R10 magnetic */
   .magnet { display:inline-grid; place-items:center; width:180px; height:180px; border-radius:50%; background:var(--accent); color:#120c08; font-weight:700; border:0; }
 
+  /* R11 scroll-driven handoff into a real destination */
+  #r11 { height:100vh; padding:0; overflow:hidden; position:relative; }
+  #r11 .r11-title { position:absolute; left:5vw; top:10vh; z-index:2; font-size:clamp(48px,10vw,170px); max-width:7ch; }
+  #r11 .r11-media { position:absolute; left:38vw; top:8vh; width:56vw; height:84vh; z-index:3; overflow:hidden; }
+  #r11 .r11-media .plate, #r11 .slot-art { width:100%; height:100%; }
+  #r11 .r11-shop { position:absolute; left:5vw; right:5vw; bottom:6vh; display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  #r11 .r11-shop .slot { aspect-ratio:3/4; position:relative; overflow:hidden; }
+  #r11 .slot-art { visibility:hidden; }
+  @media (max-width:760px) { #r11 .r11-media { left:5vw; width:90vw; top:22vh; height:44vh; } #r11 .r11-shop { grid-template-columns:repeat(2,1fr); } #r11 .r11-shop .slot:nth-child(n+3) { display:none; } }
+  @media (prefers-reduced-motion: reduce) { #r11 .r11-media { display:none; } #r11 .slot-art { visibility:visible; } }
+
   @media (prefers-reduced-motion: reduce) { #r4 .aperture { clip-path:none; } }
 </style>
 </head>
@@ -92,6 +103,15 @@
   <div class="aperture plate c"></div>
   <div class="row"><span class="word left">FROM</span><span class="word right">CLOTH</span></div>
   <p class="caption">R4 pinned scene: the words part, the aperture opens to full bleed, the caption holds.</p>
+</section>
+
+<section id="r11" data-handoff>
+  <h2 class="r11-title">The jacket, then the shop</h2>
+  <div class="r11-media" data-handoff-media><div class="plate b"></div></div>
+  <div class="r11-shop">
+    <div class="slot" data-handoff-slot><div class="plate b slot-art"></div></div>
+    <div class="slot plate"></div><div class="slot plate c"></div><div class="slot plate"></div>
+  </div>
 </section>
 
 <section id="r5" data-horizontal><div class="track">

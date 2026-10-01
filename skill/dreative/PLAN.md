@@ -27,7 +27,8 @@ sourced references labelled as generated designs do not count as directions.
 For each direction, together:
 
 - Name, images or recording, and the idea in one sentence.
-- Route: opening → development → working task → ending, with the dense content.
+- Route storyboard: 5–8 frames from opening through the task, the dense content and
+  the ending, each with what moves and how it hands on.
 - Signature moment score and what has actually been demonstrated versus planned.
 - Material: what was generated/sourced, what remains, and its route.
 - Mobile and reduced-motion form, implementation approach, main risk, relative cost.

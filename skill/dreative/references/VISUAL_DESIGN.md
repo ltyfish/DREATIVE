@@ -66,14 +66,27 @@ structure rather than feeding it the usual hero/cards/features/footer skeleton.
 Include the working middle and ending. If a long page becomes too small to judge,
 use an overview with related sectional studies that share the chosen design.
 
-A useful prompt shape, adapted to the brief:
+Prefer storyboard frames to one tall page. A whole-page image compresses every
+region to a thumbnail and invites the generator's default template; a frame at
+viewport size can show one designed moment clearly. Generate the opening, the peak
+mid-transition, the task state and an information frame separately, holding type,
+palette and material constant across them (pass the first frame as a reference).
 
-> Design the actual [page/task] for [audience], front-on at [viewport]. Use
-> [supplied subject/brand material] and preserve [facts/identity]. Explore
-> [specific visual idea or unresolved relationship]. Include [actual content
-> and working state] through the ending. Show intentional image scale, typography,
-> negative space and transitions between content groups. This is a page design;
-> keep it free of presentation-device framing.
+A useful frame prompt shape, adapted to the brief:
+
+> Art-directed website frame, front-on at [1440×900 / 390×844], for [audience].
+> Moment: [opening | mid-transition from X to Y | shop/task state | information].
+> Spatial idea: [the direction's specific relationship, e.g. "one garment per
+> viewport, sizes set into the margin", "the hero image shrinking into the first
+> slot while the grid rises"]. Use [subject/brand material]; preserve [facts].
+> Show scale contrast, cropping and typography as the composition, not a header,
+> hero banner and card grid. No device frame, no lorem ipsum.
+
+Image models fall back to the standard ecommerce or SaaS template whenever the
+prompt leaves room. If a frame shows nav + centred hero + equal card grid + footer
+blocks, the idea was not in the prompt: name the spatial idea more concretely and
+regenerate, or edit the frame. Mid-transition frames are the most useful and the
+hardest; describe the in-between state explicitly.
 
 Inspect the generated image. Judge whether its structure helps the task and
 whether the real content fits, not just whether its atmosphere is appealing.

@@ -39,11 +39,15 @@ references are listed at the end; open one when its step says so.
 
 For each direction write, briefly:
 
-- **Idea** — one sentence about the subject (a tension, gesture, material or behaviour).
-- **Signature moment** — the score `input → establish → transform → hold → handoff →
-  release`, naming the real image/text that moves and the element it lands in.
-- **Route** — opening, development, the working task (shop, read, compare, sign up),
-  ending. Each region gets a decided composition, not a default card row.
+- **Idea** — one sentence about the subject (a tension, gesture, material or behaviour)
+  that the whole route can carry, not just the opening.
+- **Route storyboard** — 5–8 frames through the whole page in scroll order: opening,
+  each transition, the working task (shop, read, compare, sign up), the dense
+  information, the ending. Per frame: what fills the viewport, what moves and on what
+  input, and how it hands to the next frame. The peak is one frame among these; the
+  task and information frames are designed with the same intent as the opening.
+- **Signature moment** — the peak frame's score `input → establish → transform → hold
+  → handoff → release`, naming the real image/text that moves and where it lands.
 - **Material** — the exact shots needed (subject, view, light, background, crop) and
   the route to each: supplied, generated, sourced, rendered or authored type/graphics.
 - **Type and colour** — a display face with character, a text face, 3–5 colours
@@ -51,7 +55,17 @@ For each direction write, briefly:
 
 Directions differ by how the visitor experiences the subject (index, journey,
 editorial cuts, spatial scene, typographic argument), not by palette or filter.
-`references/CREATIVE_DIRECTION.md` and `references/CHOREOGRAPHY.md` help develop them.
+Different styling is not different design: changing font, colour or corner radius on
+the same hero → grid → table → footer is one direction, not two. Before presenting,
+read each storyboard as a visitor: if it reduces to "hero, then a normal shop, then
+info blocks", the idea has not reached the route yet — rework it.
+
+The working task is part of the concept. A shop can be an index of large images with
+the list beside it, one garment per viewport with sizes in place, a lookbook whose
+looks resolve into buyable pieces, a rail you drag, or a grid that reorganises by
+Flip; dense facts can be an annotated garment, a process sequence, a fold-out sheet.
+These are examples to depart from, not a menu. `references/CREATIVE_DIRECTION.md` and
+`references/CHOREOGRAPHY.md` help develop them.
 
 ## 3. Material first: the shot list
 
@@ -85,9 +99,12 @@ Material rules that apply to every build:
 
 ## 4. Show directions, then stop for selection
 
-Give each direction a viewable design: generated page compositions when a
-generator exists (Codex `image_gen`, or a key — `references/VISUAL_DESIGN.md`),
-otherwise **coded studies** — the direction's opening and signature moment built in
+Give each direction a viewable design: generated **storyboard frames** when a
+generator exists (Codex `image_gen`, or a key) — the opening, the peak mid-transition,
+the task state and one information frame, each generated separately at viewport size
+(`references/VISUAL_DESIGN.md`). Image models pull hard toward the standard template
+(nav, centred hero, product grid, footer); if a frame looks like that, regenerate it
+with the direction's specific spatial idea. Otherwise **coded studies** — the direction's opening and signature moment built in
 the real app with its shots (real or placeholder; e.g. `/study/a`), screenshotted at
 1440 and 390 and recorded with `dreative motion-capture`. Studies are production
 code; the selected one is kept.
@@ -113,7 +130,9 @@ budget choices, not designs. Details: `PLAN.md`.
 
 Build the hardest moment with the real material, its entry, its hold and its
 landing in the real destination (usually the first task region). Start from the
-matching recipes (R1–R10) and compose them around the subject. Motion is never a
+matching recipes (R1–R11; R11 lands a hero image on the real product slot) and
+compose them around the subject. Move elements to measured destinations, never to
+guessed percentages. Motion is never a
 placeholder: build the real mechanism now. The only allowed image placeholders are
 declared shots from step 3, at their final size, crop and position, so filling them
 changes nothing else.
@@ -124,15 +143,18 @@ selected design. Fix crop, scale, timing and the join before moving on.
 
 ## 7. Complete the route
 
-Compose each remaining region with its own decided relationship (scale, crop,
-density, mode) while carrying the visual grammar from the signature moment.
+Build the remaining storyboard frames in order. Each region keeps its own decided
+relationship (scale, crop, density, mode) while carrying the visual grammar from the
+signature moment.
 Give the task surfaces the same craft: filtering with Flip, image-to-detail
 handoff, bag/drawer with 0.35–0.6s state motion, visible focus, touch-sized controls.
 Close with a composed ending that returns to the opening idea. Read
 `references/CHOREOGRAPHY.md` when the route feels like a hero followed by a template.
 
 Fund three things separately: responsive controls, continuity between regions, the
-signature set-piece. A quiet region may be still; an unmade decision may not.
+signature set-piece. A still region is a composed decision about scale, crop and type;
+the default grid, plain table or three-column block is not stillness, it is an unmade
+decision.
 
 ## 8. Review in the browser and fix
 
@@ -142,6 +164,11 @@ signature set-piece. A quiet region may be still; an unmade decision may not.
   collisions, invisible lower-page content on direct entry, focus, Escape, touch.
 - Scroll slow, fast, reverse and reload mid-page. Pins must release; nothing stays hidden.
 - Fix what you see, recapture, compare to the selected design. `references/VISUAL_REFINEMENT.md`.
+- Then review as the designer, not the builder: watch the whole desktop recording
+  start to finish against the storyboard. Name the weakest passage — dead scroll, a
+  template grid, a plain table, an abrupt cut, a region nothing happens in — and
+  rework it with the same care as the opening, then watch again. Fixing defects is not
+  the same as finishing the design.
 
 ## 9. Finalize and report
 
